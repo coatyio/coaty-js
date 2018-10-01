@@ -1,0 +1,1443 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>CommunicationManager | coaty v1.0.0</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">coaty v1.0.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="communicationmanager.html">CommunicationManager</a>
+				</li>
+			</ul>
+			<h1>Class CommunicationManager</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Manages a set of predefined communication events and event patterns to
+							query, distribute, and share Coaty objects across decantralized
+						application components using publish-subscribe on top of MQTT messaging.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">CommunicationManager</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/icomponent.html" class="tsd-signature-type">IComponent</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationmanager.html#protocol_version" class="tsd-kind-icon">PROTOCOL_<wbr>VERSION</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#identity" class="tsd-kind-icon">identity</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#runtime" class="tsd-kind-icon">runtime</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#createiovaluetopic" class="tsd-kind-icon">create<wbr>IoValue<wbr>Topic</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#isversioncompatible" class="tsd-kind-icon">is<wbr>Version<wbr>Compatible</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeadvertise" class="tsd-kind-icon">observe<wbr>Advertise</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeadvertisewithcoretype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Core<wbr>Type</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeadvertisewithobjecttype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Object<wbr>Type</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observechannel" class="tsd-kind-icon">observe<wbr>Channel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observecommunicationstate" class="tsd-kind-icon">observe<wbr>Communication<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observedeadvertise" class="tsd-kind-icon">observe<wbr>Deadvertise</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observediscover" class="tsd-kind-icon">observe<wbr>Discover</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeiostate" class="tsd-kind-icon">observe<wbr>IoState</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeiovalue" class="tsd-kind-icon">observe<wbr>IoValue</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeoperatingstate" class="tsd-kind-icon">observe<wbr>Operating<wbr>State</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observequery" class="tsd-kind-icon">observe<wbr>Query</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeraw" class="tsd-kind-icon">observe<wbr>Raw</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeupdate" class="tsd-kind-icon">observe<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#ondispose" class="tsd-kind-icon">on<wbr>Dispose</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishadvertise" class="tsd-kind-icon">publish<wbr>Advertise</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishassociate" class="tsd-kind-icon">publish<wbr>Associate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishchannel" class="tsd-kind-icon">publish<wbr>Channel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishdeadvertise" class="tsd-kind-icon">publish<wbr>Deadvertise</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishdiscover" class="tsd-kind-icon">publish<wbr>Discover</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishiovalue" class="tsd-kind-icon">publish<wbr>IoValue</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishquery" class="tsd-kind-icon">publish<wbr>Query</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishraw" class="tsd-kind-icon">publish<wbr>Raw</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#publishupdate" class="tsd-kind-icon">publish<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#restart" class="tsd-kind-icon">restart</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#stop" class="tsd-kind-icon">stop</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Communication<wbr>Manager<span class="tsd-signature-symbol">(</span>runtime<span class="tsd-signature-symbol">: </span><a href="runtime.html" class="tsd-signature-type">Runtime</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:121</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>runtime: <a href="runtime.html" class="tsd-signature-type">Runtime</a></h5>
+								</li>
+								<li>
+									<h5>options: <a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
+					<a name="protocol_version" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> PROTOCOL_<wbr>VERSION</h3>
+					<div class="tsd-signature tsd-kind-icon">PROTOCOL_<wbr>VERSION<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in com/communication-manager.ts:76</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Defines the communication protocol version number, an integral number.
+								Increment this version whenever you add new communication events or
+								change the shape of topics/payloads and adjust the compatibility
+							check method isVersionCompatible if needed.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="identity" class="tsd-anchor"></a>
+					<h3>identity</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> identity<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/component.html" class="tsd-signature-type">Component</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:158</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the identity meta object for this communication manager.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/component.html" class="tsd-signature-type">Component</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="options" class="tsd-anchor"></a>
+					<h3>options</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> options<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:151</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the CommunicationOptions associated with this communication manager.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="runtime" class="tsd-anchor"></a>
+					<h3>runtime</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> runtime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="runtime.html" class="tsd-signature-type">Runtime</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:144</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the Runtime object associated with this communication manager.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="runtime.html" class="tsd-signature-type">Runtime</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="createiovaluetopic" class="tsd-anchor"></a>
+					<h3>create<wbr>IoValue<wbr>Topic</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>IoValue<wbr>Topic<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:596</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Used by an IO router to create a new topic used to associate an
+									IO source with an IO actor.</p>
+								</div>
+								<p>The IO source uses this topic to publish IO values; the IO actor
+								subscribes to this topic to receive the published values.</p>
+								<p>The topic name created is based on the event type <code>IoValue</code>.
+									It specifies the associated user and the given IO source ID in the
+									corresponding topic levels. It is guaranteed to not contain wildcard
+								tokens on any topic level.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ioSource: <a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the IO source object</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="isversioncompatible" class="tsd-anchor"></a>
+					<h3>is<wbr>Version<wbr>Compatible</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Version<wbr>Compatible<span class="tsd-signature-symbol">(</span>protocolVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:612</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether the given protocol version is compatible with
+									CommunicationManager.PROTOCOL_VERSION.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>protocolVersion: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeadvertise" class="tsd-anchor"></a>
+					<h3>observe<wbr>Advertise</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Advertise<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a>, coreType<span class="tsd-signature-symbol">?: </span><a href="../globals.html#coretype" class="tsd-signature-type">CoreType</a>, objectType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:285</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>since version 1.5.0. Please use either observeAdvertiseWithCoreType
+										or observeAdvertiseWithObjectType instead.</p>
+										<p>Observe Advertise events for the given target and the given
+										core or object type emitted by the hot observable returned.</p>
+										<p>Specify either a core type or an object type to restrict events
+											accordingly. The method throws an error if both types or none
+										are specified.</p>
+										<p>Advertise events that originate from the given event target, i.e.
+											that have been published by specifying the given event target as
+										event source, will not be emitted by the observable returned.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Advertise events should be emitted</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> coreType: <a href="../globals.html#coretype" class="tsd-signature-type">CoreType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>core type of objects to be observed, or <code>undefined</code> (optional)</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> objectType: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>object type of objects to be observed, or <code>undefined</code> (optional)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Advertise events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeadvertisewithcoretype" class="tsd-anchor"></a>
+					<h3>observe<wbr>Advertise<wbr>With<wbr>Core<wbr>Type</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Core<wbr>Type<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a>, coreType<span class="tsd-signature-symbol">: </span><a href="../globals.html#coretype" class="tsd-signature-type">CoreType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:329</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Advertise events for the given target and the given
+									core type emitted by the hot observable returned.</p>
+								</div>
+								<p>Advertise events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Advertise events should be emitted</p>
+									</div>
+								</li>
+								<li>
+									<h5>coreType: <a href="../globals.html#coretype" class="tsd-signature-type">CoreType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>core type of objects to be observed.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Advertise events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeadvertisewithobjecttype" class="tsd-anchor"></a>
+					<h3>observe<wbr>Advertise<wbr>With<wbr>Object<wbr>Type</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Object<wbr>Type<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a>, objectType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:345</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Advertise events for the given target and the given
+									object type emitted by the hot observable returned.</p>
+								</div>
+								<p>Advertise events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Advertise events should be emitted</p>
+									</div>
+								</li>
+								<li>
+									<h5>objectType: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>object type of objects to be observed.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Advertise events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observechannel" class="tsd-anchor"></a>
+					<h3>observe<wbr>Channel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Channel<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a>, channelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="channelevent.html" class="tsd-signature-type">ChannelEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:380</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Channel events for the given target and the given
+									channel identifier emitted by the hot observable returned.</p>
+								</div>
+								<p>The channel identifier must be a non-empty string that does not contain
+									the following characters: <code>NULL (U+0000)</code>, <code># (U+0023)</code>, <code>+ (U+002B)</code>,
+								<code>/ (U+002F)</code>.</p>
+								<p>Channel events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Channel events should be emitted</p>
+									</div>
+								</li>
+								<li>
+									<h5>channelId: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a channel identifier</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="channelevent.html" class="tsd-signature-type">ChannelEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Channel events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observecommunicationstate" class="tsd-anchor"></a>
+					<h3>observe<wbr>Communication<wbr>State</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Communication<wbr>State<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/communicationstate.html" class="tsd-signature-type">CommunicationState</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:207</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe communication state changes by the hot observable returned.
+										When subscribed the observable immediately emits the current
+									communication state.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/communicationstate.html" class="tsd-signature-type">CommunicationState</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observedeadvertise" class="tsd-anchor"></a>
+					<h3>observe<wbr>Deadvertise</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Deadvertise<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="deadvertiseevent.html" class="tsd-signature-type">DeadvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:360</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Deadvertise events for the given target emitted by the hot
+									observable returned.</p>
+								</div>
+								<p>Deadvertise events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Deadvertise events should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="deadvertiseevent.html" class="tsd-signature-type">DeadvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Deadvertise events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observediscover" class="tsd-anchor"></a>
+					<h3>observe<wbr>Discover</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Discover<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="discoverevent.html" class="tsd-signature-type">DiscoverEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:231</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Discover events for the given target emitted by the hot
+									observable returned.</p>
+								</div>
+								<p>Discover events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Discover events should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="discoverevent.html" class="tsd-signature-type">DiscoverEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Discover events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeiostate" class="tsd-anchor"></a>
+					<h3>observe<wbr>IoState</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>IoState<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BehaviorSubject</span><span class="tsd-signature-symbol">&lt;</span><a href="iostateevent.html" class="tsd-signature-type">IoStateEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:418</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe IO state events for the given IO source or IO actor
+										emitted by the behavior subject returned. When subscribed the
+									subject immediately emits the current association state.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which IO values should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">BehaviorSubject</span><span class="tsd-signature-symbol">&lt;</span><a href="iostateevent.html" class="tsd-signature-type">IoStateEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a subject emitting IO state events for the given target</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeiovalue" class="tsd-anchor"></a>
+					<h3>observe<wbr>IoValue</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>IoValue<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:429</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe IO values for the given IO actor emitted by the hot observable
+									returned.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>IO actor for which IO values should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming values for an IO actor</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeoperatingstate" class="tsd-anchor"></a>
+					<h3>observe<wbr>Operating<wbr>State</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Operating<wbr>State<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/operatingstate.html" class="tsd-signature-type">OperatingState</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:216</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe operating state changes by the hot observable returned.
+										When subscribed the observable immediately emits the current
+									operating state.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/operatingstate.html" class="tsd-signature-type">OperatingState</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observequery" class="tsd-anchor"></a>
+					<h3>observe<wbr>Query</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Query<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="queryevent.html" class="tsd-signature-type">QueryEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:246</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Query events for the given target emitted by the hot
+									observable returned.</p>
+								</div>
+								<p>Query events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Query events should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="queryevent.html" class="tsd-signature-type">QueryEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Query events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeraw" class="tsd-anchor"></a>
+					<h3>observe<wbr>Raw</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Raw<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a>, topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:400</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe values on the given MQTT subscription topic. Values are emitted by the
+									hot observable returned. Values are represented as Uint8Array (Buffer in Node.js) objects.</p>
+								</div>
+								<p>Used to interoperate with external MQTT clients that publish messages on the given topic.</p>
+								<p>The specified MQTT subscription topic is a non-empty string that must not contain the
+								character <code>NULL (U+0000)</code>.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which values should be emitted</p>
+									</div>
+								</li>
+								<li>
+									<h5>topic: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the subscription topic on which to observe values</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting any incoming values as Uint8Array (Buffer in Node.js) objects</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="observeupdate" class="tsd-anchor"></a>
+					<h3>observe<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Update<span class="tsd-signature-symbol">(</span>eventTarget<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:261</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Observe Update events for the given target emitted by the hot
+									observable returned.</p>
+								</div>
+								<p>Update events that originate from the given event target, i.e.
+									that have been published by specifying the given event target as
+								event source, will not be emitted by the observable returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>eventTarget: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>target for which Update events should be emitted</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable emitting incoming Update events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="ondispose" class="tsd-anchor"></a>
+					<h3>on<wbr>Dispose</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Dispose<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/icomponent.html">IComponent</a>.<a href="../interfaces/icomponent.html#ondispose">onDispose</a></p>
+								<ul>
+									<li>Defined in com/communication-manager.ts:619</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unsubscribe and disconnect from the messaging broker.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishadvertise" class="tsd-anchor"></a>
+					<h3>publish<wbr>Advertise</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Advertise<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:498</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Advertise an object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Advertise event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishassociate" class="tsd-anchor"></a>
+					<h3>publish<wbr>Associate</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Associate<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="associateevent.html" class="tsd-signature-type">AssociateEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:569</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Used by an IO router to associate or disassociate an IO source
+									with an IO actor.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="associateevent.html" class="tsd-signature-type">AssociateEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Associate event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishchannel" class="tsd-anchor"></a>
+					<h3>publish<wbr>Channel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Channel<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="channelevent.html" class="tsd-signature-type">ChannelEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:536</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Publish a channel event.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="channelevent.html" class="tsd-signature-type">ChannelEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Channel event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishdeadvertise" class="tsd-anchor"></a>
+					<h3>publish<wbr>Deadvertise</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Deadvertise<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="deadvertiseevent.html" class="tsd-signature-type">DeadvertiseEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:527</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Notify subscribers that an advertised object has been deadvertised.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="deadvertiseevent.html" class="tsd-signature-type">DeadvertiseEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Deadvertise event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishdiscover" class="tsd-anchor"></a>
+					<h3>publish<wbr>Discover</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Discover<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="discoverevent.html" class="tsd-signature-type">DiscoverEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="resolveevent.html" class="tsd-signature-type">ResolveEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:449</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Find discoverable objects and receive Resolve events for them
+									emitted by the hot observable returned.</p>
+								</div>
+								<p>Note that the Discover event is lazily published when the
+								first observer subscribes to the observable.</p>
+								<p>Since the observable never emits a completed or error event,
+									a subscriber should unsubscribe when the observable is no longer needed
+									to release system resources and to avoid memory leaks. After all initial
+									subscribers have unsubscribed no more response events will be emitted
+								on the observable and an error will be thrown on resubscription.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="discoverevent.html" class="tsd-signature-type">DiscoverEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Discover event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="resolveevent.html" class="tsd-signature-type">ResolveEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable on which associated Resolve events are emitted</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishiovalue" class="tsd-anchor"></a>
+					<h3>publish<wbr>IoValue</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>IoValue<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:578</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Send the given IO value sourced from the specified IO source.
+										The value is silently discarded if the IO source is currently
+									not associated with any IO actor.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ioSource: <a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishquery" class="tsd-anchor"></a>
+					<h3>publish<wbr>Query</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Query<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="queryevent.html" class="tsd-signature-type">QueryEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="retrieveevent.html" class="tsd-signature-type">RetrieveEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:469</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Find queryable objects and receive Retrieve events for them
+									emitted by the hot observable returned.</p>
+								</div>
+								<p>Note that the Query event is lazily published when the
+								first observer subscribes to the observable.</p>
+								<p>Since the observable never emits a completed or error event,
+									a subscriber should unsubscribe when the observable is no longer needed
+									to release system resources and to avoid memory leaks. After all initial
+									subscribers have unsubscribed no more response events will be emitted
+								on the observable and an error will be thrown on resubscription.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="queryevent.html" class="tsd-signature-type">QueryEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Query event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="retrieveevent.html" class="tsd-signature-type">RetrieveEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable on which associated Retrieve events are emitted</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishraw" class="tsd-anchor"></a>
+					<h3>publish<wbr>Raw</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Raw<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span>, shouldRetain<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:552</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Publish a value on the given topic. Used to interoperate
+									with external MQTT clients that subscribe on the given topic.</p>
+								</div>
+								<p>The topic is an MQTT publication topic, i.e. a non-empty string
+									that must not contain the following characters: <code>NULL (U+0000)</code>,
+								<code># (U+0023)</code>, <code>+ (U+002B)</code>.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>topic: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the topic on which to publish the given payload</p>
+									</div>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a payload string or Uint8Array (Buffer in Node.js) to be published on the given topic</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> shouldRetain: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>whether to publish a retained message (default false)</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="publishupdate" class="tsd-anchor"></a>
+					<h3>publish<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Update<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="completeevent.html" class="tsd-signature-type">CompleteEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:489</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Request or propose partial or complete update of the specified object
+									and receive accomplishments emitted by the hot observable returned.</p>
+								</div>
+								<p>Note that the Update event is lazily published when the
+								first observer subscribes to the observable.</p>
+								<p>Since the observable never emits a completed or error event,
+									a subscriber should unsubscribe when the observable is no longer needed
+									to release system resources and to avoid memory leaks. After all initial
+									subscribers have unsubscribed no more response events will be emitted
+								on the observable and an error will be thrown on resubscription.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Update event to be published</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="completeevent.html" class="tsd-signature-type">CompleteEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a hot observable of associated Complete events</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="restart" class="tsd-anchor"></a>
+					<h3>restart</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">restart<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:184</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Restarts this communication manager with the specified options.
+										To be used to switch connection from the backend broker to a
+									hub broker or after the runtime user/device association has changed.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the new communication options to be used for a restart</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="start" class="tsd-anchor"></a>
+					<h3>start</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:170</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Starts this communication manager with the communication options
+										specified in the configuration. This is a noop if the communication
+									manager has already been started.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="stop" class="tsd-anchor"></a>
+					<h3>stop</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in com/communication-manager.ts:196</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Stops dispatching and emitting events by disconnecting from the message
+										broker. The returned promise is resolved when the communication manager
+									has disconnected.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-is-external">
+						<a href="communicationmanager.html" class="tsd-kind-icon">Communication<wbr>Manager</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
+								<a href="communicationmanager.html#protocol_version" class="tsd-kind-icon">PROTOCOL_<wbr>VERSION</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#identity" class="tsd-kind-icon">identity</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#options" class="tsd-kind-icon">options</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#runtime" class="tsd-kind-icon">runtime</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#createiovaluetopic" class="tsd-kind-icon">create<wbr>IoValue<wbr>Topic</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#isversioncompatible" class="tsd-kind-icon">is<wbr>Version<wbr>Compatible</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeadvertise" class="tsd-kind-icon">observe<wbr>Advertise</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeadvertisewithcoretype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Core<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeadvertisewithobjecttype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Object<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observechannel" class="tsd-kind-icon">observe<wbr>Channel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observecommunicationstate" class="tsd-kind-icon">observe<wbr>Communication<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observedeadvertise" class="tsd-kind-icon">observe<wbr>Deadvertise</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observediscover" class="tsd-kind-icon">observe<wbr>Discover</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeiostate" class="tsd-kind-icon">observe<wbr>IoState</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeiovalue" class="tsd-kind-icon">observe<wbr>IoValue</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeoperatingstate" class="tsd-kind-icon">observe<wbr>Operating<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observequery" class="tsd-kind-icon">observe<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeraw" class="tsd-kind-icon">observe<wbr>Raw</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#observeupdate" class="tsd-kind-icon">observe<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#ondispose" class="tsd-kind-icon">on<wbr>Dispose</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishadvertise" class="tsd-kind-icon">publish<wbr>Advertise</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishassociate" class="tsd-kind-icon">publish<wbr>Associate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishchannel" class="tsd-kind-icon">publish<wbr>Channel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishdeadvertise" class="tsd-kind-icon">publish<wbr>Deadvertise</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishdiscover" class="tsd-kind-icon">publish<wbr>Discover</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishiovalue" class="tsd-kind-icon">publish<wbr>IoValue</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishquery" class="tsd-kind-icon">publish<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishraw" class="tsd-kind-icon">publish<wbr>Raw</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#publishupdate" class="tsd-kind-icon">publish<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#restart" class="tsd-kind-icon">restart</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#start" class="tsd-kind-icon">start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="communicationmanager.html#stop" class="tsd-kind-icon">stop</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+nav {
+    background: orange !important;
+
+    .navbar-brand {
+        color: white;
+    }
+
+    .app-version {
+        color: white;
+        align-self: center;
+    }
+}
+
+main.container-fluid {
+    padding-top: 80px;
+}

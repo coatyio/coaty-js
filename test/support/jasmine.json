@@ -1,0 +1,21 @@
+{
+    "spec_dir": "dynamically configured in jasmine-runner.js",
+    "spec_files": [
+        "bootstrap.spec.js",
+        "util.spec.js",
+        "object.spec.js",
+        "communication.spec.js",
+        "io-routing.spec.js",
+        "db-in-memory.spec.js",
+        "db-nosql.spec.js",
+        "db-sql.spec.js",
+        "db-local.spec.js",
+        "historian.spec.js",
+        "sensor-things.spec.js"
+    ],
+    "helpers": [
+        "test/helpers/**/*.js"
+    ],
+    "stopSpecOnExpectationFailure": false,
+    "random": false
+}

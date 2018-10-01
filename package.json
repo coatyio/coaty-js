@@ -1,0 +1,98 @@
+{
+	"name": "coaty",
+	"version": "1.0.0",
+	"description": "Collaborative IoT Framework in JavaScript for Node.js and browsers",
+	"homepage": "https://coaty.io",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/coatyio/coaty-js"
+	},
+	"readme": "README.md",
+	"bin": {
+		"coaty-scripts": "./scripts/coaty-scripts.js"
+	},
+	"scripts": {
+		"clean": "node build/builder.js clean",
+		"build": "node build/builder.js build",
+		"build:nolint": "node build/builder.js build:nolint",
+		"lint": "node build/builder.js lint",
+		"lint:fix": "node build/builder.js lint:fix",
+		"test": "node build/builder.js test --verbose",
+		"test:debug": "node build/builder.js test --verbose --debug",
+		"doc": "node build/builder.js doc",
+		"version-release": "node scripts/coaty-scripts.js version-release",
+		"cut-release": "node scripts/coaty-scripts.js version-release %1 && node build/builder.js build:nolint && node build/builder.js doc && node scripts/coaty-scripts.js cut-release %2",
+		"push-release": "node scripts/coaty-scripts.js push-release",
+		"publish-release": "node scripts/coaty-scripts.js publish-release"
+	},
+	"config": {
+		"test_config": "test/support/jasmine.json",
+		"test_broker_config": "test/support/mosca.config.json",
+		"test_reports_dir": "test/reports"
+	},
+	"keywords": [
+		"collaborative",
+		"iot",
+		"framework",
+		"Node.js",
+		"browser",
+		"javascript",
+		"typescript"
+	],
+	"author": "Siemens AG",
+	"license": "MIT",
+	"maintainers": [
+		{
+			"name": "Hubertus Hohl",
+			"email": "hubertus.hohl@siemens.com"
+		},
+		{
+			"name": "Markus Sauer",
+			"email": "markussauer@siemens.com"
+		}
+	],
+	"peerDependencies": {
+		"cordova-sqlite-storage": "^2.4.0",
+		"pg": "^7.4.3",
+		"rxjs": "^6.3.3",
+		"sqlite3": "^4.0.2"
+	},
+	"dependencies": {
+		"@types/geojson": "7946.0.4",
+		"bonjour": "3.5.0",
+		"chalk": "2.4.1",
+		"conventional-changelog": "2.0.3",
+		"conventional-recommended-bump": "4.0.1",
+		"geojson": "0.5.0",
+		"mosca": "2.8.3",
+		"mqtt": "2.18.8",
+		"node-fetch": "2.2.0",
+		"semver": "5.5.1",
+		"uuid": "3.3.2"
+	},
+	"devDependencies": {
+		"@types/bonjour": "3.5.5",
+		"@types/jasmine": "2.8.8",
+		"@types/node-fetch": "2.1.2",
+		"@types/pg": "7.4.10",
+		"@types/sqlite3": "3.1.3",
+		"@types/uuid": "3.4.4",
+		"cordova-sqlite-storage": "2.4.0",
+		"fs-extra": "7.0.0",
+		"jasmine": "3.2.0",
+		"jasmine-reporters": "2.3.2",
+		"jasmine-spec-reporter": "4.2.1",
+		"pg": "7.4.3",
+		"reflect-metadata": "0.1.12",
+		"rimraf": "2.6.2",
+		"rxjs": "6.3.3",
+		"sqlite3": "4.0.2",
+		"tslint": "5.11.0",
+		"typedoc": "0.12.0",
+		"typescript": "2.9.2",
+		"yargs": "12.0.2"
+	},
+	"engines": {
+		"node": ">=6.0.0"
+	}
+}

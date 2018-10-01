@@ -1,0 +1,3 @@
+{
+    "extends": "coaty/tslint-config"
+}

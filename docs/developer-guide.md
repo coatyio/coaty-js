@@ -1,0 +1,3101 @@
+# Coaty Developer Guide
+
+This document covers everything a developer needs to know about using the Coaty
+framework to implement collaborative IoT applications targeting Node.js,
+as well as mobile or web apps. We assume you know nothing about Coaty JS before reading
+this guide.
+
+## Table of Contents
+
+* [Introduction](#introduction)
+* [Learn how to use](#learn-how-to-use)
+* [Getting started](#getting-started)
+* [Framework technology stack](#framework-technology-stack)
+* [Framework structure](#framework-structure)
+* [Framework design](#framework-design)
+  * [Define and configure container components](#define-and-configure-container-components)
+  * [Bootstrap a Coaty container in NodeJs](#bootstrap-a-coaty-container-in-nodejs)
+  * [Bootstrap a Coaty container in Angular or Ionic](#bootstrap-a-coaty-container-in-angular-or-ionic)
+  * [Access Coaty container components](#access-coaty-container-components)
+  * [Register controllers at run time](#register-controllers-at-run-time)
+  * [Shut down a Coaty container](#shut-down-a-coaty-container)
+  * [Define an agent-specific controller class](#define-an-agent-specific-controller-class)
+  * [Convenience controllers](#convenience-controllers)
+    * [Connection State Controller](#connection-state-controller)
+    * [Object Cache Controller](#object-cache-controller)
+    * [Historian Controller](#historian-controller)
+* [Object model](#object-model)
+  * [Define application-specific object types](#define-application-specific-object-types)
+* [Communication event patterns](#communication-event-patterns)
+  * [Starting and stopping communication](#starting-and-stopping-communication)
+  * [Publishing events](#publishing-events)
+  * [Observing events](#observing-events)
+  * [Advertise event pattern - an example](#advertise-event-pattern---an-example)
+  * [Deadvertise event pattern - an example](#deadvertise-event-pattern---an-example)
+  * [Channel event pattern - an example](#channel-event-pattern---an-example)
+  * [Discover - Resolve event pattern - an example](#discover---resolve-event-pattern---an-example)
+  * [Query - Retrieve event pattern - an example](#query---retrieve-event-pattern---an-example)
+  * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
+  * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
+* [IO Routing](#io-routing)
+  * [IO Routing communication event flow](#io-routing-communication-event-flow)
+  * [IO Routing implementation](#io-routing-implementation)
+* [Unified Storage API - Query anywhere - Retrieve anywhere](#unified-storage-api---query-anywhere---retrieve-anywhere)
+  * [Persistent storage and retrieval of Coaty objects](#persistent-storage-and-retrieval-of-coaty-objects)
+  * [NoSQL operations](#nosql-operations)
+  * [SQL operations](#sql-operations)
+  * [Local storage operations](#local-storage-operations)
+  * [Transactions](#transactions)
+  * [Database adapter extensions](#database-adapter-extensions)
+  * [Use of database adapters](#use-of-database-adapters)
+  * [Postgres adapter](#postgres-adapter)
+  * [In-memory adapter](#in-memory-adapter)
+  * [SQLite NodeJs adapter](#sqlite-nodejs-adapter)
+  * [SQLite Cordova adapter](#sqlite-cordova-adapter)
+  * [Implement a custom database adapter](#implement-a-custom-database-adapter)
+* [Decentralized logging](#decentralized-logging)
+* [Utilities](#utilities)
+  * [Executing promises in sequence](#executing-promises-in-sequence)
+  * [Binary search and insert](#binary-search-and-insert)
+  * [Localized ISO date-time formatting](#localized-iso-date-time-formatting)
+  * [Deep comparison checks](#deep-comparison-checks)
+* [NodeJS utilities](#nodejs-utilities)
+* [Multicast DNS discovery](#multicast-dns-discovery)
+  * [Discover configuration URLs](#discover-configuration-urls)
+  * [Discover broker or router](#discover-broker-or-router)
+  * [Stop publishing mDNS services](#stop-publishing-mdns-services)
+* [Scripts for Coaty agent projects](#scripts-for-coaty-agent-projects)
+  * [Coaty broker for development](#coaty-broker-for-development)
+  * [Generate project meta info at build time](#generate-project-meta-info-at-build-time)
+    * [Generate project info by script](#generate-project-info-by-script)
+    * [Generate project info by gulp task](#generate-project-info-by-gulp-task)
+    * [Generate project info by a function](#generate-project-info-by-a-function)
+  * [Release a project](#release-a-project)
+    * [Version a release](#version-a-release)
+    * [Cut a release](#cut-a-release)
+    * [Push a release](#push-a-release)
+    * [Publish a release](#publish-a-release)
+
+## Introduction
+
+The Coaty framework enables realization of collaborative IoT applications and scenarios
+in a distributed, decentralized fashion. A *Coaty application* consists of *Coaty agents*
+that communicate with each other to achieve common goals. Coaty agents can run on
+IoT devices, mobile devices, in microservices, cloud or backend services.
+
+The Coaty framework provides a production-ready application and communication layer
+foundation for building collaborative IoT applications by programming Coaty agents.
+The key properties of the framework include:
+
+* a lightweight and modular object-oriented software architecture favoring a
+  resource-oriented and declarative programming style,
+* standardized event based communication patterns on top of a publish-subscribe
+  messaging protocol (currently MQTT),
+* a platform-agnostic, extensible object model to discover, distribute, share,
+  query, and persist hierarchically typed data, and
+* rule based, context driven routing of IoT (sensor) data using smart backpressure
+  strategies.
+
+Coaty supports interoperable framework implementations for multiple platforms.
+The Coaty JS package provides the cross-platform implementation targeted at
+JavaScript/TypeScript based agent projects, running as mobile or web apps, or Node.js
+services.
+
+Coaty JS comes with complete HTML source code documentation, a Developer Guide,
+a Coding Style Guide, and best-practice examples.
+
+## Learn how to use
+
+If you are new to Coaty and would like to learn more, we
+recommend reviewing the [framework documentation](https://github.com/coatyio/coaty-js/tree/master/docs)
+under the [coaty-js](https://github.com/coatyio/coaty-js) project.
+This documentation includes:
+
+* a [Developer Guide](https://github.com/coatyio/coaty-js/blob/master/docs/developer-guide.md)
+  that provides the basics to get started developing an agent project with the Coaty JS framework,
+* a complete [HTML documentation](https://github.com/coatyio/coaty-js/blob/master/docs/code/index.html)
+  of all public type and member definitions of the Coaty JS framework sources,
+* a [Coding Style Guide](https://github.com/coatyio/coaty-js/blob/master/docs/coding-style-guide.md)
+  for Coaty framework and application developers,
+* a specification of the [Coaty communication protocol](https://github.com/coatyio/coaty-js/blob/master/docs/communication-protocol.md),
+* guidance notes on [rights management](https://github.com/coatyio/coaty-js/blob/master/docs/rights-management.md)
+  in a Coaty application.
+* a guide on the [OGC sensorThings API integration](https://github.com/coatyio/coaty-js/blob/master/docs/sensor-things-guide.md) in Coaty JS.
+
+The framework sources include a fully documented
+[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
+that demonstrates best practices and the basic use of communication events to
+exchange typed data in a decentralized Coaty application.
+
+The framework sources include a fully documented
+[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things/README.md)
+that demonstrates how Coaty and the sensorThings API can be used to manage a self-discovering
+network of sensors.
+
+Finally, the unit tests delivered with the framework itself also provide a valuable
+source of programming examples for experienced developers.
+
+Note that the framework makes heavy use of the Reactive Programming paradigm
+using RxJS observables. Understanding observables is an indispensable
+prerequisite for developing applications with the framework. An introduction to
+Reactive Programming can be found [here](http://reactivex.io/).
+
+## Getting started
+
+To build and run Coaty agents with the Coaty JS technology stack
+you need to install the `Node.js` JavaScript runtime (version 6 or higher) globally on
+your target machine. Download and installation details can be found [here](http://nodejs.org/).
+
+The framework uses the package dependency manager `npm` to download dependent libraries.
+npm comes with `Node.js` so you need to install it first.
+
+You can install the latest distribution package in your agent project as follows:
+
+```sh
+npm install coaty --save
+```
+
+For detailed installation instructions, consult the
+[README](https://github.com/coatyio/coaty-js/blob/master/README.md) in
+section "Installing the framework".
+
+## Framework technology stack
+
+The Coaty JavaScript technology stack makes use of the following base technologies:
+
+* **TypeScript** - the framework's main programming language
+* **MQTT.JS** - an MQTT client used to implement event based communication on top
+  of MQTT messaging
+* **RxJS** - the ReactiveX JavaScript library for asynchronous programming with
+  observable streams
+
+The framework also includes some optional packages that can be used in
+combination with the Unified Storage API:
+
+* **pg** - JavaScript driver for PostgreSQL databases
+* **cordova-sqlite-storage** - Cordova driver for SQLite databases
+* **sqlite3** - Node.js driver for SQLite databases
+
+## Framework structure
+
+The Coaty framework consists of several *modules*, public APIs that can be consumed
+independently from each other by a browser or a Node.js runtime. You can choose from
+a set of core modules:
+
+```
+|-- com           - event based communication
+|-- controller    - base controller classes
+|-- io            - IO routing
+|-- model         - core object types
+|-- runtime       - runtime components
+|-- util          - useful utility functions
+```
+
+and optional specialized modules that are only needed for specific types of
+Coaty agents:
+
+```
+|-- scripts           - Build-supporting scripts for use by Coaty agent projects
+|-- db                - Unified Storage API
+    |-- db-adapter-postgres
+    |-- db-adapter-sqlite-cordova
+    |-- db-adapter-sqlite-node
+|-- runtime-angular   - bootstrapping with Dependency Injection for Angular / Ionic
+|-- runtime-node      - bootstrapping for Node.js
+```
+
+The framework distribution package deploys these modules as ES5 sources in
+CommonJS module format.
+
+These JavaScript sources are meant to be used by a bundler such as Webpack,
+SystemJS Builder, Rollup, or Browserify or to be directly consumed by a Node.js runtime.
+The type definitions provide support to TypeScript tooling for things like
+type checking and code completion (e.g. Visual Studio Code Intellisense).
+
+A module is consumed by importing the associated JavaScript module file:
+
+```ts
+import { User, Device } from "coaty/model";
+import { Controller } from "coaty/controller";
+```
+
+> Note: Never try to import definitions from "coaty" package directly, i.e.
+> `import { User, Controller } from "coaty"`. Such an import statement
+> will cause an error on transpilation. Always import your definitions from
+> the specific framework modules they are contained in.
+
+## Framework design
+
+Coaty JS is realized as an inversion of control (IOC) framework with a
+component design that supports dependency injection (DI) and lifecycle management (LM):
+
+* **Container**: An IoC container that defines the entry and exit
+  points for any Coaty agent project. It provides lifecycle
+  management for container components by realizing a register-resolve-release pattern.
+  The container is responsible for composing the graph of components
+  using constructor dependency injection.
+
+* **Controller**: A container component that encapsulates business logic.
+  A controller publishes and observes communication events, provides observable state
+  to the agent project (e.g. views), supports lifecycle management, etc. A Coaty
+  container can contain any number of controllers which are specified declaratively.
+
+* **Communication Manager**: Each container contains exactly one instance
+  of the `CommunicationManager` class that provides publish-subscribe for communication event
+  patterns to exchange typed object data by an underlying messaging
+  protocol (currently MQTT).
+
+* **Configuration**: A `Configuration` object that defines configuration options for the
+  defined controllers as well as common, communication, and database related options.
+
+* **Runtime**: Each container contains exactly one instance
+  of the `Runtime` class that provides access to container’s runtime data,
+  including configuration options, as well as platform and framework meta information.
+
+A Coaty agent project should interact with its Coaty container as follows:
+
+1. Define and configure all components that should be part of the container.
+2. Bootstrap the container on startup.
+3. Dynamically register components at run time (optional).
+4. Shutdown the container on exit or whenever it is no longer needed (optional).
+
+### Define and configure container components
+
+By default, each Coaty container contains a Communication Manager, a Runtime, and
+a Configuration object. Application-specific controllers are classes derived from the base
+`Controller` class provided by the framework. They are declared as part of a container
+by the `Components` interface object.
+
+```ts
+import { Components } from "coaty/runtime";
+
+import { ProductionOrderController, SupportTaskController, WorkflowController } from "./controllers";
+
+const components: Components = {
+    controllers: {
+        ProductionOrderController,
+        SupportTaskController,
+        WorkflowController
+    }
+};
+```
+
+The configuration options for the container components are specified by a separate
+Configuration interface object:
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    common: {
+         // Common options shared by all container components
+         associatedUser: ... ,
+         associatedDevice: ... ,
+         agentInfo: ... ,
+         ...
+    },
+    communication: {
+          // Options used for communication
+          brokerUrl: ... ,
+          brokerOptions: ... ,
+          shouldAutoStart: ... ,
+          shouldAdvertiseIdentity: ... ,
+          shouldAdvertiseDevice: ... ,
+          useReadableTopics: ... ,
+    },
+    controllers: {
+        // Controller-specific configuration options
+        ProductionOrderController: {
+            shouldAdvertiseIdentity: false,
+            ...
+        },
+        SupportTaskController: {
+            shouldAdvertiseIdentity: true,
+            ...
+        },
+        WorkflowController: {
+            shouldAdvertiseIdentity: true,
+            ...
+        },
+    },
+    databases: {
+        // Options to configure database access
+        database1: {
+            adapter: ... ,
+            adapterOptions: ... ,
+            connectionString: ... ,
+            connectionOptions: ... ,
+        },
+        database2: {
+            ...
+        },
+        ...
+    }
+};
+```
+
+### Bootstrap a Coaty container in NodeJs
+
+In a Node.js environment you can bootstrap a Coaty container synchronously
+on startup by registering and resolving the declared container components:
+
+```ts
+import { Container } from "coaty/runtime";
+
+const container = Container.resolve(components, configuration);
+```
+
+You can also retrieve the configuration object from a local JSON or JS file:
+
+```ts
+import { provideConfiguration } from "coaty/runtime-node";
+
+const configuration = provideConfiguration("app.config.json");
+```
+
+Alternatively, you can bootstrap a container asynchronously by retrieving
+the Configuration object from a Url:
+
+```ts
+import { Container } from "coaty/runtime";
+import { provideConfigurationAsync } from "coaty/runtime-node";
+
+// Returns a promise on a container for the given components and config options
+Container
+    .resolveAsync(
+        components,
+        provideConfigurationAsync("http://myconfighost/app.config.json"))
+    .then(container => ...);
+```
+
+Note that the Communication Manager can be started automatically after all
+container components have been resolved. To do this, set the configuration
+setting `shouldAutoStart` to `true` in the communication options.
+Otherwise, you have to start the Communication Manager
+explicitely by invoking the `start` method.
+
+### Bootstrap a Coaty container in Angular or Ionic
+
+Coaty projects built with Angular or Ionic can inject all
+components of a Coaty container as Angular providers to make use of Angular
+constructor dependency injection.
+
+Use the `provideComponents` function to retrieve Angular providers for
+all components of the given Coaty container. The returned array of providers
+should be passed as `extraProviders` argument to the Angular bootstrap
+function:
+
+```ts
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+
+import { Container } from "coaty/runtime";
+import { provideComponents } from "coaty/runtime-angular";
+
+import { components, configuration } from "./app.config";
+import { AppModule } from "./app.module";
+
+const container = Container.resolve(components, configuration);
+
+platformBrowserDynamic(provideComponents(container)).bootstrapModule(AppModule)
+    .catch(err => console.log(err));
+```
+
+You can now use any of the container components as constructor dependencies
+in your Angular app or view components:
+
+```ts
+@Component(...)
+export class AppComponent {
+    constructor(
+        comManager: CommunicationManager,
+        zone: NgZone
+    ) {
+        // Start Communication Manager inside Angular zone
+        zone.run(() => comManager.start());
+        ...
+    }
+}
+
+@Component(...)
+export class ViewComponent1 {
+    constructor(
+        private _container: Container,
+        private _runtime: Runtime,
+        private _productionOrderCtrl: ProductionOrderController
+    ) {
+    }
+}
+```
+
+Note that the Communication Manager must be started and stopped inside the Angular 2 zone,
+so that Angular data bindings on observables returned by the
+Communication Manager are triggered whenever new events are emitted.
+In Angular, this can be achieved e.g. by starting/stopping the Communication Manager
+within a `zone.run` invocation on the Angular root component. You can
+also start/stop the Communication Manager inside every Angular view component
+*without* using `zone.run`.
+
+In Ionic you can start the communication manager after the platform is ready:
+
+```ts
+@Component(...)
+export class MyApp {
+    constructor(
+        public platform: Platform,
+        private _comManager: CommunicationManager) {
+        this.initializeApp();
+    }
+
+    initializeApp() {
+        // Synchronous invocation in then clause are inside Angular zone implicitely.
+        // For asynchronous invocation in then clause, explicitely wrap zone.run().
+        this.platform.ready().then(() => this._comManager.start());
+    }
+}
+```
+
+Subscriptions to observables retrieved by the Communication Manager should be
+unsubscribed as soon as they are no longer needed. If you bind an observable
+using the async pipe in Angular, subscriptions are automatically
+disposed before the view component is destroyed. If you subscribe to an
+observable explicitely in a view component, you should unsubscribe when the
+view is destroyed by implementing the `OnDestroy` cleanup interface.
+
+#### Coaty and Angular CLI
+
+If you make use of Angular CLI to bundle your Coaty web app for the browser,
+you have to consider the following topic. Starting with Angular CLI 6, the underlying
+webpack doesn't configure any shims for Node.js any more. But the
+MQTT.js client library used by Coaty JS requires some Node.js polyfills
+(for process, global, Buffer, etc.) when run in the browser.
+
+To solve this problem, webpack needs to be reconfigured to polyfill or mock required Node.js
+globals and modules. This extra Node.js configuration is specified in a
+`webpack.node-polyfills.config.js` file in the root folder of the project:
+
+```js
+module.exports = {
+    // These options configure whether to polyfill or mock certain Node.js globals and modules.
+    // This allows code originally written for the Node.js environment to run in other environments
+    // like the browser.
+    //
+    // Starting with Angular CLI 6, webpack doesn't configure these shims for Node.js global variables 
+    // any more by default. Nut some of these (process, global, Buffer, etc.) are required by 
+    // MQTT.js sdependency modules when run in the browser.
+    node: {
+        console: false,
+        global: true,
+        process: true,
+        __filename: 'mock',
+        __dirname: 'mock',
+        Buffer: true,
+        setImmediate: true
+
+        // See "Other node core libraries" for additional options.
+    }
+};
+```
+
+The Angular project configuration in `angular.json` must be adjusted to integrate
+the custom webpack config file by using custom builders for the build and serve targets:
+
+```json
+    "targets": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+                "path": "./webpack.extra.config.js"
+             },
+
+
+        "serve": {
+          "builder": "@angular-builders/dev-server:generic",
+```
+
+Finally, install the custom builders as development dependencies of your project:
+
+```sh
+npm install @angular-builders/custom-webpack --save-dev
+npm install @angular-builders/dev-server --save-dev
+```
+
+### Accessing Coaty container components
+
+Within Angular or Ionic, you can access container components using Angular
+constructor dependency injection. Alternatively, you can access the components
+within a container directly using one of these container methods:
+
+```ts
+getRuntime()
+getCommunicationManager()
+getController(classType)
+mapControllers(callback)
+```
+
+Note that it is not safe to query a controller in the constructor of your
+custom component because the requested controller might not have been created
+yet. Instead, you should access and cache other controllers in your custom
+controller class by defining a `onContainerResolved` method:
+
+```ts
+onContainerResolved(container: Container) {
+    // Access and cache another controller
+    this._tasksController = container.getController(TasksController);
+}
+```
+
+You can define the `onInit` hook method in your custom controller class to
+perform side effects when the controller instance has been instantiated
+(instead of defining a constructor):
+
+The `onInit` method is called immediately after the controller instance
+has been created. Although the base implementation does nothing it is good
+practice to call super.onInit() in your override method; especially if your
+custom controller class extends from another custom controller class
+and not from the base `Controller` class directly.
+
+You can override the following hook methods in your custom controller class
+to perform side effects when the operating state of the Communication Manager
+changes (see section on Communication Manager below):
+
+```ts
+onCommunicationManagerStarting()
+onCommunicationManagerStopping()
+```
+
+Ensure you always call the corresponding super method in your overridden method.
+
+### Register controllers at run time
+
+A controller can also be dynamically registered and resolved at run time:
+
+```ts
+const myCustomCtrl = container.registerController(
+    "MyCustomController",
+    MyCustomController,
+    {
+        "MyCustomController": { <controller configuration options> }
+    });
+```
+
+### Shut down a Coaty container
+
+Before the Coaty agent exists, or if you no longer need the container,
+shut down the container to release all registered components and its
+allocated system resources:
+
+```ts
+container.shutdown();
+```
+
+The shutdown method first shuts down all container controller and IO routing components
+by invoking the component's `onDispose` method (in arbitrary order). Finally,
+the Communication Manager's `onDispose` method is called which unsubscribes
+all subscriptions and disconnects the messaging client from the MQTT message broker.
+
+After invoking shutdown, the container and its components are no longer usable.
+
+Note that the `onDispose` method of container components is only called
+when the container is shut down by invoking the `shutdown` method. You should
+not perform important side effects in `onDispose`, such as saving agent
+state persistently, because the `onDispose` method is not guaranteed to be called
+by the framework in every circumstance, e.g., when the agent process
+terminates abnormally or when the `shutdown` method is not used by your app.
+
+### Define an agent-specific controller class
+
+Agent-specific controller classes realize custom business logic of a
+Coaty agent. A controller
+
+* exchanges object data with other agent components by publishing
+  and observing communication events.
+* provides observable state to other parts of the project, such as views.
+* supports lifecycle management.
+
+The following template shows how to set up the basic structure of a custom
+controller class:
+
+```ts
+import { Subscription } from "rxjs";
+
+import { Controller } from "coaty/controller";
+import { Task, CoreTypes } from "coaty/model";
+
+export class SupportTaskController extends Controller {
+
+    private _advertiseTaskSubscription: Subscription;
+
+    onInit() {
+        super.onInit();
+
+        // Define your initializations here
+        this._advertiseTaskSubscription = undefined;
+    }
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+
+        // Set up subscriptions for incoming events here
+        this._advertiseTaskSubscription = this._observeAdvertiseTask();
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+
+        // Clean up subscriptions for incoming events here
+        this._advertiseTaskSubscription && this._advertiseTaskSubscription.unsubscribe();
+    }
+
+    private _observeAdvertiseTask() {
+        return this.communicationManager.observeAdvertiseWithObjectType(this.identity, OBJECT_TYPE_NAME_SUPPORT_TASK)
+            .map(event => event.eventData.object as SupportTask)
+            .subscribe(task => {
+                // Do something whenever a support task object is advertised
+            });
+    }
+}
+```
+
+In accordance with the design principle of separation of concerns, each
+custom controller class should encapsulate a single dedicated functionality.
+
+To combine or aggregate the functionalities of multiple controllers, use
+a separate service class in your agent project (e.g. an injectable service
+in Angular) or define a superordinate controller that references the
+other controllers.
+
+### Convenience controllers
+
+Besides the base `Controller` class, the framework also provides
+some convenience controller classes that you can reuse in your
+agent project.
+
+#### Connection State Controller
+
+The `ConnectionStateController` class monitors the connection state (online or offline)
+of the associated communication manager.
+
+Use its  `isOffline` getter to get a boolean observable that emits `true` if the
+connection state of the associated communication manager transitions to offline, and
+`false` if it transitions to online. When subscribed, the current connection state is
+emitted immediately.
+
+#### Object Cache Controller
+
+The `ObjectCacheController` class discovers objects by given object Ids
+and maintains a local cache of resolved objects. The controller will also
+update existing objects in its cache whenever such objects are advertised
+by other parties.
+
+To realize an object cache controller for a specific core types or for specific objects,
+define a custom controller class that extends the abstract `ObjectCacheController` class and
+set the core type and/or the filter predicate of objects to be cached in the `OnInit` method.
+
+```ts
+import { ObjectCacheController } from "coaty/controller";
+import { FactoryUser } from "../models/factory-user";
+
+export class UserCacheController extends ObjectCacheController<FactoryUser> {
+
+    onInit() {
+        super.onInit();
+
+        // Specify the object's core type that should be cached.
+        this.coreType = "User";
+
+        // Only resolve factory users that are present
+        this.objectFilter = (obj: FactoryUser) => obj.isPresent;
+    }
+}
+```
+
+Resolve an object with a given objectId by your custom cache controller
+as follows:
+
+```ts
+this.userCacheController.resolveObject(objectId)
+    .subscribe(obj => {
+        // Emits the first object of the observable, then completes
+    })
+    .catch(error => ...);
+```
+
+#### Historian Controller
+
+The `HistorianController` class is a generic controller which can be used
+on each Coaty agent to create and/or persist snapshots in time of arbitrary Coaty
+objects.
+
+A snapshot represents a deep copy of the object and its state, a timestamp, a creator ID,
+and an optional array of associated tags. The tags can be used on retrieval of snapshots
+to identify different purposes.
+
+A snapshot is created by the `generateSnapshot(object, ...tags)` or
+`generateSnapshot(object, timestamp, ...tags)` method.
+Driven by specific controller options, you can decide to
+
+* advertise each generated snapshot (`shouldAdvertiseSnapshots`)
+* persist each generated snapshot in a database collection (`shouldPersistLocalSnapshots`)
+* persist each observed snapshot advertised by another Historian controller (`shouldPersistObservedSnapshots`)
+* execute matching Query events for snapshot objects on the database and retrieve results (`shouldReplyToQueries`)
+
+The `HistorianController` provides a convenience method to query snapshots using the
+Query event pattern:
+
+* `querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]>`
+
+The `HistorianController` also provides convenience methods to retrieve snapshots
+from a database collection:
+
+* `findSnapshotsByParentId(parentObjectId: Uuid, startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
+* `findSnapshotsByTimeFrame(startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
+* `findSnapshotsByFilter(filter: ObjectFilter): Promise<Snapshot[]>`
+
+You can set up a `HistorianController` in the Coaty container components and configuration
+as follows:
+
+```ts
+import { HistorianController } from "coaty/controller";
+import { Components, Configuration } from "coaty/runtime";
+
+export const components: Components = {
+    controllers: {
+        ...,
+        HistorianController,
+    }
+};
+
+export const configuration: Configuration = {
+        common: { ... },
+        communication: { ... },
+        controllers: {
+            ...,
+            HistorianController: {
+                shouldAdvertiseSnapshots: false,
+                shouldPersistLocalSnapshots: true,
+                shouldPersistObservedSnapshots: false,
+                shouldReplyToQueries: true,
+                database: {
+                    key: "db",
+                    collection: "historian"
+                }
+            }
+        },
+        databases: {
+            db: {
+                adapter: "PostgresAdapter",
+                connectionString: "..."
+            },
+            admindb: {
+                adapter: "PostgresAdapter",
+                connectionString: "..."
+            }
+        }
+    };
+```
+
+The `database` controller option has two properties `key` and `collection`; `key` references the
+database key as defined in the `databases` option of your configuration; `collection` is the name
+of the collection to be used. If the collection doesn't exist, it will be created in the given
+database.
+
+To see an example of the `HistorianController` in action, take a look at the [Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
+delivered with the Coaty framework sources.
+
+## Object model
+
+The Coaty framework provides a predefined hierarchy of object types
+that are used by Coaty agents to exchange typed data with communication
+patterns. The object type hierarchy looks as follows:
+
+```
+CoatyObject
+  |
+  |-- User
+  |-- Device
+  |-- Component
+  |-- Config
+  |-- Annotation
+  |-- Task
+  |-- Location
+  |-- Log
+  |-- Snapshot
+  |
+  |-- IoSource
+  |-- IoActor
+  |
+  |-- Thing
+  |-- Sensor
+  |-- Observation
+```
+
+> Note: the SensorThings object types are explained in detail in the guide on the
+> [OGC sensorThings API integration](https://github.com/coatyio/coaty-js/blob/master/docs/sensor-things-guide.md).
+
+Coaty objects are characterized as follows:
+
+* Object types are represented as statically typed TypeScript interfaces of
+  property - value-type definitions. Coaty applications can define custom object types
+  that derive from one of the predefined object types supplied by the framework.
+
+* Objects solely represent attribute - value pairs that model state but no behavior.
+
+* Objects are JSON compatible (JavaScript Object Notation) to support cross-component and
+  cross-platform serialization.
+
+* Objects can be persisted schemalessly in NoSQL and
+  SQL data stores using the Unified Storage API of the framework.
+
+* Objects can be used by and transfered across all system components, including devices,
+  frontend apps, services, and even databases. There is no need to define
+  separate DTOs (Data Transfer Objects) for communication.
+
+* Objects are schema-validated by the framework according to their TypeScript
+  interface definitions. Schema validation ensures that all specified
+  property - value pairs of an object that is distributed across system components
+  conform to the object type's shape. Schema validation comprises all properties
+  of the core types defined by the framework. It is allowed to dynamically
+  add additional properties to a core object at runtime. However, these
+  properties are **not** validated. Likewise, additional properties of object types
+  derived from a core type are **not** validated.
+
+To enable the distributed system architecture to uniquely identify an object
+without central coordination, each object has an object ID as a Version 4 UUID.
+You can create UUIDs at runtime using the `Runtime` class: It provides both a
+static as well as an instance method to generate UUIDs:
+
+```ts
+// Static UUID creation
+Runtime.newUuid();
+
+// Instance-based UUID creation
+this.runtime.newUuid();
+```
+
+The base `CoatyObject` interface defines the following generic properties:
+
+```ts
+{
+  coreType: "CoatyObject" | "User" | "Device" | ...
+  objectType: string,
+  name: string,
+  objectId: Uuid,
+  parentObjectId?: Uuid,
+  externalId?: string,
+  assigneeUserId?: Uuid,
+  locationId?: Uuid,
+  isDeactivated?: boolean
+}
+```
+
+The `objectId` property defines the unique identity of an object within the system.
+
+The optional `externalId` property defines the identity of an object relative to
+an external system, such as the primary key for this object in an external database.
+Note that external IDs are not guaranteed to be unique across
+the whole universe of system objects. Usually, external IDs are only unique for
+a specific type of objects.
+
+The property `coreType` is the framework core type name of the object;
+it corresponds to the name of the interface that defines the object's shape.
+
+The `objectType` property is the concrete type name of the object in a canonical
+form. Its form should follow the naming convention for Java packages to avoid name
+collisions. All predefined object types use the form `coaty.<InterfaceName>`,
+e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class).
+
+The concrete and core type names of all predefined object types are defined
+as static properties of the `CoreTypes` class in the framework `model` module.
+
+The optional `parentObjectId` property refers to the unique UUID of the parent object.
+It is used to model parent-child relationships of objects. For example,
+Annotation objects can be modelled as children of target objects they are attached to.
+
+The optional `assigneeUserId` property specifies the unique UUID of the user object
+that this object has been assigned to currently.
+
+The optional `locationId` property refers to the unique UUID of the Location
+object that this object has been associated with.
+
+The optional `isDeactivated` property marks an object that is no longer used. The
+concrete definition meaning of this property is defined by the Coaty application.
+The property value is optional and defaults to false.
+
+### Define application-specific object types
+
+Simply extend one of the predefined object types of the framework and specify
+a canonical object type name for the new object:
+
+```ts
+import { Task } from "coaty/model";
+
+export const modelTypes = {
+    OBJECT_TYPE_HELLO_WORLD_TASK: "com.helloworld.Task",
+};
+
+/**
+ * Represents a Hello World task or task request.
+ */
+export interface HelloWorldTask extends Task {
+
+    /**
+     * Level of urgency of the HelloWorldTask
+     */
+    urgency: HelloWorldTaskUrgency;
+}
+
+/**
+ * Defines urgency levels for HelloWorld tasks
+ */
+export enum HelloWorldTaskUrgency {
+    Low,
+    Medium,
+    High,
+    Critical
+}
+```
+
+A `HelloWorldTask` object can be created as follows (within a controller class):
+
+```ts
+const task: HelloWorldTask = {
+    objectId: this.runtime.newUuid(),
+    objectType: modelTypes.OBJECT_TYPE_HELLO_WORLD_TASK,
+    coreType: "Task",
+    name: `Hello World Task`,
+    creatorId: this.runtime.options.associatedUser.objectId,
+    creationTimestamp: Date.now(),
+    status: TaskStatus.Request,
+    urgency: HelloWorldTaskUrgency.Critical,
+};
+```
+
+## Communication event patterns
+
+By default, each Coaty container has a *Communication Manager* component that is
+registered implicitely with the container. It provides a complete set of predefined
+communication event patterns to exchange object data in a decentralized Coaty application:
+
+* **Advertise** an object: broadcast an object to parties interested in objects of a
+  specific core or object type.
+* **Deadvertise** an object by its unique ID: notify subscribers when capability is
+  no longer available; for abnormal disconnection of a client, last will concept can be
+  implemented by sending this event.
+* **Channel** Broadcast objects to parties interested in objects delivered through
+  a channel with a specific channel identifier.
+* **Discover - Resolve** Discover an object and/or related objects by external ID,
+  internal ID, or object type, and receive responses by Resolve events.
+* **Query - Retrieve**  Query objects by specifying selection and ordering criteria,
+  receive responses by Retrieve events.
+* **Update - Complete**  Request or suggest an object update and receive
+  accomplishments by Complete events.
+* **Associate** Used by IO Router to dynamically associate/disassociate IO sources
+  with IO actors.
+* **IoValue** Send IO values from a publishing IO source to associated IO actors.
+
+Internally, events are emitted and received by the Communication Manager using
+publish-subscribe messaging with an MQTT message broker. Events are passed to Coaty
+controllers by following the Reactive Programming paradigm using RxJS
+observables. An introduction to Reactive Programming can be found
+[here](http://reactivex.io/).
+
+The Communication Manager provides features to transparently control the underlying
+publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
+upon connection, and queued offline publishing.
+
+### Starting and stopping communication
+
+Use the `CommunicationManager.start` method to connect to a broker. Note
+that the Communication Manager automatically connects after the container is
+resolved if the communication option `shouldAutoStart` is set to `true`
+(opt-in).
+
+Use the `CommunicationManager.restart` method to reconnect to the broker. This is useful if
+you want to switch connection from the backend broker to a hub broker or
+after the runtime user/device association has changed.
+
+Use the `CommunicationManager.stop` method to disconnect from the message broker.
+Afterwards, events are no longer dispatched and emitted. You can start the
+Communication Manager again later using the `start` method.
+
+Whenever the operating state of the Communication Manager changes by invoking
+one of the above method calls all the controller components of the container
+are notified by the following hook methods:
+
+```ts
+Controller.onCommunicationManagerStarting()
+Controller.onCommunicationManagerStopping()
+```
+
+When used inside Angular or Ionic, the Communication Manager must be started
+inside an Angular zone, so that Angular data bindings on observables returned
+by the Communication Manager are triggered whenever new events are emitted.
+In Ionic, this can e.g. be achieved by starting the Communication Manager
+from within the `platformReady` callback on the Ionic root component or from
+within any Ionic Component Page.
+
+Use the `CommunicationManager.observeCommunicationState` method to observe
+communication state changes of the underlying MQTT connection (i.e. online or offline).
+Usage of this feature is further simplified by a convenience controller class
+named [`ConnectionStateController`](#connection-state-controller).
+
+### Publishing events
+
+Use `publishAdvertise`to send Advertise events. The core type (`coreType`) and
+the object type (`objectType`) of the advertised object is used to deliver
+corresponding events to parties observing Advertise events for the same core
+or object type.
+
+Use `publishDeadvertise` to send Deadvertise events for objects by specifying
+their object IDs.
+
+Use `publishChannel` to send Channel events. A channel identifier must be specified.
+It is used to deliver the channeled objects to parties observing Channel events
+for the same channel identifier.
+
+Use `publishDiscover` to send Discover events. The observable returned
+will emit all the Resolve events which are direct responses to the published request.
+Be aware that multiple Resolve events may be emitted from different parties
+which may have different payloads: some may be responding with an object,
+some with related objects, and some with both. Your Resolve event handler
+must differentiate these cases carefully. For example, if you are discovering
+an object ID and you are only interested in related objects (e.g. annotation
+objects) you have to ignore response events which only provide an object
+but no related objects. The `DiscoverEventData` class provides convenience methods
+to differentiate between supported payloads: `isDiscoveringExternalId`,
+`isDiscoveringObjectId`, `isDiscoveringExternalAndObjectId`, `isDiscoveringTypes`,
+`isCoreTypeCompatible`, `isObjectTypeCompatible`. The `matchesObject` method
+can be used to determines whether a given object matches the requirements of
+incoming discover event data.
+
+Use `publishUpdate` to send Update events. The observable returned will
+emit all the Complete events which are direct responses to the published request.
+
+Use `publishQuery` to send Query events. The observable returned will
+emit all the Retrieve events which are direct responses to the published request.
+
+*Note that all publish methods for request-response event patterns, i.e.
+`publishDiscover`, `publishUpdate` and `publishQuery`, publish the specified
+event **lazily**, i.e **not until** the first observer subscribes to the
+observable returned by the method.* In this way race conditions on the
+response event can be avoided. Since the observable never emits a completed
+or event, a subscriber should *unsubscribe* when the observable is no
+longer needed to release system resources and to avoid memory leaks.
+After all initial subscribers have unsubscribed no more response events
+will be emitted on the observable. Instead, errors will be emitted to all
+subsequent resubscriptions.
+
+For example, you can unsubscribe automatically after the expected response
+event is received by using the `Observable.take` operator like the following:
+
+```ts
+this.communicationManager.publishDiscover(...)
+    // Unsubscribe automatically after first response event arrives.
+    .take(1)
+
+    // Issue an error notification if no event is emitted within the given period of time.
+    .timeout(2000)
+
+    .subscribe(event => {
+        // Handle the first response event; all others are discarded.
+    },
+    error => {
+        // Handle timeout.
+    });
+```
+
+The template code above also shows how the `timeout` operator can be used to
+handle the case when no response event is received within a particular period of time.
+
+Note that when publishing an event, an event source object (of type `CoatyObject`)
+must be specfied that uniquely identifies the source component. Likewise, when
+observing events, an event target object (of type `CoatyObject`) must be specified
+that uniquely identifies the target component. To suppress echo events, a component
+that acts both as an event source and as an event target for the same event type
+will *never* receive the published event on its associated observable.
+
+### Observing events
+
+Use any of the `observeDiscover`, `observeQuery`, `observeUpdate`,
+`observeAdvertiseWithCoreType`, `observeAdvertiseWithObjectType`, `observeDeadvertise`,
+`observeChannel`, or `observeAssociate` methods to observe incoming request events
+in your agent. For `observeDiscover`, `observeQuery` or `observeUpdate`, invoke the
+`resolve`, `retrieve`, or `complete` method on the received event to send a
+response event.
+
+Note that there is no guarantee that response events are ever delivered by the
+Discover, Query, and Update communication patterns. Depending on your system
+design and context such a communication pattern might return no responses at all
+or not within a certain time interval. In your agent project, you should handle these
+cases by chaining a timeout handler to the observable returned by the observe
+method (see code example below in the next section).
+
+### Advertise event pattern - an example
+
+```ts
+// Publish an Advertise event for a Task object
+this.communicationManager
+    .publishAdvertise(AdvertiseEvent.withObject(this.identity, task)));
+
+
+// Observe Advertise events on all objects of core type "Task"
+this.communicationManager
+    .observeAdvertiseWithCoreType(this.identity, "Task")
+    .map(event => event.eventData.object as Task)
+    .filter(task => task.status === TaskStatus.Request)
+    .subscribe(task => {
+         // Handle task request emitted by Advertise event
+    });
+
+// Observe Advertise events on objects of object type "com.helloworld.Task"
+this.communicationManager
+    .observeAdvertiseWithObjectType(this.identity, "com.helloworld.Task")
+    .map(event => event.eventData.object as HelloWorldTask)
+    .filter(task => task.status === TaskStatus.Request)
+    .subscribe(task => {
+         // Handle HelloWorld task request emitted by Advertise event
+    });
+
+```
+
+### Deadvertise event pattern - an example
+
+By publishing a Deadvertise event with the unique ID of an object you can notify
+observers that this object is no longer available:
+
+```ts
+// Publish a Deadvertise event
+this.communicationManager
+    .publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, objectId));
+
+// Observe Deadvertise events
+this.communicationManager
+    .observeDeadvertise(this.identity)
+    .map(event => event.eventData.objectIds)
+    .subscribe(objectIds => {
+        // Handle object IDs of deadvertised objects which have been advertised previously
+    });
+```
+
+This concept is especially useful in combination with abnormal disconnection of an
+agent and the MQTT last will concept. On connection to the broker, the communication
+manager of a Coaty agent sends a last will message consisting of a Deadvertise
+event with the object IDs of its identity component and its associated device (if defined).
+Whenver the agent disconnects normally or abnormally, the broker publishes its last will
+message to all subscribers which observe Deadvertise events.
+
+Using this pattern, agents can detect the online/offline state of other Coaty agents
+and act accordingly. One typical use case is to set the parent object ID of
+advertised application root objects originating from a specific Coaty agent to the
+identity ID (or associated device ID) of the agent's communication manager. In case this
+agent is disconnected, other agents can observe Deadvertise events and check whether one of
+the deadvertised object IDs correlates with the parent object ID of any application root object
+the agent is managing and invoke specific actions.
+
+The following example shows how to implement this communication pattern with the Sensor Things API
+to observe the online/offline state of things and sensors.
+
+The sensor device advertises the associated Thing object:
+
+```ts
+import { SensorThingsTypes, Thing } from "coaty/sensor-things";
+
+// This Thing object represents a sensor device
+const thing: Thing = {
+    name: "My Thing",
+    objectType: SensorThingsTypes.OBJECT_TYPE_THING,
+    coreType: "CoatyObject",
+    objectId: ...,
+    ...
+};
+
+// Publish an Advertise event for Thing object
+thing.parentObjectId = this.communicationManager.identity.objectId;
+this.communicationManager
+    .publishAdvertise(AdvertiseEvent.withObject(this.identity, thing)));
+```
+
+An agent can observe the sensor device connection state as follows:
+
+```ts
+import { SensorThingsTypes, Thing } from "coaty/sensor-things";
+
+// Observe Advertise events on Thing objects
+this.communicationManager
+    .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING,)
+    .map(event => event.eventData.object as Thing)
+    .subscribe(thing => {
+         // Store thing for later use
+         this.onlineThings.push(thing);
+    });
+
+// Observe Deadvertise events
+this.communicationManager
+    .observeDeadvertise(this.identity)
+    .map(event => event.eventData.objectIds)
+    .subscribe(objectIds => {
+        const offlineThings = this.onlineThings.filter(t => objectIds.some(id => id === t.parentObjectId));
+        // These things are no longer online. Remove them from the onlineThings cache...
+    });
+```
+
+### Channel event pattern - an example
+
+```ts
+const channelId = "42";
+
+// Publish a Channel event
+this.communicationManager
+    .publishChannel(ChannelEvent.withObject(this.identity, channelId, object));
+
+
+// Observe Channel events for the given channel ID
+this.communicationManager
+    .observeChannel(this.identity, channelId)
+    .filter(event => event.eventData.object)
+    .subscribe(object => {
+         // Handle object emitted by channel event
+    });
+```
+
+### Discover - Resolve event pattern - an example
+
+```ts
+const externalId = "42424242";
+
+// Publish a Discover event and observe first Resolve event response
+this.communicationManager
+    .publishDiscover(DiscoverEvent.withExternalId(this.identity, externalId))
+    .take(1)
+    .timeout(5000)
+    .subscribe(event => {
+        const object = event.eventData.object;  // Handle object in Resolve response event
+    },
+    error => {
+        // No response has been received within the given timeout period
+        this.logError(error, "Failed to discover external ID");
+    });
+
+// Observe Discover events and respond with a Resolve event
+this.communicationManager.observeDiscover(this.identity)
+    .filter(event => event.eventData.isDiscoveringExternalId)
+    .subscribe(event => {
+         // Agent-specific lookup of an object with given external ID.
+         // Alternatively, use `event.eventData.matchesObject()` here to find a
+         // match in a collection of objects.
+         const object = findObjectWithExternalId(event.eventData.externalId);
+         // Respond with found object in Resolve event
+         event.resolve(ResolveEvent.withObject(this.identity, object));
+    });
+```
+
+### Query - Retrieve event pattern - an example
+
+The following example shows how objects can be seamlessly and transparently
+retrieved from a database by publishing a Query event that specifies filtering,
+join, and ordering criteria.
+
+This example uses the Unified Storage API to retrieve objects from a
+persistent or in-memory database. If you implement your own object storage
+method, use the `QueryEventData.matchesObject()` method to find stored objects
+that match the requirements of given query event data.
+
+```ts
+// Select log objects by filter conditions, then order and paginate results
+const filter: ObjectFilter = {
+    conditions: {
+        and: [["logLevel", filterOp.between(LogLevel.Debug, LogLevel.Error)],
+              ["logTags", filterOp.contains(["client", "service"])]]
+    },
+    skip: 200,
+    take: 100,
+    orderByProperties: [["logDate", "Desc"], ["logLevel", "Asc"]]
+};
+
+// Resolve object reference to property 'locationId‘ as extra property
+// named 'resolvedLocation'
+const joinCondition: JoinCondition = {
+    localProperty: "locationId",
+    asProperty: "resolvedLocation",
+    isOneToOneRelation: true
+};
+
+this.communicationManager
+    .publishQuery(QueryEvent.withCoreTypes(this.identity, ["Log"], filter, joinCondition))
+    .take(1)
+    // Issue an error if queryTimeoutMillis elapses without any event received
+    .timeout(this.options["queryTimeoutMillis"])
+    .subscribe(event => {
+        // Handle resulting log objects emitted by Retrieve event
+        const logs = event.eventData.objects as Log[];
+    },
+    error => {
+        // No response has been received within the given period of time
+        this.logError(error, "Failed to query log objects");
+    });
+
+this.communicationManager
+  .observeQuery(this.identity)
+  .filter(event => event.eventData.isCoreTypeCompatible("Log"))
+  .subscribe(event => {
+    const dbJoinCond = DbContext.getDbJoinConditionsFrom(
+      event.eventData.objectJoinConditions,
+      {
+        localProperty: "locationId",
+        fromCollection: "location",
+        fromProperty: "objectId"
+      });
+    this.databaseContext
+      .findObjects<Log>("log", event.eventData.objectFilter, dbJoinCond)
+      .then(iterator => iterator.forBatch(logs => {
+         event.retrieve(RetrieveEvent.withObjects(this.identity, logs));
+      }))
+      .catch(error => {
+         // In case of retrieval error, do not respond with a
+         // Retrieve event. The sender of the query should
+         // implement proper timeout handling.
+      });
+  });
+```
+
+### Observing and publishing raw MQTT messages
+
+To enable interoperation with external MQTT clients, use `publishRaw` to publish
+a raw MQTT message specifying an MQTT topic, a payload (of type `string` or `Uint8Array`
+(`Buffer` in Node.js), and an optional flag indicating whether the published message
+should be retained.
+
+Likewise, use `observeRaw` to observe incoming values on an MQTT subscription topic.
+Values emitted are always represented as UInt8Array (Buffer in Node.js) objects.
+Use the `toString` method on a value to convert the raw data to an UTF8 encoded string.
+
+### Deferred publication and subscription of events
+
+You can invoke any of the above observe or publish methods while
+the Communication Manager is running, i.e. is in started operating state.
+Invocation is also possible when the communication manager is offline, i.e.
+not connected. The Communication Manager supports deferred publications and
+subscriptions when the agent connects or reconnects. All your
+*subscriptions* issued while the agent is offline will be
+(re)applied when the agent (re)connects again. *Publications* issued while the
+agent is offline will be applied only after the next (re)connect.
+Publications issued while the agent is online will *not* be deferred, i.e.
+not reapplied after a reconnect.
+
+In your controller classes we recommend to subscribe
+to observe methods when the Communication Manager is starting and unsubscribe from
+observe methods when the Communication Manager is stopping. Use the
+aforementioned controller hook methods to implement this subscription pattern.
+
+## IO Routing
+
+The Coaty framework supports dynamic contextual routing of IO data from IO sources (i.e
+producers) to IO actors (i.e. consumers) for user-associated devices. IO sources
+publish `IoValue` events or external events. IO actors can receive such events by
+subscribing to the topics on which IO sources publish values. IO sources are
+*dynamically* associated with IO actors depending on the current context of the
+associated user. Backpressure strategies enable data transfer rate controlled
+publishing of data. Backpressure strategies are negotiated between IO source and IO
+actors.
+
+### IO Routing communication event flow
+
+The communication event flow of IO routing comprises the following steps:
+
+1. `Device` objects with their IO capabilities, i.e. IO sources and IO actors,
+  are advertised/deadvertised by the communication manager based on the
+  user-associated device object in the container configuration
+  (`CommonOptions.associatedDevice`).
+
+2. The IO router associates/disassociates the currently advertised IO sources
+  and IO actors based on application-specific logic which usually considers the
+  user's context, such as user's role or profile, user's task flow, location, and
+  other environmental factors. On context changes, the IO router should change
+  associations accordingly.
+
+An IO source is associated/disassociated with an IO actor by publishing
+an Associate event. Since the associated topic is used for both
+publication and subscription, it must never contain wildcard tokens (i.e.
+`#` or `+`) on topic levels.
+
+Associated topics for framework components are generated by the
+IO router using the topic structure with an `IoValue` event type as described
+above. Associated topics published by external IO sources or subscribed to by
+external IO actors need not conform to this topic structure but can be of any
+valid MQTT topic shape.
+
+The payload data published by both external and internal IO sources
+must conform to the protocol specification, i.e. it must be specified as
+UTF-8 encoded strings in JSON format.
+
+Associations of IO sources with IO actors are constrained as follows:
+
+* An IO source can only be associated with an IO actor if their value types
+  are compatible, i.e. they produce/consume data in the same underlying data format.
+
+* Each pair of IO source and IO actor publishes/subscribes to exactly one
+  associated topic.
+
+* An IO source can be associated with different IO actors.
+
+* An IO actor can be associated with different IO sources. Values are
+  received on all the topic subscriptions for the associated IO sources.
+
+* An IO source publishes values on exactly one associated topic.
+
+* Different IO sources must not publish values on the same topic.
+  Otherwise, an IO actor could receive values from a non-associated source.
+
+### IO Routing implementation
+
+IO routing functionality is provided in the `io` module.
+
+Define IO sources and IO actors and register them as capabilities of the
+associated device:
+
+```ts
+import { IoSource, IoActor } from "coaty/io";
+
+// IO source definition
+const ioRobotControlSource: IoSource = {
+  name: "Robot Control Source",
+  objectId: "76e4ee99-12f5-4b51-ad0b-a09601c24c48",
+  objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
+  coreType: "IoSource",
+  valueType: "RobotControlValue",
+  updateStrategy: IoSourceBackpressureStrategy.Throttle,
+  updateRate: 100  // maximum possible drain rate (in ms)
+};
+
+const watch: Device = {
+    objectId: this.runtime.newUuid(),
+    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
+    coreType: "Device",
+    name: "Robot Control Watch",
+    displayType: DeviceDisplayType.Watch,
+    ioCapabilities: [ ioRobotControlSource ],
+    assigneeUserId: ...
+};
+
+// IO actor definition
+const ioRobotControlActor: IoActor = {
+    name: "Robot Control Actor",
+    objectId: "6c9c399d-b522-405a-9776-f40e100fda61",
+    objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
+    coreType: "IoActor",
+    valueType: "RobotControlValue",
+    updateRate: 500   // desired rate for incoming values (in ms)
+};
+
+const robot: Device = {
+    objectId: this.runtime.newUuid(),
+    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
+    coreType: "Device",
+    name: "Robot",
+    displayType: DeviceDisplayType.None,
+    ioCapabilities: [ ioRobotControlActor ],
+};
+
+```
+
+Use the `RuleBasedIoRouter` class to realize rule-based routing of data
+from IO sources to IO actors. By defining application-specific routing rules
+you can associate IO sources with IO actors based on arbitrary user context.
+
+```ts
+// IO routing rule definition
+const configuration: Configuration = {
+    ...
+    controllers: {
+      RuleBasedIoRouter: {
+        rules: [
+          { name: "Route values from watches to near robot devices",
+            valueType: ioRobotControlSource.valueType,
+            condition:
+              (source, sourceDevice, actor, actorDevice, router) =>
+                sourceDevice.displayType === DisplayType.Watch &&
+                isWithinReach(sourceDevice, actorDevice)
+          } as IoAssociationRule,
+          ...
+        ]
+      }, ...
+```
+
+Use the `BasicIoRouter` class to realize a basic routing algorithm where all
+compatible pairs of IO sources and IO actors are associated. An IO source and
+an IO actor are compatible if both define the same value type.
+
+The Communication Manager supports methods to control IO routing by code in
+your agent project: Use `publishIoValue` to send IO value data for an IO source.
+Use `observeIoState` and `observeIoValue` to receive IO state changes and IO
+values for an IO actor.
+
+To further simplify management of IO sources and IO actors, the framework
+provides specific controller classes on top of these methods:
+
+* `IoSourceController`: Provides data transfer rate controlled publishing of
+  IO values for IO sources and monitoring of changes in the association state of
+  IO sources. This controller respects the backpressure strategy of an IO source
+  in order to cope with IO values that are more rapidly produced than specified
+  in the recommended update rate.
+
+* `IoActorController`: Provides convenience methods for observing IO values
+  and for monitoring changes in the association state of specific IO actors.
+  Note that this controller class caches the latest IO value received
+  for the given IO actor (using BehaviorSubjects). When subscribed, the current
+  value (or undefined if none exists yet) is emitted immediately.
+  Due to this behavior the cached value of the observable will also be emitted
+  after reassociation. If this is not desired use
+  `this.communicationManager.observeIoValue` instead. This method doesn't cache
+  any previously emitted value.
+
+## Unified Storage API - Query anywhere - Retrieve anywhere
+
+The Coaty framework supports unified persistent or in-memory storage and
+retrieval of objects and other data in SQL and NoSQL databases. The Unified
+Storage API is database-agnostic. It unifies common CRUD constructs of relational
+databases and NoSQL document databases in a simple but powerful API based on promises
+for asynchronous operations.
+
+The Unified Storage API is especially suited to interact with
+Query - Retrieve communication event patterns. It enables declarative, seamless
+and transparent retrieval of objects across Coaty components independent
+of database implementations. The query event's object filter
+which specifies selection and ordering criteria can be directly passed to the
+database agnostic API for schemeless object retrieval.
+
+The Unified Storage API uses the notion of *database adapters* to connect to specific
+databases. The framework provides ready-to-use built-in adapters. You can also
+write your own adapter to connect to a specific database not yet supported by
+the framework.
+
+Database adapters can support SQL operations, NoSQL operations, or both.
+Depending on the specific database adapter, the API can be used in
+Coaty containers running in Node.js services, in Cordova apps, or in
+the browser. For example, the built-in SQLite Cordova adapter can run
+in Cordova apps; the built-in SQLite Node adapter can run in Node.js.
+The built-in Postgres adapter can also run in a Node.js environnment.
+
+For services, we recommend to use the standard built-in Postgres adapter
+in combination with a PostgreSQL 9.5 (or later) database server. PostgreSQL is
+an open-source object-relational DBMS running on a variety of operating system
+platforms. It supports almost all SQL operations as well as highly efficient NoSQL
+document operations using the JSONB data type for binary storage and retrieval of
+JSON objects. The Postgres adapter stores objects as JSONB column data
+properly indexed to speed-up containment operations on key-value pairs.
+
+For efficient non-persistent, in-memory storage of objects we recommend to use
+the built-in In-Memory adapter. This adapter supports NoSQL operations only. It
+can be used in any Coaty container, running in Node.js, Cordova apps, or
+browsers.
+
+For mobile apps, device apps and services that should locally persist small amounts of
+data, such as user settings or preferences, we recommend to use one of the
+built-in SQLite adapters (see subsection 'Local Store operations' below).
+
+### Persistent storage and retrieval of Coaty objects
+
+In the following, we will explain the Unified Storage API in detail using the example
+of a PostgreSQL database. For details on setting up a PostgreSQL database and
+configuring the Postgres adapter, see the subsection 'Postgres adapter' below.
+
+To connect to your Postgres database, connection information is supplied with
+the Coaty container configuration object in the `databases` property.
+In general, you specify the name of the adapter to use, a connection string, and
+other database-specific connection options (optional).
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    common: {
+        // Common options shared by all components
+    },
+    communication: {
+         // Options used for communication
+    },
+    controllers: {
+        // Controller configuration options
+    },
+    databases: {
+        mydb1: {
+            adapter: "PostgresAdapter",
+            connectionString: "postgres://myuser:mypwd@localhost/mydatabase1",
+            connectionOptions: {
+                // Postgres specific connection options
+            }
+        },
+        ...
+    }
+};
+```
+
+For all database adapters used by your agent (typically specified
+in the databases configuration options), you must register the adapter's
+constructor function before use. The name of the adapter must correspond
+to the value of the `adapter` property specified in the connection info
+of the database configuration.
+
+```ts
+import { DbAdapterFactory } from "coaty/db";
+import { PostgresAdapter } from "coaty/db-adapter-postgres";
+
+DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
+
+const container = Container.resolve(...);
+```
+
+The Coaty framework exposes *database context* objects to perform SQL and/or NoSQL
+operations on the database. It features a promise-based interface for
+asynchronous data flow control. A database context is a light-weight object
+that can be used to perform a single operation or multiple operations
+in sequence. A database context object can be short-lived but you
+can also use it for the lifetime of your container by storing it as an
+instance member in a controller.
+
+We recommend to register database adapters **before** resolving the Container
+so that controllers within the container can instantiate database contexts
+in their `onInit` method.
+
+A database context object is created with the connection information specified
+in the configuration. Optionally, you can specify the adapter constructor
+function for the connection info's adapter as a second argument. In this case,
+you don't need to register the adapter explicitely as explained above:
+
+```ts
+import { DbContext } from "coaty/db";
+import { PostgresAdapter } from "coaty/db-adapter-postgres";
+
+const dbContext1 = new DbContext(this.runtime.databaseOptions["mydb1"]);
+
+const dbContext2 = new DbContext(this.runtime.databaseOptions["mydb1"], PostgresAdapter);
+```
+
+The SQL and NoSQL operations that you can invoke on the database contexts are defined
+by the interfaces `IDbSqlOperations` and `IDbNoSqlOperations`, respectively.
+
+If you invoke an operation on a database context that is not supported by
+the associated database adapter, the returned promise is rejected with an
+"operation not supported" error.
+
+For example, to create and populate a collection of User objects, invoke the
+following NoSQL operations:
+
+```ts
+dbContext.addCollection("appusers")
+    .then(() => dbContext.insertObjects("appusers", <newObjects>))
+    .then(() => dbContext.updateObjects("appusers", <updateObjects>))
+    .catch(error => console.log(error));
+```
+
+To invoke multiple asynchronous operations in sequence, it is best practice to
+use composing promises and promise chaining as shown in the above example.
+Avoid the common bad practice pattern of nesting promises as if they were callbacks.
+
+Note that you can reuse a database context object even if an operation
+performed on it fails or yields an error. You can also catch rejected promises
+after every single operation. After a catch clause, the promise chain is restored:
+
+```ts
+dbContext.addCollection("appusers")
+    .then(() => dbContext.insertObjects("appusers", <newObjects>))
+    .catch(insertError => console.log(insertError))
+    .then(() => dbContext.updateObjects("appusers", <updateObjects>))
+    .catch(updateError => console.log(updateError));
+```
+
+Promise chaining effectively serializes the database operations, invoking the
+next operation not until the previous one has completed successfully or with an
+error.
+
+For applying promise operations to a series of items, the framework provides
+a utility method `Async.inSeries` to chain promises in series
+(see section Utilities below). This method can be used to iterate over individual
+objects retrieved by a database operation such as `findObjects` and apply some
+asynchronous database operation on each one in series:
+
+```ts
+let count = 0;
+let myItems;
+dbContext.findObjects<MyItem>("myitems", ...)
+    .then(iterator => iterator.forBatch(items => myItems = items))
+    .then(() => Async.inSeries(myItems, item =>
+        dbContext.updateObjectProperty("myitems", item.objectId, "count", count++)))
+    .catch(error => {
+        // Handle any errors, note that Async.inSeries fails fast
+    }),
+```
+
+You could invoke database operations which are independent of each other in
+parallel as follows (but see note of caution below):
+
+```ts
+dbContext.addCollection("appusers")
+    .then(() => {
+        dbContext.findObjects("appusers", ...)
+            .then(...)
+            .catch(...);
+        dbContext.countObjects("appusers", ...)
+            .then(...)
+            .catch(...);
+    })
+    .catch(error => {
+         // called only when addCollection fails
+    });
+```
+
+A problem with the above example is that there is no thenable or catch clause
+to be invoked when all operations have completed.
+
+To await completion of parallel operations you can collect all operations in an
+array which is passed to `Promise.all`:
+
+```ts
+dbContext.addCollection("appusers")
+    .then(() => Promise.all([
+        dbContext.findObjects("appusers", ...)
+            .then(iterator => {
+                  // Iterate over results, returning completion promise
+                  return iterator.forEach(...);
+            })
+            .catch(error => {
+                  // Handle error, catch by default returns a resolved promise
+            }),
+
+        dbContext.countObjects("appusers", ...)
+            .then(count => {
+                  // Handle result, return fullfilled or rejected promise
+            })
+            .catch(error => {
+                  // Handle error, catch by default returns a resolved promise
+            });
+    ]))
+    .then(() => {
+        // all operations completed, either successfully or with an error
+    });
+```
+
+Note that `Promise.all` implements a fail-fast behavior. It returns a promise
+that resolves when all of the promises in the array have resolved, or immediately
+rejects with the reason of the first passed promise that rejects, discarding all
+the other promises whether or not they have resolved. To avoid fail-fast behavior
+in the above example, all the operation catch handlers return a *fulfilled* promise
+to signal that `Promise.all` should also await completion of failed operations.
+
+**A final note of caution**: Iterating over individual objects retrieved by a database
+operation such as `findObjects` and applying some asynchronous database operation on
+each one **in parallel** normally does **not** perform better than applying these
+operations **in series**. This is because database queries are usually queued by the
+database driver and executed one after the other. Moreover, chaining a lerge number
+of promises does not scale well because allocation in memory has a negative impact on
+memory footprint. To avoid these pitfalls you should in general prefer sequential promise
+chaining by `Async.inSeries`.
+
+### NoSQL operations
+
+The following NoSQL operations are defined on a `DbContext`:
+
+```ts
+addCollection(name: string): Promise<void>;
+
+removeCollection(name: string): Promise<void>;
+
+clearCollection(name: string): Promise<void>;
+
+insertObjects(
+        collectionName: string,
+        objects: CoatyObject | CoatyObject[],
+        shouldReplaceExisting?: boolean): Promise<Uuid[]>;
+
+updateObjects(
+        collectionName: string,
+        objects: CoatyObject | CoatyObject[]): Promise<Uuid[]>;
+
+updateObjectProperty(
+        collectionName: string,
+        objectIds: Uuid | Uuid[],
+        property: string,
+        value: any,
+        shouldCreateMissing = true): Promise<any>
+
+deleteObjectsById(
+        collectionName: string,
+        objectIds: Uuid | Uuid[]): Promise<Uuid[]>;
+
+deleteObjects(
+        collectionName: string,
+        filter?: DbObjectFilter): Promise<number>;
+
+findObjectById<T extends CoatyObject>(
+        collectionName: string,
+        id: string,
+        isExternalId = false): Promise<T>;
+
+findObjects<T extends CoatyObject>(
+        collectionName: string,
+        filter?: DbObjectFilter,
+        joinConditions?: DbJoinCondition | DbJoinCondition[]): Promise<IQueryIterator<T>>;
+
+countObjects(
+        collectionName: string,
+        filter?: DbObjectFilter): Promise<number>;
+
+aggregateObjects(
+        collectionName: string,
+        aggregateProp: string,
+        aggregateOp: AggregateOp,
+        filter?: DbObjectFilter): Promise<number | boolean>;
+```
+
+In the following we will explain the NoSQL operation for finding objects.
+Detailed descriptions of all supported operations are documented in the code of class
+`DbContext`. Code examples can be found in the framework's Hello World example and
+in the unit tests under `ts/test/spec/db-nosql.spec.ts` and `ts/test/spec/db-in-memory.spec.ts`.
+
+A NoSQL operation for finding objects looks like the following:
+
+```ts
+const filter: DbObjectFilter = {
+    conditions: {
+        and: [
+            ["name", filterOp.like("Task%")],
+            ["description", filterOp.like("_foo%")],
+            ["duration", filterOp.between(1000000, 3000000)],
+            ["status", filterOp.in([TaskStatus.Pending, TaskStatus.InProgress])],
+            ["requirements", filterOp.contains(["welder"])]
+            ["requirements", filterOp.notContains(["qualitycheck", "endassembly"])]
+        ]
+    },
+    orderByProperties: [["creationDate", "Desc"], ["name", "Asc"]],
+    skip: 100,
+    take: 100
+};
+
+const joinConditions: DbJoinCondition[] = [
+    {
+        fromCollection: "location",
+        fromProperty: "objectId",
+        localProperty: "locationId",
+        asProperty: "resolvedLocation",
+        isOneToOneRelation: true
+    },
+    {
+        fromCollection: "component",
+        fromProperty: "objectId",
+        localProperty: "componentIds",
+        asProperty: "resolvedComponents",
+        isLocalPropertyArray: true
+    },
+];
+
+dbContext.findObjects<ComponentTask>("task", filter, joinConditions)
+    .then(iterator => iterator.forEach(compTask => console.log(compTask)))
+    .catch(error => console.error(error));
+```
+
+The `findObjects` operation looks up objects in a collection which match
+the given object filter. If the filter is empty or not specified all objects
+in the collection are retrieved.
+
+Optional join conditions can be specified to augment result objects by
+resolving object references to related objects and by storing them as extra
+properties (for details, see online documentation of `DbJoinCondition`).
+Typically, augmented result objects are transfered to other agent
+components as part of the Query - Retrieve communication event pattern, saving
+time for roundtrip events to look up related objects.
+
+However, you should take care that the extra properties of augmented objects are
+**not** stored in the database to avoid inconsistencies and to keep the
+object-oriented database design non-redundant and normalized. Always delete
+extra properties before persisting the object.
+
+It is worth noting that join operations can also be applied to the local
+collection itself. Self joins are useful to resolve all direct subobjects
+related to a superordinate object.
+
+The `findObjects` operation supports two ways of iterating the query results
+(see `DbObjectFilter.shouldFetchInChunks`):
+
+1. Execute the whole query at once and load the result set in memory (default)
+2. Fetch the query result a chunk of rows at a time to avoid memory problems.
+   This provides an efficient way to process large query result sets.
+
+Note that fetching query results in chunks is significantly slower than
+fetching the whole query at once when the query contains not significantly
+more or even less items than the size of a chunk as specified by `fetchSize`.
+
+Fetching results in chunks is especially beneficial in combination with the
+skip and take options. This is the preferred way of paging through a
+large result set by retrieving only a specific subset.
+
+The `findObjects` method is especially suited to handle Query - Retrieve
+communication event patterns. The object filter defined by a
+Query event can be directly passed to `findObjects`. The object join conditions
+defined by a Query event can be passed to `findObjects` using the
+`DbContext.getDbJoinConditionsFrom` mapping function.
+
+### SQL operations
+
+The following SQL operations are defined on a `DbContext`:
+
+```ts
+query(sql: SqlQueryBuilder): Promise<SqlQueryResultSet>;
+iquery(sql: SqlQueryBuilder, queryOptions: SqlQueryOptions): Promise<IQueryIterator<SqlQueryRow>>;
+```
+
+Use `query` to execute an SQL query defined by the given query builder and
+retrieve the results as one set of row data. Note that the query first retrieves
+all result rows and stores them in memory. For queries that yield potentially
+large result sets, consider to use the `iquery` operation instead of this one.
+
+Use `iquery` to execute an SQL query defined by the given query builder and
+retrieve the results iteratively. The result can be iterated one by one or in
+batches to avoid memory overrun when the result contains a large number of rows.
+
+Use the predefined query builder function `SQL` to formulate
+your parameterized SQL query. `SQL` is a tag function for defining universal
+SQL queries by template literals. The tag function translates universal
+parametrized queries into queries for the specific SQL dialect to be addressed.
+It also ensures that SQL identifiers and literals are properly quoted, i.e.
+escaped to prevent SQL syntax errors and SQL injection. For example:
+
+```ts
+const myTable = "app-users";
+const firstNameColumn = "first name";
+const firstNameColumn = "last-name";
+const firstName = "Fred";
+const lastName = "Flintstone";
+query(SQL`SELECT * FROM ${myTable}{IDENT}
+        WHERE ${firstNameColumn}{LIT} = ${firstName} AND
+              ${lastNameColumn}{LIT} = ${lastName};`)
+```
+
+builds this parameterized query if the PostgresAdapter is used:
+
+```
+query:  SELECT * FROM "app-users" WHERE 'first name' = $1 AND 'last-name' = $2;
+params: [ "Fred", "Flintstone" ]
+```
+
+and this parameterized query if an SQLite adapter is used:
+
+```
+query:  SELECT * FROM "app-users" WHERE 'first name' = ? AND 'last-name' = ?;
+params: [ "Fred", "Flintstone" ]
+```
+
+and this parameterized query if a MySQL adapter is used:
+
+```
+query:  SELECT * FROM `app-users` WHERE 'first name' = ? AND 'last-name' = ?;
+params: [ "Fred", "Flintstone" ]
+```
+
+Detailed descriptions of the supported operations are documented in the code of class
+`DbContext`. Code examples can be found in the framework's unit tests
+in the file `ts/test/spec/db-sql.spec.ts`.
+
+### Local storage operations
+
+The Unified Storage API also supports *local* database contexts that persist data in a
+local database file without using a database server. Such a database context is
+usually adequate for storing small amounts of data in the local file system
+of a device or service. SQLite is a typical example of such a database. Typically,
+a local database context is used to persist agent-specific settings.
+For example, a local database context can be used in a Node.js environment as
+well as in a Cordova app (utilizing specific built-in SQLite database adapters).
+
+Besides SQL operations and transactions, a local database context supports
+local storage of pairs of keys and values. Keys are strings and values are any
+JSON objects. Values can be retrieved when a key is known or by mapping through
+all key-value pairs.
+
+```ts
+addStore(name: string): Promise<any>;
+removeStore(name: string): Promise<any>;
+getValue(key: string, store?: string): Promise<any>;
+getValues(store?: string): Promise<any>;
+setValue(key: string, value: any, store?: string): Promise<any>;
+deleteValue(key: string, store?: string): Promise<any>;
+clearValues(store?: string): Promise<any>;
+close(): Promise<any>;
+```
+
+Detailed descriptions of the supported operations are documented in the code of
+class `DbLocalContext`. Code examples can be found in the framework's unit
+tests in the file `ts/test/spec/db-local.spec.ts`.
+
+### Transactions
+
+To bundle multiple query operations inside a transaction block, use the
+`transaction` method on the database context. The action callback **must** return a
+promise that is fulfilled if **all** operations have executed without errors, and
+that is rejected if **any** of the operations fail. All operations within a
+transaction **must** operate on the transaction database context that is passed to
+the action callback.
+
+```ts
+transaction(action: (transactionContext: DbContext | DbLocalContext) => Promise<any>): Promise<any>;
+```
+
+While you can invoke independent transactions on the same or different database
+contexts in parallel, or invoke transactions on the same database context in series,
+transactions cannot be *nested*. In this case, the promise returned by trying to invoke
+the subtransaction is rejected with a corresponding error.
+
+### Database adapter extensions
+
+In addition to the unified SQL and NoSQL operations described above, a database
+adapter can also define *extension* methods. Extensions are adapter-specific, i.e.
+specific to databases and database drivers. Extensions are registered with the `registerExtension`
+adapter method. A database extension context for a specific adapter can now call the
+defined extension using the `callExtension` method. As with the other
+operations, extension methods return promises yielding the requested data.
+
+### Use of database adapters
+
+The built-in database adapters provided by the Coaty framework use specific
+low-level database driver modules to connect to databases.
+
+The drivers used by built-in adapters are defined as (optional) peer dependencies
+in the package.json of the coaty npm module. To use a specific adapter in your
+agent project, you must install the associated driver module(s) as dependencies
+in the package.json. Refer to the framework's package.json
+to figure out which version of the driver modules should be installed. You
+only need to install driver modules for adapters that you really use in your
+agent project.
+
+### Postgres adapter
+
+To make use of the built-in Postgres database adapter, install PostgreSQL
+version 9.5 or higher. Download and installation details can be found
+[here](https://www.postgresql.org/). Then, set up and start the database
+server as explained in the [Postgres documentation](https://www.postgresql.org/docs/).
+
+Next, create the target database(s) and user roles. This can be accomplished using
+
+* the pgAdmin tool,
+* the pgsql interactive terminal,
+* the createdb/createuser command-line utility programs,
+* extension methods provided by the PostgreSQL adapter (see subsection on
+  "Database adapter extensions" below).
+
+Now, you are ready to connect to your Postgres database. Connection information
+is supplied with the container configuration object in the `databases` property.
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    common: {
+        // Common options shared by all components
+    },
+    communication: {
+         // Options used for communication
+    },
+    controllers: {
+        // Controller configuration options
+    },
+    databases: {
+        mydb1: {
+            adapter: "PostgresAdapter",
+            connectionString: "postgres://myuser:mypwd@localhost/mydatabase1",
+            connectionOptions: {
+                // Postgres specific connection options
+            }
+        },
+        ...
+    }
+};
+```
+
+A detailed description of the Postgres connection string format and the available
+connection options can be found in the documentation of the `PostgresAdapter`
+class.
+
+Finally, the Postgres adapter must be registered before use:
+
+```ts
+import { DbAdapterFactory } from "coaty/db";
+import { PostgresAdapter } from "coaty/db-adapter-postgres";
+
+DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
+```
+
+The Postgres adapter supports both SQL and NoSQL operations as well as extension
+methods for creating and deleting, i.e. dropping, databases and users at runtime:
+
+```ts
+initDatabase(dbInfo: DbConnectionInfo, collections?: string[], clearCollections: boolean = false)
+createDatabase(name: string, owner: string, comment?: string): Promise<boolean>;
+deleteDatabase(name: string): Promise<void>;
+createUser(name: string, comment?: string): Promise<void>;
+deleteUser(name: string): Promise<void>;
+```
+
+When setting up PostgreSQL do not forget to set a proper password for the PostgreSQL
+admin user if you want to make use of these extension methods. Usually,
+when installing PostgreSQL on Windows or when using a PostgreSQL docker container the
+admin user and admin password are both preset to `postgres`. On Linux, you might
+have to set the password explicitely by running `sudo -u postgres psql postgres` and
+then defining a password through the command `postgres=# \password postgres`.
+
+The following example shows how to initialize a database (i.e. create a database and
+database user, and add collections) at program startup with the PostgreSQL adapter:
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    common: {
+        // Common options shared by all components
+    },
+    communication: {
+        // Options used for communication
+    },
+    controllers: {
+        // Controller configuration options
+    },
+    databases: {
+        db: {
+            adapter: "PostgresAdapter",
+            connectionString: "postgres://myuser:mypassword@localhost/mydb"
+        }
+        adminDb: {
+            adapter: "PostgresAdapter",
+
+            // Connect as admin user (postgres) with password (postgres) to admin database (postgres)
+            // Format: postgres://<admin-user>:<admin-pwd>@<host>/<admin-db>
+            connectionString: "postgres://postgres:postgres@localhost/postgres"
+        }
+    }
+};
+
+import { DbContext } from "coaty/db";
+import { PostgresAdapter } from "coaty/db-adapter-postgres";
+
+const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"], PostgresAdapter);
+
+adminContext.callExtension("initDatabase", this.runtime.databaseOptions["db"], ["mycollection1", "mycollection2"])
+    .catch(error => console.log(error));
+```
+
+Note that you have to be an admin user ("postgres" in the example, using "postgres"
+as password) with access to the postgres admin database ("postgres") to successfully
+execute these operations.
+
+### In-memory adapter
+
+For efficient non-persistent, in-memory storage of objects we recommend to use
+the built-in `InMemoryAdapter`. This adapter supports the complete set of NoSQL
+operations. Transactions are not supported. Fetching in chunks is not supported,
+i.e. `DbObjectFilter.shouldFetchInChunks` and `DbObjectFilter.fetchSize` are ignored.
+
+This adapter has no external dependencies to database drivers and requires no
+installation of third-party modules. It can be used in any Coaty container,
+running in Node.js, Cordova apps, or browsers.
+
+The `InMemoryAdapter` requires a connection string of the following form:
+`in-memory://<database>`
+
+This adapter supports the following connection options:
+
+```ts
+{
+   // Name of database to connect
+   database: "<name>"
+}
+```
+
+The database specified by either the connection string or options is implicitely and
+automatically created in-memory the first time you are creating a `DbContext` on it.
+
+The following example shows how to create and use a database with the `InMemoryAdapter`:
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    ...
+    databases: {
+        inMemoryDb: {
+            adapter: "InMemoryAdapter",
+            connectionString: "in-memory://my-in-memory-db"
+        }
+    }
+};
+
+import { DbContext } from "coaty/db";
+import { InMemoryAdapter } from "coaty/db-in-memory";
+
+const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"], InMemoryAdapter);
+
+dbContext.addCollection("appusers")
+    .then(() => dbContext.insertObjects("appusers", <newObjects>))
+    .then(() => dbContext.updateObjects("appusers", <updateObjects>))
+    .catch(error => console.log(error));
+```
+
+Detailed descriptions of the supported NoSQL operations are documented in the code
+of class `DbContext`. Further code examples can be found in the framework's unit tests
+in the file `ts/test/spec/db-in-memory.spec.ts`.
+
+### SQLite NodeJs adapter
+
+The Coaty framework provides a built-in database adapter for persistent SQL-based
+local storage and retrieval in Node.js processes. The `SqLiteNodeAdapter`
+makes use of SQLite 3 utilizing the `sqlite3` npm module as database driver.
+
+The SQLite node adapter supports SQL operations, transactions, and local
+store operations exposed by a local database context (of class `DbLocalContext`).
+For the `query` operation the `fetchSize` option is ignored.
+
+The adapter also provides an extension method `deleteDatabase` for deleting an
+SQLite database file.
+
+The SQLite database file path is specified as connection string in the
+connection info object. If you specify an absolute or relative file path
+ensure that the path exists and is accessible by the process, otherwise
+the database file cannot be created or opened. The database file name should
+include the extension, if desired, e.g. `"db/myservice.db"`. No further connection
+options are supported.
+
+As a prerequisite you need to install the npm module `sqlite3` as explained
+here: [sqlite3](https://www.npmjs.com/package/sqlite3).
+
+To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
+connection information and register the adapter before use:
+
+```ts
+import { DbAdapterFactory, DbLocalContext } from "coaty/db";
+import { SqLiteNodeAdapter } from "coaty/db-adapter-sqlite-node";
+import { Configuration } from "coaty/runtime";
+
+// Specify adapter in configuration
+const configuration: Configuration = {
+    common: {},
+    communication: {
+        ...
+    },
+    controllers: {
+        ...
+    },
+    databases: {
+        localdb: {
+            adapter: "SqLiteNodeAdapter",
+
+            // Path to the SqLite database file is relative to project's root folder
+            connectionString: "db/mylocaldb.db"
+        }
+    }
+};
+
+// Register adapter explicitely or
+DbAdapterFactory.registerAdapter("SqLiteNodeAdapter", SqLiteNodeAdapter);
+
+// Register adapter in local database context
+const dbContext = new DbLocalContext(connectionInfo, SqLiteNodeAdapter);
+```
+
+### SQLite Cordova adapter
+
+The Coaty framework provides a built-in database adapter for persistent SQL-based
+local storage and retrieval in mobile browser apps running on iOS, Android and Windows.
+The SQLite Cordova adapter makes use of the cordova-sqlite-storage plugin.
+The adapter provides a powerful alternative to limited HTML5 local storage in
+your mobile app.
+
+The SQLite node adapter supports SQL operations, transactions, and local
+store operations exposed by a local database context (of class `DbLocalContext`).
+The `iquery` operation is not supported.
+
+This adapter provides an extension method `deleteDatabase` for deleting the
+local SQLite database file specified in the connection options.
+
+This adapter accepts the following connection info: `connectionString`
+specifies the name of the database file. `connectionOptions` accepts a
+`location` option (defaults to `default`). To specify a different location,
+(affects iOS only) use the `iosDatabaseLocation` option with one of the
+following choices:
+
+* `default`: stored in Library/LocalDatabase subdirectory, **not** visible to
+  iTunes and **not** backed up by iCloud
+* `Library`: stored in Library subdirectory, backed up by iCloud, **not**
+  visible to iTunes
+* `Documents`: stored in Documents subdirectory, visible to iTunes and backed
+  up by iCloud
+
+Like with other Cordova plugins you must wait for the `deviceready` event
+in your app before instantiating a local database context with this adapter.
+Note that controllers and other service classes injected into Ionic/Angular
+UI components are created before the `deviceready` event is fired. Thus, you
+should never execute operations on a local database context on this adapter
+in the constructor of such a class.
+
+To use the SQLite Cordova adapter, you need to install the cordova-sqlite-storage
+plugin as explained here: [cordova-sqlite-storage](https://www.npmjs.com/package/cordova-sqlite-storage).
+
+To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
+connection information and register the adapter before use:
+
+```ts
+import { DbAdapterFactory, DbLocalContext } from "coaty/db";
+import { SqLiteCordovaAdapter } from "coaty/db-adapter-sqlite-cordova";
+import { Configuration } from "coaty/runtime";
+
+// Specify adapter in configuration
+const configuration: Configuration = {
+    common: {},
+    communication: {
+        ...
+    },
+    controllers: {
+        ...
+    },
+    databases: {
+        localdb: {
+            adapter: "SqLiteCordovaAdapter",
+
+            // Name of the database file
+            connectionString: "mylocaldb",
+
+            connectionOptions: {
+                // Specify database file location on local device
+                location: "default",
+
+                // Specify location for iOS
+                iosDatabaseLocation: "default"
+            }
+        }
+    }
+};
+
+// Register adapter explicitely or
+DbAdapterFactory.registerAdapter("SqLiteCordovaAdapter", SqLiteCordovaAdapter);
+
+// Register adapter in local database context
+const dbContext = new DbLocalContext(connectionInfo, SqLiteCordovaAdapter);
+```
+
+### Implement a custom database adapter
+
+You can implement your own custom database adapter by defining a class that
+derives from `DbAdapterBase` and implements the `IDbAdapter` and
+`IDbAdapterExtension` interfaces. `DbAdapterBase` provides default
+implementations for all interface methods that return a rejected promise
+which yields an "Operation not supported" error.
+
+You can specify the custom adapter in the database configuration options.
+Note that the custom adapter class must be registered before use.
+
+```ts
+import { Configuration } from "coaty/runtime";
+
+const configuration: Configuration = {
+    common: {
+        // Common options shared by all components
+    },
+    communication: {
+        // Options used for communication
+    },
+    controllers: {
+        // Controller configuration options
+    },
+    databases: {
+        myCustomDb: {
+            adapter: "MyCustomDatabaseAdapter",
+            connectionString: "...",
+            connectionOptions: {
+                // Specific connection options for custom database
+            }
+        }
+    }
+};
+
+import { DbAdapterFactory } from "coaty/db";
+import { MyCustomDatabaseAdapter } from "myapp/my-custom-adapter";
+
+DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdapter);
+
+```
+
+## Decentralized logging
+
+The Coaty framework provides the object type `Log` for decentralized
+logging of any kind of informational events in your Coaty agents, such as
+errors, warnings, and system messages. Log objects are usually published
+to interested parties using an Advertise event. These log objects can then
+be collected and ingested into external processing pipelines such as the
+[ELK Stack](https://www.elastic.co/elk-stack).
+
+Any container component can publish a log object by creating and advertising a
+`Log` object. You can specify the level of logging (debug, info, warning, error,
+fatal), the message to log, its creation timestamp, and other optional information
+about the host environment in which this log object is created. You can also
+extend the `Log` object with custom property-value pairs.
+
+You can also specify log tags as an array of string values in the
+`Log.logTags` property. Tags are used to categorize or filter log output.
+Agents may introduce specific tags, such as "service" or "app".
+Note that log objects published by the framework itself always use the reserved
+tag named "coaty" as part of the `logTags` property. This tag name
+should never be used by your custom agents.
+
+For convenience, the base `Controller` class provides methods for
+publishing/advertising log objects:
+
+* `logDebug`
+* `logInfo`
+* `logWarning`
+* `logError`, `logErrorWithStacktrace`
+* `logFatal`
+
+The base `Controller` class also defines a protected method
+`extendLogObject(log: Log)` which is invoked by the controller whenever
+one of the above log methods is called. The controller first creates a
+`Log` object with appropriate property values and passes it to this method
+before advertising it. You can overwrite this method to additionally set
+certain properties (such as `LogHost.hostname`) or to add custom
+property-value pairs to the `Log` object. For example, a Node.js agent
+could add the hostname to the `Log` object:
+
+```ts
+import { Log } from "coaty/model";
+
+protected extendLogObject(log: Log) {
+    log.logHost.hostname = require("os").hostname();
+}
+```
+
+To collect log objects advertised by your agent components, implement
+a logging controller that observes Advertise events on the core type `Log`.
+Take a look at the Hello World example of the Coaty framework to see
+how this is implemented in detail.
+
+Future versions of the framework could include predefined logging controllers
+that collect `Log` entries, store them persistently; output them to
+file or console, and provide a query interface for analyzing and visualizing
+log entries by external tools.
+
+## Utilities
+
+The framework provides some useful utility functions in the `util` module
+that are missing in the JavaScript ES5/ES6 standard.
+
+### Executing promises in sequence
+
+The `Async.inSeries` method applies an asynchronous operation against each
+value of an array of items in series (from left-to-right). You can break out
+of the iteration prematurely by resolving a `false` value from an operation:
+
+```ts
+import { Async } from "coaty/util";
+
+Async.inSeries(
+    [1, 2, 3, 4, 5],
+    (item: number) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log("run async operation #" + item);
+                resolve(item < 4 ? true : false);
+            }, 1000);
+        }),
+    })
+    .then(() => console.log("some async operations completed"))
+    .catch(error => console.log(error));
+```
+
+The `Async.reduce` method applies an asynchronous operation against an
+accumulator and each value of an array of items in series (from left-to-right)
+to reduce it to a single value:
+
+```ts
+import { Async } from "coaty/util";
+
+const items = [100, 300, 150, 50];
+
+Async.reduce(
+    items,
+    (item: number, previousValue?: number[]) => {
+        return new Promise<number[]>((resolve, reject) => {
+            setTimeout(() => {
+                previousValue.push(item);
+                resolve(previousValue);
+            }, item);
+        }),
+    },
+    [])
+    .then(value => {
+        value.forEach((val, i) => {
+            expect(val).toBe(items[i]);
+        });
+    })
+    .catch(error => console.log(error));
+```
+
+### Binary search and insert
+
+Binary search and insert functions to efficiently search/insert an item into a
+sorted `Array<T>` using a specific compare function on the item:
+
+```ts
+import { binarySearch, binaryInsert } from "coaty/util";
+
+binarySearch<T>(
+    source: Array<T>,
+    value: T,
+    compareFn: (a: T, b: T) => number,
+    startIndex: number = 0,
+    endIndex: number = source.length - 1): number;
+
+binaryInsert<T>(
+    source: Array<T>,
+    item: T,
+    compareFn: (a: T, b: T) => number);
+```
+
+### Localized ISO date-time formatting
+
+A function to return a date string in ISO 8601 format including timezone offset
+information and optional milliseconds:
+
+```ts
+import { toLocalIsoString } from "coaty/util";
+
+// outputs 2016-09-21T15:46:41+02:00
+console.log(toLocalIsoString(new Date()));
+
+// outputs 2016-09-21T15:46:41.000+02:00
+console.log(toLocalIsoString(new Date(), true));
+```
+
+### Deep comparison checks
+
+#### Equality check
+
+Determines whether two JavaScript values, typically objects or arrays, are deep equal according
+to a recursive equality algorithm.
+
+Note that the strict equality operator `===` is used to compare leave values. For checking the
+containment of properties in objects the `hasOwnProperty` operator is used, i.e. only properties
+defined on the object directly (not inherited) are considered.
+
+Compares JavaScript values, typically objects or arrays, and determines whether
+they are deep equal according to a recursive equality algorithm.
+
+```ts
+import { equals } from "coaty/util";
+
+expect(equals(null, null)).toBe(true);
+        /* tslint:disable-next-line:no-null-keyword */
+        expect(equals(null, undefined)).toBe(false);
+        expect(equals(42, 42)).toBe(true);
+        expect(equals(42, "42")).toBe(false);
+        expect(equals([], [])).toBe(true);
+equals({ a : [ 2, 3 ], b : [ 4 ] }, { a : [ 2, 3 ], b : [ 4 ] })) => true
+equals({ x : 5, y : [6] }, { x : 5, y : 6 })) => false
+```
+
+#### Contains check
+
+Checks if a JavaScript value (usually an object or array) contains
+other values. Primitive value types (number, string, boolean, null,undefined) contain
+only the identical value. Object properties match if all the key-value
+pairs of the specified object are contained in them. Array properties
+match if all the specified array elements are contained in them.
+
+The general principle is that the contained object must match the containing object
+as to structure and data contents recursively on all levels, possibly after discarding
+some non-matching array elements or object key/value pairs from the containing object.
+But remember that the order of array elements is not significant when doing a containment match,
+and duplicate array elements are effectively considered only once.
+
+As a special exception to the general principle that the structures must match, an
+array on *toplevel* may contain a primitive value:
+
+```ts
+contains([1, 2, 3], [3]) => true
+contains([1, 2, 3], 3) => true
+```
+
+Note that the strict equality operator `===` is used to compare primitive values. For checking the
+containment of properties in objects the `hasOwnProperty` operator is used, i.e. only properties
+defined on the object directly (not inherited) are considered.
+
+For example:
+
+```ts
+import { contains } from "coaty/util";
+
+contains("foo" , "foo") => true
+
+contains([1, 2, 3] , []) => true
+contains([1, 2, 3] , [3, 1]) => true
+contains([1, 2, 3] , [3, 1, 3, 1]) => true
+contains([1, 2, 3] , [3, 1, 5]) => false
+contains([1, [2, 3, 4], 3] , [3, [3, 2]]) => true
+contains([1, [2, 3, 4], 3] , [3, [3, 1]]) => false
+
+contains({ "foo": 1, "bar": 2 } , { "bar": 2 }) => true
+contains({ "foo": 1, "bar": 2 } , { "bar": 2, "foo": 1 }) => true
+contains({ "foo": 1, "bar": 2 } , { "bar": 2, "foo": 2 }) => false
+contains({ "foo": { "bar": "baz" }}, { "foo": {} }) => true
+contains({ "foo": { "bar": "baz" }}, { "bar": "baz" }) => false
+
+contains([1, { "foo": [{ "bar": [1, 2, 3] }, 2, 3] }], [{ "foo": [{ "bar": [3] }] }]) => true
+```
+
+#### Includes check
+
+Checks if a value is included on toplevel in the given
+operand array of values which may be primitive types (number, string, boolean, null)
+or object types compared using the deep equality operator.
+
+For example:
+
+```ts
+import { includes } from "coaty/util";
+
+includes([1, 46, 47, "foo"], 47) => true
+includes([1, 46, "47", "foo"], 47) => false
+includes([1, 46, { "foo": 47 }, "foo"], { "foo": 47 }) => true
+includes([1, 46, { "foo": 47, "bar": 42 }, "foo"], { "foo": 47 }) => false
+```
+
+## NodeJS utilities
+
+The framework includes a `NodeUtils` class in the `runtime-node` module which provides
+some static utility methods to be used by Coaty agent services.
+
+Use the `handleProcessTermination` method to perform synchronous and asynchronous cleanup
+of allocated resources (e.g. file descriptors, handles, DB connections, etc.) before shutting
+down the Node.js process.
+
+Use the `logCommunicationState` method to log changes in online/offline communication state
+(i.e. agent connection to Coaty broker) to the console.
+
+Use the `logInfo`, `logError`, and `logEvent` methods to log a given message, error, or event
+to the console, also providing the logging date.
+
+Usage examples can be found in the examples provided with the framework's source code.
+
+## Multicast DNS discovery
+
+The framework includes a `MulticastDnsDiscovery` class to support multicast DNS discovery
+(a.k.a Bonjour, Zeroconf, mDNS) to be used within Node.js based agents. These functions can
+be used, for example, to auto-discover the IP address of the Coaty broker/router
+or the URL of a container configuration hosted on a web server.
+
+Use the `publishMulticastDnsService`, `publishMqttBrokerInfo`, and `publishWampRouterInfo`
+methods in a Coaty service to publish corresponding mDNS services (see examples below).
+
+Use the `unpublishMulticastDnsServices` function to stop publishing of mDNS services when the
+Coaty service exits.
+
+Use the `findMulticastDnsService`, `findMqttBrokerInfo`, and `findWampRouterInfo` functions
+in a Coaty agent component to discover a published mDNS service (see examples below).
+
+### Discover configuration URLs
+
+Publish an mDNS service for a Coaty configuration URL with a given name, type, port,
+and TXT record as follows:
+
+```ts
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+MulticastDnsDiscovery.publishMulticastDnsService("My Config URL", "coaty-config", 4711, { "path": "/config/my-config.json" })
+    .then(srv => console.log("Service published successfully", srv.name))
+    .catch(error => console.error("Service could not be published", error));
+```
+
+The values of the `txt` record properties are always strings so you can easily concatenate
+them to form a URL, etc.
+
+Find the first mDNS service for the published Coaty configuration URL:
+
+```ts
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+MulticastDnsDiscovery.findMulticastDnsService("My Config URL", "coaty-config", 10000)
+    .then(srv => console.log("Config URL:", `https://${srv.host}:${srv.port}${srv.txt.path}`))
+    .catch(error => console.log(error));
+```
+
+### Discover broker or router
+
+Publish Coaty broker/router discovery information (with default connection parameters) as follows:
+
+```ts
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+// Publish MQTT broker info in a Coaty service
+MulticastDnsDiscovery.publishMqttBrokerService()
+    .then(srv => console.log("Broker info published successfully", srv.name))
+    .catch(error => console.error("Broker info could not be published", error));
+
+// Publish WAMP router info in a Coaty service
+MulticastDnsDiscovery.publishWampRouterService()
+    .then(srv => console.log("Router info published successfully", srv.name))
+    .catch(error => console.error("Router info could not be published", error));
+```
+
+Auto discover the broker/router URL in a Coaty network and use this information to dynamically
+configure the communication manager at run time. For this to work correctly, ensure that the
+communication manager is *not* started automatically.
+
+```ts
+import { Container } from "coaty/runtime";
+
+const container = Container.resolve(...);
+
+// On startup discover MQTT broker URL and start communication manager.
+
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+MulticastDnsDiscovery.findMqttBrokerService()
+    .then(srv => {
+        container.getCommunicationManager().options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
+        container.getCommunicationManager().start();
+    });
+
+// On startup discover WAMP router URL and realm and start communication manager.
+
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+MulticastDnsDiscovery.findWampRouterService()
+    .then(srv => {
+        container.getCommunicationManager().options.routerUrl = `ws://${srv.host}:${srv.port}${srv.txt.path}`;
+        container.getCommunicationManager().options.realm = srv.txt.realm;
+        container.getCommunicationManager().start();
+    });
+```
+
+Note that the find functions described above can only be used in Node.js programs.
+If you want to discover a bonjour service within a cordova app, use the
+plugin `cordova-plugin-zeroconf`. In an Ionic app, you can use `@ionic-native/zeroconf`
+plugin which is a wrapper around the cordova plugin.
+
+### Stop publishing mDNS services
+
+Published mDNS services should be stopped before a Coaty service exits:
+
+```ts
+import { MulticastDnsDiscovery } from "coaty/runtime-node";
+
+MulticastDnsDiscovery.unpublishMulticastDnsServices().then(() => process.exit(0));
+```
+
+## Scripts for Coaty agent projects
+
+The framework includes some build-supporting scripts for use by Coaty agent
+projects. These so-called *coaty scripts* can execute tasks as part of any npm
+script based build process of your project:
+
+* `broker` - start a Coaty broker for development and testing purposes
+* `info` - generate agent and framework meta info at build time (version, …)
+* `version-release` - bump new release version based on recommended conventional commits
+* `cut-release` - cut a release using conventional changelog management
+* `push-release` - push release commits and release tag to the remote git repo
+* `publish-release` - publish a release to npm registry server
+
+You can use these coaty scripts as part of npm run scripts in your package.json
+`scripts` section as follows:
+
+```json
+"scripts": {
+    "broker": "coaty-scripts broker [--verbose] [--port <port>]",
+    "build": "coaty-scripts info && <run your build script here>",
+    "prepare-release": "coaty-scripts version-release %1 && npm run build && coaty-scripts cut-release %2",
+    "push-release": "coaty-scripts push-release",
+    "publish-release": "coaty-scripts publish-release"
+}
+```
+
+The following examples show how the npm run scripts defined above can be executed
+on the command line:
+
+```sh
+/// Start a Coaty broker to develop and test your application
+npm run broker
+
+/// Build project including generation of agent info
+npm run build
+
+// Prepare release
+npm run prepare-release recommended "This is a release note..."
+
+// Push release on remote git repo
+npm run push-release
+
+// Publish release to npm registry
+npm run publish-release
+```
+
+Note that parameters supplied with an `npm run` command can be referenced in a
+related Coaty script call by substituting a `%i` parameter, where `i` is the one-based
+positional index of the desired npm run command parameter.
+
+### Coaty broker for development
+
+For Coaty application development and testing purposes, the framework includes
+a Mosca MQTT broker. You can execute the `broker` script (inside an npm script)
+to run this broker:
+
+```sh
+coaty-scripts broker [--verbose] [--port <port>]
+```
+
+Runs Mosca broker on MQTT port 1883 (or the one specified with command line option
+`--port <number>`) and websocket port 9883. The websocket port is computed from the
+given MQTT port by adding 8000.
+
+If the broker is launched on standard port 1883, a multicast DNS service for broker
+discovery is published additionally. The broker is then discoverable under the mDNS
+service name "Coaty MQTT Broker" and the service type "coaty-mqtt".
+
+If the command line option `--verbose` is given, Mosca broker provides verbose logging
+of subscriptions. Additionally, all MQTT messages published by MQTT clients are logged
+on the console, including message topic and payload.
+
+> Note: You should **not** use this broker in a production system. Instead, use a
+> high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ, Mosquitto,
+> or Crossbar.io WAMP router).
+
+Alternatively, you can run this broker from within your application build scripts
+as follows:
+
+```js
+const broker = require("coaty/scripts/broker");
+
+// Run broker with default options
+broker.run();
+
+// or specify custom options
+broker.run({ logVerbose: true, ... });
+```
+
+Options are defined in an object hash including the following properties:
+
+* `port:` the MQTT port (default is 1883); the websocket port is computed from
+  port by adding 8000.
+* `logVerbose:` true for detailed logging of subscriptions and published messages
+  (default is false).
+* `startBonjour:` true, if multicast DNS broker discovery service should be
+  published (default is false); only works if standard MQTT port 1883 is used.
+  The broker is then discoverable under the mDNS service name "Coaty MQTT Broker"
+  and the service type "coaty-mqtt".
+* `onReady`: callback function to be invoked when broker is ready (default none).
+* `moscaSettings`: if given, these settings completely override the default mosca
+   settings computed by the other options.
+
+### Generate project meta info at build time
+
+The framework provides an object interface in the `runtime` module named `AgentInfo`.
+This interface represents package, build and config information of any Coaty agent project,
+whether it runs as a client app or as a backend service. Project information is generated
+when the project is build and can be used at runtime, e.g. for logging,
+informational display, or configuration (e.g. discriminating based on production vs.
+development build mode).
+
+The framework provides several methods to generate `AgentInfo` at build time of the
+project:
+
+* an `info` script to be run as part of the build process based on npm scripts
+* a gulp task to be run as part of a gulp-based build process
+* a pure function to be called in custom build processes based on Node.js.
+
+Each of these methods generates a TypeScript file named `agent.info.ts` which exports
+an `AgentInfo` object on a variable named `agentInfo`. You can import this object
+into your project and use it as needed:
+
+```ts
+import { agentInfo } from "path_to/agent.info";
+
+console.log(agentInfo.buildInfo.buildDate));
+console.log(agentInfo.buildInfo.buildMode));
+console.log(agentInfo.packageInfo.name));
+console.log(agentInfo.packageInfo.version));
+console.log(agentInfo.configInfo.serviceHost));
+...
+```
+
+Package information exposed by the `AgentInfo.packageInfo` object is extracted from the
+project's package.json file.
+
+The build mode exposed by the `AgentInfo.buildInfo` object is determined by the value of the
+environment variable `NODE_ENV` at build time. Typical values include `production`
+or `development`, but could be any other string as well. You should set this
+environment variable to a proper value before starting the build process. If this
+variable is not set, a `development` build mode is assumed. Note that `NODE_ENV` is
+also used by Node.js, e.g. the express server uses it at run time to determine whether
+it is a production or development environment.
+
+The `serviceHost` property exposed by the `AgentInfo.configInfo` object represents the host
+name used for MQTT broker connections and REST based services.
+The value is acquired from the environment variable `COATY_SERVICE_HOST`.
+If not set, the value defaults to an empty string.
+
+#### Generate project info by script
+
+The example explained next refers to the Ionic build process.
+
+In the build and watch script of your package.json add a call to run
+`coaty-scripts info`:
+
+```json
+ "scripts": {
+    "build": "coaty-scripts info && ionic-app-scripts build",
+    "watch": "coaty-scripts info && ionic-app-scripts watch",
+    ...
+  },
+```
+
+By default, the generated `agent.info.ts` file is written to `"./src/"`. You can
+customize this location by supplying a second argument to the script.
+
+#### Generate project info by gulp task
+
+The framework provides a gulp task that you can integrate into your gulpfile.js:
+
+```js
+const infoScript = require("coaty/scripts/info");
+
+// path_to specifies the path without filename where
+// agent.info.ts should be written, such as "./src/app" for Ionic apps.
+gulp.task("agentinfo", infoScript.gulpBuildAgentInfo("path_to"));
+
+// Add the gulp task as a step of the build task
+gulp.task("build", () => {
+  runSequence("clean", "agentinfo", "transpile", "tslint");
+});
+```
+
+Note that the `agentinfo` gulp task must be run **before** transpiling the TypeScript
+source code.
+
+#### Generate project info by a function
+
+To integrate generation of project info into your custom Node.js based build process, you
+can use the function `generateAgentInfoFile` which is exported by the `runtime` module:
+
+```js
+var infoScript = require("coaty/scripts/info");
+
+var agentInfoFolder = "./src/";
+var agentInfoFilename = "agent.info.ts";   // optional parameter
+var packageFile = "package.json";      // optional parameter
+infoScript.generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile);
+```
+
+### Release a project
+
+The provided release scripts separate local steps that only affect the local git repo
+from remote steps that affect the npm registry:
+
+* `version-release` - bump new release version based on recommended conventional commits
+* `cut-release` - cut the release using conventional changelog management
+* `push-release` - push release commits and release tag to the remote git repo
+* `publish-release` - publish the release to npm registry server
+
+#### Version a release
+
+To prepare a new release locally, first run the `version-release` script. It
+computes a new package version and bumps it.
+
+```sh
+coaty-scripts version-release (recommended | first | major | minor | patch | <semantic version>)
+```
+
+If supplied with `recommended`, a recommended version bump is computed based
+on conventional commits. An error is reported, if the recommended version cannot
+be computed because there are no commits for this release at all.
+
+If supplied with `first`, the package version is bumped to the current version
+specified in package.json.
+
+If supplied with `major`, `minor`, or `patch`, the package version is
+incremented to the next major, minor, or patch version, respectively.
+
+If supplied with a valid semantic version (e.g. `1.2.3` or `1.2.3-beta.5`)
+this version is bumped. You can also use this option to create a prerelease.
+
+In any of the above cases except `first`, an error is reported if the new version
+to be bumped is equal to the current package version.
+
+> The auto-generated release information in the CHANGELOG only includes
+> `feat`, `fix`, and `perf` conventional commits. Non-conventional commits are *not*
+> included. Other conventional commit types such as `docs`, `chore`, `style`, `refactor`
+> are *not* included. However, if there is any `BREAKING CHANGE`, this commit
+> will *always* appear in the changelog.
+
+#### Cut a release
+
+The `cut-release` script
+
+1. updates the CHANGELOG with release information from the conventional commits,
+2. commits all pending changes,
+3. creates an annotated git tag with the new release version.
+
+```sh
+coaty-scripts cut-release ["<release note>"]
+```
+
+If supplied with an optional release note, the given text is
+prepended to the release information generated by conventional commits.
+The text should consist of whole sentences.
+
+*Before* executing the script, you should build the project's distribution package,
+and other assets, such as auto-generated source code documentation.
+
+#### Push a release
+
+Use the `push-release` script to push the cut release commits and the
+release tag to the remote git repo server.
+
+```sh
+coaty-scripts push-release
+```
+
+Note that the `push-release` script may error because the git private key authentication
+has not been set up properly. In this case, you can perform this step manually
+using your preferred GIT client. Do **NOT** forget to push the release tag, too.
+You can push both the release commits and the annotated tag by executing
+`git push --follow-tags`.
+
+#### Publish a release
+
+Use the `publish-release` script to publish the distribution package(s) of the
+cut release on the public npm registry:
+
+```sh
+coaty-scripts publish-release [npm-tag]
+```
+
+This command publishes any distribution package located in the `dist` subfolder
+of your agent project. If you want to publish multiple distribution packages,
+create subfolders in the `dist` folder for each of them.
+
+If supplied with `npm-tag`, the published packages are registered with the given
+tag, such that `npm install <package>@<npm-tag>` will install this version.
+If not supplied with `npm-tag`, the `latest` tag is registered. In this case,
+`npm install` installs the version tagged with `latest`.
+
+By default, packages are published on the public npm registry. If you
+want to publish to a company-internal registry server, overwrite the default
+by adding a `publishConfig` section to your package.json:
+
+```json
+"publishConfig": {
+    "registry": "https://my.npm.registry.host/npm-server/api/npm/npm-xyz"
+},
+```
+
+Note that authentication is required for publishing, so you need to set up an
+appropriate account at the npm registry server first. Then, create an npm
+authentication token (on npm website or by invoking `npm adduser`) and
+paste the created authentication information into your `~/.npmrc`.
+
+---
+Copyright (c) 2018 Siemens AG. This work is licensed under a
+[Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).

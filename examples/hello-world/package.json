@@ -1,0 +1,34 @@
+{
+    "name": "hello-world",
+    "version": "1.0.0",
+    "description": "Hello world example for Coaty JS framework",
+    "scripts": {
+        "build": "gulp build",
+        "lint": "gulp lint",
+        "lint:fix": "gulp lint:fix",
+        "broker": "coaty-scripts broker --verbose",
+        "client": "node dist/client/agent.js",
+        "monitor": "node dist/monitor/agent.js",
+        "service": "node dist/service/agent.js"
+    },
+    "readme": "README.md",
+    "author": "Siemens AG",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+        "coaty": "1.0.0",
+        "pg": "7.4.3",
+        "rxjs": "6.3.3"
+    },
+    "devDependencies": {
+        "@types/node": "10.9.4",
+        "fs-extra": "7.0.0",
+        "gulp": "3.9.1",
+        "gulp-sourcemaps": "2.6.4",
+        "gulp-tslint": "8.1.3",
+        "gulp-typescript": "5.0.0-alpha.3",
+        "run-sequence": "2.2.1",
+        "tslint": "5.11.0",
+        "typescript": "2.9.2"
+    }
+}

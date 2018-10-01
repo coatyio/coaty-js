@@ -1,0 +1,21 @@
+<header>
+    <nav class="navbar navbar-expand-md fixed-top navbar-light bg-light">
+        <a class="navbar-brand h1 mb-0" href="#">
+            <img src="assets/images/coaty-logo-white.svg" width="32" height="32" class="d-inline-block" alt="">&nbsp;&nbsp;{{appTitle}}
+        </a>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto">
+                <span class="nav-item app-version">{{appVersion}}</span>
+                <li *ngFor="let link of headerLinks" class="nav-item">
+                    <a class="nav-link" href="{{link.url}}">
+                        <img src="{{link.icon}}" width="32" height="32" class="d-inline-block align-center" alt="">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main role="main" class="container-fluid">
+    <router-outlet></router-outlet>
+</main>
