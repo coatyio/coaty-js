@@ -33,7 +33,8 @@
 	"keywords": [
 		"collaborative",
 		"iot",
-		"framework",
+        "framework",
+        "agent",
 		"Node.js",
 		"browser",
 		"javascript",

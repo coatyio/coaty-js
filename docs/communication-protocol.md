@@ -256,7 +256,7 @@ options in the form of an object hash (key-value pairs).
 A Deadvertise event accepts the following JSON payload:
 
 ```json
-Deadvertise   { "objectIds": [ UUID1, UUID2, ... ] }
+{ "objectIds": [ UUID1, UUID2, ... ] }
 ```
 
 The `objectIds` property specifies all objects that should be deadvertised.

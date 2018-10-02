@@ -618,6 +618,7 @@ controller class:
 
 ```ts
 import { Subscription } from "rxjs";
+import { map } from "rxjs/operators";
 
 import { Controller } from "coaty/controller";
 import { Task, CoreTypes } from "coaty/model";
@@ -648,8 +649,8 @@ export class SupportTaskController extends Controller {
     }
 
     private _observeAdvertiseTask() {
-        return this.communicationManager.observeAdvertiseWithObjectType(this.identity, OBJECT_TYPE_NAME_SUPPORT_TASK)
-            .map(event => event.eventData.object as SupportTask)
+        return this.communicationManager.observeAdvertiseWithObjectType(this.identity, "com.helloworld.SupportTask")
+            .pipe(map(event => event.eventData.object as SupportTask))
             .subscribe(task => {
                 // Do something whenever a support task object is advertised
             });
@@ -715,10 +716,11 @@ as follows:
 
 ```ts
 this.userCacheController.resolveObject(objectId)
-    .subscribe(obj => {
-        // Emits the first object of the observable, then completes
-    })
-    .catch(error => ...);
+    .subscribe(
+        obj => {
+            // Emits the first object of the observable, then completes
+        },
+        error => { ... });
 ```
 
 #### Historian Controller
@@ -1090,19 +1092,23 @@ For example, you can unsubscribe automatically after the expected response
 event is received by using the `Observable.take` operator like the following:
 
 ```ts
+import { take, timeout } from "rxjs/operators";
+
 this.communicationManager.publishDiscover(...)
-    // Unsubscribe automatically after first response event arrives.
-    .take(1)
+    .pipe(
+        // Unsubscribe automatically after first response event arrives.
+        take(1),
 
-    // Issue an error notification if no event is emitted within the given period of time.
-    .timeout(2000)
-
-    .subscribe(event => {
-        // Handle the first response event; all others are discarded.
-    },
-    error => {
-        // Handle timeout.
-    });
+        // Issue an error notification if no event is emitted within 2000ms.
+        timeout(2000)
+    )
+    .subscribe(
+        event => {
+            // Handle the first response event; all others are discarded.
+        },
+        error => {
+            // Handle timeout.
+        });
 ```
 
 The template code above also shows how the `timeout` operator can be used to
@@ -1129,11 +1135,13 @@ Discover, Query, and Update communication patterns. Depending on your system
 design and context such a communication pattern might return no responses at all
 or not within a certain time interval. In your agent project, you should handle these
 cases by chaining a timeout handler to the observable returned by the observe
-method (see code example below in the next section).
+method (see code examples below in the next sections).
 
 ### Advertise event pattern - an example
 
 ```ts
+import { filter, map } from "rxjs/operators";
+
 // Publish an Advertise event for a Task object
 this.communicationManager
     .publishAdvertise(AdvertiseEvent.withObject(this.identity, task)));
@@ -1142,8 +1150,10 @@ this.communicationManager
 // Observe Advertise events on all objects of core type "Task"
 this.communicationManager
     .observeAdvertiseWithCoreType(this.identity, "Task")
-    .map(event => event.eventData.object as Task)
-    .filter(task => task.status === TaskStatus.Request)
+    .pipe(
+        map(event => event.eventData.object as Task),
+        filter(task => task.status === TaskStatus.Request)
+    )
     .subscribe(task => {
          // Handle task request emitted by Advertise event
     });
@@ -1151,12 +1161,13 @@ this.communicationManager
 // Observe Advertise events on objects of object type "com.helloworld.Task"
 this.communicationManager
     .observeAdvertiseWithObjectType(this.identity, "com.helloworld.Task")
-    .map(event => event.eventData.object as HelloWorldTask)
-    .filter(task => task.status === TaskStatus.Request)
+    .pipe(
+        map(event => event.eventData.object as HelloWorldTask),
+        filter(task => task.status === TaskStatus.Request)
+    )
     .subscribe(task => {
          // Handle HelloWorld task request emitted by Advertise event
     });
-
 ```
 
 ### Deadvertise event pattern - an example
@@ -1165,6 +1176,8 @@ By publishing a Deadvertise event with the unique ID of an object you can notify
 observers that this object is no longer available:
 
 ```ts
+import { map } from "rxjs/operators";
+
 // Publish a Deadvertise event
 this.communicationManager
     .publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, objectId));
@@ -1172,7 +1185,7 @@ this.communicationManager
 // Observe Deadvertise events
 this.communicationManager
     .observeDeadvertise(this.identity)
-    .map(event => event.eventData.objectIds)
+    .pipe(map(event => event.eventData.objectIds))
     .subscribe(objectIds => {
         // Handle object IDs of deadvertised objects which have been advertised previously
     });
@@ -1219,12 +1232,13 @@ this.communicationManager
 An agent can observe the sensor device connection state as follows:
 
 ```ts
+import { map } from "rxjs/operators";
 import { SensorThingsTypes, Thing } from "coaty/sensor-things";
 
 // Observe Advertise events on Thing objects
 this.communicationManager
     .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING,)
-    .map(event => event.eventData.object as Thing)
+    .pipe(map(event => event.eventData.object as Thing))
     .subscribe(thing => {
          // Store thing for later use
          this.onlineThings.push(thing);
@@ -1233,7 +1247,7 @@ this.communicationManager
 // Observe Deadvertise events
 this.communicationManager
     .observeDeadvertise(this.identity)
-    .map(event => event.eventData.objectIds)
+    .pipe(map(event => event.eventData.objectIds))
     .subscribe(objectIds => {
         const offlineThings = this.onlineThings.filter(t => objectIds.some(id => id === t.parentObjectId));
         // These things are no longer online. Remove them from the onlineThings cache...
@@ -1243,6 +1257,8 @@ this.communicationManager
 ### Channel event pattern - an example
 
 ```ts
+import { filter } from "rxjs/operators";
+
 const channelId = "42";
 
 // Publish a Channel event
@@ -1253,7 +1269,7 @@ this.communicationManager
 // Observe Channel events for the given channel ID
 this.communicationManager
     .observeChannel(this.identity, channelId)
-    .filter(event => event.eventData.object)
+    .pipe(filter(event => event.eventData.object))
     .subscribe(object => {
          // Handle object emitted by channel event
     });
@@ -1262,24 +1278,29 @@ this.communicationManager
 ### Discover - Resolve event pattern - an example
 
 ```ts
+import { filter, take, timeout } from "rxjs/operators";
+
 const externalId = "42424242";
 
 // Publish a Discover event and observe first Resolve event response
 this.communicationManager
     .publishDiscover(DiscoverEvent.withExternalId(this.identity, externalId))
-    .take(1)
-    .timeout(5000)
-    .subscribe(event => {
-        const object = event.eventData.object;  // Handle object in Resolve response event
-    },
-    error => {
-        // No response has been received within the given timeout period
-        this.logError(error, "Failed to discover external ID");
-    });
+    .pipe(
+        take(1),
+        timeout(5000)
+    )
+    .subscribe(
+        event => {
+            const object = event.eventData.object;  // Handle object in Resolve response event
+        },
+        error => {
+            // No response has been received within the given timeout period
+            this.logError(error, "Failed to discover external ID");
+        });
 
 // Observe Discover events and respond with a Resolve event
 this.communicationManager.observeDiscover(this.identity)
-    .filter(event => event.eventData.isDiscoveringExternalId)
+    .pipe(filter(event => event.eventData.isDiscoveringExternalId))
     .subscribe(event => {
          // Agent-specific lookup of an object with given external ID.
          // Alternatively, use `event.eventData.matchesObject()` here to find a
@@ -1302,6 +1323,8 @@ method, use the `QueryEventData.matchesObject()` method to find stored objects
 that match the requirements of given query event data.
 
 ```ts
+import { filter, take, timeout } from "rxjs/operators";
+
 // Select log objects by filter conditions, then order and paginate results
 const filter: ObjectFilter = {
     conditions: {
@@ -1323,21 +1346,24 @@ const joinCondition: JoinCondition = {
 
 this.communicationManager
     .publishQuery(QueryEvent.withCoreTypes(this.identity, ["Log"], filter, joinCondition))
-    .take(1)
-    // Issue an error if queryTimeoutMillis elapses without any event received
-    .timeout(this.options["queryTimeoutMillis"])
-    .subscribe(event => {
-        // Handle resulting log objects emitted by Retrieve event
-        const logs = event.eventData.objects as Log[];
-    },
-    error => {
-        // No response has been received within the given period of time
-        this.logError(error, "Failed to query log objects");
-    });
+    .pipe(
+        take(1),
+        // Issue an error if queryTimeoutMillis elapses without any event received
+        timeout(this.options["queryTimeoutMillis"])
+    )
+    .subscribe(
+        event => {
+            // Handle resulting log objects emitted by Retrieve event
+            const logs = event.eventData.objects as Log[];
+        },
+        error => {
+            // No response has been received within the given period of time
+            this.logError(error, "Failed to query log objects");
+        });
 
 this.communicationManager
   .observeQuery(this.identity)
-  .filter(event => event.eventData.isCoreTypeCompatible("Log"))
+  .pipe(filter(event => event.eventData.isCoreTypeCompatible("Log")))
   .subscribe(event => {
     const dbJoinCond = DbContext.getDbJoinConditionsFrom(
       event.eventData.objectJoinConditions,
