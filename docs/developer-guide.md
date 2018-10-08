@@ -984,8 +984,8 @@ communication event patterns to exchange object data in a decentralized Coaty ap
 * **Deadvertise** an object by its unique ID: notify subscribers when capability is
   no longer available; for abnormal disconnection of a client, last will concept can be
   implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in objects delivered through
-  a channel with a specific channel identifier.
+* **Channel** Broadcast objects to parties interested in any kind of objects delivered
+  through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external ID,
   internal ID, or object type, and receive responses by Resolve events.
 * **Query - Retrieve**  Query objects by specifying selection and ordering criteria,
@@ -1260,17 +1260,18 @@ this.communicationManager
 import { filter } from "rxjs/operators";
 
 const channelId = "42";
+const myObject = <any coaty object>;
 
 // Publish a Channel event
 this.communicationManager
-    .publishChannel(ChannelEvent.withObject(this.identity, channelId, object));
+    .publishChannel(ChannelEvent.withObject(this.identity, channelId, myObject));
 
 
 // Observe Channel events for the given channel ID
 this.communicationManager
     .observeChannel(this.identity, channelId)
     .pipe(filter(event => event.eventData.object))
-    .subscribe(object => {
+    .subscribe(obj => {
          // Handle object emitted by channel event
     });
 ```
@@ -1310,6 +1311,15 @@ this.communicationManager.observeDiscover(this.identity)
          event.resolve(ResolveEvent.withObject(this.identity, object));
     });
 ```
+
+To share object state between Coaty agents, the Discover-Resolve event
+pattern is often used in combination with the Advertise event pattern. One
+agent advertises new object state whenever it changes; other agents that
+are interested in object state changes observe this Advertise event.
+To ensure that any interested agent immediately gets the latest object state
+on connection, it should initially publish a Discover event for the object
+state. The agent that advertises object state should observe these Discover
+events and resolve the current object state.
 
 ### Query - Retrieve event pattern - an example
 
@@ -2777,23 +2787,31 @@ const container = Container.resolve(...);
 
 // On startup discover MQTT broker URL and start communication manager.
 
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
 
 MulticastDnsDiscovery.findMqttBrokerService()
     .then(srv => {
         container.getCommunicationManager().options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
         container.getCommunicationManager().start();
+    })
+	.catch(error => {
+        NodeUtils.logError(error, "Couldn't discover Coaty broker:");
+        process.exit(1);
     });
 
 // On startup discover WAMP router URL and realm and start communication manager.
 
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
 
 MulticastDnsDiscovery.findWampRouterService()
     .then(srv => {
         container.getCommunicationManager().options.routerUrl = `ws://${srv.host}:${srv.port}${srv.txt.path}`;
         container.getCommunicationManager().options.realm = srv.txt.realm;
         container.getCommunicationManager().start();
+    })
+	.catch(error => {
+        NodeUtils.logError(error, "Couldn't discover Coaty router:");
+        process.exit(1);
     });
 ```
 

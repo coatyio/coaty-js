@@ -67,8 +67,8 @@ discover, distribute, and share object information in a decentralized applicatio
 * **Deadvertise** an object by its unique ID: notify subscribers when capability is
   no longer available; for abnormal disconnection of a party, last will concept can
   be implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in objects delivered through
-  a channel with a specific channel identifier.
+* **Channel** Broadcast objects to parties interested in any kind of objects delivered
+  through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external ID,
   internal ID, or object type, and receive responses by Resolve events.
 * **Query - Retrieve**  Query objects by specifying selection and ordering criteria,
