@@ -283,9 +283,9 @@ export class MulticastDnsDiscovery {
      * 
      * @param name the name of the mDNS service to find
      * @param name the type of the mDNS service to find
-     * @param timeout the number of milliseconds after which the returned promise is rejected (optional)
+     * @param timeout the number of milliseconds after which the returned promise is rejected (optional, default is 2147483647)
      */
-    public static findMulticastDnsService(name: string, type: string, timeout?: number): Promise<MulticastDnsService> {
+    public static findMulticastDnsService(name: string, type: string, timeout = 2147483647): Promise<MulticastDnsService> {
         return new Promise<any>((resolve, reject) => {
             let isResolved = false;
             const timer = setTimeout(() => {
@@ -294,7 +294,7 @@ export class MulticastDnsDiscovery {
                     browser.stop();
                     reject("mDNS timed out");
                 }
-            }, timeout || Number.MAX_SAFE_INTEGER);
+            }, timeout);
             const browser = MulticastDnsDiscovery.bonjour.find({ type: type }, (service: MulticastDnsService) => {
                 if (service.name === name) {
                     if (!isResolved) {
@@ -317,11 +317,11 @@ export class MulticastDnsDiscovery {
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
      * 
-     * @param timeout the number of milliseconds after which the returned promise is rejected (defaults to undefined)
-     * @param name the name of the mDNS service to find (defaults to `MQTT Broker`)
+     * @param timeout the number of milliseconds after which the returned promise is rejected (defaults to 2147483647)
+     * @param name the name of the mDNS service to find (defaults to `Coaty MQTT Broker`)
      * @param type the type of the mDNS service to find (defaults to `coaty-mqtt`)
      */
-    public static findMqttBrokerService(timeout?: number, name = "MQTT Broker", type = "coaty-mqtt"): Promise<MulticastDnsService> {
+    public static findMqttBrokerService(timeout?: number, name = "Coaty MQTT Broker", type = "coaty-mqtt"): Promise<MulticastDnsService> {
         return MulticastDnsDiscovery.findMulticastDnsService(name, type, timeout);
     }
 
@@ -334,11 +334,11 @@ export class MulticastDnsDiscovery {
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
      * 
-     * @param timeout the number of milliseconds after which the returned promise is rejected (defaults to undefined)
-     * @param name the name of the mDNS service to find (defaults to `WAMP Router`)
+     * @param timeout the number of milliseconds after which the returned promise is rejected (defaults to 2147483647)
+     * @param name the name of the mDNS service to find (defaults to `Coaty WAMP Router`)
      * @param type the type of the mDNS service to find (defaults to `coaty-wamp`)
      */
-    public static findWampRouterService(timeout?: number, name = "WAMP Router", type = "coaty-wamp"): Promise<MulticastDnsService> {
+    public static findWampRouterService(timeout?: number, name = "Coaty WAMP Router", type = "coaty-wamp"): Promise<MulticastDnsService> {
         return MulticastDnsDiscovery.findMulticastDnsService(name, type, timeout);
     }
 
