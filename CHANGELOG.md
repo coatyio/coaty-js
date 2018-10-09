@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.0.4"></a>
+## [1.0.4](https://github.com/coatyio/coaty-js/compare/v1.0.3...v1.0.4) (2018-10-09)
+
+This patch release fixes an issue in Coaty cut-release script.
+
+### Bug Fixes
+
+* **scripts:** fix tagging issue in cut-release script ([f33fe0c](https://github.com/coatyio/coaty-js/commit/f33fe0c))
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/coatyio/coaty-js/compare/v1.0.2...v1.0.3) (2018-10-09)
 
