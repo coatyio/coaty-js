@@ -43,7 +43,7 @@ if (process.argv.length > 2) {
     let cmdPromise = undefined;
     switch (cmd) {
         case "broker":
-            cmdPromise = brokerScript.broker(...cmdArgs);
+            cmdPromise = brokerScript.broker(cmdArgs);
             break; 
         case "info":
             cmdPromise = infoScript.info(...cmdArgs);

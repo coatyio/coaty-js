@@ -13,7 +13,7 @@ const utils = require("./utils");
  * If the command line option `--verbose` is given, Mosca broker provides verbose logging of subscriptions, etc.
  * Additionally, all MQTT messages published by MQTT clients are logged on the console, including message topic and payload.
  * 
- * @param cmdArgs a string specifying command arguments: [--verbose], [--port <port>]
+ * @param cmdArgs a string array specifying command arguments: [--verbose], [--port <port>]
  */
 function broker(cmdArgs) {
     // Return a promise that never resolves or rejects so that the script won"t terminate.
