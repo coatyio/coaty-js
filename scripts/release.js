@@ -230,7 +230,7 @@ function publishRelease(npmDistTag) {
         // For details see here
         // https://www.jfrog.com/confluence/display/RTF/Npm+Registry#NpmRegistry-NpmPublish(DeployingPackages)
         // .then(() => runCommandWithRedirectedIo(`npm login --always-auth --registry=${reg}`))
-        .then(() => asyncInSeries(distFolders, folder => runCommand(`npm publish "${folder}" --tag=${tag}`)))
+        .then(() => asyncInSeries(distFolders, folder => runCommandWithRedirectedIo(`npm publish "${folder}" --tag=${tag}`)))
         .then(() => `published ${distFolders.length} distribution packages on '${tag}' tag to npm registry`);
 }
 
