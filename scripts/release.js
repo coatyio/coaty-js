@@ -159,9 +159,9 @@ function cutRelease(releaseNote) {
         .then(() => runCommand(`git commit --no-verify -m "${msg}"`))
         // Make an unsigned annotated tag, replacing an existing tag with the same version
         .then(output => {
-            runCommand(`git tag -a -f -m "${msg}" v${pkg.version}`);
-            return `updated CHANGELOG, committed and tagged ${output}\n\n` +
-                "You can now push the tagged release: git push --follow-tags";
+            return runCommand(`git tag -a -f -m "${msg}" v${pkg.version}`)
+                .then(() => `updated CHANGELOG, committed and tagged ${output}\n\n` +
+                    "You can now push the tagged release: git push --follow-tags");
         });
 }
 
