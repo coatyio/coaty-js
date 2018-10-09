@@ -1,4 +1,13 @@
-# Coaty Changelog
+# Changelog
+
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/coatyio/coaty-js/compare/v1.0.0...v1.0.2) (2018-10-09)
+
+This patch release fixes an issue in Coaty broker script.
+
+### Bug Fixes
+
+* **scripts:** fix handling of command arguments in broker script ([0d0985e](https://github.com/coatyio/coaty-js/commit/0d0985e))
 
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/coatyio/coaty-js/compare/v1.0.0...v1.0.1) (2018-10-08)
