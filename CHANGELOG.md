@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/coatyio/coaty-js/compare/v1.0.2...v1.0.3) (2018-10-09)
+
+This patch release fixes an issue in Coaty publish-release script.
+
+### Bug Fixes
+
+* **scripts:** fix blocking I/O in publish-release script ([63f8974](https://github.com/coatyio/coaty-js/commit/63f8974))
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/coatyio/coaty-js/compare/v1.0.0...v1.0.2) (2018-10-09)
 
