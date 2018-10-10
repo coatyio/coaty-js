@@ -996,6 +996,38 @@ communication event patterns to exchange object data in a decentralized Coaty ap
   with IO actors.
 * **IoValue** Send IO values from a publishing IO source to associated IO actors.
 
+Coaty not only provides *one-way* communication event patterns, such as Advertise
+and Channel, that support classic publish-subscribe interaction between Coaty
+agents. With *two-way* event patterns, *request-response* interaction between
+Coaty agents can be realized, similar to, for example, HTTP/REST or remote
+procedure call (RPC): The Query-Retrieve pattern is used to enable remote
+retrieval of objects satisfying certain criteria. The Update-Complete pattern
+is used to update and share object state across agents.
+
+While traditional request-response interaction is always directed towards
+a single concrete endpoint that must be known by the requester, Coaty two-way
+request-response event patterns share the characteristics of publish-subscribe
+communication: A request event is always directed towards all subscribers
+which are interested in this kind of event. Response events are published
+by all subscribers that are willing to provide answers. This means that
+response events for a single request event can be provided independently
+by multiple subscribers, and each subscriber can publish multiple
+responses over time.
+
+The use case specific logic implemented by the requester determines how to
+handle such responses. For example, the requester can decide to
+
+* just take the first response and ignore all others,
+* only take responses received within a given time interval,
+* handle any response over time.
+
+In the latter case innovative scenarios beyond classic request-response
+can be realized. For example, a Query event responder could
+re-execute the database query and publish a Retrieve event with the
+new results every time the concerned storage area is updated.
+In this way inefficient database polling is replaced by an efficient
+push-based approach.
+
 Internally, events are emitted and received by the Communication Manager using
 publish-subscribe messaging with an MQTT message broker. Events are passed to Coaty
 controllers by following the Reactive Programming paradigm using RxJS
@@ -1011,13 +1043,14 @@ upon connection, and queued offline publishing.
 Use the `CommunicationManager.start` method to connect to a broker. Note
 that the Communication Manager automatically connects after the container is
 resolved if the communication option `shouldAutoStart` is set to `true`
-(opt-in).
+(opt-in). The communication manager automatically tries to reconnect
+periodically whenever the broker connection is lost.
 
-Use the `CommunicationManager.restart` method to reconnect to the broker. This is useful if
-you want to switch connection from the backend broker to a hub broker or
-after the runtime user/device association has changed.
+Use the `CommunicationManager.restart` method to reconnect to a (maybe different)
+broker. This is useful if you want to switch connection from one broker to another
+or after the runtime user/device association has changed.
 
-Use the `CommunicationManager.stop` method to disconnect from the message broker.
+Use the `CommunicationManager.stop` method to disconnect from the broker.
 Afterwards, events are no longer dispatched and emitted. You can start the
 Communication Manager again later using the `start` method.
 
