@@ -172,11 +172,13 @@ describe("Communication", () => {
             },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
+                identity: { name: "Agent1" },
                 shouldAutoStart: true,
                 useReadableTopics: USE_READABLE_TOPICS,
             },
             controllers: {
                 MockDeviceController: {
+                    identity: { name: "MockDeviceController1" },
                     shouldAdvertiseIdentity: true,
                 },
             },
@@ -200,8 +202,8 @@ describe("Communication", () => {
             },
             controllers: {
                 MockObjectController: {
+                    identity: { name: "MockObjectController1" },
                     shouldAdvertiseIdentity: true,
-                    name: "MockObjectController1",
                     responseDelay: responseDelay,
                 },
             },
@@ -223,8 +225,8 @@ describe("Communication", () => {
             },
             controllers: {
                 MockObjectController: {
+                    identity: { name: "MockObjectController2" },
                     shouldAdvertiseIdentity: true,
-                    name: "MockObjectController2",
                     responseDelay: responseDelay,
                 },
             },
@@ -404,6 +406,12 @@ describe("Communication", () => {
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.objectType)
                     .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
+                expect(Spy.get("MockObjectController1").value2
+                    .calls.argsFor(0)[0].eventData.object.parentObjectId)
+                    .toBe(container1.getCommunicationManager().identity.objectId);
+                expect(Spy.get("MockObjectController1").value2
+                    .calls.argsFor(0)[0].eventData.object.name)
+                    .toBe("MockDeviceController1");
 
                 expect(Spy.get("MockObjectController2").value2)
                     .toHaveBeenCalledTimes(1);
@@ -422,6 +430,16 @@ describe("Communication", () => {
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.objectType)
                     .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
+                expect(Spy.get("MockObjectController2").value2
+                    .calls.argsFor(0)[0].eventData.object.parentObjectId)
+                    .toBe(container1.getCommunicationManager().identity.objectId);
+                expect(Spy.get("MockObjectController2").value2
+                    .calls.argsFor(0)[0].eventData.object.name)
+                    .toBe("MockDeviceController1");
+
+                // Check custom identity properties of communication manager in container1
+                expect(container1.getCommunicationManager().identity.name)
+                    .toBe("Agent1");
             });
         }, TEST_TIMEOUT);
 

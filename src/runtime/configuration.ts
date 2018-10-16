@@ -86,6 +86,13 @@ export interface CommunicationOptions {
     brokerOptions?: any;
 
     /**
+     * Property-value pairs to be initialized on the identity object of the
+     * communication manager (optional). For example, the `name` of the
+     * identity object can be configured here.
+     */
+    identity?: { [prop: string]: any };
+
+    /**
      * Determines whether the communication manager should start initially
      * when the container has been resolved. Its value defaults
      * to false.
@@ -133,10 +140,19 @@ export interface ControllerConfig {
 export interface ControllerOptions {
 
     /**
+     * Property-value pairs to be initialized on the identity object of the
+     * controller (optional). For example, the `name` of the
+     * identity object can be configured here.
+     */
+    identity?: { [prop: string]: any };
+
+    /**
      * Determines whether the controller should advertise its identity
-     * automatically when the component is instantiated and deadvertise
-     * its identity when the component is released (optional, opt-in).
-     * If not specified or undefined its value defaults to false.
+     * automatically when it is instantiated and deadvertise
+     * its identity when the communication manager is stopped or terminated
+     * abnormally (via last will).
+     * If not specified or undefined, the identity is advertised/deadvertised
+     * by default.
      */
     shouldAdvertiseIdentity?: boolean;
 

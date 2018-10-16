@@ -206,11 +206,12 @@ export abstract class Controller implements IController {
      * Called when the communication manager is about to start or restart.
      * Implement side effects here. Ensure that super.onCommunicationManagerStarting
      * is called in your override. The base implementation advertises
-     * its identity if requested
-     * by the controller option property `shouldAdvertiseIdentity`.
+     * its identity if requested by the controller option property `shouldAdvertiseIdentity`
+     * (if this property is not specified, the identity is advertised by default).
      */
     onCommunicationManagerStarting() {
-        if (this.options.shouldAdvertiseIdentity) {
+        if (this.options.shouldAdvertiseIdentity === undefined ||
+            this.options.shouldAdvertiseIdentity === true) {
             this._advertiseIdentity();
         }
     }
@@ -241,10 +242,14 @@ export abstract class Controller implements IController {
      *
      * Do not call this method in your application code, it is called by the
      * framework. To retrieve the identity of a controller use
-     * its identity getter.
+     * its `identity` getter.
      *
-     * Overwrite this method to initalize the identity with a custom name
-     * or additional application-specific properties.
+     * You can overwrite this method to initalize the identity with a custom name
+     * or additional application-specific properties. Alternatively, you can 
+     * set or add custom property-value pairs by specifying them in the `identity`
+     * property of the controller configuration options `ControllerOptions`.
+     * If you specify identity properties in both ways, the ones specified by this
+     * method take precedence.
      *
      * @param identity the default identity object for a controller instance
      */
@@ -281,8 +286,10 @@ export abstract class Controller implements IController {
             objectType: CoreTypes.OBJECT_TYPE_COMPONENT,
             coreType: "Component",
             objectId: this.runtime.newUuid(),
+            parentObjectId: this.communicationManager.identity.objectId,
             name: this._controllerType,
         };
+        Object.assign(identity, this.options.identity || {});
         this.initializeIdentity(identity);
         return identity;
     }

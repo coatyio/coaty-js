@@ -637,12 +637,14 @@ export class CommunicationManager implements IComponent {
     }
 
     private _createIdentity(): Component {
-        return {
+        const defaultIdentity: Component = {
             objectType: CoreTypes.OBJECT_TYPE_COMPONENT,
             coreType: "Component",
             objectId: this.runtime.newUuid(),
             name: "CommunicationManager",
         };
+
+        return Object.assign(defaultIdentity, this.options.identity || {});
     }
 
     private _updateState(newState: CommunicationState) {

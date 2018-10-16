@@ -92,11 +92,8 @@ export class MockDeviceController extends Controller {
 
 export class MockObjectController extends Controller {
 
-    private _name: string;
-
     onInit() {
         super.onInit();
-        this._name = this.options["name"];
 
         this._handleDiscoverEvents();
         this._handleAdvertiseEvents();
@@ -155,7 +152,7 @@ export class MockObjectController extends Controller {
                 take(1),
             )
             .subscribe(event => {
-                Spy.set(this._name, event);
+                Spy.set(this.identity.name, event);
 
                 setTimeout(
                     () => {
@@ -165,7 +162,7 @@ export class MockObjectController extends Controller {
                                 objectId: this.runtime.newUuid(),
                                 objectType: "coaty.test.MockObject",
                                 coreType: "CoatyObject",
-                                name: `MockObject_${this._name}`,
+                                name: `MockObject_${this.identity.name}`,
                             }));
                     },
                     this.options["responseDelay"]);
@@ -179,9 +176,8 @@ export class MockObjectController extends Controller {
             // from the MockDeviceController and one from the other 
             // MockObjectController
             .pipe(filter(event => event.eventUserId &&
-                event.eventData.object.objectType === CoreTypes.OBJECT_TYPE_COMPONENT &&
-                event.eventData.object.name === "MockDeviceController"))
-            .subscribe(event => Spy.set(this._name, Spy.NO_VALUE, event));
+                event.eventData.object.name === "MockDeviceController1"))
+            .subscribe(event => Spy.set(this.identity.name, Spy.NO_VALUE, event));
     }
 
 }
