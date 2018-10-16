@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CommunicationOptions | coaty v1.0.4</title>
+	<title>CommunicationOptions | coaty v1.1.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">coaty v1.0.4</a>
+					<a href="../index.html" class="title">coaty v1.1.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -88,6 +88,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#brokeroptions" class="tsd-kind-icon">broker<wbr>Options</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#brokerurl" class="tsd-kind-icon">broker<wbr>Url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#identity" class="tsd-kind-icon">identity</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#shouldadvertisedevice" class="tsd-kind-icon">should<wbr>Advertise<wbr>Device</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#shouldadvertiseidentity" class="tsd-kind-icon">should<wbr>Advertise<wbr>Identity</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#shouldautostart" class="tsd-kind-icon">should<wbr>Auto<wbr>Start</a></li>
@@ -105,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">broker<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L86">runtime/configuration.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L86">runtime/configuration.ts:86</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -120,7 +121,7 @@
 					<div class="tsd-signature tsd-kind-icon">broker<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L81">runtime/configuration.ts:81</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L81">runtime/configuration.ts:81</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -133,12 +134,37 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="identity" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> identity</h3>
+					<div class="tsd-signature tsd-kind-icon">identity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L93">runtime/configuration.ts:93</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Property-value pairs to be initialized on the identity object of the
+								communication manager (optional). For example, the <code>name</code> of the
+							identity object can be configured here.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>prop: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="shouldadvertisedevice" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> should<wbr>Advertise<wbr>Device</h3>
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Advertise<wbr>Device<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L110">runtime/configuration.ts:110</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L117">runtime/configuration.ts:117</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -157,7 +183,7 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Advertise<wbr>Identity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L101">runtime/configuration.ts:101</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L108">runtime/configuration.ts:108</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -175,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Auto<wbr>Start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L93">runtime/configuration.ts:93</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L100">runtime/configuration.ts:100</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -192,7 +218,7 @@
 					<div class="tsd-signature tsd-kind-icon">use<wbr>Readable<wbr>Topics<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f33fe0c/src/runtime/configuration.ts#L120">runtime/configuration.ts:120</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/c45767f/src/runtime/configuration.ts#L127">runtime/configuration.ts:127</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -227,6 +253,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="communicationoptions.html#brokerurl" class="tsd-kind-icon">broker<wbr>Url</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="communicationoptions.html#identity" class="tsd-kind-icon">identity</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="communicationoptions.html#shouldadvertisedevice" class="tsd-kind-icon">should<wbr>Advertise<wbr>Device</a>

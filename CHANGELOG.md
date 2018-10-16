@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/coatyio/coaty-js/compare/v1.0.4...v1.1.0) (2018-10-16)
+
+This feature release provides some improvements in handling the identity object of controllers.
+
+### Features
+
+* **controller:** set parentObjectId of controller's identity to communication manager's identity object ID; advertise controller identity by default (opt-out); support specifying identity properties in controller/communication configuration options ([c45767f](https://github.com/coatyio/coaty-js/commit/c45767f))
+
 <a name="1.0.4"></a>
 ## [1.0.4](https://github.com/coatyio/coaty-js/compare/v1.0.3...v1.0.4) (2018-10-09)
 

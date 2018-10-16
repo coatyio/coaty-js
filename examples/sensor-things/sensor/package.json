@@ -1,6 +1,6 @@
 {
     "name": "sensor-things-sensor",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "description": "Sensor service for Coaty Sensor Things example",
     "scripts": {
         "lint": "gulp lint",
@@ -14,7 +14,7 @@
     "private": true,
     "dependencies": {
         "@types/inquirer": "0.0.43",
-        "coaty": "1.0.4",
+        "coaty": "1.1.0",
         "inquirer": "6.2.0",
         "rxjs": "6.3.3"
     },
