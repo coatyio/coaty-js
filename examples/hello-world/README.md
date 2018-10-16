@@ -298,8 +298,7 @@ The same behavior applies to all controllers defined in a Coaty container.
 Identity advertisement/deadvertisement can be activated or deactivated
 by setting the boolean option `shouldAdvertiseIdentity` in the communication
 or controller options of the Coaty configuration. By default, this option is
-activated for communication managers. For controllers, this option is
-deactivated by default.
+activated for both communication managers and controllers.
 
 The service component keeps track of connected components by
 observing Advertise and Deadvertise events for `Component` identities,

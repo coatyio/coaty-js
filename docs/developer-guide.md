@@ -298,6 +298,7 @@ const configuration: Configuration = {
           // Options used for communication
           brokerUrl: ... ,
           brokerOptions: ... ,
+          identity: ... ,
           shouldAutoStart: ... ,
           shouldAdvertiseIdentity: ... ,
           shouldAdvertiseDevice: ... ,
@@ -306,14 +307,17 @@ const configuration: Configuration = {
     controllers: {
         // Controller-specific configuration options
         ProductionOrderController: {
+            identity: ... ,
             shouldAdvertiseIdentity: false,
             ...
         },
         SupportTaskController: {
+            identity: ... ,
             shouldAdvertiseIdentity: true,
             ...
         },
         WorkflowController: {
+            identity: ... ,
             shouldAdvertiseIdentity: true,
             ...
         },
@@ -333,6 +337,13 @@ const configuration: Configuration = {
     }
 };
 ```
+
+Note that both controllers and the Communication Manager maintain an `identity`
+Component object that provides metadata of the component, including its `name`,
+a unique object ID, etc. By default, these identity objects are advertised when
+the components are set up and deadvertised on normal or abnormal disconnection
+of a Coaty agent. Using the controller or communication options, you can opt out
+of de/advertisement by setting `shouldAdvertiseIdentity` to `false`.
 
 ### Bootstrap a Coaty container in NodeJs
 
@@ -924,6 +935,10 @@ The optional `isDeactivated` property marks an object that is no longer used. Th
 concrete definition meaning of this property is defined by the Coaty application.
 The property value is optional and defaults to false.
 
+Application specific objetc types can be defined based on the predefined core object
+types by adding additional property-value pairs. Allowed value types must conform to
+JSON data types.
+
 ### Define application-specific object types
 
 Simply extend one of the predefined object types of the framework and specify
@@ -1270,7 +1285,7 @@ import { SensorThingsTypes, Thing } from "coaty/sensor-things";
 
 // Observe Advertise events on Thing objects
 this.communicationManager
-    .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING,)
+    .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING)
     .pipe(map(event => event.eventData.object as Thing))
     .subscribe(thing => {
          // Store thing for later use
@@ -1557,7 +1572,7 @@ import { IoSource, IoActor } from "coaty/io";
 
 // IO source definition
 const ioRobotControlSource: IoSource = {
-  name: "Robot Control Source",
+  name: "Robot Control Source",
   objectId: "76e4ee99-12f5-4b51-ad0b-a09601c24c48",
   objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
   coreType: "IoSource",
@@ -1578,7 +1593,7 @@ const watch: Device = {
 
 // IO actor definition
 const ioRobotControlActor: IoActor = {
-    name: "Robot Control Actor",
+    name: "Robot Control Actor",
     objectId: "6c9c399d-b522-405a-9776-f40e100fda61",
     objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
     coreType: "IoActor",
@@ -3100,7 +3115,7 @@ The provided release scripts separate local steps that only affect the local git
 from remote steps that affect the npm registry:
 
 * `version-release` - bump new release version based on recommended conventional commits
-* `cut-release` - cut the release using conventional changelog management
+* `cut-release` - cut the release using conventional changelog management
 * `push-release` - push release commits and release tag to the remote git repo
 * `publish-release` - publish the release to npm registry server
 

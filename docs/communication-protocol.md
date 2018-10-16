@@ -230,12 +230,16 @@ Annotation objects can be modelled as children of target objects they are attach
 The optional `assigneeUserId` property specifies the unique UUID of the user object
 that this object has been assigned to currently.
 
-The optional `locationId` property refers to the unqieu UUID of the Location
+The optional `locationId` property refers to the unique UUID of the Location
 object that this object has been associated with.
 
 The optional `isDeactivated` property marks an object that is no longer used. The
 concrete definition meaning of this property is defined by the application.
 The property value is optional and defaults to false.
+
+Application specific objetc types can be defined based on the predefined core object
+types by adding additional property-value pairs. Allowed value types must conform to
+JSON data types.
 
 ### Payload for Advertise Event
 
