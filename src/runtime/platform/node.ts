@@ -59,9 +59,9 @@ export class NodeUtils {
     }
 
     /**
-     * Log the given message to console, also providing the logging date.
+     * Log the given informational message to console, also providing the logging date.
      * 
-     * @param message message to log
+     * @param message informational message to log
      * @param isoDateString date string in ISO format or unspecified to use current data (optional)
      */
     public static logInfo(message: string, isoDateString?: string) {
@@ -78,11 +78,11 @@ export class NodeUtils {
      */
     public static logError(error: any, message?: string, isoDateString?: string) {
         const date = isoDateString || toLocalIsoString(new Date(), true);
-        console.log(`[${date}] [error] ${message || ""} ${error}`);
+        console.log(`[${date}] [error] ${message || ""}${message ? " " : ""}${error}`);
     }
 
     /**
-     * Log the given event to console, also providing the loggin date.
+     * Log the given event to console, also providing the logging date.
      * 
      * @param message message to log
      * @param eventName name of event to log (optional)
