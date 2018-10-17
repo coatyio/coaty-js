@@ -174,7 +174,7 @@ export interface DatabaseOptions {
 }
 
 /**
- * Returns a new Coaty configuration object as a result of merging the two given
+ * Returns a new Coaty container configuration object as a result of merging the two given
  * primary and secondary configurations.
  *
  * For each sub-configuration object (common, communication, etc.) the value of a
