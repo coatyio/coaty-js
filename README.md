@@ -11,8 +11,8 @@ that communicate with each other to achieve common goals. Coaty agents can run o
 IoT devices, mobile devices, in microservices, cloud or backend services.
 
 The Coaty framework provides a production-ready application and communication layer
-foundation for building collaborative IoT applications by programming Coaty agents.
-The key properties of the framework include:
+foundation for building collaborative IoT applications in an easy-to-use yet powerful and
+efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
