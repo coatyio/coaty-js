@@ -43,7 +43,8 @@ export class ComponentController extends Controller {
                 this._registeredComponents.set(comp.objectId, comp);
                 // Alternatively, the user ID can be read from the event using event.eventUserId
                 const compId = comp.assigneeUserId ? `Client User ID ${comp.assigneeUserId}` : `ID ${comp.objectId}`;
-                this.logInfo(`Component registered: ${comp.name}, ${compId}`, LogTags.LOG_TAG_SERVICE);
+                const parentId = comp.parentObjectId ? `, PARENT ID ${comp.parentObjectId}` : "";
+                this.logInfo(`Component registered: ${comp.name}, ${compId}${parentId}`, LogTags.LOG_TAG_SERVICE);
             });
     }
 
@@ -56,7 +57,8 @@ export class ComponentController extends Controller {
                     if (comp) {
                         this._registeredComponents.delete(id);
                         const compId = comp.assigneeUserId ? `Client User ID ${comp.assigneeUserId}` : `ID ${comp.objectId}`;
-                        this.logInfo(`Component deregistered: ${comp.name}, ${compId}`, LogTags.LOG_TAG_SERVICE);
+                        const parentId = comp.parentObjectId ? `, PARENT ID ${comp.parentObjectId}` : "";
+                        this.logInfo(`Component deregistered: ${comp.name}, ${compId}${parentId}`, LogTags.LOG_TAG_SERVICE);
                     }
                 });
             });

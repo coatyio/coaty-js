@@ -38,10 +38,10 @@ export class MonitorController extends Controller {
     }
 
     /**
-     * Gets an observable that emits a new set of log entries
+     * Gets an observable that emits a new complete set of log entries
      * whenever new log data is available.
      */
-    getLog(): Observable<Log[]> {
+    get log$(): Observable<Log[]> {
         return this._logSubject.asObservable();
     }
 

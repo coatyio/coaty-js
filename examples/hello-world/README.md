@@ -159,7 +159,7 @@ The file structure for the Hello World project looks like the following:
         |-- task-controller.ts      - issue task requests and assign tasks
         |-- task-snapshot-controller.ts - a HistorianController that handles task snapshots
     |-- shared/
-        |-- config.ts               - common Coaty configuration options
+        |-- config.ts               - common agent configuration options
         |-- db.ts                   - constants/functions for database initialization
         |-- log-tags.ts             - custom log tags for db, client, monitor, and service operations
         |-- models.ts               - definitions of domain object models
@@ -297,7 +297,7 @@ The same behavior applies to all controllers defined in a Coaty container.
 
 Identity advertisement/deadvertisement can be activated or deactivated
 by setting the boolean option `shouldAdvertiseIdentity` in the communication
-or controller options of the Coaty configuration. By default, this option is
+or controller options of the container configuration. By default, this option is
 activated for both communication managers and controllers.
 
 The service component keeps track of connected components by

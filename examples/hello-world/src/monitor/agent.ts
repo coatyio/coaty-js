@@ -40,7 +40,7 @@ Db.initDatabase(configuration.databases, false)
 function initConsoleOutput(monitor: MonitorController) {
     "use strict";
 
-    monitor.getLog().subscribe(logs => {
+    monitor.log$.subscribe(logs => {
         console.log("#############################");
         console.log(`## Log updated (${logs.length})`);
         console.log("##");

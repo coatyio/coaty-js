@@ -23,8 +23,6 @@ export const configuration: Configuration = mergeConfigurations(
         controllers: {
             TaskController: {
 
-                shouldAdvertiseIdentity: true,
-
                 // Minimum amount of time in milliseconds until an offer is sent
                 minTaskOfferDelay: 2000,
 
