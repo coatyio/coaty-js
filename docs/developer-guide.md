@@ -999,7 +999,7 @@ communication event patterns to exchange object data in a decentralized Coaty ap
 * **Deadvertise** an object by its unique ID: notify subscribers when capability is
   no longer available; for abnormal disconnection of a client, last will concept can be
   implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in any kind of objects delivered
+* **Channel** Broadcast objects to parties interested in any type of objects delivered
   through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external ID,
   internal ID, or object type, and receive responses by Resolve events.
@@ -1323,6 +1323,11 @@ this.communicationManager
          // Handle object emitted by channel event
     });
 ```
+
+The Channel event pattern provides a very efficient way of pushing any type
+of Coaty objects to observers that share a specific channel identifier. It
+differs from Advertise events in that these are pushing specific core or object
+types to interested observers.
 
 ### Discover - Resolve event pattern - an example
 
