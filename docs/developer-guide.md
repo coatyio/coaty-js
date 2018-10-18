@@ -1479,9 +1479,34 @@ a raw MQTT message specifying an MQTT topic, a payload (of type `string` or `Uin
 (`Buffer` in Node.js), and an optional flag indicating whether the published message
 should be retained.
 
-Likewise, use `observeRaw` to observe incoming values on an MQTT subscription topic.
-Values emitted are always represented as UInt8Array (Buffer in Node.js) objects.
-Use the `toString` method on a value to convert the raw data to an UTF8 encoded string.
+Likewise, use `observeRaw` to observe incoming messages on raw MQTT subscription topics.
+The observable returned by calling `observeRaw` emits messages as tuples including the
+actual published topic and the payload. Payload is represented as
+`Uint8Array` (`Buffer` in Node.js) and needs to be parsed by the application.
+Use the `toString` method on a payload to convert the raw data to an UTF8 encoded string.
+
+Note that the observable returned by `observeRaw` is *shared* among all raw topic observers.
+This basically means that the observable will emit messages for *all* observed
+raw subscription topics, not only for the one specified in a single method call.
+Thus, you should always pipe the observable through an RxJS `filter` operator to
+filter out the messages associated with the given subscription topic:
+
+```ts
+import { filter } from "rxjs/operators";
+
+this.communicationManager
+    .observeRaw(this.identity, "$SYS/#")
+    .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
+    .subscribe(([topic, payload]) => {
+        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
+    });
+```
+
+Observing raw subscription topics effectively suppresses observation of other communication
+event types by a communication manager: If at least one raw topic is observed, the
+communication manager dispatches all incoming messages as raw messages. To observe other
+communication events within the same Coaty agent, use another container that handles
+non-raw events.
 
 ### Deferred publication and subscription of events
 

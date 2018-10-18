@@ -385,26 +385,54 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Observe values on the given MQTT subscription topic. Values are emitted by the 
-     * hot observable returned. Values are represented as Uint8Array (Buffer in Node.js) objects.
+     * Observe incoming messages on raw MQTT subscription topics. The observable returned by
+     * calling `observeRaw` emits messages as tuples including the actual published topic and
+     * the payload. Payload is represented as `Uint8Array` (`Buffer` in Node.js) and needs to
+     * be parsed by the application. Use the `toString` method on a payload to convert the raw
+     * data to an UTF8 encoded string.
      * 
-     * Used to interoperate with external MQTT clients that publish messages on the given topic.
+     * Used to interoperate with external MQTT clients that publish messages on raw
+     * (usually non-Coaty) topics.
+     *
+     * Note that the returned observable is *shared* among all raw topic observers. This
+     * basically means that the observable will emit messages for *all* observed
+     * raw subscription topics, not only for the one specified in a single method call.
+     * Thus, you should always pipe the observable through an RxJS `filter` operator to
+     * filter out the messages associated with the given subscription topic.
      * 
-     * The specified MQTT subscription topic is a non-empty string that must not contain the 
+     * ```ts
+     * import { filter } from "rxjs/operators";
+     *
+     * this.communicationManager
+     *    .observeRaw(this.identity, "$SYS/#")
+     *    .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
+     *    .subscribe(([topic, payload]) => {
+     *        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
+     *    });
+     * ```
+     * 
+     * Observing raw subscription topics effectively suppresses observation of other communication
+     * event types by a communication manager: If at least one raw topic is observed, the
+     * communication manager dispatches all incoming messages as raw messages. To observe other
+     * communication events within the same Coaty agent, use another container that handles
+     * non-raw events.
+     * 
+     * The specified subscription topic must be a valid MQTT subscription topic. It must not contain the 
      * character `NULL (U+0000)`.
      *
      * @param eventTarget target for which values should be emitted
-     * @param topic the subscription topic on which to observe values
-     * @returns a hot observable emitting any incoming values as Uint8Array (Buffer in Node.js) objects
+     * @param topicFilter the subscription topic
+     * @returns a hot observable emitting any incoming messages as tuples containing the actual topic
+     * and the payload as Uint8Array (Buffer in Node.js)
      */
-    observeRaw(eventTarget: CoatyObject, topic: string): Observable<Uint8Array> {
-        if (typeof topic !== "string" ||
-            topic.length === 0 ||
-            topic.indexOf("\u0000") !== -1) {
-            throw new TypeError(`${topic} is not a valid subscription topic`);
+    observeRaw(eventTarget: CoatyObject, topicFilter: string): Observable<[string, Uint8Array]> {
+        if (typeof topicFilter !== "string" ||
+            topicFilter.length === 0 ||
+            topicFilter.indexOf("\u0000") !== -1) {
+            throw new TypeError(`${topicFilter} is not a valid subscription topic`);
         }
 
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Raw, topic) as Observable<any>;
+        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Raw, topicFilter) as Observable<any>;
     }
 
     /**
@@ -1345,18 +1373,22 @@ export class CommunicationManager implements IComponent {
     private _tryDispatchAsRawMessage(topicName: string, payload: any): boolean {
         let isDispatching = false;
         try {
-            const targetItems = this._observedRequests.get(
-                CommunicationTopic.getEventTypeName(CommunicationEventType.Raw, topicName));
-            if (targetItems) {
+            let isRawDispatch = false;
+            // Dispatch raw message on all registered observables of event type "Raw:<any subscription topic>""
+            this._observedRequests.forEach((targetItems, eventTypeName) => {
+                if (!eventTypeName.startsWith(CommunicationEventType[CommunicationEventType.Raw] +
+                    CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR)) {
+                    return;
+                }
                 targetItems.forEach(item => {
+                    isRawDispatch = true;
                     isDispatching = true;
-                    // Dispatch raw data (parsing is up to the application)
-                    item.dispatchNext(payload);
+                    // Dispatch raw data and the actual topic (parsing is up to the application)
+                    item.dispatchNext(payload, topicName);
                     isDispatching = false;
                 });
-                return true;
-            }
-            return false;
+            });
+            return isRawDispatch;
         } catch (error) {
             if (isDispatching) {
                 throw error;
@@ -1658,14 +1690,14 @@ export class CommunicationManager implements IComponent {
 }
 
 abstract class SubscriberItem<T> {
-    private _subscribers: Array<Subscriber<T>>;
+    private _subscribers: Array<Subscriber<T | [string, T]>>;
 
     constructor() {
         this._subscribers = [];
     }
 
-    dispatchNext(message: T) {
-        [...this._subscribers].forEach(s => s.next(message));
+    dispatchNext(message: T, topic?: string) {
+        [...this._subscribers].forEach(s => s.next(topic ? [topic, message] : message));
     }
 
     dispatchComplete() {
@@ -1680,11 +1712,11 @@ abstract class SubscriberItem<T> {
         return this._subscribers.length;
     }
 
-    protected add(subscriber: Subscriber<T>) {
+    protected add(subscriber: Subscriber<T | [string, T]>) {
         this._subscribers.push(subscriber);
     }
 
-    protected remove(subscriber: Subscriber<T>) {
+    protected remove(subscriber: Subscriber<T | [string, T]>) {
         const subscriberIndex = this._subscribers.indexOf(subscriber);
         if (subscriberIndex !== -1) {
             this._subscribers.splice(subscriberIndex, 1);

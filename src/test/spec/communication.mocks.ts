@@ -78,13 +78,15 @@ export class MockDeviceController extends Controller {
             });
     }
 
-    watchForRawEvents(logger: RawEventLogger, topic: string) {
+    watchForRawEvents(logger: RawEventLogger, topicFilter: string, topicPrefix: string) {
         this.communicationManager
-            .observeRaw(this.identity, topic)
-            .subscribe(value => {
+            .observeRaw(this.identity, topicFilter)
+            // Note that all published raw messages are dispatched on all raw observables!
+            .pipe(filter(([topic,]) => topic.startsWith(topicPrefix)))
+            .subscribe(([topic, payload]) => {
                 logger.count++;
-                // Raw values are emitted as Uint8Array/Buffer objects
-                logger.eventData.push(value.toString());
+                // Raw values are emitted as tuples of topic name and Uint8Array/Buffer payload
+                logger.eventData.push([topic, payload.toString()]);
             });
     }
 

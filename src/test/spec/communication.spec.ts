@@ -528,6 +528,9 @@ describe("Communication", () => {
                 .publishRaw("", "abc"))
                 .toThrow();
             expect(() => container2.getCommunicationManager()
+                .publishRaw("foo/\0", "abc"))
+                .toThrow();
+            expect(() => container2.getCommunicationManager()
                 .publishRaw("/foo/+", "abc"))
                 .toThrow();
             expect(() => container2.getCommunicationManager()
@@ -538,25 +541,42 @@ describe("Communication", () => {
         it("all Raw topics are received", (done) => {
 
             const deviceController = container1.getController(mocks.MockDeviceController);
-            const logger: mocks.RawEventLogger = {
+            const logger1: mocks.RawEventLogger = {
+                count: 0,
+                eventData: [],
+            };
+            const logger2: mocks.RawEventLogger = {
                 count: 0,
                 eventData: [],
             };
             const eventCount = 3;
-            const topic = "/test/42/";
+            const topicFilter1 = "/test/42/";
+            const topicFilter2 = `/${CommunicationTopic.PROTOCOL_NAME}/#`;
+            const topic2 = `/${CommunicationTopic.PROTOCOL_NAME}/1/Advertise:CoatyObject/`;
 
-            deviceController.watchForRawEvents(logger, topic);
+            deviceController.watchForRawEvents(logger1, topicFilter1, topicFilter1);
+            deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
 
             delayAction(500, undefined, () => {
                 container2
                     .getController(mocks.MockObjectController)
-                    .publishRawEvents(eventCount, topic);
+                    .publishRawEvents(eventCount, topicFilter1);
+                container2
+                    .getController(mocks.MockObjectController)
+                    .publishRawEvents(eventCount, topic2);
 
                 delayAction(1000, done, () => {
-                    expect(logger.count).toBe(eventCount);
-                    expect(logger.eventData.length).toBe(eventCount);
+                    expect(logger1.count).toBe(eventCount);
+                    expect(logger1.eventData.length).toBe(eventCount);
                     for (let i = 1; i <= eventCount; i++) {
-                        expect(logger.eventData[i - 1]).toBe(`${i}`);
+                        expect(logger1.eventData[i - 1][0]).toBe(topicFilter1);
+                        expect(logger1.eventData[i - 1][1]).toBe(`${i}`);
+                    }
+                    expect(logger2.count).toBe(eventCount);
+                    expect(logger2.eventData.length).toBe(eventCount);
+                    for (let i = 1; i <= eventCount; i++) {
+                        expect(logger2.eventData[i - 1][0]).toBe(topic2);
+                        expect(logger2.eventData[i - 1][1]).toBe(`${i}`);
                     }
                 });
             });
