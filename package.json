@@ -52,6 +52,9 @@
             "email": "markussauer@siemens.com"
         }
     ],
+	"bugs": {
+        "url": "https://github.com/coatyio/coaty-js/issues"
+    },
     "peerDependencies": {
         "cordova-sqlite-storage": "^2.4.0",
         "pg": "^7.4.3",
