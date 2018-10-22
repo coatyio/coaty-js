@@ -18,8 +18,8 @@
 ## Introduction
 
 _This README assumes you are already familiar with
-[Sensor Things API](https://github.com/coatyio/coaty-js/tree/master/docs/sensor-things-guide.md)
-and [Coaty communication](https://github.com/coatyio/coaty-js/tree/master/docs/communication-protocol.md)._
+[Sensor Things API](https://coatyio.github.io/coaty-js/man/sensor-things-guide.md)
+and [Coaty communication](https://coatyio.github.io/coaty-js/man/communication-protocol.md)._
 
 The sensorThings example demonstrates how Coaty and the sensorThings API can be used
 to manage a self-discovering network of sensors.

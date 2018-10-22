@@ -1,3 +1,8 @@
+---
+layout: default
+title: Coaty JS Documentation
+---
+
 # Rights Management in Coaty Applications
 
 ## Table of Contents

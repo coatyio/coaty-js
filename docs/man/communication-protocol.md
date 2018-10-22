@@ -1,3 +1,8 @@
+---
+layout: default
+title: Coaty JS Documentation
+---
+
 # Coaty Communication Protocol
 
 > This specification conforms to Coaty Communication Protocol Version 1

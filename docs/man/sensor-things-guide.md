@@ -1,3 +1,8 @@
+---
+layout: default
+title: Coaty JS Documentation
+---
+
 # Sensor Things in Coaty Applications
 
 ## Table of Contents

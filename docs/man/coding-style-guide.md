@@ -1,3 +1,8 @@
+---
+layout: default
+title: Coaty JS Documentation
+---
+
 # Coaty Coding Style Guide
 
 These guidelines and principles shall provide a common basis for coding

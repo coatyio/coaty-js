@@ -16,7 +16,7 @@ for the build and serve targets. Finally, the custom builders must be installed 
 dependencies of your project.
 
 This approach is described in detail in the
-[Coaty JS Developer Guide](https://github.com/coatyio/coaty-js/tree/master/docs/developer-guide.md#bootstrap-a-coaty-container-in-angular-or-ionic).
+[Coaty JS Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide.md#bootstrap-a-coaty-container-in-angular-or-ionic).
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a
