@@ -15,7 +15,6 @@ also follow these guidelines in their Coaty projects.
 ## Table of Contents
 
 * [Linting TypeScript Code](#linting-typescript-code)
-  * [TSLint in Coaty projects](#tslint-in-coaty-projects)
 * [TypeScript Coding Guidelines](#typescript-coding-guidelines)
   * [Naming](#naming)
   * [Style](#style)
