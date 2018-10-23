@@ -196,26 +196,18 @@ on it and the IO source publishes on it.
 A Coaty object is defined by the following generic properties:
 
 ```
-<object> ::= {
+{
+  coreType: "CoatyObject" | "User" | "Device" | ...,
   objectType: string,
-  coreType: "CoatyObject" | "User" | "Device" | "Task" | ...
   name: string,
-  objectId: UUID,
-  parentObjectId?: UUID,
-  assigneeUserId?: UUID,
+  objectId: Uuid,
   externalId?: string,
-  locationId?: UUID,
+  parentObjectId?: Uuid,
+  assigneeUserId?: Uuid,
+  locationId?: Uuid,
   isDeactivated?: boolean
 }
 ```
-
-The `objectId` property defines the unique identity of an object within the system.
-
-The optional `externalId` property defines the identity of an object relative to
-an external system, such as the primary key for this object in an external database.
-Note that external IDs are not guaranteed to be unique across
-the whole universe of system objects. Usually, external IDs are only unique for
-a specific type of objects.
 
 The property `coreType` is the framework core type name of the object;
 it corresponds to the name of the interface that defines the object's shape.
@@ -227,6 +219,14 @@ e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class).
 
 The concrete and core type names of all predefined object types are defined
 as static properties of the `CoreTypes` class in the framework `model` module.
+
+The `objectId` property defines the unique identity of an object within the system.
+
+The optional `externalId` property defines the identity of an object relative to
+an external system, such as the primary key for this object in an external database.
+Note that external IDs are not guaranteed to be unique across
+the whole universe of system objects. Usually, external IDs are only unique for
+a specific type of objects.
 
 The optional `parentObjectId` property refers to the unique UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
@@ -242,7 +242,7 @@ The optional `isDeactivated` property marks an object that is no longer used. Th
 concrete definition meaning of this property is defined by the application.
 The property value is optional and defaults to false.
 
-Application specific objetc types can be defined based on the predefined core object
+Application specific object types can be defined based on the predefined core object
 types by adding additional property-value pairs. Allowed value types must conform to
 JSON data types.
 
@@ -250,7 +250,7 @@ JSON data types.
 
 An Advertise event accepts this JSON payload:
 
-```json
+```js
 {
   "object:" <object>,
   "privateData": <any>
@@ -264,7 +264,7 @@ options in the form of an object hash (key-value pairs).
 
 A Deadvertise event accepts the following JSON payload:
 
-```json
+```js
 { "objectIds": [ UUID1, UUID2, ... ] }
 ```
 
@@ -274,7 +274,7 @@ The `objectIds` property specifies all objects that should be deadvertised.
 
 A Channel event accepts the following JSON payloads:
 
-```json
+```js
 {
   "object:" <object1>,
   "privateData": <any>
@@ -283,7 +283,7 @@ A Channel event accepts the following JSON payloads:
 
 or
 
-```json
+```js
 {
   "objects:" [ <object1>, <object2>, ... ],
   "privateData": <any>
@@ -298,7 +298,7 @@ options in the form of an object hash (key-value pairs).
 The Discover pattern is used to resolve an object based on its external ID,
 its object ID, or type restrictions. It accepts the following JSON payloads:
 
-```json
+```js
 { "externalId": "extId", "objectTypes": ["object type", ...], "coreTypes": ["core type", ...] }
 ```
 
@@ -306,13 +306,13 @@ Discover an object by specifying its external ID (e.g. barcode scan id).
 Since external IDs are not guaranteed to be unique, results can be restricted by
 one of the specified object types or core types (optional).
 
-```json
+```js
 { "objectId": UUID }
 ```
 
 Discover an object based on its internal UUID.
 
-```json
+```js
 { "externalID": "extId", "objectId": objUUID }
 ```
 
@@ -320,7 +320,7 @@ Discover an object based on its external ID and its internal UUID.
 Useful for finding an object with an external representation that is
 persisted in an external data store.
 
-```json
+```js
 { "objectTypes": ["object type", ...], "coreTypes": ["core type", ...] }
 ```
 
@@ -332,7 +332,7 @@ event pattern.
 
 The Resolve response event accepts the following JSON payloads:
 
-```json
+```js
 {
   "object": <object>,
   "privateData": <any>
@@ -341,7 +341,7 @@ The Resolve response event accepts the following JSON payloads:
 
 or
 
-```json
+```js
 {
   "relatedObjects": [<object>, ...],
   "privateData": <any>
@@ -350,7 +350,7 @@ or
 
 or
 
-```json
+```js
 {
   "object": <object>,
   "relatedObjects": [<object>, ...],
@@ -366,7 +366,7 @@ options in the form of an object hash (key-value pairs).
 The Query pattern is used to retrieve objects based on type restrictions and
 object attribute filtering and joining:
 
-```json
+```js
 {
   "objectTypes": ["object type", ...],
   "coreTypes": ["core type", ...],
@@ -381,7 +381,7 @@ or `coreTypes` must be specified.
 
 The optional object filter defines conditions for filtering and arranging result objects:
 
-```json
+```js
 {
   // Conditions for filtering objects by logical 'and' or 'or' combination.
   "conditions": {
@@ -429,7 +429,7 @@ The optional join conditions are used to join related objects into a result set 
 objects. Result objects are augmented by resolving object references to related
 objects and storing them in an extra property. A join condition looks like the following:
 
-```json
+```js
 {
   // Specifies the property name of an object reference to be resolved by joining.
   "localProperty": "<property to resolve>",
@@ -453,7 +453,7 @@ objects and storing them in an extra property. A join condition looks like the f
 
 The Retrieve response event accepts the following JSON payload:
 
-```json
+```js
 {
   "objects": [ <object>, ... ]
   "privateData": <any>
@@ -469,7 +469,7 @@ An Update request or proposal targeting an object may be either partial or compl
 For a partial update, the object's property name(s) that should be changed and the
 new value(s) are specified as payload:
 
-```json
+```js
 {
   "objectId": UUID,
   "changedValues": { "<name of prop>": <newValue>, ... }
@@ -483,7 +483,7 @@ as a partial update or a complete update on this object.
 
 To update a complete object, the whole object is specified as payload:
 
-```json
+```js
 {
   "object": <object>
 }
@@ -497,7 +497,7 @@ this approach is in line.
 
 The payload for the Complete response event looks like the following:
 
-```json
+```js
 {
   "object:" <object>,
   "privateData": <any>
@@ -513,7 +513,7 @@ An Associate event is published by an IO router to associate or disassociate
 an IO source with an IO actor (see next section). Associate events accept the
 following JSON payload:
 
-```json
+```js
 {
   "ioSource": <IO source object definition>,
   "ioActor": <IO actor object definition>,

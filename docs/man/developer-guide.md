@@ -85,8 +85,8 @@ this guide.
 
 The Coaty framework enables realization of collaborative IoT applications and scenarios
 in a distributed, decentralized fashion. A *Coaty application* consists of *Coaty agents*
-that communicate with each other to achieve common goals. Coaty agents can run on
-IoT devices, mobile devices, in microservices, cloud or backend services.
+that act independently and communicate with each other to achieve common goals. Coaty
+agents can run on IoT devices, mobile devices, in microservices, cloud or backend services.
 
 The Coaty framework provides a production-ready application and communication layer
 foundation for building collaborative IoT applications in an easy-to-use yet powerful and
@@ -106,7 +106,7 @@ The Coaty JS package provides the cross-platform implementation targeted at
 JavaScript/TypeScript based agent projects, running as mobile or web apps, or Node.js
 services.
 
-Coaty JS comes with complete HTML source code documentation, a Developer Guide,
+Coaty JS comes with complete source code documentation, a Developer Guide,
 a Coding Style Guide, and best-practice examples.
 
 ## Learn how to use
@@ -118,7 +118,7 @@ This documentation includes:
 
 * a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide.md)
   that provides the basics to get started developing an agent project with the Coaty JS framework,
-* a complete [HTML documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
+* a complete [code documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
   of all public type and member definitions of the Coaty JS framework sources,
 * a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide.md)
   for Coaty framework and application developers,
@@ -893,27 +893,19 @@ this.runtime.newUuid();
 
 The base `CoatyObject` interface defines the following generic properties:
 
-```ts
+```
 {
-  coreType: "CoatyObject" | "User" | "Device" | ...
+  coreType: "CoatyObject" | "User" | "Device" | ...,
   objectType: string,
   name: string,
   objectId: Uuid,
-  parentObjectId?: Uuid,
   externalId?: string,
+  parentObjectId?: Uuid,
   assigneeUserId?: Uuid,
   locationId?: Uuid,
   isDeactivated?: boolean
 }
 ```
-
-The `objectId` property defines the unique identity of an object within the system.
-
-The optional `externalId` property defines the identity of an object relative to
-an external system, such as the primary key for this object in an external database.
-Note that external IDs are not guaranteed to be unique across
-the whole universe of system objects. Usually, external IDs are only unique for
-a specific type of objects.
 
 The property `coreType` is the framework core type name of the object;
 it corresponds to the name of the interface that defines the object's shape.
@@ -925,6 +917,16 @@ e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class).
 
 The concrete and core type names of all predefined object types are defined
 as static properties of the `CoreTypes` class in the framework `model` module.
+
+The `name` property defines a descriptive name for the object.
+
+The `objectId` property defines the unique identity of an object within the system.
+
+The optional `externalId` property defines the identity of an object relative to
+an external system, such as the primary key for this object in an external database.
+Note that external IDs are not guaranteed to be unique across
+the whole universe of system objects. Usually, external IDs are only unique for
+a specific type of objects.
 
 The optional `parentObjectId` property refers to the unique UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
@@ -940,7 +942,7 @@ The optional `isDeactivated` property marks an object that is no longer used. Th
 concrete definition meaning of this property is defined by the Coaty application.
 The property value is optional and defaults to false.
 
-Application specific objetc types can be defined based on the predefined core object
+Application specific object types can be defined based on the predefined core object
 types by adding additional property-value pairs. Allowed value types must conform to
 JSON data types.
 
