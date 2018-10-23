@@ -825,6 +825,10 @@ export class CommunicationManager implements IComponent {
          * The Server MAY allow ClientId’s that contain characters not included in the list given above. 
          */
         const id = this.identity.objectId;
+        if (this.options.useProtocolCompliantClientId === undefined ||
+            this.options.useProtocolCompliantClientId === false) {
+            return `COATY${id}`;
+        }
         return `COATY${id.replace("-", "").substr(0, this._useReadableTopics ? 8 : 19)}`;
     }
 

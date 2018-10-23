@@ -125,6 +125,23 @@ export interface CommunicationOptions {
      * If not specified, the value of this option defaults to false.
      */
     useReadableTopics?: boolean;
+
+    /**
+     * Determines whether the communication manager should provide a protocol
+     * compliant client ID when connecting to the broker/router.
+     * 
+     * If not specified, the value of this option defaults to false.
+     * 
+     * For example, MQTT Spec 3.1 states that the broker MUST allow Client IDs
+     * which are between 1 and 23 UTF-8 encoded bytes in length, and that contain only
+     * the characters "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
+     * However, broker implementations are free to allow non-compliant Client IDs.
+     * 
+     * By default, non-compliant Client IDs of the form "COATY<uuid>" are used where
+     * <uuid> specifies the `objectId` of the communication manager's `identity` object.
+     * If you experience issues with a specific broker, specify this option as `true`.
+     */
+    useProtocolCompliantClientId?: boolean;
 }
 
 /**
