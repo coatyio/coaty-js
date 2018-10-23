@@ -15,7 +15,6 @@ also follow these guidelines in their Coaty projects.
 ## Table of Contents
 
 * [Linting TypeScript Code](#linting-typescript-code)
-  * [TSLint in Coaty projects](#tslint-in-coaty-projects)
 * [TypeScript Coding Guidelines](#typescript-coding-guidelines)
   * [Naming](#naming)
   * [Style](#style)
@@ -56,7 +55,7 @@ are defined in the TSLint configuration file `tslint-config.json` which is part 
 the framework's distribution package, so a Coaty application project can also use them
 in its `tsconfig.json` file:
 
-```json
+```ts
 {
     "extends": "coaty/tslint-config",
     "rules": {
