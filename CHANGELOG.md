@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/coatyio/coaty-js/compare/v1.1.1...v1.2.0) (2018-10-23)
+
+This minor release supports generation of non-compliant Client IDs by the communication manager on broker connections.
+
+### Features
+
+* **communication-manager:** support non-compliant Client IDs on broker connections ([d3e0b26](https://github.com/coatyio/coaty-js/commit/d3e0b26))
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/coatyio/coaty-js/compare/v1.1.0...v1.1.1) (2018-10-18)
 
