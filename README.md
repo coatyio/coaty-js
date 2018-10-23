@@ -38,16 +38,16 @@ recommend reviewing the [framework documentation](https://coatyio.github.io/coat
 under the [coaty-js](https://github.com/coatyio/coaty-js) project.
 This documentation includes:
 
-* a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide.md)
+* a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide/)
   that provides the basics to get started developing an agent project with the Coaty JS framework,
 * a complete [code documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
   of all public type and member definitions of the Coaty JS framework sources,
-* a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide.md)
+* a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/)
   for Coaty JS framework and application developers,
-* a specification of the [Coaty communication protocol](https://coatyio.github.io/coaty-js/man/communication-protocol.md),
-* guidance notes on [rights management](https://coatyio.github.io/coaty-js/man/rights-management.md)
+* a specification of the [Coaty communication protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
+* guidance notes on [rights management](https://coatyio.github.io/coaty-js/man/rights-management/)
   in a Coaty application.
-* a guide on the [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide.md) in Coaty JS.
+* a guide on the [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 The framework sources include a fully documented
 [Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)

@@ -65,7 +65,7 @@ a [Creative Commons Attribution-ShareAlike 4.0 International License](http://cre
 ## Coding Style
 
 Please ensure that all your contributions are aligned to our obligatory
-[Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide.md).
+[Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/).
 
 The framework includes a custom linter configuration that conforms to our
 style guide and should also be used in Coaty application projects.
