@@ -110,7 +110,7 @@ npm run doc           - Generate HTML documentation from source code
 
 Execute `npm run doc` to generate HTML documentation from the TypeScript
 source code and the included JavaDoc comments. The generated documentation
-is written to the `docs/code/` folder and accessible by `index.html`.
+is written to the `docs/tsdoc/` folder and accessible by `index.html`.
 
 ## Test Coaty framework
 

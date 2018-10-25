@@ -262,7 +262,9 @@ strictly follow the coding principles listed below:
 ### Asynchronous Data Flow
 
 * Asynchronous date flow between components should be modelled using RxJS
-  observables.
+  observables. An introduction to Reactive Programming can be found
+  [here](http://reactivex.io/). Examples and explanations can be found on
+  the [Learn RxJS](https://www.learnrxjs.io/) website.
 
 * In RxJS, use pipeable operator syntax. Import only those RxJS operators that you
   actually use in your code, e.g. `import { map, take } from "rxjs/operators";`.

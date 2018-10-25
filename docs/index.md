@@ -33,7 +33,8 @@ source of programming examples for experienced developers.
 Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
 prerequisite for developing applications with the framework. An introduction to
-Reactive Programming can be found [here](http://reactivex.io/).
+Reactive Programming can be found [here](http://reactivex.io/).  Examples and
+explanations can be found on the [Learn RxJS](https://www.learnrxjs.io/) website.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a

@@ -38,7 +38,7 @@ module.exports = {
     readme: "./README.md",
 
     // Specifies the location the documentation should be written to.
-    out: "docs/code/",
+    out: "docs/tsdoc/",
 
     // Path to source files
     src: "src/",
