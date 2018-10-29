@@ -776,8 +776,15 @@ export class CommunicationManager implements IComponent {
     }
 
     private _getBrokerUrl(url: string, options: any) {
-        /* tslint:disable-next-line:no-null-keyword */
-        return (options && options.servers) ? null : (url || undefined);
+        if (options && options.servers && options.servers.length > 0) {
+            /* tslint:disable-next-line:no-null-keyword */
+            return null;
+        }
+        if (options) {
+            // Specifying an empty servers array throws an error in MQTT client.
+            delete options.servers;
+        }
+        return (url || undefined);
     }
 
     private _endClient(callback?: () => void) {
