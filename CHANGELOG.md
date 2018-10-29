@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/coatyio/coaty-js/compare/v1.2.0...v1.2.1) (2018-10-29)
+
+This patch release fixes a potential issue related to broker options in CommunicationManager, preserves all comments in generated .d.ts declaration files for use by IDEs, and adds new guidelines to the coding style guide.
+
+### Bug Fixes
+
+* **com:** fix error in CommunicationManager thrown if brokerOptions specify an empty servers array ([20e4f91](https://github.com/coatyio/coaty-js/commit/20e4f91))
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/coatyio/coaty-js/compare/v1.1.1...v1.2.0) (2018-10-23)
 
