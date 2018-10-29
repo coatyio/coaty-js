@@ -181,6 +181,14 @@ TypeScript file with the following comment rule flags
 * Within a class, property members should precede constructor and method members.
   Within each group, public members should precede protected and private members.
 
+### General Types
+
+* Don’t ever use the types `Number`, `String`, `Boolean`, or `Object`. These types
+  refer to non-primitive boxed objects that are almost never used appropriately in
+  JavaScript code.
+* Do use the types `number`, `string`, and `boolean`
+* Instead of `Object`, use the non-primitive `object` type (added in TypeScript 2.2).
+
 ### Generic Types
 
 * Use `T` for the type variable if only one is needed.
@@ -250,7 +258,6 @@ TypeScript file with the following comment rule flags
   statement and that exports are properly defined. Old-style typings often miss this
   convention so that the TypeScript compiler complains with a `Cannot find module`
   error.
-
 * Use npm @types packages to import external typings as dev dependencies into your
  project.
 
