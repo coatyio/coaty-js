@@ -1,6 +1,6 @@
 # Coaty - Hello World Example
 
-[![Powered by Coaty](https://img.shields.io/badge/Powered%20by-Coaty-FFA500.svg)](https://coaty.io)
+[![Powered by Coaty](https://img.shields.io/badge/Powered%20by-Coaty-FF8C00.svg)](https://coaty.io)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Check this example to see a complete application scenario of the
