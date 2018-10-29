@@ -125,12 +125,25 @@ function build(pkgName, pkgVersion) {
             // First, bring the desired tsconfig file into place
             fse.copySync(tsconfigPath, "./" + TS_TARGETDIR + "/tsconfig.json");
 
-            // Execute "tsc --project TS_TARGETDIR", using compiler from local typescript npm package
+            // Transpile TS into JS code, using TS compiler in local typescript npm package.
+            // Remove all comments except copy-right header comments, and do not
+            // generate corresponding .d.ts files (see next step below).
             childProcess.execSync(path.resolve("./node_modules/.bin/tsc") +
                 " --project " + TS_TARGETDIR +
-                " --outDir " + targetDir,
+                " --outDir " + targetDir +
+                " --removeComments true --declaration false",
                 // redirect child output to parent's stdin, stdout and stderr
                 { stdio: "inherit" });
+
+            // Only emit .d.ts files, using TS compiler in local typescript npm package.
+            // The generated declaration files include all comments so that
+            // IDEs can provide this information to developers.
+            childProcess.execSync(path.resolve("./node_modules/.bin/tsc") +
+            " --project " + TS_TARGETDIR +
+            " --outDir " + targetDir +
+            " --removeComments false --declaration true --emitDeclarationOnly true",
+            // redirect child output to parent's stdin, stdout and stderr
+            { stdio: "inherit" });
 
             // Copy scripts folder into distribution package
             fse.copySync("./scripts", targetDir + "scripts");

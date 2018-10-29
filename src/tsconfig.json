@@ -11,7 +11,6 @@
         "inlineSourceMap": true,
         "inlineSources": false,
         "noImplicitAny": false,
-        "removeComments": true,
         "rootDir": ".",
         "lib": [
             "dom",
