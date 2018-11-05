@@ -20,6 +20,7 @@ export const configuration: Configuration = mergeConfigurations(
             agentInfo,
         },
         communication: {
+            identity: { name: "Monitor" },
         },
         controllers: {
             MonitorController: {

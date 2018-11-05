@@ -67,6 +67,7 @@ export function clientConfig(agentInfo: AgentInfo): Configuration {
         common: {
         },
         communication: {
+            identity: { name: "Client" },
             useReadableTopics: isDevMode,
             brokerOptions: {
                 servers: [

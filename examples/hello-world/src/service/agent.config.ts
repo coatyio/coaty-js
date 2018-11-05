@@ -41,7 +41,9 @@ export const configuration: Configuration = mergeConfigurations(
             agentInfo,
             associatedUser: SERVICE_USER,
         },
-        communication: {},
+        communication: {
+            identity: { name: "Service" },
+        },
         controllers: {
             TaskController: {
                 // Interval in milliseconds after which a new task request is generated
