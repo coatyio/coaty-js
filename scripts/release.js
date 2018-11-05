@@ -161,7 +161,7 @@ function cutRelease(releaseNote) {
         .then(output => {
             return runCommand(`git tag -a -f -m "${msg}" v${pkg.version}`)
                 .then(() => `updated CHANGELOG, committed and tagged ${output}\n\n` +
-                    "You can now push the tagged release: git push --follow-tags");
+                    "You can now push the tagged release: npm run push-release");
         });
 }
 
