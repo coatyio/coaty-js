@@ -197,8 +197,8 @@ a set of core modules:
 |-- util          - useful utility functions
 ```
 
-and optional specialized modules that are only needed for specific types of
-Coaty agents:
+and optional specialized modules that are only needed/available for specific types of
+Coaty agents running on specific platforms:
 
 ```
 |-- scripts           - Build-supporting scripts for use by Coaty agent projects
@@ -207,7 +207,7 @@ Coaty agents:
     |-- db-adapter-sqlite-cordova
     |-- db-adapter-sqlite-node
 |-- runtime-angular   - bootstrapping with Dependency Injection for Angular / Ionic
-|-- runtime-node      - bootstrapping for Node.js
+|-- runtime-node      - Node.js specific utilities for Coaty applications
 ```
 
 The framework distribution package deploys these modules as ES5 sources in
@@ -826,7 +826,8 @@ delivered with the Coaty framework sources.
 
 The Coaty framework provides a predefined hierarchy of object types
 that are used by Coaty agents to exchange typed data with communication
-patterns. The object type hierarchy looks as follows:
+patterns. The object type hierarchy is defined in the `coaty/model` module
+and looks as follows:
 
 ```
 CoatyObject
@@ -1055,7 +1056,8 @@ Internally, events are emitted and received by the Communication Manager using
 publish-subscribe messaging with an MQTT message broker. Events are passed to Coaty
 controllers by following the Reactive Programming paradigm using RxJS
 observables. An introduction to Reactive Programming can be found
-[here](http://reactivex.io/).
+[here](http://reactivex.io/). Examples and explanations can be found on the
+[Learn RxJS](https://www.learnrxjs.io/) website.
 
 The Communication Manager provides features to transparently control the underlying
 publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
