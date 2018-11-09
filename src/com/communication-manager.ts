@@ -1385,7 +1385,7 @@ export class CommunicationManager implements IComponent {
         let isDispatching = false;
         try {
             let isRawDispatch = false;
-            // Dispatch raw message on all registered observables of event type "Raw:<any subscription topic>""
+            // Dispatch raw message on all registered observables of event type "Raw:<any subscription topic>"
             this._observedRequests.forEach((targetItems, eventTypeName) => {
                 if (!eventTypeName.startsWith(CommunicationEventType[CommunicationEventType.Raw] +
                     CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR)) {

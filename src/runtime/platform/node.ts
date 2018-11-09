@@ -51,10 +51,10 @@ export class NodeUtils {
      * @param container a Coaty container
      */
     public static logCommunicationState(container: Container) {
-        container.getCommunicationManager()
-            .observeCommunicationState()
+        const manager = container.getCommunicationManager();
+        manager.observeCommunicationState()
             .subscribe(state => {
-                NodeUtils.logInfo(`MQTT: ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);
+                NodeUtils.logInfo(`MQTT: ${manager.identity.name} ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);
             });
     }
 
