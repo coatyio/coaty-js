@@ -68,6 +68,10 @@ prerequisite for developing applications with the framework. An introduction to
 Reactive Programming can be found [here](http://reactivex.io/). Examples and
 explanations can be found on the [Learn RxJS](https://www.learnrxjs.io/) website.
 
+If you are new to TypeScript programming, we recommend to take a look at the official
+[TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
+to interactively try some TypeScript code in your browser.
+
 ## Getting started
 
 To build and run Coaty agents with the Coaty JS technology stack

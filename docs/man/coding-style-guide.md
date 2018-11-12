@@ -12,6 +12,10 @@ The coding guidelines are *obligatory* for TypeScript developers that contribute
 to the Coaty framework. We strongly suggest that application developers shall
 also follow these guidelines in their Coaty projects.
 
+If you are new to TypeScript programming, we recommend to take a look at the official
+[TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
+to interactively try some TypeScript code in your browser.
+
 ## Table of Contents
 
 * [Linting TypeScript Code](#linting-typescript-code)
