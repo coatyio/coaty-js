@@ -499,7 +499,7 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Request or propose partial or complete update of the specified object 
+     * Request or propose partial or full update of the specified object 
      * and receive accomplishments emitted by the hot observable returned.
      *
      * Note that the Update event is lazily published when the

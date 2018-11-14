@@ -392,19 +392,19 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
      * @param eventSource the event source object
      * @param objectId the UUID of the object to be updated (partial update)
      * @param changedValues Object hash for properties that have changed or should be changed (partial update)
-     * @param object the complete object to be updated (for complete updates)
+     * @param object the object to be updated (for full updates)
      */
     static withPartial(eventSource: CoatyObject, objectId: Uuid, changedValues: { [property: string]: any; }) {
         return new UpdateEvent(eventSource, new UpdateEventData(objectId, changedValues));
     }
 
     /**
-     * Create an UpdateEvent instance for the given complete update.
+     * Create an UpdateEvent instance for the given full update.
      * 
      * @param eventSource the event source object
-     * @param object the complete object to be updated
+     * @param object the full object to be updated
      */
-    static withComplete(eventSource: CoatyObject, object: CoatyObject) {
+    static withFull(eventSource: CoatyObject, object: CoatyObject) {
         return new UpdateEvent(eventSource, new UpdateEventData(undefined, undefined, object));
     }
 
@@ -420,7 +420,7 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
             throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
         }
 
-        if (this.eventData.isCompleteUpdate &&
+        if (this.eventData.isFullUpdate &&
             this.eventData.object.objectId !== eventData.object.objectId) {
             throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
         }
@@ -1209,7 +1209,7 @@ export class UpdateEventData extends CommunicationEventData {
     }
 
     /**
-     * The object to be updated (for complete updates only).
+     * The object to be updated (for full updates only).
      */
     get object() {
         return this._object;
@@ -1223,9 +1223,9 @@ export class UpdateEventData extends CommunicationEventData {
     }
 
     /**
-     * Determines wheher this event data defines a complete update.
+     * Determines wheher this event data defines a full update.
      */
-    get isCompleteUpdate() {
+    get isFullUpdate() {
         return this._object !== undefined;
     }
 
@@ -1238,7 +1238,7 @@ export class UpdateEventData extends CommunicationEventData {
      *
      * @param objectId The UUID of the object to be updated (for partial updates)
      * @param changedValues Object hash for properties that have changed or should be changed (for partial updates)
-     * @param object the complete object to be updated (for complete updates)
+     * @param object the object to be updated (for full updates)
      */
     constructor(
         objectId?: Uuid,
