@@ -40,6 +40,7 @@ this guide.
   * [Channel event pattern - an example](#channel-event-pattern---an-example)
   * [Discover - Resolve event pattern - an example](#discover---resolve-event-pattern---an-example)
   * [Query - Retrieve event pattern - an example](#query---retrieve-event-pattern---an-example)
+  * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
   * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
   * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
 * [IO Routing](#io-routing)
@@ -828,9 +829,9 @@ delivered with the Coaty framework sources.
 
 ## Object model
 
-The Coaty framework provides a predefined hierarchy of object types
+The Coaty framework provides a predefined hierarchy of core object types
 that are used by Coaty agents to exchange typed data with communication
-patterns. The object type hierarchy is defined in the `coaty/model` module
+patterns. The core object type hierarchy is defined in the `coaty/model` module
 and looks as follows:
 
 ```
@@ -848,14 +849,11 @@ CoatyObject
   |
   |-- IoSource
   |-- IoActor
-  |
-  |-- Thing
-  |-- Sensor
-  |-- Observation
 ```
 
-> Note: the SensorThings object types are explained in detail in the guide on the
-> [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
+> Note: Besides these core types, the framework also provides some object types to manage sensor data.
+> These object types are defined in the `coaty/sensor-things` module and explained in detail in the
+> guide on [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
 
 Coaty objects are characterized as follows:
 
@@ -1030,7 +1028,7 @@ agents. With *two-way* event patterns, *request-response* interaction between
 Coaty agents can be realized, similar to, for example, HTTP/REST or remote
 procedure call (RPC): The Query-Retrieve pattern is used to enable remote
 retrieval of objects satisfying certain criteria. The Update-Complete pattern
-is used to update and share object state across agents.
+is used to update and synchronize object state across agents.
 
 While traditional request-response interaction is always directed towards
 a single concrete endpoint that must be known by the requester, Coaty two-way
@@ -1489,6 +1487,67 @@ this.communicationManager
          // implement proper timeout handling.
       });
   });
+```
+
+### Update - Complete event pattern - an example
+
+The Update-Complete pattern is used to update and synchronize object state across agents.
+An agent can request or suggest an object update and receive accomplishments by Complete events.
+
+An Update request or proposal for a Coaty object may be either *partial* or *full*.
+
+For a *partial* update, the object id and the property name-value pairs that
+change are specified as event data. The interpretation of the new value for a
+property depends on the application context: For example, if the new value is not a
+primitive value, but an object consisting of attribute-value pairs, the update operation
+could be interpreted as a partial or a full update on this value object. Also, the
+interpretation of the property name itself depends on the application context. For
+example, the name could specify a chain of property/subproperty names to support
+updating values of a subproperty object on any level (e.g.
+`<property1>.<subproperty1>.<subsubproperty1>`). It could also be a virtual property
+that is *not* even defined in the associated object.
+
+For a *full* update, the entire Coaty object is specified as event data.
+
+Both partial and full Update events signal accomplishment by sending back
+a Complete event with the entire (usually changed) object as event data.
+This approach avoids complex merging operations of incremental change deltas in
+the client. Since objects are treated as immutable entities on the client
+this approach is in line.
+
+```ts
+import { filter, take, timeout } from "rxjs/operators";
+
+// Publish a partial Update event on a finished task object and observe first
+// Complete event response from the persistent storage agent.
+this.communicationManager.publishUpdate(
+        UpdateEvent.withPartial(this.identity, taskObjectId,
+        {
+            status: TaskStatus.Done,
+            doneTimestamp: Date.now(),
+        })))
+    .pipe(
+        // Unsubscribe automatically after first response event arrives.
+        take(1),
+        map(event => event.eventData.object as Task),
+    )
+    .subscribe(
+        task => {
+            // Task has been persisted...
+        });
+
+// The persistent storage agent observes task updates and stores
+// the changed property values in a database. Afterwards, it responds
+// with a Complete event which contains the fully updated object.
+this.communicationManager.observeUpdate(this.identity)
+    .pipe(filter(event => event.eventData.isPartialUpdate))
+    .subscribe(event => {
+        const task = this.getTaskWithIdFromDb(event.eventData.objectId);
+        if (task !== undefined) {
+            this.updateTaskWithIdinDb(task.objectId, event.eventData.changedValues);
+            event.complete(CompleteEvent.withObject(this.identity, task));
+        }
+    });
 ```
 
 ### Observing and publishing raw MQTT messages

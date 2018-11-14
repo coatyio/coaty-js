@@ -62,6 +62,11 @@ Note that MQTT allows applications to send MQTT Control Packets of size up to
 256 MB. For Publish messages, this includes the message topic of size up to 64K,
 the payload, as well as some bytes of header data.
 
+> To debug MQTT messages published by a Coaty agent, you can use any MQTT client
+> and subscribe to the `#` topic. We recommend [MQTT.fx](http://www.mqttfx.org/),
+> a cross-platform client which provides a graphical user interface for message
+> inspection.
+
 ## Events and Event Patterns
 
 The framework uses a minimum set of predefined events and event patterns to
@@ -465,9 +470,12 @@ options in the form of an object hash (key-value pairs).
 
 ### Payloads for Update - Complete Event
 
-An Update request or proposal targeting an object may be either partial or complete.
-For a partial update, the object's property name(s) that should be changed and the
-new value(s) are specified as payload:
+The Update-Complete pattern is used to update and synchronize object state across
+agents. An Update request or proposal for a Coaty object may be either *partial*
+or *full*.
+
+For a *partial* update, the object id and the property name-value pairs that
+change are specified as payload:
 
 ```js
 {
@@ -479,9 +487,13 @@ new value(s) are specified as payload:
 The interpretation of the new value for a property depends on the application
 context: For example, if the new value is not a primitive value, but an object
 consisting of attribute-value pairs, the update operation could be interpreted
-as a partial update or a complete update on this object.
+as a partial or a full update on this value object. Also, the interpretation
+of the property name itself depends on the application context. For example, the name
+could specify a chain of property/subproperty names to support updating values
+of a subproperty object on any level (e.g. `<property1>.<subproperty1>.<subsubproperty1>`).
+It could also be a virtual property that is *not* even defined in the associated object.
 
-To update a complete object, the whole object is specified as payload:
+For a *full* update, the entire Coaty object is specified as payload:
 
 ```js
 {
@@ -489,7 +501,7 @@ To update a complete object, the whole object is specified as payload:
 }
 ```
 
-Both partial and complete Update events signal accomplishment by sending back
+Both partial and full Update events signal accomplishment by sending back
 a Complete event with the entire (usually changed) object in the payload.
 This approach avoids complex merging operations of incremental change deltas in
 the client. Since objects are treated as immutable entities on the client

@@ -65,7 +65,7 @@ OGC specification:
 
 All the displayed objects in the diagram are Coaty objects. Except `Location`, all other objects are
 application objects and therefore defined by their unique `objectType`. Like with all Coaty objects,
-sensor things objects can also be advertised, discovered, queried and resolved.
+sensor things objects can be advertised, discovered, queried, and updated.
 
 ### Thing
 

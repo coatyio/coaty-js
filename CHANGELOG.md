@@ -1,5 +1,22 @@
 # Changelog
 
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/coatyio/coaty-js/compare/v1.2.1...v1.2.2) (2018-11-14)
+
+This patch release refactors two utility methods regarding Update-Complete event handling.
+
+### Code Refactoring
+
+* **com:** change the notion of non-partial Update events from "complete update" to "full update" to avoid any possibility of confusion regarding Complete events. ([9ab2904](https://github.com/coatyio/coaty-js/commit/9ab2904))
+
+### Features
+
+* **examples:** add human-readable identity names for Hellow World agents ([7cdcf3e](https://github.com/coatyio/coaty-js/commit/7cdcf3e))
+
+### BREAKING CHANGES
+
+* **com:** `UpdateEvent.withComplete` is now `UpdateEvent.withFull` and `UpdateEventData.isCompleteUpdate` is now `UpdateEventData.isFullUpdate`
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/coatyio/coaty-js/compare/v1.2.0...v1.2.1) (2018-10-29)
 
