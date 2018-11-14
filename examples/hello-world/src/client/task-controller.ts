@@ -68,8 +68,8 @@ export class TaskController extends Controller {
                     dueTimestamp: Date.now(),
                     assigneeUserId: this.runtime.options.associatedUser.objectId,
                 }))
-                // Unsubscribe automatically after first response event arrives.
                 .pipe(
+                    // Unsubscribe automatically after first response event arrives.
                     take(1),
                     map(event => event.eventData.object as HelloWorldTask),
                 )
