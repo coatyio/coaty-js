@@ -186,7 +186,11 @@ export class MulticastDnsDiscovery {
      * parameters. The keys and values of these parameters are always strings so you can 
      * easily concat them to form a URL, etc.
      * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService.
+     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
+     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
+     * can pass the target IP address of your mDNS service explicitely.
+     * 
+     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
      * If an error occurs while publishing, the promise is rejected.
      * 
      * This function can only be used in a server-side environment (Node.js),
@@ -196,16 +200,22 @@ export class MulticastDnsDiscovery {
      * @param type the type of the mDNS service
      * @param port the port of the mDNS service
      * @param txtRecord the TXT record containing additional key value pairs (optional)
+     * @param host the host IP address to be published with the service (optional, defaults to local hostname)
      */
-    public static publishMulticastDnsService(name: string, type: string, port: number, txtRecord: { [key: string]: string } = {})
+    public static publishMulticastDnsService(
+        name: string,
+        type: string,
+        port: number,
+        txtRecord: { [key: string]: string } = {},
+        host?: string)
         : Promise<MulticastDnsService> {
         return new Promise<MulticastDnsService>((resolve, reject) => {
             const srv = MulticastDnsDiscovery.bonjour.publish({
                 name: name,
                 type: type,
-                host: MulticastDnsDiscovery.getLocalIpV4Address(),
+                host: host || undefined,
                 port: port,
-                txt: txtRecord,
+                txt: txtRecord || {},
             });
             srv.on("up", () => resolve(srv));
             srv.on("error", error => reject(error));
@@ -215,7 +225,11 @@ export class MulticastDnsDiscovery {
     /**
      * Publish Coaty MQTT broker information using a multicast DNS (a.k.a mDNS, Bonjour) service with the given parameters.
      * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService.
+     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
+     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
+     * can pass the target IP address of your mDNS service explicitely.
+     * 
+     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
      * If an error occurs while publishing, the promise is rejected.
      * 
      * The broker's websocket port (`ws-port`) is published in the TXT record of the service.
@@ -227,16 +241,26 @@ export class MulticastDnsDiscovery {
      * @param wsPort the broker's websocket port (default value is 9883)
      * @param name the name of the mDNS service (default value is `Coaty MQTT Broker`)
      * @param type the type of the mDNS service (default value is `coaty-mqtt`)
+     * @param host the broker IP address to be published with the service (default is local hostname)
      */
-    public static publishMqttBrokerService(port = 1883, wsPort = 9883, name = "Coaty MQTT Broker", type = "coaty-mqtt")
+    public static publishMqttBrokerService(port?: number, wsPort?: number, name?: string, type?: string, host?: string)
         : Promise<MulticastDnsService> {
-        return MulticastDnsDiscovery.publishMulticastDnsService(name, type, port, { "ws-port": wsPort.toString() });
+        return MulticastDnsDiscovery.publishMulticastDnsService(
+            name || "Coaty MQTT Broker",
+            type || "coaty-mqtt",
+            port || 1883,
+            { "ws-port": (wsPort || 9883).toString() },
+            host);
     }
 
     /**
      * Publish Coaty WAMP router information using a multicast DNS (a.k.a mDNS, Bonjour) service with the given parameters.
      * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService.
+     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
+     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
+     * can pass the target IP address of your mDNS service explicitely.
+     * 
+     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
      * If an error occurs while publishing, the promise is rejected.
      * 
      * The WAMP router's URL path (`path`) and realm (`realm`) is published in the TXT record of the service.
@@ -249,10 +273,16 @@ export class MulticastDnsDiscovery {
      * @param port the router's port (default value is 80)
      * @param name the name of the mDNS service (default value is `Coaty WAMP Router`)
      * @param type the type of the mDNS service (default value is `coaty-wamp`)
+     * @param host the router IP address to be published with the service (deafult is local hostname)
      */
-    public static publishWampRouterService(path = "/", realm = "coaty-app", port = 80, name = "Coaty WAMP Router", type = "coaty-wamp")
+    public static publishWampRouterService(path?: string, realm?: string, port?: number, name?: string, type?: string, host?: string)
         : Promise<MulticastDnsService> {
-        return MulticastDnsDiscovery.publishMulticastDnsService(name, type, port, { path, realm });
+        return MulticastDnsDiscovery.publishMulticastDnsService(
+            name || "Coaty WAMP Router",
+            type || "coaty-wamp",
+            port || 80,
+            { path: path || "/", realm: realm || "coaty-app" },
+            host);
     }
 
     /**

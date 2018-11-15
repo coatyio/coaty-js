@@ -15,6 +15,7 @@ describe("Bootstrapping", () => {
     const myMulticastDnsServiceName = "My mDNS Test Service";
     const myMulticastDnsServiceType = "coaty-test";
     const myMulticastDnsServicePort = 1898;
+    const myMulticastDnsServiceHostname = "My mDNS Service Hostname";
 
     const components: Components = {
         controllers: {
@@ -142,7 +143,8 @@ describe("Bootstrapping", () => {
                 myMulticastDnsServiceName,
                 myMulticastDnsServiceType,
                 myMulticastDnsServicePort,
-                { a: "Value a" })
+                { a: "Value a" },
+                myMulticastDnsServiceHostname)
                 .then(srv => {
                     expect(srv.fqdn).toBe(myMulticastDnsServiceName + "._" + myMulticastDnsServiceType + "._tcp.local");
                 })
@@ -156,7 +158,7 @@ describe("Bootstrapping", () => {
                     expect(srv.name).toBe(myMulticastDnsServiceName);
                     expect(srv.port).toBe(myMulticastDnsServicePort);
                     expect(srv.type).toBe(myMulticastDnsServiceType);
-                    expect(srv.host).toBe(MulticastDnsDiscovery.getLocalIpV4Address());
+                    expect(srv.host).toBe(myMulticastDnsServiceHostname);
                     expect(srv.txt["a"]).toBe("Value a");
                 })
                 .then(() => done())

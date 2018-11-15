@@ -2974,7 +2974,7 @@ MulticastDnsDiscovery.findMqttBrokerService()
         container.getCommunicationManager().options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
         container.getCommunicationManager().start();
     })
-	.catch(error => {
+    .catch(error => {
         NodeUtils.logError(error, "Couldn't discover Coaty broker:");
         process.exit(1);
     });
@@ -2989,7 +2989,7 @@ MulticastDnsDiscovery.findWampRouterService()
         container.getCommunicationManager().options.realm = srv.txt.realm;
         container.getCommunicationManager().start();
     })
-	.catch(error => {
+    .catch(error => {
         NodeUtils.logError(error, "Couldn't discover Coaty router:");
         process.exit(1);
     });
