@@ -1,6 +1,6 @@
 {
     "name": "hello-world",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "Hello world example for Coaty JS framework",
     "scripts": {
         "build": "gulp build",
@@ -16,7 +16,7 @@
     "license": "MIT",
     "private": true,
     "dependencies": {
-        "coaty": "1.2.2",
+        "coaty": "1.2.3",
         "pg": "7.4.3",
         "rxjs": "6.3.3"
     },

@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.2.3"></a>
+## [1.2.3](https://github.com/coatyio/coaty-js/compare/v1.2.2...v1.2.3) (2018-11-15)
+
+This patch release fixes a problem concerning publication of multicast DNS service records.
+
+### Bug Fixes
+
+* **runtime-node:** modify function `publishMulticastDnsService` to use the local hostname by default, not the IPv4 address of the first network interface; optionally providing a specific host address as a parameter is now supported ([b825fcd](https://github.com/coatyio/coaty-js/commit/b825fcd))
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/coatyio/coaty-js/compare/v1.2.1...v1.2.2) (2018-11-14)
 

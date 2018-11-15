@@ -22,7 +22,7 @@ export interface Thing extends CoatyObject {
     objectType: ThingObjectTypeLiteral;
 
     /** 
-     * This is a short description of the corresponding the Thing.
+     * This is a short description of the corresponding Thing.
      */
     description: string;
 
