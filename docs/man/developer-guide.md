@@ -152,8 +152,8 @@ If you are new to TypeScript programming, we recommend to take a look at the off
 to interactively try some TypeScript code in your browser.
 
 To program Coaty applications, we recommend to use [Visual Studio Code](https://code.visualstudio.com/),
-a free, open source IDE that runs everywhere. Install the `TSLint` VS Code extension to
-provide TypeScript linting within the IDE.
+a free, open source IDE that runs everywhere. Install the VS Code extension "TSLint" to
+enable TypeScript linting within the IDE.
 
 ## Getting started
 
