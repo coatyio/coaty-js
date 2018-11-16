@@ -16,6 +16,10 @@ If you are new to TypeScript programming, we recommend to take a look at the off
 [TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
 to interactively try some TypeScript code in your browser.
 
+To program the Coaty framework, we recommend to use [Visual Studio Code](https://code.visualstudio.com/),
+a free, open source IDE that runs everywhere. Install the `TSLint` VS Code extension to
+provide TypeScript linting within the IDE.
+
 ## Table of Contents
 
 * [Linting TypeScript Code](#linting-typescript-code)
@@ -59,7 +63,7 @@ are defined in the TSLint configuration file `tslint-config.json` which is part 
 the framework's distribution package, so a Coaty application project can also use them
 in its `tsconfig.json` file:
 
-```ts
+```json
 {
     "extends": "coaty/tslint-config",
     "rules": {
