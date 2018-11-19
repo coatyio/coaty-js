@@ -63,9 +63,9 @@ Note that MQTT allows applications to send MQTT Control Packets of size up to
 the payload, as well as some bytes of header data.
 
 > To debug MQTT messages published by a Coaty agent, you can use any MQTT client
-> and subscribe to the `#` topic. We recommend [MQTT.fx](http://www.mqttfx.org/),
-> a cross-platform client which provides a graphical user interface for message
-> inspection.
+> and subscribe to the `#` topic. We recommend [mqtt-spy](https://kamilfb.github.io/mqtt-spy/)
+> or [MQTT.fx](http://www.mqttfx.org/), both cross-platform clients provide
+> graphical user interfaces for message inspection.
 
 ## Events and Event Patterns
 
