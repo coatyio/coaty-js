@@ -1,7 +1,7 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { IoActor, IoSource } from "../model/io-point";
-import { CoatyObject, Uuid } from "../model/object";
+import { CoatyObject, Component, Uuid } from "../model/object";
 import { ObjectFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectMatcher } from "../model/object-filter";
 import { ObjectJoinCondition } from "../model/object-join";
 import { CoreType, CoreTypes } from "../model/types";
@@ -33,7 +33,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     eventType: CommunicationEventType;
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;
 
-    private _eventSource: CoatyObject;
+    private _eventSource: Component;
     private _eventSourceId: Uuid;
     private _eventData: T;
     private _eventUserId: Uuid | string;
@@ -44,10 +44,10 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      * 
      * Create an event instance for the given event type.
      *
-     * @param eventSource source object associated with this event
+     * @param eventSource source component associated with this event
      * @param eventData data associated with this event
      */
-    constructor(eventSource: CoatyObject, eventData: T) {
+    constructor(eventSource: Component, eventData: T) {
         const source: any = eventSource;
 
         // This is to support passing a UUID as event source 
@@ -55,19 +55,19 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
         if ((typeof source === "string") && source.length > 0) {
             this._eventSource = undefined;
             this._eventSourceId = source;
-        } else if (CoreTypes.isObject(source)) {
+        } else if (CoreTypes.isObject(source, "Component")) {
             this._eventSource = eventSource;
             this._eventSourceId = eventSource.objectId;
         } else {
-            throw new TypeError("in CommunicationEvent<T>: argument 'eventSource' is not a CoatyObject");
+            throw new TypeError("in CommunicationEvent<T>: argument 'eventSource' is not a Component");
         }
 
         this._eventData = eventData;
     }
 
     /**
-     * Gets the event source object associated with this event.
-     * Returns undefined if the source object is not available
+     * Gets the event source component associated with this event.
+     * Returns undefined if the source component is not available
      * but only its ID (via `eventSourceId`). This is always the
      * case on the receiving, i.e. observing side, since the
      * message topic only transmits the source ID but not the source
@@ -130,73 +130,73 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param externalId the external ID to discover
      */
-    static withExternalId(eventSource: CoatyObject, externalId: string) {
+    static withExternalId(eventSource: Component, externalId: string) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and core types.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param externalId the external ID to discover
      * @param coreTypes an array of core types to discover
      */
-    static withExternalIdAndCoreTypes(eventSource: CoatyObject, externalId: string, coreTypes: CoreType[]) {
+    static withExternalIdAndCoreTypes(eventSource: Component, externalId: string, coreTypes: CoreType[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, undefined, undefined, coreTypes));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and object types.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param externalId the external ID to discover
      * @param objectTypes an array of object types to discover
      */
-    static withExternalIdAndObjectTypes(eventSource: CoatyObject, externalId: string, objectTypes: string[]) {
+    static withExternalIdAndObjectTypes(eventSource: Component, externalId: string, objectTypes: string[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, undefined, objectTypes, undefined));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given object Id.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objectId the object ID to discover
      */
-    static withObjectId(eventSource: CoatyObject, objectId: Uuid) {
+    static withObjectId(eventSource: Component, objectId: Uuid) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, objectId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and object Id.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param externalId the external ID to discover
      * @param objectId the object ID to discover
      */
-    static withExternalAndObjectId(eventSource: CoatyObject, externalId: string, objectId: Uuid) {
+    static withExternalAndObjectId(eventSource: Component, externalId: string, objectId: Uuid) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, objectId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given core types.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param coreTypes the core types to discover
      */
-    static withCoreTypes(eventSource: CoatyObject, coreTypes: CoreType[]) {
+    static withCoreTypes(eventSource: Component, coreTypes: CoreType[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, undefined, undefined, coreTypes));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given object types.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objectTypes the object types to discover
      */
-    static withObjectTypes(eventSource: CoatyObject, objectTypes: string[]) {
+    static withObjectTypes(eventSource: Component, objectTypes: string[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, undefined, objectTypes, undefined));
     }
 
@@ -250,12 +250,12 @@ export class ResolveEvent extends CommunicationEvent<ResolveEventData> {
     /**
      * Create a ResolveEvent instance for resolving the given object.
      *
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param object the object to be resolved
      * @param relatedObjects related objects to be resolved (optional)
      * @param privateData private data object (optional)
      */
-    static withObject(eventSource: CoatyObject, object: CoatyObject, relatedObjects?: CoatyObject[], privateData?: any) {
+    static withObject(eventSource: Component, object: CoatyObject, relatedObjects?: CoatyObject[], privateData?: any) {
         return new ResolveEvent(eventSource, new ResolveEventData(object, relatedObjects, privateData));
     }
 
@@ -263,11 +263,11 @@ export class ResolveEvent extends CommunicationEvent<ResolveEventData> {
      * Create a ResolveEvent instance for resolving the given related objects.
      * 
      * @static
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param relatedObjects related objects to be resolved
      * @param privateData private data object (optional)
      */
-    static withRelatedObjects(eventSource: CoatyObject, relatedObjects: CoatyObject[], privateData?: any) {
+    static withRelatedObjects(eventSource: Component, relatedObjects: CoatyObject[], privateData?: any) {
         return new ResolveEvent(eventSource, new ResolveEventData(undefined, relatedObjects, privateData));
     }
 }
@@ -292,13 +292,13 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
      * Create a QueryEvent instance for querying the given object types, filter, and join conditions.
      * The object filter and join conditions are optional.
      *
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objectTypes restrict results by object types (logical OR).
      * @param objectFilter restrict results by object filter (optional).
      * @param objectJoinConditions join related objects into results (optional).
      */
     static withObjectTypes(
-        eventSource: CoatyObject,
+        eventSource: Component,
         objectTypes: string[],
         objectFilter?: ObjectFilter,
         objectJoinConditions?: ObjectJoinCondition | ObjectJoinCondition[]) {
@@ -309,13 +309,13 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
      * Create a QueryEvent instance for querying the given core types, filter, and join conditions.
      * The object filter and join conditions are optional.
      *
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param coreTypes restrict results by core types (logical OR).
      * @param objectFilter restrict results by object filter (optional).
      * @param objectJoinConditions join related objects into results (optional).
      */
     static withCoreTypes(
-        eventSource: CoatyObject,
+        eventSource: Component,
         coreTypes: CoreType[],
         objectFilter?: ObjectFilter,
         objectJoinConditions?: ObjectJoinCondition | ObjectJoinCondition[]) {
@@ -361,11 +361,11 @@ export class RetrieveEvent extends CommunicationEvent<RetrieveEventData> {
     /**
      * Create a RetrieveEvent instance for the given objects.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objects the objects to be retrieved
      * @param privateData  private data object (optional)
      */
-    static withObjects(eventSource: CoatyObject, objects: CoatyObject[], privateData?: any) {
+    static withObjects(eventSource: Component, objects: CoatyObject[], privateData?: any) {
         return new RetrieveEvent(eventSource, new RetrieveEventData(objects, privateData));
     }
 }
@@ -389,22 +389,22 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     /**
      * Create an UpdateEvent instance for the given partial update.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objectId the UUID of the object to be updated (partial update)
      * @param changedValues Object hash for properties that have changed or should be changed (partial update)
      * @param object the object to be updated (for full updates)
      */
-    static withPartial(eventSource: CoatyObject, objectId: Uuid, changedValues: { [property: string]: any; }) {
+    static withPartial(eventSource: Component, objectId: Uuid, changedValues: { [property: string]: any; }) {
         return new UpdateEvent(eventSource, new UpdateEventData(objectId, changedValues));
     }
 
     /**
      * Create an UpdateEvent instance for the given full update.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param object the full object to be updated
      */
-    static withFull(eventSource: CoatyObject, object: CoatyObject) {
+    static withFull(eventSource: Component, object: CoatyObject) {
         return new UpdateEvent(eventSource, new UpdateEventData(undefined, undefined, object));
     }
 
@@ -444,11 +444,11 @@ export class CompleteEvent extends CommunicationEvent<CompleteEventData> {
     /**
      * Create a CompleteEvent instance for updating the given object.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param object the updated object
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: CoatyObject, object: CoatyObject, privateData?: any) {
+    static withObject(eventSource: Component, object: CoatyObject, privateData?: any) {
         return new CompleteEvent(eventSource, new CompleteEventData(object, privateData));
     }
 }
@@ -461,11 +461,11 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
     /**
      * Create an AdvertiseEvent instance for advertising the given object.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param object the object to be advertised
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: CoatyObject, object: CoatyObject, privateData?: any) {
+    static withObject(eventSource: Component, object: CoatyObject, privateData?: any) {
         return new AdvertiseEvent(eventSource, new AdvertiseEventData(object, privateData));
     }
 
@@ -482,10 +482,10 @@ export class DeadvertiseEvent extends CommunicationEvent<DeadvertiseEventData> {
     /**
      * Create a DeadvertiseEvent instance for deadvertising the given object IDs.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objectIds object IDs to be deadvertised
      */
-    static withObjectIds(eventSource: CoatyObject, ...objectIds: string[]) {
+    static withObjectIds(eventSource: Component, ...objectIds: string[]) {
         return new DeadvertiseEvent(eventSource, new DeadvertiseEventData(...objectIds));
     }
 
@@ -516,12 +516,12 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
      * `/ (U+002F)`.
      * 
-     * @param eventSource source object associated with this Channel event
+     * @param eventSource source component associated with this Channel event
      * @param channelId the channel identifier of this Channel event
      * @param eventData data associated with this Channel event
      */
     constructor(
-        eventSource: CoatyObject,
+        eventSource: Component,
         channelId: string,
         eventData: ChannelEventData) {
         super(eventSource, eventData);
@@ -542,22 +542,22 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
     /**
      * Create a ChannelEvent instance for delivering the given object.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param object the object to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: CoatyObject, channelId: string, object: CoatyObject, privateData?: any) {
+    static withObject(eventSource: Component, channelId: string, object: CoatyObject, privateData?: any) {
         return new ChannelEvent(eventSource, channelId, new ChannelEventData(object, undefined, privateData));
     }
 
     /**
      * Create a ChannelEvent instance for delivering the given objects.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param objects the objects to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObjects(eventSource: CoatyObject, channelId: string, objects: CoatyObject[], privateData?: any) {
+    static withObjects(eventSource: Component, channelId: string, objects: CoatyObject[], privateData?: any) {
         return new ChannelEvent(eventSource, channelId, new ChannelEventData(undefined, objects, privateData));
     }
 }
@@ -570,14 +570,14 @@ export class AssociateEvent extends CommunicationEvent<AssociateEventData> {
     /**
      * Create an AssociateEvent instance for associating the given IO source/actor.
      * 
-     * @param eventSource the event source object
+     * @param eventSource the event source component
      * @param ioSource the IO source object to associate/disassociate
      * @param ioActor the IO actor object to associate/disassociate
      * @param associatedTopic the topic used by IO source and IO actor, or undefined for disassocation
      * @param updateRate the recommended update rate (in millis) for publishing IO source values (optional)
      */
     static with(
-        eventSource: CoatyObject,
+        eventSource: Component,
         ioSource: IoSource,
         ioActor: IoActor,
         associatedTopic: string,
@@ -609,7 +609,6 @@ export class IoStateEvent {
     /**
      * Create an IoStateEvent instance for describing an IO state.
      * 
-     * @param eventSource the event source object
      * @param hasAssociations determines whether the related IO source/actor has associations
      * @param updateRate the recommended update rate (in millis) for publishing IO source values (optional)
      */
@@ -1450,7 +1449,7 @@ export class DeadvertiseEventData extends CommunicationEventData {
 
     private _hasValidParameters(): boolean {
         return CoreTypes.isStringArray(this._objectIds) &&
-            (<string[]> this._objectIds).every(o => o.length > 0);
+            (<string[]>this._objectIds).every(o => o.length > 0);
     }
 }
 
