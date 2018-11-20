@@ -351,7 +351,7 @@ For instance the temperature is a valid observed property:
 }
 ```
 
-The `definition` property expects a reference to an ontology.
+The `definition` property expects a reference to an ontology, e.g. as defined [here](http://www.qudt.org).
 
 ### Encoding Type
 

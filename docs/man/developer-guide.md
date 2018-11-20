@@ -43,6 +43,7 @@ this guide.
   * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
   * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
   * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
+  * [Metadata communication for distributed lifecycle management](#metadata-communication-for-distributed-lifecycle-management)
 * [IO Routing](#io-routing)
   * [IO Routing communication event flow](#io-routing-communication-event-flow)
   * [IO Routing implementation](#io-routing-implementation)
@@ -311,9 +312,9 @@ const configuration: Configuration = {
     },
     communication: {
           // Options used for communication
+          identity: ... ,
           brokerUrl: ... ,
           brokerOptions: ... ,
-          identity: ... ,
           shouldAutoStart: ... ,
           shouldAdvertiseIdentity: ... ,
           shouldAdvertiseDevice: ... ,
@@ -354,11 +355,12 @@ const configuration: Configuration = {
 ```
 
 Note that both controllers and the Communication Manager maintain an `identity`
-Component object that provides metadata of the component, including its `name`,
+object of type `Component` that provides metadata of the component, including its `name`,
 a unique object ID, etc. By default, these identity objects are advertised when
-the components are set up and deadvertised on normal or abnormal disconnection
-of a Coaty agent. Using the controller or communication options, you can opt out
+the components are set up and deadvertised on normal or abnormal termination
+of a Coaty agent. Using the controller and/or communication options, you can opt out
 of de/advertisement by setting `shouldAdvertiseIdentity` to `false`.
+For details, see this [section](#metadata-communication-for-distributed-lifecycle-management).
 
 ### Bootstrap a Coaty container in NodeJs
 
@@ -546,7 +548,7 @@ npm install @angular-builders/custom-webpack --save-dev
 npm install @angular-builders/dev-server --save-dev
 ```
 
-### Accessing Coaty container components
+### Access Coaty container components
 
 Within Angular or Ionic, you can access container components using Angular
 constructor dependency injection. Alternatively, you can access the components
@@ -1108,7 +1110,7 @@ named [`ConnectionStateController`](#connection-state-controller).
 
 ### Publishing events
 
-Use `publishAdvertise`to send Advertise events. The core type (`coreType`) and
+Use `publishAdvertise` to send Advertise events. The core type (`coreType`) and
 the object type (`objectType`) of the advertised object is used to deliver
 corresponding events to parties observing Advertise events for the same core
 or object type.
@@ -1203,6 +1205,10 @@ method (see code examples below in the next sections).
 
 ### Advertise event pattern - an example
 
+The Advertise event is used to communicate Coaty objects to agents interested in
+a specific tyoe of object. Advertise events can be observed based on either an
+object's core type (`coreType`) or an object's object type (`objectType`).
+
 ```ts
 import { filter, map } from "rxjs/operators";
 
@@ -1236,15 +1242,22 @@ this.communicationManager
 
 ### Deadvertise event pattern - an example
 
-By publishing a Deadvertise event with the unique ID of an object you can notify
-observers that this object is no longer available:
+The Deadvertise event works in combination with the Advertise event.
+By publishing a Deadvertise event with the unique object ID of an object,
+you can notify observers that this object (which has been advertised earlier)
+is no longer available:
 
 ```ts
 import { map } from "rxjs/operators";
 
+const object: CoatyObject = {
+    objectid: "3b820148-e3e1-42d6-8d20-425e54670b06",
+    ...
+};
+
 // Publish a Deadvertise event
 this.communicationManager
-    .publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, objectId));
+    .publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, object.objectId));
 
 // Observe Deadvertise events
 this.communicationManager
@@ -1255,12 +1268,13 @@ this.communicationManager
     });
 ```
 
-This concept is especially useful in combination with abnormal disconnection of an
+This concept is especially useful in combination with abnormal termination of an
 agent and the MQTT last will concept. On connection to the broker, the communication
-manager of a Coaty agent sends a last will message consisting of a Deadvertise
-event with the object IDs of its identity component and its associated device (if defined).
-Whenver the agent disconnects normally or abnormally, the broker publishes its last will
-message to all subscribers which observe Deadvertise events.
+manager of a Coaty container sends a last will message consisting of a Deadvertise
+event with the object ID of its identity component and its associated device (if defined).
+Whenever the agent disconnects normally or abnormally, the broker publishes its last will
+message to all subscribers which observe Deadvertise events. For details, see this
+[section](#metadata-communication-for-distributed-lifecycle-management).
 
 Using this pattern, agents can detect the online/offline state of other Coaty agents
 and act accordingly. One typical use case is to set the parent object ID of
@@ -1287,8 +1301,9 @@ const thing: Thing = {
     ...
 };
 
-// Publish an Advertise event for Thing object
+// Associate communication manager's identity with thing
 thing.parentObjectId = this.communicationManager.identity.objectId;
+// Publish an Advertise event for Thing object
 this.communicationManager
     .publishAdvertise(AdvertiseEvent.withObject(this.identity, thing)));
 ```
@@ -1314,11 +1329,17 @@ this.communicationManager
     .pipe(map(event => event.eventData.objectIds))
     .subscribe(objectIds => {
         const offlineThings = this.onlineThings.filter(t => objectIds.some(id => id === t.parentObjectId));
-        // These things are no longer online. Remove them from the onlineThings cache...
+        // These things are no longer online.
+        // Remove them from the onlineThings cache and perform side effects...
     });
 ```
 
 ### Channel event pattern - an example
+
+The Channel event pattern provides a very efficient way of pushing any type
+of Coaty objects to observers that share a specific channel identifier. It
+differs from Advertise events in that these are pushing specific core or object
+types to interested observers.
 
 ```ts
 import { filter } from "rxjs/operators";
@@ -1340,16 +1361,18 @@ this.communicationManager
     });
 ```
 
-The Channel event pattern provides a very efficient way of pushing any type
-of Coaty objects to observers that share a specific channel identifier. It
-differs from Advertise events in that these are pushing specific core or object
-types to interested observers.
-
 ### Discover - Resolve event pattern - an example
+
+The two-way Discover-Resolve communication pattern can be used to discover Coaty
+objects of a certain core or object type and/or with a certain object id or external id.
+
+For example, by scanning the QR Code of a physical asset, which encodes its external id,
+the Discover event can resolve the Coaty object representation of this asset.
 
 ```ts
 import { filter, take, timeout } from "rxjs/operators";
 
+// QR Code of asset
 const externalId = "42424242";
 
 // Publish a Discover event and observe first Resolve event response
@@ -1380,6 +1403,14 @@ this.communicationManager.observeDiscover(this.identity)
          event.resolve(ResolveEvent.withObject(this.identity, object));
     });
 ```
+
+Note that the Resolve event cannot only respond with a matching object, but
+can alternatively or additionally provide related objects. The logic of
+resolving Discover events is application specific and defined by the
+resolving agent. For example, a Discover event that specifies an external id
+*in combination* with the object types `Thing` and `Sensor` could be resolved
+by returning the `Thing` object with the given external id and all sensor
+objects associated with this thing as related objects.
 
 To share object state between Coaty agents, the Discover-Resolve event
 pattern is often used in combination with the Advertise event pattern. One
@@ -1607,6 +1638,45 @@ In your controller classes we recommend to subscribe
 to observe methods when the Communication Manager is starting and unsubscribe from
 observe methods when the Communication Manager is stopping. Use the
 aforementioned controller hook methods to implement this subscription pattern.
+
+### Metadata communication for distributed lifecycle management
+
+Whenever a Coaty container is resolved by creating its communication manager and
+controller components, the identities of these components are advertised as
+`Component` objects automatically. You can prevent publishing Advertise events for identity components
+by setting the controller and/or communication configuration option
+`shouldAdvertiseIdentity` to `false`.
+
+Each identity component is initialized with default property values. For example,
+the `name` of a controller identity refers to the controller's type; the `name`
+of a communication manager identity is always "CommunicationManager". You can
+customize and configure specific properties of identity component objects as follows:
+
+* For controllers, either specify identity properties in the controller's configuration
+  options (`ControllerOptions.identity`), or overwrite the `initializeIdentity`
+  method in your controller class definition. If you specify identity properties in
+  both ways, the ones specified in the configuration options take precedence.
+* For communication managers, specify identity properties in the communication
+  configuration options (`CommunicationOptions.identity`).
+
+Note that the `parentObjectId` property of a controller's identity component is set to the
+`objectId` of the communication manager's identity component for reasons described next.
+
+Advertisement of identities is especially useful in combination with abnormal termination of an
+agent and the MQTT last will concept. On connection to the broker, the communication
+manager of a Coaty container sends a last will message consisting of a Deadvertise
+event with the object ID of its identity component and its associated device (if defined).
+Whenever the agent disconnects normally or abnormally, the broker publishes its last will
+message to all subscribers which observe Deadvertise events.
+
+Using this pattern, agents can detect the online/offline state of other Coaty agents
+and act accordingly. One typical use case is to set the parent object ID of
+advertised application root objects originating from a specific Coaty agent to the
+identity ID (or associated device ID) of the agent's communication manager. In case this
+agent is disconnected, other agents can observe Deadvertise events and check whether one of
+the deadvertised object IDs correlates with the parent object ID of any application root object
+the agent is managing and invoke specific actions. An example of this pattern can be found
+in this [section](#deadvertise-event-pattern---an-example).
 
 ## IO Routing
 
