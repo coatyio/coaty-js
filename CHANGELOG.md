@@ -1,5 +1,15 @@
 # Changelog
 
+<a name="1.2.4"></a>
+## [1.2.4](https://github.com/coatyio/coaty-js/compare/v1.2.3...v1.2.4) (2018-11-20)
+
+This patch release covers some minor issues in the `com` and `controller` modules, simplifies agent configuration in the sensor-things example, and adds new content to the developer guide and sensor-things guide.
+
+### Bug Fixes
+
+* **com:** narrow eventSource property of communication events to type Component ([9bcfca9](https://github.com/coatyio/coaty-js/commit/9bcfca9))
+* **controller:** identity properties specified in controller configuration options take precedence over the ones specified in the controller's `initializeIdentity` method ([57c88d6](https://github.com/coatyio/coaty-js/commit/57c88d6))
+
 <a name="1.2.3"></a>
 ## [1.2.3](https://github.com/coatyio/coaty-js/compare/v1.2.2...v1.2.3) (2018-11-15)
 
