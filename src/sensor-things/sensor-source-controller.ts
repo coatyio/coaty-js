@@ -487,7 +487,6 @@ export class SensorSourceController extends Controller {
                     }
                 } else if (
                     event.eventData.isDiscoveringTypes &&
-                    !event.eventData.isDiscoveringExternalId &&
                     event.eventData.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)) {
                     this._sensors.forEach(container => {
                         event.resolve(ResolveEvent.withObject(this.identity, container.sensor));
