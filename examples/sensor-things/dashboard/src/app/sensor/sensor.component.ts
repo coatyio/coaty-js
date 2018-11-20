@@ -100,7 +100,7 @@ export class SensorComponent implements OnDestroy {
         if (object.objectType === SensorThingsTypes.OBJECT_TYPE_THING) {
             fields = ["objectId", "locationId"];
         } else if (object.objectType === SensorThingsTypes.OBJECT_TYPE_SENSOR) {
-            fields = ["objectId", "parentObjectId", "observedPropertyId"];
+            fields = ["objectId", "parentObjectId"];
         } else if (object.objectType === SensorThingsTypes.OBJECT_TYPE_FEATURE_OF_INTEREST) {
             fields = ["objectId"];
         } else if (object.objectType === SensorThingsTypes.OBJECT_TYPE_OBSERVATION) {

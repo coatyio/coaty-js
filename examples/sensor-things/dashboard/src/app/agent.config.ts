@@ -8,10 +8,7 @@ import { SensorThingsController } from "./controller/sensor-things-controller";
 import { CoreTypes, User } from "coaty/model";
 
 export const DEFAULT_CLIENT_BROKER_PORT = "9883";
-export const DEFAULT_SERVICE_HOST_DEV = "127.0.0.1";
-export const DEFAULT_SERVICE_HOST_PROD = "192.168.0.210";
-export const DEFAULT_SERVICE_BROKER_PORT = "1883";
-export const DEFAULT_SERVICE_HOST_BASE_PORT = 7000;
+export const DEFAULT_SERVICE_HOST = "127.0.0.1";
 
 const user: User = {
     objectId: "ed940055-37b0-4783-9b44-1b64cfc79d3a",
@@ -26,22 +23,23 @@ const user: User = {
 };
 
 /**
- * Gets a common Configuration object for Hello World clients.
+ * Gets Configuration object for dashboard client.
  * @param info the client's agent info
  */
 export function clientConfig(info: AgentInfo): Configuration {
     "use strict";
 
     const isDevMode = info.buildInfo.buildMode === "development";
-
-    const host = info.configInfo.serviceHost || (isDevMode ? DEFAULT_SERVICE_HOST_DEV : DEFAULT_SERVICE_HOST_PROD);
-    const hostUrl = `http://${host}`;
-    const baseServerPort = DEFAULT_SERVICE_HOST_BASE_PORT;
+    const host = info.configInfo.serviceHost || DEFAULT_SERVICE_HOST;
 
     return {
         common: {
+            agentInfo: info,
+            associatedUser: user,
         },
         communication: {
+            identity: { name: "Dashboard" },
+            shouldAutoStart: false,
             useReadableTopics: isDevMode,
             brokerOptions: {
                 servers: [
@@ -63,16 +61,4 @@ export const components: Components = {
     }
 };
 
-export const configuration: Configuration = mergeConfigurations(
-    clientConfig(agentInfo),
-    {
-        common: {
-            agentInfo,
-            associatedUser: user,
-        },
-        communication: {
-            shouldAutoStart: false
-        },
-        controllers: {
-        }
-    });
+export const configuration: Configuration = clientConfig(agentInfo);

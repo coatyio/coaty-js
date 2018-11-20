@@ -5,7 +5,7 @@ import { Components, Configuration, Container, mergeConfigurations } from "coaty
 import { NodeUtils } from "coaty/runtime-node";
 
 import { prompt } from "inquirer";
-import { clientConfig } from "./agent.config";
+import { sensorConfig } from "./agent.config";
 import { agentInfo } from "./agent.info";
 import { SensorThingsController } from "./sensor-things-controller";
 
@@ -50,12 +50,14 @@ prompt([
      * Inline configuration to have an easier access to answers
      */
     const configuration: Configuration = mergeConfigurations(
-        clientConfig(agentInfo),
+        sensorConfig(agentInfo),
         {
             common: {
                 agentInfo,
             },
-            communication: {},
+            communication: {
+                identity: { name: `Sensor service ${answers.deviceName}` },
+            },
             controllers: {
                 SensorThingsController: {
                     answers: {

@@ -126,9 +126,9 @@ export class SensorThingsController extends SensorSourceController {
                 unitOfMeasurement: this._getUnitOfMeasurement(metric),
                 observationType: ObservationTypes.TRUTH,
                 observedProperty: {
-                    name: "Observed Property " + metric,
-                    description: metric,
-                    definition: "https://www.google.com.tr/?q=" + metric, // not a valid definition
+                    name: metric,
+                    description: "Observed Property " + metric,
+                    definition: "https://www.google.com/?q=" + metric, // not a valid definition
                 },
                 parentObjectId: this._thing.objectId,
                 encodingType: SensorEncodingTypes.UNDEFINED,
