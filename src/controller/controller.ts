@@ -248,8 +248,8 @@ export abstract class Controller implements IController {
      * or additional application-specific properties. Alternatively, you can 
      * set or add custom property-value pairs by specifying them in the `identity`
      * property of the controller configuration options `ControllerOptions`.
-     * If you specify identity properties in both ways, the ones specified by this
-     * method take precedence.
+     * If you specify identity properties in both ways, the ones specified
+     * in the configuration options take precedence.
      *
      * @param identity the default identity object for a controller instance
      */
@@ -289,8 +289,8 @@ export abstract class Controller implements IController {
             parentObjectId: this.communicationManager.identity.objectId,
             name: this._controllerType,
         };
-        Object.assign(identity, this.options.identity || {});
         this.initializeIdentity(identity);
+        Object.assign(identity, this.options.identity || {});
         return identity;
     }
 
