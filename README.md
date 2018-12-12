@@ -16,7 +16,7 @@ efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
-* standardized event based communication patterns on top of a publish-subscribe
+* standardized event based communication patterns on top of an open publish-subscribe
   messaging protocol (currently MQTT),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
@@ -25,7 +25,7 @@ efficient way. The key properties of the framework include:
 
 Coaty supports interoperable framework implementations for multiple platforms.
 The Coaty JS package provides the cross-platform implementation targeted at
-JavaScript/TypeScript based agent projects, running as mobile or web apps, or Node.js
+JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
 services.
 
 Coaty JS comes with complete source code documentation, a Developer Guide,
@@ -50,13 +50,13 @@ This documentation includes:
 * a guide on the [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
+[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
 that demonstrates best practices and the basic use of communication events to
-exchange typed data in a decentralized Coaty application.
+exchange typed data in a distributed Coaty application.
 
 The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things/README.md)
-that demonstrates how Coaty and the sensorThings API can be used to manage a self-discovering
+[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things)
+that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
 network of sensors.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -138,4 +138,5 @@ helped to implement Coaty and make it even better:
 * Markus Sauer (@markussauer)
 * Hubertus Hohl (@ffa500)
 * Alihan Livdumlu (@adragonite)
+* Atakan Dulker (@phynics)
 * Antoine Beyet
