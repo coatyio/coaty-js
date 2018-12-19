@@ -6,7 +6,8 @@
         "lint": "gulp lint",
         "lint:fix": "gulp lint:fix",
         "build": "gulp build",
-        "start": "node ./dist/agent.js"
+        "start": "node ./dist/agent.js",
+        "broker": "coaty-scripts broker --verbose"
     },
     "readme": "README.md",
     "author": "Siemens AG",
