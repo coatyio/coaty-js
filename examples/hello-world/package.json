@@ -9,7 +9,12 @@
         "broker": "coaty-scripts broker --verbose",
         "client": "node dist/client/agent.js",
         "monitor": "node dist/monitor/agent.js",
-        "service": "node dist/service/agent.js"
+        "service": "node dist/service/agent.js",
+        "docker-build": "docker build -t coaty/hello-world .",
+        "docker-run": "docker run -t --name coaty-hello-world coaty/hello-world",
+        "docker-service": "docker exec -t coaty-hello-world npm run service",
+        "docker-monitor": "docker exec -t coaty-hello-world npm run monitor",
+        "docker-client": "docker exec -t coaty-hello-world npm run client"
     },
     "readme": "README.md",
     "author": "Siemens AG",
