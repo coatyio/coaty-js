@@ -247,6 +247,7 @@ PLATFORMS
 DEPENDENCIES
   github-pages
   jekyll-theme-primer (~> 0.5.3)
+  nokogiri (>= 1.8.5)
   tzinfo-data
   wdm (~> 0.1.0)
 
