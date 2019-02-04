@@ -49,8 +49,12 @@ Coaty JS source code is licensed under the [MIT License](https://opensource.org/
 Attach a license and copyright notice to the top of each created source files as follows:
 
 ```ts
-/*! Copyright (c) <contributor>. Licensed under the MIT License. */
+/*! Copyright (c) <year> <contributor>. Licensed under the MIT License. */
 ```
+
+`<year>` specifies the year of *first* publication and must *not* be changed
+when you modify the contents of the file later on. Do *not* add additional
+copyright notices or dates when the work is revised at a future time.
 
 Contributions without this header on each new source file won't be accepted.
 
