@@ -1,3 +1,5 @@
+/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
+
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
