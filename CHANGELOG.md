@@ -1,5 +1,21 @@
 # Changelog
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/coatyio/coaty-js/compare/v1.2.4...v1.3.0) (2019-02-04)
+
+This feature release adds new features to the Unified Storage API and the broker script.
+
+### Bug Fixes
+
+* **sensor-things example:** add missing rxjs dependency to package.json in broker project ([889a320](https://github.com/coatyio/coaty-js/commit/889a320))
+
+### Features
+
+* **db:** support property chaining for object filter conditions, ordering, and aggregation ([b887d43](https://github.com/coatyio/coaty-js/commit/b887d43))
+* **examples:** dockerize hello world example ([aa11610](https://github.com/coatyio/coaty-js/commit/aa11610))
+* **scripts:** add option to specify hostname for multicast DNS in broker script ([9b1fa37](https://github.com/coatyio/coaty-js/commit/9b1fa37))
+* **util:** add Async.withTimeout method to process promises with timeout ([c758cfd](https://github.com/coatyio/coaty-js/commit/c758cfd))
+
 <a name="1.2.4"></a>
 ## [1.2.4](https://github.com/coatyio/coaty-js/compare/v1.2.3...v1.2.4) (2018-11-20)
 
