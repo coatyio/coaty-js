@@ -68,7 +68,10 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>Provides a static <code>matchesFilter</code> method to match an object against a
-						given object filter.</p>
+							given object filter. Useful for retrieving matching objects on Query events
+							without using a database adapter. Also useful to filter out Coaty objects
+							that match given filter conditions before publishing with Advertise or
+						Channel events.</p>
 					</div>
 				</div>
 			</section>
@@ -93,6 +96,8 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="objectmatcher.html#getfilterproperties" class="tsd-kind-icon">get<wbr>Filter<wbr>Properties</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="objectmatcher.html#getfilterpropertyvalue" class="tsd-kind-icon">get<wbr>Filter<wbr>Property<wbr>Value</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="objectmatcher.html#matchesfilter" class="tsd-kind-icon">matches<wbr>Filter</a></li>
 							</ul>
 						</section>
@@ -111,7 +116,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L480">model/object-filter.ts:480</a></li>
+									<li>Defined in model/object-matcher.ts:23</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -129,6 +134,88 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+					<a name="getfilterproperties" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Filter<wbr>Properties</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Filter<wbr>Properties<span class="tsd-signature-symbol">(</span>propNames<span class="tsd-signature-symbol">: </span><a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in model/object-matcher.ts:69</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets an array of property names for the given nested properties specified either
+									in dot notation or array notation.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>internal</dt>
+									<dd><p>For internal use in framework only.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>propNames: <a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>property names as string in dot notation or as array of property names</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>an array of nested property names</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+					<a name="getfilterpropertyvalue" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Filter<wbr>Property<wbr>Value</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Filter<wbr>Property<wbr>Value<span class="tsd-signature-symbol">(</span>propNames<span class="tsd-signature-symbol">: </span><a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a>, obj<span class="tsd-signature-symbol">: </span><a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in model/object-matcher.ts:86</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the value of a given property for the given object. Property names may be
+									specified to retrieve the value of a nested property of a subordinate object.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>internal</dt>
+									<dd><p>For internal use in framework only.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>propNames: <a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>property names as string in dot notation or as array of property names</p>
+									</div>
+								</li>
+								<li>
+									<h5>obj: <a href="../interfaces/coatyobject.html" class="tsd-signature-type">CoatyObject</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a Coaty object</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>the value of the nested properties of the given object</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 					<a name="matchesfilter" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> matches<wbr>Filter</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
@@ -138,7 +225,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L496">model/object-filter.ts:496</a></li>
+									<li>Defined in model/object-matcher.ts:38</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -163,6 +250,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true on match; false otherwise</p>
 						</li>
 					</ul>
 				</section>
@@ -185,6 +273,12 @@
 						<ul>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="objectmatcher.html#collator" class="tsd-kind-icon">collator</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+								<a href="objectmatcher.html#getfilterproperties" class="tsd-kind-icon">get<wbr>Filter<wbr>Properties</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
+								<a href="objectmatcher.html#getfilterpropertyvalue" class="tsd-kind-icon">get<wbr>Filter<wbr>Property<wbr>Value</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="objectmatcher.html#matchesfilter" class="tsd-kind-icon">matches<wbr>Filter</a>

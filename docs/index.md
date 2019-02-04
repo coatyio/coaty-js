@@ -18,13 +18,13 @@ recommend reviewing this framework documentation:
   a guide on integration of the `OGC sensorThings API` in Coaty
 
 The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
+[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
 that demonstrates best practices and the basic use of communication events to
 exchange typed data in a decentralized Coaty application.
 
 The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things/README.md)
-that demonstrates how Coaty and the sensorThings API can be used to manage a self-discovering
+[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things)
+that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
 network of sensors.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -33,8 +33,9 @@ source of programming examples for experienced developers.
 Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
 prerequisite for developing applications with the framework. An introduction to
-Reactive Programming can be found [here](http://reactivex.io/).  Examples and
-explanations can be found on the [Learn RxJS](https://www.learnrxjs.io/) website.
+Reactive Programming can be found [here](http://reactivex.io/). Examples and
+explanations can be found on the [RxJS](https://rxjs.dev/) and
+[Learn RxJS](https://www.learnrxjs.io/) websites.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a

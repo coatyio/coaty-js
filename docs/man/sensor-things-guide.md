@@ -19,10 +19,10 @@ title: Coaty JS Documentation
   * [Encoding Type](#encoding-type)
   * [Observation Type](#observation-type)
 * [Controllers](#controllers)
+  * [Sensor Source Controller](#sensor-source-controller)
   * [Thing Observer Controller](#thing-observer-controller)
   * [Sensor Observer Controller](#sensor-observer-controller)
   * [Thing Sensor Observation Observer Controller](#thing-sensor-observation-observer-controller)
-  * [Sensor Source Controller](#sensor-source-controller)
   * [Discovering Sensor Things](#discovering-sensor-things)
   * [Detecting online and offline state of Sensor Things agents](#detecting-online-and-offline-state-of-sensor-things-agents)
 
@@ -390,70 +390,6 @@ split in two groups: source and observer controllers. The source controllers are
 be used by sensor data producers to provide the SensorThings objects whereas the observer controllers
 should be used by sensor data consumers.
 
-### Thing Observer Controller
-
-ThingObserverController provides three methods to observe Things in a system:
-
-* `discoverThings()`: Sends a Discover event to find all Things in a system. The server should
-  implement the counterpart function that listens and reacts to discover events.
-* `observeAdvertisedThings()`: Observes advertised Things in the system. The server should
-  implement the counterpart function that sends Advertise events when a Thing is created.
-* `queryThingsAtLocation(locationId: Uuid)`: Sends a Query event to find all Things in a system
-  with the given locationId. The server should implement the counterpart function that sends
-  listens and reacts to query events.
-
-### Sensor Observer Controller
-
-SensorObserverController provides methods to observe Sensors in a system and to listen to
-their observations.
-
-* `observeChanneledObservations(sensorId: Uuid, channelId?: Uuid)`: Observes the channeled
-  observations sent from a Sensor with the given objectId. Normally, the channelId is the
-  sensorId and therefore can be omitted. However, the user can define a custom channelId in
-  specific cases. This method is designed to be used along with
-  `SensorSourceController.publishChanneledObservation`.
-* `observeAdvertisedObservations(sensorId: Uuid)`: Observes the advertised observations sent
-  from a Sensor with the given objectId. This method is designed to be used along with
-  `SensorSourceController.publishAdvertisedObservation`.
-* `observeAdvertisedSensors()`: Observes advertised Sensors in the system. This method can
-  be used well together with `SensorSourceController` as it advertises every registered
-  Sensor unless specified otherwise.
-* `discoverSensors()`: Sends a Discover event to find all Sensors in a system. This can be
-  used well together with `SensorSourceController` as it listens to Discover events for its
-  registered Sensors unless specified otherwise.
-* `querySensorsOfThing(thingId: Uuid)`: Sends a Query event to find all Sensors in a system
-  with the given parentObjectId (belonging to the given Thing). This can be
-  used well together with `SensorSourceController` as it listens to Query events for its
-  registered Sensors unless specified otherwise.
-
-### Thing Sensor Observation Observer Controller
-
-`ThingSensorObservationObserverController` observes things and associated sensor and
-observation objects, combining the functionality of `ThingObserverController` and
-`SensorObserverController`.
-This controller is designed to be used by a sensor data consumer that wants to easily handle
-sensor-related events as well as sensor observations.
-
-This controller provides the following getters to handle incoming events for sensors, and observations:
-
-* `registeredSensorsChangeInfo$`: Gets an Observable emitting information about changes in
-  the currently registered sensors. Registered sensor objects are augmented by a property `thing`
-  which references the associated `Thing` object.
-* `sensorObservation$`: Gets an Observable emitting incoming observations on registered
-  sensors.
-
-The following filter predicates can be set to further restrict observed things and sensors:
-
-* `thingFilter(filter: (thing: Thing) => boolean)`: Sets a filter predicate that determines whether
-  an observed thing is relevant and should be registered with the controller. The filter
-  predicate should return `true` if the passed-in thing is relevant; `false` otherwise.
-  By default, all observed things are considered relevant.
-* `sensorFilter(filter: (sensor: Sensor, thing: Thing) => boolean)`: Sets a filter predicate
-  that determines whether an observed sensor is relevant
-  and should be registered with the controller. The filter predicate should
-  return `true` if the passed-in sensor is relevant; `false` otherwise.
-  By default, all observed sensors of all relevant things are considered relevant.
-
 ### Sensor Source Controller
 
 `SensorSourceController` controls Sensors that are registered with it and allows them to
@@ -558,6 +494,122 @@ channel the observations with `publishChanneledObservation` or advertise them
 with `publishAdvertisedObservation`. The controller will use the Io interface
 for the Sensor to read the value of the sensor and create an Observation object
 with that.
+
+### Thing Observer Controller
+
+ThingObserverController provides three methods to observe Things in a system:
+
+* `discoverThings()`: Sends a Discover event to find all Things in a system. The server should
+  implement the counterpart function that listens and reacts to discover events.
+* `observeAdvertisedThings()`: Observes advertised Things in the system. The server should
+  implement the counterpart function that sends Advertise events when a Thing is created.
+* `queryThingsAtLocation(locationId: Uuid)`: Sends a Query event to find all Things in a system
+  with the given locationId. The server should implement the counterpart function that sends
+  listens and reacts to query events.
+
+### Sensor Observer Controller
+
+SensorObserverController provides methods to observe Sensors in a system and to listen to
+their observations.
+
+* `observeChanneledObservations(sensorId: Uuid, channelId?: Uuid)`: Observes the channeled
+  observations sent from a Sensor with the given objectId. Normally, the channelId is the
+  sensorId and therefore can be omitted. However, the user can define a custom channelId in
+  specific cases. This method is designed to be used along with
+  `SensorSourceController.publishChanneledObservation`.
+* `observeAdvertisedObservations(sensorId: Uuid)`: Observes the advertised observations sent
+  from a Sensor with the given objectId. This method is designed to be used along with
+  `SensorSourceController.publishAdvertisedObservation`.
+* `observeAdvertisedSensors()`: Observes advertised Sensors in the system. This method can
+  be used well together with `SensorSourceController` as it advertises every registered
+  Sensor unless specified otherwise.
+* `discoverSensors()`: Sends a Discover event to find all Sensors in a system. This can be
+  used well together with `SensorSourceController` as it listens to Discover events for its
+  registered Sensors unless specified otherwise.
+* `querySensorsOfThing(thingId: Uuid)`: Sends a Query event to find all Sensors in a system
+  with the given parentObjectId (belonging to the given Thing). This can be
+  used well together with `SensorSourceController` as it listens to Query events for its
+  registered Sensors unless specified otherwise.
+
+### Thing Sensor Observation Observer Controller
+
+`ThingSensorObservationObserverController` observes things and associated sensor and
+observation objects, combining the functionality of `ThingObserverController` and
+`SensorObserverController`.
+This controller is designed to be used by a sensor data consumer that wants to easily handle
+sensor-related events as well as sensor observations.
+
+This controller provides the following getters to handle incoming events for sensors, and observations:
+
+* `registeredSensorsChangeInfo$`: Gets an Observable emitting information about changes in
+  the currently registered sensors. Registered sensor objects are augmented by a property `thing`
+  which references the associated `Thing` object.
+* `sensorObservation$`: Gets an Observable emitting incoming observations on registered
+  sensors.
+
+The following filter predicates can be set to further restrict observed things and sensors:
+
+* `thingFilter(filter: (thing: Thing) => boolean)`: Sets a filter predicate that determines whether
+  an observed thing is relevant and should be registered with the controller. The filter
+  predicate should return `true` if the passed-in thing is relevant; `false` otherwise.
+  By default, all observed things are considered relevant.
+* `sensorFilter(filter: (sensor: Sensor, thing: Thing) => boolean)`: Sets a filter predicate
+  that determines whether an observed sensor is relevant
+  and should be registered with the controller. The filter predicate should
+  return `true` if the passed-in sensor is relevant; `false` otherwise.
+  By default, all observed sensors of all relevant things are considered relevant.
+
+The following example shows how to use this controller to observe sensors and sensor
+measurements:
+
+```ts
+import { ThingSensorObservationObserverController } from "coaty/sensor-things";
+import { Subscription } from "rxjs";
+
+export class SensorDataObserverController extends ThingSensorObservationObserverController {
+
+    private _sensorsSubscription: Subscription;
+    private _observationSubscription: Subscription;
+
+    onInit() {
+        super.onInit();
+    }
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+
+        // Observe sensors
+        this._sensorsSubscription = this.observeSensors();
+
+        // Observe incoming sensor measurements
+        this._observationSubscription = this.observeObservations();
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+
+        this._sensorsSubscription && this._sensorsSubscription.unsubscribe();
+        this._observationSubscription && this._observationSubscription.unsubscribe();
+    }
+
+    observeSensors() {
+        // Monitor information about changes in the currently registered sensors. 
+        return this.registeredSensorsChangeInfo$.subscribe(changeInfo => {
+            console.log("New Sensors added", JSON.stringify(changeInfo.added));
+            console.log("Sensors removed", JSON.stringify(changeInfo.removed));
+            console.log("Sensors changed", JSON.stringify(changeInfo.changed));
+        });
+    }
+
+    observeObservations() {
+        // Monitor incoming sensor observations.
+        return this.sensorObservation$.subscribe(({ obs, sensor }) => {
+            console.log(`Incoming observation for sensor ${sensor.name}: result=${obs.result} resultTime=${obs.resultTime}`);
+        });
+    }
+
+}
+```
 
 ### Discovering Sensor Things
 

@@ -126,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L21">db/db-operations.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L30">db/db-operations.ts:30</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -150,13 +150,13 @@
 					<a name="aggregateobjects" class="tsd-anchor"></a>
 					<h3>aggregate<wbr>Objects</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">aggregate<wbr>Objects<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateProp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateOp<span class="tsd-signature-symbol">: </span><a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a>, filter<span class="tsd-signature-symbol">?: </span><a href="dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">aggregate<wbr>Objects<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateProps<span class="tsd-signature-symbol">: </span><a href="../globals.html#aggregateproperties" class="tsd-signature-type">AggregateProperties</a>, aggregateOp<span class="tsd-signature-symbol">: </span><a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a>, filter<span class="tsd-signature-symbol">?: </span><a href="dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L158">db/db-operations.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L176">db/db-operations.ts:176</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -172,6 +172,14 @@
 									returned is <code>undefined</code>.
 									Returns a promise that if fulfilled yields the aggregated value of
 								matching object properties. The promise is rejected if an error occurred.</p>
+								<p>The object property to be applied for aggregation is specified either
+									in dot notation or array notation. In dot notation, the name of the
+									object property is specified as a string (e.g. <code>&quot;volume&quot;</code>). It may
+									include dots (<code>.</code>) to access nested properties of subobjects (e.g.
+									<code>&quot;message.size&quot;</code>). If a single property name contains dots itself,
+									you obviously cannot use dot notation. Instead, specify the property
+									or nested properties as an array of strings (e.g.
+								<code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -179,7 +187,7 @@
 									<h5>collectionName: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>aggregateProp: <span class="tsd-signature-type">string</span></h5>
+									<h5>aggregateProps: <a href="../globals.html#aggregateproperties" class="tsd-signature-type">AggregateProperties</a></h5>
 								</li>
 								<li>
 									<h5>aggregateOp: <a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a></h5>
@@ -202,7 +210,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L37">db/db-operations.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L46">db/db-operations.ts:46</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -232,7 +240,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L143">db/db-operations.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L152">db/db-operations.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -267,7 +275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L105">db/db-operations.ts:105</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L114">db/db-operations.ts:114</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -302,7 +310,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L96">db/db-operations.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L105">db/db-operations.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -339,7 +347,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L115">db/db-operations.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L124">db/db-operations.ts:124</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -383,7 +391,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L131">db/db-operations.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L140">db/db-operations.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -431,7 +439,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L51">db/db-operations.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L60">db/db-operations.ts:60</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -473,7 +481,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L29">db/db-operations.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L38">db/db-operations.ts:38</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -503,7 +511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L80">db/db-operations.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L89">db/db-operations.ts:89</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -552,7 +560,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-operations.ts#L65">db/db-operations.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-operations.ts#L74">db/db-operations.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

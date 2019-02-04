@@ -68,7 +68,8 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>Defines criteria for filtering and ordering a result
-						set of Coaty objects. Used in combination with query events.</p>
+							set of Coaty objects. Used in combination with Query events
+						and database operations, as well as the <code>ObjectMatcher</code> functionality.</p>
 					</div>
 				</div>
 			</section>
@@ -106,36 +107,42 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="conditions" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> conditions</h3>
-					<div class="tsd-signature tsd-kind-icon">conditions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<div class="tsd-signature tsd-kind-icon">conditions<span class="tsd-signature-symbol">:</span> <a href="objectfiltercondition.html" class="tsd-signature-type">ObjectFilterCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#objectfilterconditions" class="tsd-signature-type">ObjectFilterConditions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L23">model/object-filter.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/model/object-filter.ts#L34">model/object-filter.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Conditions for filtering objects (optional).
+							<p>A single condition or a set of conditions for filtering objects (optional).
 							If not specified or empty, all objects are selected.</p>
 						</div>
-						<p>Filter conditions can be combined by logical AND or OR.</p>
-						<p>Object filter conditions are defined as an array of tuples
-							specifying object property name - filter expression pairs.
+						<p>A set of filter conditions can be combined by logical AND or OR.</p>
+						<p>An object filter condition is defined as a tuple
+							specifying the name of an object property and a filter expression.
 							The filter expression must evaluate to true when applied to the
 						property&#39;s value for the condition to become true.</p>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
+						<p>The object property to be applied for filtering is specified either
+							in dot notation or array notation. In dot notation, the name of the
+							object property is specified as a string (e.g. <code>&quot;objectId&quot;</code>). It may
+							include dots (<code>.</code>) to access nested properties of subobjects (e.g.
+							<code>&quot;message.name&quot;</code>). If a single property name contains dots itself,
+							you obviously cannot use dot notation. Instead, specify the property
+							or nested properties as an array of strings (e.g.
+						<code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
+						<p>A filter expression is a tuple consisting of a filter operator and an
+							operator-specific number of filter operands. You should use one of the
+						typesafe <code>filterOp</code> functions to specify a filter expression.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="orderbyproperties" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> order<wbr>ByProperties</h3>
-					<div class="tsd-signature tsd-kind-icon">order<wbr>ByProperties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"Asc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Desc"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">order<wbr>ByProperties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"Asc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Desc"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L44">model/object-filter.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/model/object-filter.ts#L49">model/object-filter.ts:49</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -144,6 +151,13 @@
 								(property name - sort order) tuples. The results are ordered by the
 							first tuple, then by the second tuple, etc.</p>
 						</div>
+						<p>The object property used for ordering can be specified either in dot notation
+							or array notation. In dot notation, the name of the
+							object property is specified as a string (e.g. <code>&quot;objectId&quot;</code>). It may
+							include dots (<code>.</code>) to access nested properties of subobjects (e.g.
+							<code>&quot;message.name&quot;</code>). If a single property name contains dots itself, you obviously
+							cannot use dot notation. Instead, specify the property or nested properties
+						as an array of strings (e.g. <code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -152,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">skip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L60">model/object-filter.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/model/object-filter.ts#L65">model/object-filter.ts:65</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -170,7 +184,7 @@
 					<div class="tsd-signature tsd-kind-icon">take<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/model/object-filter.ts#L52">model/object-filter.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/model/object-filter.ts#L57">model/object-filter.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

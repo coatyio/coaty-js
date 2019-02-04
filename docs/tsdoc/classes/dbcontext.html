@@ -160,7 +160,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L44">db/db-context.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L45">db/db-context.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">_adapter<span class="tsd-signature-symbol">:</span> <a href="../interfaces/idbadapter.html" class="tsd-signature-type">IDbAdapter</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/idbadapterextension.html" class="tsd-signature-type">IDbAdapterExtension</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L44">db/db-context.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L45">db/db-context.ts:45</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,7 +219,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L68">db/db-context.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L69">db/db-context.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -248,7 +248,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#addcollection">addCollection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L94">db/db-context.ts:94</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L95">db/db-context.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -272,14 +272,14 @@
 					<a name="aggregateobjects" class="tsd-anchor"></a>
 					<h3>aggregate<wbr>Objects</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">aggregate<wbr>Objects<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateProp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateOp<span class="tsd-signature-symbol">: </span><a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a>, filter<span class="tsd-signature-symbol">?: </span><a href="../interfaces/dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">aggregate<wbr>Objects<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, aggregateProps<span class="tsd-signature-symbol">: </span><a href="../globals.html#aggregateproperties" class="tsd-signature-type">AggregateProperties</a>, aggregateOp<span class="tsd-signature-symbol">: </span><a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a>, filter<span class="tsd-signature-symbol">?: </span><a href="../interfaces/dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#aggregateobjects">aggregateObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L279">db/db-context.ts:279</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L289">db/db-context.ts:289</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -295,6 +295,14 @@
 									returned is <code>undefined</code>.
 									Returns a promise that if fulfilled yields the aggregated value of
 								matching object properties. The promise is rejected if an error occurred.</p>
+								<p>The object property to be applied for aggregation is specified either
+									in dot notation or array notation. In dot notation, the name of the
+									object property is specified as a string (e.g. <code>&quot;volume&quot;</code>). It may
+									include dots (<code>.</code>) to access nested properties of subobjects (e.g.
+									<code>&quot;message.size&quot;</code>). If a single property name contains dots itself,
+									you obviously cannot use dot notation. Instead, specify the property
+									or nested properties as an array of strings (e.g.
+								<code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -302,7 +310,7 @@
 									<h5>collectionName: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>aggregateProp: <span class="tsd-signature-type">string</span></h5>
+									<h5>aggregateProps: <a href="../globals.html#aggregateproperties" class="tsd-signature-type">AggregateProperties</a></h5>
 								</li>
 								<li>
 									<h5>aggregateOp: <a href="../enums/aggregateop.html" class="tsd-signature-type">AggregateOp</a></h5>
@@ -325,7 +333,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L82">db/db-context.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L83">db/db-context.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -365,7 +373,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#clearcollection">clearCollection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L114">db/db-context.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L115">db/db-context.ts:115</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -396,7 +404,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#countobjects">countObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L259">db/db-context.ts:259</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L260">db/db-context.ts:260</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -432,7 +440,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#deleteobjects">deleteObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L206">db/db-context.ts:206</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L207">db/db-context.ts:207</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -468,7 +476,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#deleteobjectsbyid">deleteObjectsById</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L192">db/db-context.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L193">db/db-context.ts:193</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -506,7 +514,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#findobjectbyid">findObjectById</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L221">db/db-context.ts:221</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L222">db/db-context.ts:222</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -551,7 +559,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#findobjects">findObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L242">db/db-context.ts:242</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L243">db/db-context.ts:243</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -599,7 +607,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L299">db/db-context.ts:299</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L309">db/db-context.ts:309</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -636,7 +644,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#insertobjects">insertObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L130">db/db-context.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L131">db/db-context.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -679,7 +687,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbsqloperations.html">IDbSqlOperations</a>.<a href="../interfaces/idbsqloperations.html#iquery">iquery</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L364">db/db-context.ts:364</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L374">db/db-context.ts:374</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -726,7 +734,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbsqloperations.html">IDbSqlOperations</a>.<a href="../interfaces/idbsqloperations.html#query">query</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L337">db/db-context.ts:337</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L347">db/db-context.ts:347</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -764,7 +772,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#removecollection">removeCollection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L104">db/db-context.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L105">db/db-context.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -794,7 +802,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L384">db/db-context.ts:384</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L394">db/db-context.ts:394</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -857,7 +865,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#updateobjectproperty">updateObjectProperty</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L171">db/db-context.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L172">db/db-context.ts:172</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -907,7 +915,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idbnosqloperations.html">IDbNoSqlOperations</a>.<a href="../interfaces/idbnosqloperations.html#updateobjects">updateObjects</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/7e4a334/src/db/db-context.ts#L150">db/db-context.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/79c6c67/src/db/db-context.ts#L151">db/db-context.ts:151</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

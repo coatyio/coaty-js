@@ -66,7 +66,8 @@ Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
 prerequisite for developing applications with the framework. An introduction to
 Reactive Programming can be found [here](http://reactivex.io/). Examples and
-explanations can be found on the [Learn RxJS](https://www.learnrxjs.io/) website.
+explanations can be found on the [RxJS](https://rxjs.dev/) and
+[Learn RxJS](https://www.learnrxjs.io/) websites.
 
 If you are new to TypeScript programming, we recommend to take a look at the official
 [TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful

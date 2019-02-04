@@ -245,19 +245,20 @@ TypeScript file with the following comment rule flags
 
 ### Comments
 
-* Use JSDoc style comments for *public* functions, interfaces, enums, and classes:
-  `/** ... */`. Include a description, specify types and values for all
-  parameters and return values.
+* Use [TSDoc](https://github.com/Microsoft/tsdoc) style comments for *public* functions,
+  interfaces, enums, and classes: `/** ... */`. Include a description, specify values
+  for all parameters (`@param`) and return values (`@returns`).
+  Don't specify explicit type information for parameters as it can be deduced from source code.
 * Use ``//`` for single line comments. Place single line comments on a newline
   above the subject of the comment. Put an empty line before the comment.
-* Prefixing your comments with `FIXME` or `TODO` or `HACK` helps other
+* Prefixing your comments with custom tags `@fixme` or `@todo` or `@hack` helps other
   developers quickly understand if you're pointing out a problem that needs to
   be revisited, or if you are suggesting a solution to the problem that needs
   to be implemented, or if you are explaining the reason for a workaround.
   These are different than regular comments because they are actionable.
-  The actions are `FIXME -- need to figure this out` or
-  `TODO -- need to implement` or `HACK -- reason for`. You can also
-  append the short name of the person who is responsible: `TODO(HHo)`.
+  The actions are `@fixme -- need to figure this out` or
+  `@todo -- need to implement` or `@hack -- reason for`. You can also
+  append the initials of the person who is responsible: `@todo(HHo)`.
 
 ### Typings
 
@@ -277,9 +278,9 @@ strictly follow the coding principles listed below:
 ### Asynchronous Data Flow
 
 * Asynchronous date flow between components should be modelled using RxJS
-  observables. An introduction to Reactive Programming can be found
+  observables.  An introduction to Reactive Programming can be found
   [here](http://reactivex.io/). Examples and explanations can be found on
-  the [Learn RxJS](https://www.learnrxjs.io/) website.
+  the [RxJS](https://rxjs.dev/) and [Learn RxJS](https://www.learnrxjs.io/) websites.
 
 * In RxJS, use pipeable operator syntax. Import only those RxJS operators that you
   actually use in your code, e.g. `import { map, take } from "rxjs/operators";`.

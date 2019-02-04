@@ -375,7 +375,7 @@ object attribute filtering and joining:
 {
   "objectTypes": ["object type", ...],
   "coreTypes": ["core type", ...],
-  "objectFilter": ObjectFilter,
+  "objectFilter": DbObjectFilter,
   "objectJoinConditions": ObjectJoinCondition | ObjectJoinCondition[]
 }
 ```
@@ -384,21 +384,22 @@ Query objects are retrieved based on the specified object types or core types, a
 object filter, and optional join conditions. Exactly one of the properties `objectTypes`
 or `coreTypes` must be specified.
 
-The optional object filter defines conditions for filtering and arranging result objects:
+The optional `objectFilter` defines conditions for filtering and arranging result objects:
 
 ```js
 {
   // Conditions for filtering objects by logical 'and' or 'or' combination.
-  "conditions": {
+  "conditions": ["<propertyName>[.<subpropertyName>]*", <filterOperator1>, ...<filterOperands1>] |
+  {
      and: | or: [
-       ["<propertyName1>", <filterOperator1>, ...<filterOperands1>],
-       ["<propertyName2>", <filterOperator2>, ...<filterOperands2>],
+       ["<propertyName1>[.<subpropertyName1>]*", <filterOperator1>, ...<filterOperands1>],
+       ["<propertyName2>[.<subpropertyName2>]*", <filterOperator2>, ...<filterOperands2>],
        ...
      ]
   },
 
   // Sort result objects by the given property names (optional)
-  "orderByProperties": [[<propertyName1>, "Asc" | "Desc"], ...],
+  "orderByProperties": [["<propertyName>[.<subpropertyName>]*", "Asc" | "Desc"], ...],
 
   // Take no more than the given number of results (optional).
   "take": <number>,
@@ -490,7 +491,7 @@ consisting of attribute-value pairs, the update operation could be interpreted
 as a partial or a full update on this value object. Also, the interpretation
 of the property name itself depends on the application context. For example, the name
 could specify a chain of property/subproperty names to support updating values
-of a subproperty object on any level (e.g. `<property1>.<subproperty1>.<subsubproperty1>`).
+of a subproperty object on any level (e.g. `<property>.<subproperty>.<subsubproperty>`).
 It could also be a virtual property that is *not* even defined in the associated object.
 
 For a *full* update, the entire Coaty object is specified as payload:

@@ -7,7 +7,7 @@ title: Coaty JS Documentation
 
 This document covers everything a developer needs to know about using the Coaty
 framework to implement collaborative IoT applications targeting Node.js,
-as well as mobile or web apps. We assume you know nothing about Coaty JS before reading
+as well as mobile and web apps. We assume you know nothing about Coaty JS before reading
 this guide.
 
 ## Table of Contents
@@ -22,9 +22,9 @@ this guide.
   * [Bootstrap a Coaty container in NodeJs](#bootstrap-a-coaty-container-in-nodejs)
   * [Bootstrap a Coaty container in Angular or Ionic](#bootstrap-a-coaty-container-in-angular-or-ionic)
   * [Access Coaty container components](#access-coaty-container-components)
-  * [Register controllers at run time](#register-controllers-at-run-time)
   * [Shut down a Coaty container](#shut-down-a-coaty-container)
   * [Define an agent-specific controller class](#define-an-agent-specific-controller-class)
+    * [Register controllers at run time](#register-controllers-at-run-time)
   * [Convenience controllers](#convenience-controllers)
     * [Connection State Controller](#connection-state-controller)
     * [Object Cache Controller](#object-cache-controller)
@@ -43,7 +43,7 @@ this guide.
   * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
   * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
   * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
-  * [Metadata communication for distributed lifecycle management](#metadata-communication-for-distributed-lifecycle-management)
+  * [Distributed lifecycle management](#distributed-lifecycle-management)
 * [IO Routing](#io-routing)
   * [IO Routing communication event flow](#io-routing-communication-event-flow)
   * [IO Routing implementation](#io-routing-implementation)
@@ -62,7 +62,7 @@ this guide.
   * [Implement a custom database adapter](#implement-a-custom-database-adapter)
 * [Decentralized logging](#decentralized-logging)
 * [Utilities](#utilities)
-  * [Executing promises in sequence](#executing-promises-in-sequence)
+  * [Asynchronous promise operations](#asynchronous-promise-operations)
   * [Binary search and insert](#binary-search-and-insert)
   * [Localized ISO date-time formatting](#localized-iso-date-time-formatting)
   * [Deep comparison checks](#deep-comparison-checks)
@@ -96,7 +96,7 @@ efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
-* standardized event based communication patterns on top of a publish-subscribe
+* standardized event based communication patterns on top of a open publish-subscribe
   messaging protocol (currently MQTT),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
@@ -105,7 +105,7 @@ efficient way. The key properties of the framework include:
 
 Coaty supports interoperable framework implementations for multiple platforms.
 The Coaty JS package provides the cross-platform implementation targeted at
-JavaScript/TypeScript based agent projects, running as mobile or web apps, or Node.js
+JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
 services.
 
 Coaty JS comes with complete source code documentation, a Developer Guide,
@@ -130,13 +130,13 @@ This documentation includes:
 * a guide on the [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
+[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
 that demonstrates best practices and the basic use of communication events to
-exchange typed data in a decentralized Coaty application.
+exchange typed data in a distributed Coaty application.
 
 The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things/README.md)
-that demonstrates how Coaty and the sensorThings API can be used to manage a self-discovering
+[Sensor Things example](https://github.com/coatyio/coaty-js/tree/master/examples/sensor-things)
+that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
 network of sensors.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -146,7 +146,8 @@ Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
 prerequisite for developing applications with the framework. An introduction to
 Reactive Programming can be found [here](http://reactivex.io/). Examples and
-explanations can be found on the [Learn RxJS](https://www.learnrxjs.io/) website.
+explanations can be found on the [RxJS](https://rxjs.dev/) and
+[Learn RxJS](https://www.learnrxjs.io/) websites.
 
 If you are new to TypeScript programming, we recommend to take a look at the official
 [TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
@@ -360,7 +361,7 @@ a unique object ID, etc. By default, these identity objects are advertised when
 the components are set up and deadvertised on normal or abnormal termination
 of a Coaty agent. Using the controller and/or communication options, you can opt out
 of de/advertisement by setting `shouldAdvertiseIdentity` to `false`.
-For details, see this [section](#metadata-communication-for-distributed-lifecycle-management).
+For details, see this [section](#distributed-lifecycle-management).
 
 ### Bootstrap a Coaty container in NodeJs
 
@@ -400,7 +401,7 @@ Note that the Communication Manager can be started automatically after all
 container components have been resolved. To do this, set the configuration
 setting `shouldAutoStart` to `true` in the communication options.
 Otherwise, you have to start the Communication Manager
-explicitely by invoking the `start` method.
+explicitely by invoking its `start` method.
 
 ### Bootstrap a Coaty container in Angular or Ionic
 
@@ -550,61 +551,14 @@ npm install @angular-builders/dev-server --save-dev
 
 ### Access Coaty container components
 
-Within Angular or Ionic, you can access container components using Angular
-constructor dependency injection. Alternatively, you can access the components
-within a container directly using one of these container methods:
+You can access the components within a container directly using one of
+these container methods:
 
 ```ts
-getRuntime()
-getCommunicationManager()
-getController(classType)
-mapControllers(callback)
-```
-
-Note that it is not safe to query a controller in the constructor of your
-custom component because the requested controller might not have been created
-yet. Instead, you should access and cache other controllers in your custom
-controller class by defining a `onContainerResolved` method:
-
-```ts
-onContainerResolved(container: Container) {
-    // Access and cache another controller
-    this._tasksController = container.getController(TasksController);
-}
-```
-
-You can define the `onInit` hook method in your custom controller class to
-perform side effects when the controller instance has been instantiated
-(instead of defining a constructor):
-
-The `onInit` method is called immediately after the controller instance
-has been created. Although the base implementation does nothing it is good
-practice to call super.onInit() in your override method; especially if your
-custom controller class extends from another custom controller class
-and not from the base `Controller` class directly.
-
-You can override the following hook methods in your custom controller class
-to perform side effects when the operating state of the Communication Manager
-changes (see section on Communication Manager below):
-
-```ts
-onCommunicationManagerStarting()
-onCommunicationManagerStopping()
-```
-
-Ensure you always call the corresponding super method in your overridden method.
-
-### Register controllers at run time
-
-A controller can also be dynamically registered and resolved at run time:
-
-```ts
-const myCustomCtrl = container.registerController(
-    "MyCustomController",
-    MyCustomController,
-    {
-        "MyCustomController": { <controller configuration options> }
-    });
+container.getRuntime()
+container.getCommunicationManager()
+container.getController(classType)
+container.mapControllers(callback)
 ```
 
 ### Shut down a Coaty container
@@ -639,7 +593,15 @@ Coaty agent. A controller
 * exchanges object data with other agent components by publishing
   and observing communication events.
 * provides observable state to other parts of the project, such as views.
-* supports lifecycle management.
+* provides methods for lifecycle management.
+
+In accordance with the design principle of separation of concerns, each
+custom controller class should encapsulate a single dedicated functionality.
+
+To combine or aggregate the functionalities of multiple controllers, use
+a separate service class in your agent project (e.g. an injectable service
+in Angular) or define a superordinate controller that references the
+other controllers (see use of delegation design pattern in the next section).
 
 The following template shows how to set up the basic structure of a custom
 controller class:
@@ -686,13 +648,69 @@ export class SupportTaskController extends Controller {
 }
 ```
 
-In accordance with the design principle of separation of concerns, each
-custom controller class should encapsulate a single dedicated functionality.
+Note that it is not safe to query a controller in the constructor of your
+custom controller because the requested controller might not have been created
+yet. Instead, you should access and cache other controllers in your custom
+controller class by defining a `onContainerResolved` lifecycle method:
 
-To combine or aggregate the functionalities of multiple controllers, use
-a separate service class in your agent project (e.g. an injectable service
-in Angular) or define a superordinate controller that references the
-other controllers.
+```ts
+onContainerResolved(container: Container) {
+    // Access and cache another controller
+    this._tasksController = container.getController(TasksController);
+}
+```
+
+You can define the `onInit` lifecycle method in your custom controller class to
+perform side effects when the controller instance has been instantiated
+(instead of defining a constructor):
+
+The `onInit` method is called immediately after the controller instance
+has been created. Although the base implementation does nothing it is good
+practice to call super.onInit() in your override method; especially if your
+custom controller class extends from another custom controller class
+and not from the base `Controller` class directly.
+
+You can override the following lifecycle methods in your custom controller class
+to perform side effects when the operating state of the Communication Manager
+changes (see section on Communication Manager below).
+
+```ts
+onCommunicationManagerStarting()
+onCommunicationManagerStopping()
+```
+
+Usually, in the starting method, RxJS subscriptions for incoming communication events
+are set up; whereas in the stopping method these subscriptions are unsubscribed.
+
+> Ensure you always call the corresponding super method in your overridden method.
+
+#### Register controllers at run time
+
+A controller can also be dynamically registered and resolved at run time:
+
+```ts
+const myCustomCtrl = container.registerController(
+    "MyCustomController",
+    MyCustomController,
+    {
+        "MyCustomController": { <controller configuration options> }
+    });
+```
+
+If your custom controller needs to access functionality of other controllers, two
+different design patterns can be used:
+
+1. Inheritance: Extend your controller class from a base controller class.
+2. Delegation: provide instance member(s) that refer to the dependent controller(s).
+
+By using the delegation pattern, your custom controller instance should set up
+the references to dependent controllers in the `onContainerResolved` lifecycle
+method as explained in the previous section. In this method, you can also
+dynamically create and register a dependent controller that has not been
+configured in the container configuration by using `container.registerController`.
+
+> Note that the delegation design pattern supports exchanging communication events
+> between your custom controller and its dependent controllers.
 
 ### Convenience controllers
 
@@ -903,17 +921,17 @@ this.runtime.newUuid();
 
 The base `CoatyObject` interface defines the following generic properties:
 
-```
-{
-  coreType: "CoatyObject" | "User" | "Device" | ...,
-  objectType: string,
-  name: string,
-  objectId: Uuid,
-  externalId?: string,
-  parentObjectId?: Uuid,
-  assigneeUserId?: Uuid,
-  locationId?: Uuid,
-  isDeactivated?: boolean
+```ts
+interface CoatyObject {
+  coreType: "CoatyObject" | "User" | "Device" | ...;
+  objectType: string;
+  name: string;
+  objectId: Uuid;
+  externalId?: string;
+  parentObjectId?: Uuid;
+  assigneeUserId?: Uuid;
+  locationId?: Uuid;
+  isDeactivated?: boolean;
 }
 ```
 
@@ -1064,8 +1082,8 @@ Internally, events are emitted and received by the Communication Manager using
 publish-subscribe messaging with an MQTT message broker. Events are passed to Coaty
 controllers by following the Reactive Programming paradigm using RxJS
 observables. An introduction to Reactive Programming can be found
-[here](http://reactivex.io/). Examples and explanations can be found on the
-[Learn RxJS](https://www.learnrxjs.io/) website.
+[here](http://reactivex.io/). Examples and explanations can be found on
+the [RxJS](https://rxjs.dev/) and [Learn RxJS](https://www.learnrxjs.io/) websites.
 
 The Communication Manager provides features to transparently control the underlying
 publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
@@ -1089,7 +1107,7 @@ Communication Manager again later using the `start` method.
 
 Whenever the operating state of the Communication Manager changes by invoking
 one of the above method calls all the controller components of the container
-are notified by the following hook methods:
+are notified by the following lifecycle methods:
 
 ```ts
 Controller.onCommunicationManagerStarting()
@@ -1274,7 +1292,7 @@ manager of a Coaty container sends a last will message consisting of a Deadverti
 event with the object ID of its identity component and its associated device (if defined).
 Whenever the agent disconnects normally or abnormally, the broker publishes its last will
 message to all subscribers which observe Deadvertise events. For details, see this
-[section](#metadata-communication-for-distributed-lifecycle-management).
+[section](#distributed-lifecycle-management).
 
 Using this pattern, agents can detect the online/offline state of other Coaty agents
 and act accordingly. One typical use case is to set the parent object ID of
@@ -1370,7 +1388,7 @@ For example, by scanning the QR Code of a physical asset, which encodes its exte
 the Discover event can resolve the Coaty object representation of this asset.
 
 ```ts
-import { filter, take, timeout } from "rxjs/operators";
+import { filter, first, map, timeout } from "rxjs/operators";
 
 // QR Code of asset
 const externalId = "42424242";
@@ -1379,12 +1397,13 @@ const externalId = "42424242";
 this.communicationManager
     .publishDiscover(DiscoverEvent.withExternalId(this.identity, externalId))
     .pipe(
-        take(1),
+        first(),
+        map(event => event.eventData.object),
         timeout(5000)
     )
     .subscribe(
-        event => {
-            const object = event.eventData.object;  // Handle object in Resolve response event
+        object => {
+            // Handle object in Resolve response event
         },
         error => {
             // No response has been received within the given timeout period
@@ -1539,7 +1558,7 @@ could be interpreted as a partial or a full update on this value object. Also, t
 interpretation of the property name itself depends on the application context. For
 example, the name could specify a chain of property/subproperty names to support
 updating values of a subproperty object on any level (e.g.
-`<property1>.<subproperty1>.<subsubproperty1>`). It could also be a virtual property
+`<property>.<subproperty>.<subsubproperty>`). It could also be a virtual property
 that is *not* even defined in the associated object.
 
 For a *full* update, the entire Coaty object is specified as event data.
@@ -1637,14 +1656,14 @@ not reapplied after a reconnect.
 In your controller classes we recommend to subscribe
 to observe methods when the Communication Manager is starting and unsubscribe from
 observe methods when the Communication Manager is stopping. Use the
-aforementioned controller hook methods to implement this subscription pattern.
+aforementioned controller lifecycle methods to implement this subscription pattern.
 
-### Metadata communication for distributed lifecycle management
+### Distributed lifecycle management
 
 Whenever a Coaty container is resolved by creating its communication manager and
 controller components, the identities of these components are advertised as
-`Component` objects automatically. You can prevent publishing Advertise events for identity components
-by setting the controller and/or communication configuration option
+`Component` objects automatically. You can prevent publishing Advertise events for
+identity components by setting the controller and/or communication configuration option
 `shouldAdvertiseIdentity` to `false`.
 
 Each identity component is initialized with default property values. For example,
@@ -2133,7 +2152,7 @@ countObjects(
 
 aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean>;
 ```
@@ -2153,13 +2172,14 @@ const filter: DbObjectFilter = {
             ["description", filterOp.like("_foo%")],
             ["duration", filterOp.between(1000000, 3000000)],
             ["status", filterOp.in([TaskStatus.Pending, TaskStatus.InProgress])],
-            ["requirements", filterOp.contains(["welder"])]
-            ["requirements", filterOp.notContains(["qualitycheck", "endassembly"])]
-        ]
+            ["requirements", filterOp.contains(["welder"])],
+            ["requirements", filterOp.notContains(["qualitycheck", "endassembly"])],
+            ["metainfo.version", filterOp.between(1, 4)],
+        ],
     },
-    orderByProperties: [["creationDate", "Desc"], ["name", "Asc"]],
+    orderByProperties: [["creationDate", "Desc"], ["name", "Asc"], ["metainfo.version", "Asc"]],
     skip: 100,
-    take: 100
+    take: 100,
 };
 
 const joinConditions: DbJoinCondition[] = [
@@ -2168,14 +2188,14 @@ const joinConditions: DbJoinCondition[] = [
         fromProperty: "objectId",
         localProperty: "locationId",
         asProperty: "resolvedLocation",
-        isOneToOneRelation: true
+        isOneToOneRelation: true,
     },
     {
         fromCollection: "component",
         fromProperty: "objectId",
         localProperty: "componentIds",
         asProperty: "resolvedComponents",
-        isLocalPropertyArray: true
+        isLocalPropertyArray: true,
     },
 ];
 
@@ -2186,7 +2206,8 @@ dbContext.findObjects<ComponentTask>("task", filter, joinConditions)
 
 The `findObjects` operation looks up objects in a collection which match
 the given object filter. If the filter is empty or not specified all objects
-in the collection are retrieved.
+in the collection are retrieved. For details on how to specify object filters,
+take a look at the source code documentation of class `ObjectFilter`.
 
 Optional join conditions can be specified to augment result objects by
 resolving object references to related objects and by storing them as extra
@@ -2773,7 +2794,7 @@ log entries by external tools.
 The framework provides some useful utility functions in the `util` module
 that are missing in the JavaScript ES5/ES6 standard.
 
-### Executing promises in sequence
+### Asynchronous promise operations
 
 The `Async.inSeries` method applies an asynchronous operation against each
 value of an array of items in series (from left-to-right). You can break out
@@ -2822,6 +2843,24 @@ Async.reduce(
         });
     })
     .catch(error => console.log(error));
+```
+
+The `Async.withTimeout` method augments an asynchronous promise operation
+with a timeout. It returns a promise that rejects after the given number of
+milliseconds if the passed in promise doesn't resolve or reject in the meantime:
+
+```ts
+import { Async } from "coaty/util";
+
+const myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve(true), 2000);
+});
+
+Async.withTimeout(1000, myPromise)
+    .then(value => console.log("resolved"))
+    .catch(error => console.log(error.message));
+
+// should yield 'Timed out after 1000 ms'
 ```
 
 ### Binary search and insert
@@ -2890,7 +2929,7 @@ equals({ x : 5, y : [6] }, { x : 5, y : 6 })) => false
 #### Contains check
 
 Checks if a JavaScript value (usually an object or array) contains
-other values. Primitive value types (number, string, boolean, null,undefined) contain
+other values. Primitive value types (number, string, boolean, null, undefined) contain
 only the identical value. Object properties match if all the key-value
 pairs of the specified object are contained in them. Array properties
 match if all the specified array elements are contained in them.
@@ -2985,6 +3024,12 @@ Coaty service exits.
 
 Use the `findMulticastDnsService`, `findMqttBrokerInfo`, and `findWampRouterInfo` functions
 in a Coaty agent component to discover a published mDNS service (see examples below).
+
+> Note that multicast DNS discovery can only resolve host names within an IP subnet.
+> If you need discovery of broker connection information across subnets, host the
+> container configuration with this information as a JSON file on a centrally accessible
+> web server and retrieve it using HTTP/REST as described in this
+> [section](#bootstrap-a-coaty-container-in-nodejs).
 
 ### Discover configuration URLs
 
@@ -3141,7 +3186,7 @@ a Mosca MQTT broker. You can execute the `broker` script (inside an npm script)
 to run this broker:
 
 ```sh
-coaty-scripts broker [--verbose] [--port <port>]
+coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>]
 ```
 
 Runs Mosca broker on MQTT port 1883 (or the one specified with command line option
@@ -3150,7 +3195,10 @@ given MQTT port by adding 8000.
 
 If the broker is launched on standard port 1883, a multicast DNS service for broker
 discovery is published additionally. The broker is then discoverable under the mDNS
-service name "Coaty MQTT Broker" and the service type "coaty-mqtt".
+service name "Coaty MQTT Broker" and the service type "coaty-mqtt". In this case, you
+can optionally specifiy a non-default hostname for multicast DNS discovery with the
+command line option `--bonjourHost`. Useful for cases, where the normal hostname provided
+by mDNS cannot be resolved by DHCP.
 
 If the command line option `--verbose` is given, Mosca broker provides verbose logging
 of subscriptions. Additionally, all MQTT messages published by MQTT clients are logged
@@ -3175,14 +3223,17 @@ broker.run({ logVerbose: true, ... });
 
 Options are defined in an object hash including the following properties:
 
-* `port:` the MQTT port (default is 1883); the websocket port is computed from
+* `port`: the MQTT port (default is 1883); the websocket port is computed from
   port by adding 8000.
-* `logVerbose:` true for detailed logging of subscriptions and published messages
+* `logVerbose`: true for detailed logging of subscriptions and published messages
   (default is false).
-* `startBonjour:` true, if multicast DNS broker discovery service should be
+* `startBonjour`: true, if multicast DNS broker discovery service should be
   published (default is false); only works if standard MQTT port 1883 is used.
   The broker is then discoverable under the mDNS service name "Coaty MQTT Broker"
   and the service type "coaty-mqtt".
+* `bonjourHost`: if given, specifies the hostname to be used for publishing the
+   mDNS service (optional). Useful for cases, where the normal hostname provided
+   by mDNS cannot be resolved by DHCP.
 * `onReady`: callback function to be invoked when broker is ready (default none).
 * `moscaSettings`: if given, these settings completely override the default mosca
    settings computed by the other options.
