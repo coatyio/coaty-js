@@ -11,6 +11,7 @@ Coaty JavaScript framework in action.
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [Start-up](#start-up)
+* [Run with Docker](#run-with-docker)
 * [Project Structure](#project-structure)
 * [Communication Event Flow](#communication-event-flow)
   * [Task Flow between Service and Clients](#task-flow-between-service-and-clients)
@@ -81,6 +82,10 @@ This example comes bundled with the Coaty framework but it can be
 build and run independently. The example has its own npm package definition
 and a simple build environment based on npm scripts.
 
+You can either install all prerequisites of the example locally on your
+target machine as described next or use a dockerized version of the example
+as described in section [Run with Docker](#run-with-docker) below.
+
 First, make sure that the `Node.js` JavaScript runtime (version 6 or higher) is globally
 installed on your target machine. Download and installation details can be found
 [here](http://nodejs.org/).
@@ -132,6 +137,21 @@ We recommend to first launch just one client, watch its
 behavior and then start additional ones to see how they compete for incoming
 task requests.
 
+## Run with Docker
+
+The dockerized example provides a way to run the example applications isolated
+in a docker container, packaged with all its dependencies and libraries. Please refer
+to [Docker website](https://docs.docker.com/) on how to install the Docker engine
+on your machine.
+
+Build the dockerized example by executing `npm run docker-build`.
+
+Next, run the Docker container by executing `npm run docker-run`.
+
+Start a service, a client, or a monitor within the Docker container by
+executing `npm run docker-service`, `npm run docker-client`, or
+`npm run docker-monitor` in a new console window.
+
 ## Project Structure
 
 The file structure for the Hello World project looks like the following:
@@ -163,6 +183,7 @@ The file structure for the Hello World project looks like the following:
         |-- db.ts                   - constants/functions for database initialization
         |-- log-tags.ts             - custom log tags for db, client, monitor, and service operations
         |-- models.ts               - definitions of domain object models
+|-- Dockerfile                      - contains all commands to build a Docker image
 |-- gulpfile.js                     - project gulpfile with tasks for building and linting
 |-- package.json                    - project package definition
 |-- tsconfig.json                   - TypeScript compiler options
