@@ -86,4 +86,28 @@ export class Async {
         });
     }
 
+    /**
+     * Returns a promise that rejects after the given number of milliseconds
+     * if the passed in promise doesn't resolve or reject in the meantime;
+     * otherwise the returned promise resolves or rejects with the passed in
+     * promise. 
+     * 
+     * @param timeoutMillis  number of milliseconds after which to reject
+     * @param promise as promise
+     */
+    static withTimeout<T>(timeoutMillis: number, promise: Promise<T>): Promise<T> {
+
+        // Create a promise that rejects after the given number of milliseconds
+        const timeout = new Promise<T>((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error(`Timed out after ${timeoutMillis} ms`));
+            }, timeoutMillis);
+        });
+
+        return Promise.race([
+            promise,
+            timeout,
+        ]);
+    }
+
 }

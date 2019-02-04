@@ -44,6 +44,46 @@ describe("Utilities", () => {
             .catch(error => failTest(error, done));
     }, TEST_TIMEOUT);
 
+    it("Async.withTimeout rejects on timeout", (done) => {
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(() => resolve(), 2000);
+        });
+        Async.withTimeout(1000, promise)
+            .then(() => {
+                failTest(new Error("Not timed out"), done);
+            })
+            .catch(error => {
+                expect(error.message).toBe("Timed out after 1000 ms");
+                done();
+            });
+    }, 2 * TEST_TIMEOUT);
+
+    it("Async.withTimeout resolves on non-timeout", (done) => {
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(() => resolve(true), 1000);
+        });
+        Async.withTimeout(2000, promise)
+            .then(value => {
+                expect(value).toBeTruthy();
+                done();
+            })
+            .catch(error => failTest(error, done));
+    }, 2 * TEST_TIMEOUT);
+
+    it("Async.withTimeout rejects on non-timeout", (done) => {
+        const promise = new Promise((resolve, reject) => {
+            setTimeout(() => reject(true), 1000);
+        });
+        Async.withTimeout(2000, promise)
+            .then(() => {
+                failTest(new Error("Not rejected"), done);
+            })
+            .catch(error => {
+                expect(error).toBeDefined();
+                done();
+            });
+    }, 2 * TEST_TIMEOUT);
+
     it("Deep equality checks", () => {
         /* tslint:disable-next-line:no-null-keyword */
         expect(equals(null, null)).toBe(true);
