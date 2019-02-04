@@ -1,47 +1,52 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject } from "../model/object";
-import { contains, equals, includes } from "../util/deep";
-
 /**
  * Defines criteria for filtering and ordering a result
- * set of Coaty objects. Used in combination with query events.
+ * set of Coaty objects. Used in combination with Query events
+ * and database operations, as well as the `ObjectMatcher` functionality.
  */
 export interface ObjectFilter {
 
     /**
-     * Conditions for filtering objects (optional).
+     * A single condition or a set of conditions for filtering objects (optional).
      * If not specified or empty, all objects are selected.
      *
-     * Filter conditions can be combined by logical AND or OR.
-     *
-     * Object filter conditions are defined as an array of tuples
-     * specifying object property name - filter expression pairs.
+     * A set of filter conditions can be combined by logical AND or OR.
+     * 
+     * An object filter condition is defined as a tuple
+     * specifying the name of an object property and a filter expression.
      * The filter expression must evaluate to true when applied to the
      * property's value for the condition to become true.
+     *
+     * The object property to be applied for filtering is specified either
+     * in dot notation or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"objectId"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.name"`). If a single property name contains dots itself,
+     * you obviously cannot use dot notation. Instead, specify the property
+     * or nested properties as an array of strings (e.g.
+     * `["property.with.dots, "subproperty.with.dots"]`).
+     *
+     * A filter expression is a tuple consisting of a filter operator and an
+     * operator-specific number of filter operands. You should use one of the
+     * typesafe `filterOp` functions to specify a filter expression.
      */
-    conditions?: {
-
-        /**
-         * Individual filter conditions are combined by logical AND.
-         * Specify either the `and` or the `or` property, or none, but never both.
-         */
-        and?: ObjectFilterCondition[];
-
-
-        /**
-         * Individual filter conditions are combined by logical OR.
-         * Specify either the `and` or the `or` property, or none, but never both.
-         */
-        or?: ObjectFilterCondition[];
-    };
+    conditions?: ObjectFilterCondition | ObjectFilterConditions;
 
     /**
      * Determines the ordering of result objects by an array of
      * (property name - sort order) tuples. The results are ordered by the
      * first tuple, then by the second tuple, etc.
+     * 
+     * The object property used for ordering can be specified either in dot notation
+     * or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"objectId"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.name"`). If a single property name contains dots itself, you obviously
+     * cannot use dot notation. Instead, specify the property or nested properties
+     * as an array of strings (e.g. `["property.with.dots, "subproperty.with.dots"]`).
      */
-    orderByProperties?: Array<[string, "Asc" | "Desc"]>;
+    orderByProperties?: Array<[ObjectFilterProperties, "Asc" | "Desc"]>;
 
     /**
      * If a take count is given, no more than that many objects will be returned
@@ -62,13 +67,90 @@ export interface ObjectFilter {
 }
 
 /**
+ * Defines the format of nested properties used in ObjectFilter `conditions` and 
+ * `orderByProperties` clauses. Both dot notation (`"property.subproperty.subsubproperty"`)
+ * and array notation (`["property", "subproperty", "subsubproperty"]`) are supported for
+ * naming nested properties. Note that dot notation cannot be used if one of the properties
+ * contains a dot (.) in its name. In such cases, array notation must be used.
+ */
+export type ObjectFilterProperties = string | string[];
+
+/**
+ * Defines a set of conditions for filtering objects.
+ * Filter conditions can be combined by logical AND or OR
+ * as follows:
+ * 
+ * ```
+ * {
+ *    and: ObjectFilterCondition[],
+ * }
+ * ```
+ * 
+ * ```
+ * {
+ *    or: ObjectFilterCondition[],
+ * }
+ * ```
+ */
+export type ObjectFilterConditions = {
+    /**
+     * Multiple filter conditions combined by logical AND.
+     * Specify either the `and` or the `or` property, or none, but *never* both.
+     * 
+     * An object filter condition is defined as a tuple
+     * specifying the name of an object property and a filter expression.
+     * The filter expression must evaluate to true when applied to the
+     * property's value for the condition to become true.
+     * 
+     * The object property to be applied for filtering is specified either
+     * in dot notation or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"objectId"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.name"`). If a single property name contains dots itself,
+     * you obviously cannot use dot notation. Instead, specify the property
+     * or nested properties as an array of strings (e.g.
+     * `["property.with.dots, "subproperty.with.dots"]`).
+     *
+     * A filter expression is a tuple consisting of a filter operator and an
+     * operator-specific number of filter operands. You should use one of the
+     * typesafe `filterOp` functions to specify a filter expression.
+     */
+    and?: ObjectFilterCondition[];
+
+
+    /**
+     * Multiple filter conditions combined by logical OR.
+     * Specify either the `and` or the `or` property, or none, but *never* both.
+     * 
+     * An object filter condition is defined as a tuple
+     * specifying the name of an object property and a filter expression.
+     * The filter expression must evaluate to true when applied to the
+     * property's value for the condition to become true.
+     *
+     * The object property to be applied for filtering is specified either
+     * in dot notation or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"objectId"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.name"`). If a single property name contains dots itself,
+     * you obviously cannot use dot notation. Instead, specify the property
+     * or nested properties as an array of strings (e.g.
+     * `["property.with.dots, "subproperty.with.dots"]`).
+     *
+     * A filter expression is a tuple consisting of a filter operator and an
+     * operator-specific number of filter operands. You should use one of the
+     * typesafe `filterOp` functions to specify a filter expression.
+     */
+    or?: ObjectFilterCondition[];
+};
+
+/**
  * An object filter condition is defined as a tuple
  * specifying an object property name - filter expression pair.
  * The filter expression must evaluate to true when applied to the
  * property's value for the condition to become true.
  */
-export interface ObjectFilterCondition extends Array<string | ObjectFilterExpression> {
-    0: string;
+export interface ObjectFilterCondition extends Array<ObjectFilterProperties | ObjectFilterExpression> {
+    0: ObjectFilterProperties;
     1: ObjectFilterExpression;
 }
 
@@ -227,7 +309,7 @@ export const filterOp = {
         [ObjectFilterOperator.Contains, values],
 
     /**
-     * Checks if the filter property value (usually an object or array) do not contain the
+     * Checks if the filter property value (usually an object or array) does not contain the
      * given values. Primitive value types (number, string, boolean, null) contain
      * only the identical value. Object properties match if all the key-value
      * pairs of the specified object are not contained in them. Array properties
@@ -413,7 +495,7 @@ export enum ObjectFilterOperator {
     Contains,
 
     /**
-     * Checks if the filter property value (usually an object or array) do not contain the
+     * Checks if the filter property value (usually an object or array) does not contain the
      * given values. Primitive value types (number, string, boolean, null) contain
      * only the identical value. Object properties match if all the key-value
      * pairs of the specified object are not contained in them. Array properties
@@ -464,174 +546,4 @@ export enum ObjectFilterOperator {
      */
     NotIn,
 
-}
-
-/**
- * Provides a static `matchesFilter` method to match an object against a
- * given object filter.
- */
-export class ObjectMatcher {
-
-    /**
-     * Gets an Intl.Collator instance that is shared by all callers.
-     * To be used to efficiently perform language-sensitive string comparison.
-     * The returned collator object uses default locales and options.
-     */
-    static get collator() {
-        let collator = ObjectMatcher.COLLATOR;
-        if (!collator) {
-            collator = ObjectMatcher.COLLATOR = new Intl.Collator();
-        }
-        return collator;
-    }
-
-    private static COLLATOR: Intl.Collator;
-
-    /**
-     * Determines whether the given object matches the given object filter.
-     * Only the filter conditions are heeded for the result.
-     * @param obj The object to pass the filter on.
-     * @param filter The filter to apply.
-     */
-    static matchesFilter(obj: CoatyObject, filter: ObjectFilter): boolean {
-        if (obj === undefined) {
-            return false;
-        }
-        if (filter === undefined) {
-            return true;
-        }
-        if (filter.conditions === undefined) {
-            return true;
-        }
-        if (filter.conditions.and) {
-            return filter.conditions.and.every(cond => ObjectMatcher._matchesCondition(obj, cond));
-        }
-        if (filter.conditions.or) {
-            return filter.conditions.or.some(cond => ObjectMatcher._matchesCondition(obj, cond));
-        }
-        return true;
-    }
-
-    private static _matchesCondition(obj: CoatyObject, condition: ObjectFilterCondition) {
-        const [prop, [op, value1, value2]] = condition;
-        const value = obj[prop];
-
-        if (op === ObjectFilterOperator.NotExists) {
-            return value === undefined;
-        }
-        if (value === undefined) {
-            return false;
-        }
-
-        switch (op) {
-            case ObjectFilterOperator.LessThan:
-                if (typeof value === "string" && typeof value1 === "string") {
-                    return ObjectMatcher.collator.compare(value, value1) < 0;
-                }
-                return value < value1;
-            case ObjectFilterOperator.LessThanOrEqual:
-                if (typeof value === "string" && typeof value1 === "string") {
-                    return ObjectMatcher.collator.compare(value, value1) <= 0;
-                }
-                return value <= value1;
-            case ObjectFilterOperator.GreaterThan:
-                if (typeof value === "string" && typeof value1 === "string") {
-                    return ObjectMatcher.collator.compare(value, value1) > 0;
-                }
-                return value > value1;
-            case ObjectFilterOperator.GreaterThanOrEqual:
-                if (typeof value === "string" && typeof value1 === "string") {
-                    return ObjectMatcher.collator.compare(value, value1) >= 0;
-                }
-                return value >= value1;
-            case ObjectFilterOperator.Between:
-                if (typeof value === "string" && typeof value1 === "string" && typeof value2 === "string") {
-                    if (ObjectMatcher.collator.compare(value1, value2) > 0) {
-                        return ObjectMatcher.collator.compare(value, value2) >= 0 &&
-                            ObjectMatcher.collator.compare(value, value1) <= 0;
-                    }
-                    return ObjectMatcher.collator.compare(value, value1) >= 0 &&
-                        ObjectMatcher.collator.compare(value, value2) <= 0;
-                }
-                if (value1 > value2) {
-                    return value >= value2 && value <= value1;
-                }
-                return value >= value1 && value <= value2;
-            case ObjectFilterOperator.NotBetween:
-                if (typeof value === "string" && typeof value1 === "string" && typeof value2 === "string") {
-                    if (ObjectMatcher.collator.compare(value1, value2) > 0) {
-                        return ObjectMatcher.collator.compare(value, value2) < 0 ||
-                            ObjectMatcher.collator.compare(value, value1) > 0;
-                    }
-                    return ObjectMatcher.collator.compare(value, value1) < 0 ||
-                        ObjectMatcher.collator.compare(value, value2) > 0;
-                }
-                if (value1 > value2) {
-                    return value < value2 || value > value1;
-                }
-                return value < value1 || value > value2;
-            case ObjectFilterOperator.Like:
-                if (typeof value !== "string" || typeof value1 !== "string") {
-                    return false;
-                }
-                // To speed up regexp matching, generate regexp once and 
-                // cache it as extra property on object filter expression array.
-                const cachedRegex = condition[1]["likeRegex"];
-                const likeRegex: RegExp = cachedRegex || ObjectMatcher._createLikeRegexp(value1);
-                if (!cachedRegex) {
-                    condition[1]["likeRegex"] = likeRegex;
-                }
-                return likeRegex.test(value);
-            case ObjectFilterOperator.Equals:
-                return equals(value, value1);
-            case ObjectFilterOperator.NotEquals:
-                return !equals(value, value1);
-            case ObjectFilterOperator.Exists:
-                return true;
-            case ObjectFilterOperator.Contains:
-                return contains(value, value1);
-            case ObjectFilterOperator.NotContains:
-                return !contains(value, value1);
-            case ObjectFilterOperator.In:
-                return includes(value1, value);
-            case ObjectFilterOperator.NotIn:
-                return !includes(value1, value);
-            default:
-                return false;
-        }
-    }
-
-    private static _createLikeRegexp(pattern: string) {
-        // Convert underscore/percent based SQL LIKE pattern into JavaScript regexp
-        let regexStr = "^";
-        let isEscaped = false;
-        for (const c of pattern) {
-            if (c === "\\") {
-                if (isEscaped) {
-                    isEscaped = false;
-                    regexStr += "\\\\";
-                } else {
-                    isEscaped = true;
-                }
-                continue;
-            }
-            if (".*+?^${}()|[]".indexOf(c) !== -1) {
-                regexStr += "\\" + c;
-                isEscaped = false;
-                continue;
-            }
-            if (c === "_" && !isEscaped) {
-                regexStr += ".";
-                continue;
-            }
-            if (c === "%" && !isEscaped) {
-                regexStr += ".*";
-                continue;
-            }
-            regexStr += c;
-            isEscaped = false;
-        }
-        regexStr += "$";
-        return new RegExp(regexStr);
-    }
 }

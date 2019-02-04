@@ -7,11 +7,13 @@ import * as newuuidv4 from "uuid/v4";
 
 import { CoatyObject, Uuid } from "../../model/object";
 import { filterOp, ObjectFilterOperator } from "../../model/object-filter";
+import { ObjectMatcher } from "../../model/object-matcher";
 import { Async } from "../../util/async";
 import { DbAdapterBase } from "../db-adapter";
 import { DbConnectionInfo } from "../db-connection-info";
 import { DbContext } from "../db-context";
 import {
+    AggregateProperties,
     DbJoinCondition,
     DbObjectFilter,
     IQueryIterator,
@@ -275,7 +277,7 @@ export class PostgresAdapter extends DbAdapterBase {
         let values: any[];
 
         if (isExternalId) {
-            const filter: DbObjectFilter = { conditions: { and: [["externalId", filterOp.equals(id)]] } };
+            const filter: DbObjectFilter = { conditions: ["externalId", filterOp.equals(id)] };
             const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
             text = `SELECT object FROM ${tableId} ${whereClause};`;
             values = whereParams;
@@ -319,13 +321,14 @@ export class PostgresAdapter extends DbAdapterBase {
 
     aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean> {
+        const propsArray = ObjectMatcher.getFilterProperties(aggregateProps);
         const tableId = this._getTableId(collectionName);
         const [aggFunc, aggType] = this._getAggregateParams(aggregateOp);
         const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
-        const text = `SELECT ${aggFunc}((object->>${asLiteral(aggregateProp)})::${aggType}) AS result
+        const text = `SELECT ${aggFunc}((${this._getObjectIndexer(propsArray, true)})::${aggType}) AS result
                               FROM ${tableId} ${whereClause};`;
 
         return this._getQueryable().query(text, whereParams).then(result =>
@@ -567,51 +570,82 @@ export class PostgresAdapter extends DbAdapterBase {
         if (!filter || !filter.conditions) {
             return ["", []];
         }
+        if (Array.isArray(filter.conditions)) {
+            filter.conditions = { and: [filter.conditions] };
+        }
 
         const combineAnd = !filter.conditions.or;
         const clauses: string[] = [];
         const params = [];
-        const contains: Array<[string, any]> = [];
-        const notContains: Array<[string, any]> = [];
+        const contains: Array<[string[], any]> = [];
+        const notContains: Array<[string[], any]> = [];
         let i = 1;
         let p1;
         let p2;
 
-        const p = (param: any, index: number) => {
+        const para = (param: any, index: number) => {
             return embedParams ? `${asLiteral(param)}` : `$${index}`;
         };
 
+        const checkExistence = (propsArray: string[], isNegated = false) => {
+            let clause = `object ? ${asLiteral(propsArray[0])}`;
+            for (let ip = 1; ip < propsArray.length; ip++) {
+                clause += ` AND ${this._getObjectIndexer(propsArray.slice(0, ip))} ? ${asLiteral(propsArray[ip])}`;
+            }
+            clauses.push(`(${isNegated ? "NOT (" : ""}${clause}${isNegated ? ")" : ""})`);
+        };
+
+        const checkContainments = (containment: Array<[string[], any]>, isNegated = false) => {
+            for (const [propsArray, opnd] of containment) {
+                const obj = {};
+                let subobj = obj;
+                propsArray.forEach((prop, index) => {
+                    if (index === propsArray.length - 1) {
+                        subobj[prop] = opnd;
+                        return;
+                    }
+                    subobj[prop] = {};
+                    subobj = subobj[prop];
+                });
+                p1 = JSON.stringify(obj);
+                clauses.push(`(${isNegated ? "NOT " : ""}object @> ${para(p1, i++)}::jsonb)`);
+                params.push(p1);
+            }
+        };
+
         for (const cond of (combineAnd ? filter.conditions.and : filter.conditions.or)) {
-            const [prop, expr] = cond;
+            const [props, expr] = cond;
+            const propsArray = ObjectMatcher.getFilterProperties(props);
             const op = expr[0];
             const opnd1 = expr[1];
             const opnd2 = expr[2];
-            const key = asLiteral(prop);
+
             switch (op) {
                 case ObjectFilterOperator.LessThan:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(object->${key} < ${p(p1, i++)}::jsonb`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} < ${para(p1, i++)}::jsonb)`);
                     params.push(p1);
                     break;
                 case ObjectFilterOperator.LessThanOrEqual:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(object->${key} <= ${p(p1, i++)}::jsonb`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} <= ${para(p1, i++)}::jsonb)`);
                     params.push(p1);
                     break;
                 case ObjectFilterOperator.GreaterThan:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(object->${key} > ${p(p1, i++)}::jsonb)`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} > ${para(p1, i++)}::jsonb)`);
                     params.push(p1);
                     break;
                 case ObjectFilterOperator.GreaterThanOrEqual:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(object->${key} >= ${p(p1, i++)}::jsonb)`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} >= ${para(p1, i++)}::jsonb)`);
                     params.push(p1);
                     break;
                 case ObjectFilterOperator.Between:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    clauses.push(`(object->${key} BETWEEN SYMMETRIC ${p(p1, i)}::jsonb AND ${p(p2, i + 1)}::jsonb)`);
+                    /* tslint:disable-next-line:max-line-length */
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
                     i += 2;
                     params.push(p1);
                     params.push(p2);
@@ -619,19 +653,20 @@ export class PostgresAdapter extends DbAdapterBase {
                 case ObjectFilterOperator.NotBetween:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    clauses.push(`(object->${key} NOT BETWEEN SYMMETRIC ${p(p1, i)}::jsonb AND ${p(p2, i + 1)}::jsonb)`);
+                    /* tslint:disable-next-line:max-line-length */
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} NOT BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
                     i += 2;
                     params.push(p1);
                     params.push(p2);
                     break;
                 case ObjectFilterOperator.Like:
                     p1 = opnd1;
-                    clauses.push(`(object->>${key} LIKE ${p(p1, i++)})`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray, true)} LIKE ${para(p1, i++)})`);
                     params.push(p1);
                     break;
                 case ObjectFilterOperator.Equals:
                     if (opnd1 === undefined) {
-                        clauses.push(`(NOT object ? ${key})`);
+                        checkExistence(propsArray, true);
                     } else {
                         if (typeof opnd1 === "number" ||
                             typeof opnd1 === "string" ||
@@ -639,17 +674,17 @@ export class PostgresAdapter extends DbAdapterBase {
                             !opnd1) {
                             // Using Contains for primitive types is faster 
                             // because of jsonb_path_ops index
-                            contains.push([prop, opnd1]);
+                            contains.push([propsArray, opnd1]);
                         } else {
                             p1 = JSON.stringify(opnd1);
-                            clauses.push(`(object->${key} = ${p(p1, i++)}::jsonb)`);
+                            clauses.push(`(${this._getObjectIndexer(propsArray)} = ${para(p1, i++)}::jsonb)`);
                             params.push(p1);
                         }
                     }
                     break;
                 case ObjectFilterOperator.NotEquals:
                     if (opnd1 === undefined) {
-                        clauses.push(`(object ? ${key})`);
+                        checkExistence(propsArray, false);
                     } else {
                         if (typeof opnd1 === "number" ||
                             typeof opnd1 === "string" ||
@@ -657,25 +692,25 @@ export class PostgresAdapter extends DbAdapterBase {
                             !opnd1) {
                             // Using Not Contains for primitive types is faster 
                             // because of jsonb_path_ops index
-                            notContains.push([prop, opnd1]);
+                            notContains.push([propsArray, opnd1]);
                         } else {
                             p1 = JSON.stringify(opnd1);
-                            clauses.push(`(object->${key} <> ${p(p1, i++)}::jsonb)`);
+                            clauses.push(`(${this._getObjectIndexer(propsArray)} <> ${para(p1, i++)}::jsonb)`);
                             params.push(p1);
                         }
                     }
                     break;
                 case ObjectFilterOperator.Exists:
-                    clauses.push(`(object ? ${key})`);
+                    checkExistence(propsArray, false);
                     break;
                 case ObjectFilterOperator.NotExists:
-                    clauses.push(`(NOT object ? ${key})`);
+                    checkExistence(propsArray, true);
                     break;
                 case ObjectFilterOperator.Contains:
-                    contains.push([prop, opnd1]);
+                    contains.push([propsArray, opnd1]);
                     break;
                 case ObjectFilterOperator.NotContains:
-                    notContains.push([prop, opnd1]);
+                    notContains.push([propsArray, opnd1]);
                     break;
                 case ObjectFilterOperator.In:
                 case ObjectFilterOperator.NotIn:
@@ -684,7 +719,8 @@ export class PostgresAdapter extends DbAdapterBase {
                     }
                     const sqlOp = op === ObjectFilterOperator.In ? "in" : "not in";
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(object->${key} ${sqlOp} (SELECT value FROM jsonb_array_elements(${p(p1, i++)}::jsonb)))`);
+                    /* tslint:disable-next-line:max-line-length */
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} ${sqlOp} (SELECT value FROM jsonb_array_elements(${para(p1, i++)}::jsonb)))`);
                     params.push(p1);
                     break;
                 default:
@@ -692,21 +728,8 @@ export class PostgresAdapter extends DbAdapterBase {
             }
         }
 
-        for (const [prop, opnd] of notContains) {
-            const obj = {};
-            obj[prop] = opnd;
-            p1 = JSON.stringify(obj);
-            clauses.push(`(NOT object @> ${p(p1, i++)}::jsonb)`);
-            params.push(p1);
-        }
-
-        for (const [prop, opnd] of contains) {
-            const obj = {};
-            obj[prop] = opnd;
-            p1 = JSON.stringify(obj);
-            clauses.push(`(object @> ${p(p1, i++)}::jsonb)`);
-            params.push(p1);
-        }
+        checkContainments(notContains, true);
+        checkContainments(contains, false);
 
         if (clauses.length === 0) {
             return ["", []];
@@ -719,9 +742,17 @@ export class PostgresAdapter extends DbAdapterBase {
             return "";
         }
         tableId = tableId ? tableId + "." : "";
+
         return "ORDER BY " + filter.orderByProperties
-            .map((order, i) => `${tableId}object->${asLiteral(order[0])} ${this._getSortOrder(order[1])}`)
+            /* tslint:disable-next-line:max-line-length */
+            .map((order, i) => `${tableId}${this._getObjectIndexer(ObjectMatcher.getFilterProperties(order[0]))} ${this._getSortOrder(order[1])}`)
             .join(", ");
+    }
+
+    private _getObjectIndexer(propsArray: string[], asText = false) {
+        return propsArray.length === 1 ?
+            `object ->${asText ? ">" : ""}${asLiteral(propsArray[0])}` :
+            `object #>${asText ? ">" : ""}array[${propsArray.map(p => asLiteral(p)).join(",")}]`;
     }
 
     private _getSortOrder(order: "Asc" | "Desc") {

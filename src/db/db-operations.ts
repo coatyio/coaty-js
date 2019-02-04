@@ -8,6 +8,15 @@ import { DbLocalContext } from "./db-local-context";
 import { AggregateOp } from "./db-operators";
 
 /**
+ * Defines the format of nested properties used for aggregating objects.
+ * Both dot notation (`"property.subproperty.subsubproperty"`) and array notation
+ * (`["property", "subproperty", "subsubproperty"]`) are supported for naming
+ * nested properties. Note that dot notation cannot be used if one of the 
+ * properties contains a dot (.) in its name. In such cases, array notation must be used.
+ */
+export type AggregateProperties = string | string[];
+
+/**
  * Defines NoSQL operations on Coaty objects.
  */
 export interface IDbNoSqlOperations {
@@ -154,10 +163,19 @@ export interface IDbNoSqlOperations {
      * returned is `undefined`.
      * Returns a promise that if fulfilled yields the aggregated value of
      * matching object properties. The promise is rejected if an error occurred.
+     * 
+     * The object property to be applied for aggregation is specified either
+     * in dot notation or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"volume"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.size"`). If a single property name contains dots itself,
+     * you obviously cannot use dot notation. Instead, specify the property
+     * or nested properties as an array of strings (e.g.
+     * `["property.with.dots, "subproperty.with.dots"]`).
      */
     aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean>;
 

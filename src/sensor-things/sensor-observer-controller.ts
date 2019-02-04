@@ -92,9 +92,7 @@ export class SensorObserverController extends Controller {
      */
     querySensorsOfThing(thingId: Uuid): Observable<Sensor[]> {
         const objectFilter: ObjectFilter = {
-            conditions: {
-                and: [["parentObjectId", filterOp.equals(thingId)]],
-            },
+            conditions: ["parentObjectId", filterOp.equals(thingId)],
         };
 
         return this.communicationManager

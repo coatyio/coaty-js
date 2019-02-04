@@ -13,6 +13,7 @@ export * from "./model/location";
 export * from "./model/log";
 export * from "./model/object-filter";
 export * from "./model/object-join";
+export * from "./model/object-matcher";
 export * from "./model/object";
 export * from "./model/user";
 export * from "./model/snapshot";

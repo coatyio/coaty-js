@@ -16,6 +16,7 @@ import {
     SqlQueryOptions,
     SqlQueryResultSet,
 } from "./db-operations";
+import { AggregateProperties } from "./db-operations";
 import { AggregateOp } from "./db-operators";
 
 export type DbAdapterExtension = (...args) => Promise<any>;
@@ -40,7 +41,7 @@ export interface IDbAdapter extends
 }
 
 export interface IDbAdapterConstructor {
-    new (connectionInfo: DbConnectionInfo): IDbAdapter & IDbAdapterExtension;
+    new(connectionInfo: DbConnectionInfo): IDbAdapter & IDbAdapterExtension;
 }
 
 /**
@@ -113,7 +114,7 @@ export abstract class DbAdapterBase implements IDbAdapter, IDbAdapterExtension {
 
     aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean> {
         return this.rejectNotSupported("aggregateObjects");

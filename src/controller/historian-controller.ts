@@ -127,9 +127,7 @@ export class HistorianController extends Controller {
      */
     querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]> {
         const objectFilter: ObjectFilter = {
-            conditions: {
-                and: [["parentObjectId", filterOp.equals(parentObjectId)]],
-            },
+            conditions: ["parentObjectId", filterOp.equals(parentObjectId)],
             orderByProperties: [["creationTimestamp", "Desc"]],
         };
 

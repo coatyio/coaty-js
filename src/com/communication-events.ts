@@ -2,8 +2,9 @@
 
 import { IoActor, IoSource } from "../model/io-point";
 import { CoatyObject, Component, Uuid } from "../model/object";
-import { ObjectFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectMatcher } from "../model/object-filter";
+import { ObjectFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectFilterProperties } from "../model/object-filter";
 import { ObjectJoinCondition } from "../model/object-join";
+import { ObjectMatcher } from "../model/object-matcher";
 import { CoreType, CoreTypes } from "../model/types";
 
 /**
@@ -324,7 +325,7 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
 
     /**
      * @Internal
-     * Throws an error if the given Retreive event data does not correspond to 
+     * Throws an error if the given Retrieve event data does not correspond to 
      * the event data of this Query event.
      * @param eventData event data for Retrieve response event
      */
@@ -1069,31 +1070,37 @@ export class QueryEventData extends CommunicationEventData {
         }
         /* tslint:disable-next-line:no-null-keyword */
         return conds !== null &&
-            typeof conds === "object" &&
-            !(conds.and && conds.or) &&
-            (conds.and === undefined || this._isFilterConditionValid(conds.and)) &&
-            (conds.or === undefined || this._isFilterConditionValid(conds.or));
+            this._isFilterConditionValid(conds) ||
+            (typeof conds === "object" &&
+                !(conds.and && conds.or) &&
+                (conds.and === undefined || this._isFilterConditionArrayValid(conds.and)) &&
+                (conds.or === undefined || this._isFilterConditionArrayValid(conds.or)));
     }
 
-    private _isFilterConditionValid(acond: ObjectFilterCondition[]) {
-        // TODO(HHo) refine validation checks for filter operator parameters
+    private _isFilterConditionArrayValid(acond: ObjectFilterCondition[]) {
         return Array.isArray(acond) &&
-            acond.every(cond =>
-                Array.isArray(cond) &&
-                cond.length === 2 &&
-                cond[0] &&
-                typeof cond[0] === "string" &&
-                Array.isArray(cond[1]) &&
-                cond[1].length >= 1 &&
-                typeof cond[1][0] === "number" &&
-                ObjectFilterOperator[cond[1][0]] !== undefined);
+            acond.every(cond => this._isFilterConditionValid(cond));
     }
 
-    private _areOrderByPropertiesValid(orderProps: Array<[string, "Asc" | "Desc"]>): boolean {
+    private _isFilterConditionValid(cond: ObjectFilterCondition) {
+        // @todo(HHo) refine validation checks for filter operator parameters
+        return Array.isArray(cond) &&
+            cond.length === 2 &&
+            cond[0] &&
+            (typeof cond[0] === "string" ||
+                (Array.isArray(cond[0]) && (<any[]>cond[0]).every(prop => typeof prop === "string"))) &&
+            Array.isArray(cond[1]) &&
+            cond[1].length >= 1 &&
+            typeof cond[1][0] === "number" &&
+            ObjectFilterOperator[cond[1][0]] !== undefined;
+    }
+
+    private _areOrderByPropertiesValid(orderProps: Array<[ObjectFilterProperties, "Asc" | "Desc"]>): boolean {
         return Array.isArray(orderProps) &&
             orderProps.every(o => Array.isArray(o) &&
                 o.length === 2 &&
-                typeof o[0] === "string" &&
+                (typeof o[0] === "string" ||
+                    (Array.isArray(o[0]) && (<any[]>o[0]).every(prop => typeof prop === "string"))) &&
                 (o[1] === "Asc" || o[1] === "Desc"));
     }
 

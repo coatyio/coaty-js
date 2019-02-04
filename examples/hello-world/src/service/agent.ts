@@ -25,5 +25,5 @@ Db.initDatabase(configuration.databases)
 
         return container;
     })
-    .catch(error => NodeUtils.logError(error, "Failed to initialize service."));
+    .catch(error => NodeUtils.logError(error, "Failed to initialize database."));
 

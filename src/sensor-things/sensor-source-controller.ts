@@ -12,7 +12,7 @@ import {
 } from "../com/communication-events";
 import { Controller } from "../controller/controller";
 import { Uuid } from "../model/object";
-import { ObjectMatcher } from "../model/object-filter";
+import { ObjectMatcher } from "../model/object-matcher";
 import { TimeInterval } from "../util/date";
 import { Observation, Sensor } from "./objects";
 import { ISensorIoStatic, SensorIo } from "./sensor-io";

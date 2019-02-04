@@ -107,9 +107,7 @@ export class TaskController extends Controller {
 
             // Query list of snapshot objects from the just finished task
             const objectFilter: ObjectFilter = {
-                conditions: {
-                    and: [["parentObjectId", filterOp.equals(this._assignedTask.objectId)]],
-                },
+                conditions: ["parentObjectId", filterOp.equals(this._assignedTask.objectId)],
                 orderByProperties: [["creationTimestamp", "Desc"]],
             };
 

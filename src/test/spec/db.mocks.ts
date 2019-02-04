@@ -15,7 +15,11 @@ export interface DbTestObject extends CoatyObject {
     testValue: any;
     testText: string;
     testBool: boolean;
+    testObj: { "": number, name: string, testId: number, testValue: any, testText: string, testBool: boolean };
     testUpdate?: string;
+    " ": string;
+    "": { "": { "": number }};
+    ".": { ".": { ".": number } };
 }
 
 export class MockQueryingController extends Controller {

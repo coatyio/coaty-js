@@ -4,11 +4,12 @@
  * Test suite for framework objects.
  */
 
-import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectMatcher } from "../../model";
+import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectFilterConditions, ObjectMatcher } from "../../model";
 import { Runtime } from "../../runtime";
 
 describe("Objects", () => {
 
+    /* tslint:disable:object-literal-key-quotes */
     const filterObj = {
         name: "TestObjectFilter",
         coreType: "CoatyObject",
@@ -23,6 +24,9 @@ describe("Objects", () => {
         filterArray: [42, [43, 44], [[45, 46]]],
         filterObject: { foo: 42, bar: [42, 43], baz: { mumble: [42, 45] } },
         filterObject1: { foo: 42 },
+        " ": "blank",
+        "": { "": { "": 1 } },
+        ".": { ".": { ".": 2 } },
     } as CoatyObject;
 
     it("Object filters", () => {
@@ -36,6 +40,7 @@ describe("Objects", () => {
             conditions: {
                 and: [
                     ["foo", filterOp.notExists()],
+                    ["foo.bar", filterOp.notExists()],
                     ["filterUndefined", filterOp.notExists()],
                     ["filterBoolean", filterOp.exists()],
                     ["filterBoolean", filterOp.equals(true)],
@@ -48,6 +53,17 @@ describe("Objects", () => {
                     ["filterArray", filterOp.notEquals([42, [43, 44], [[45, 47]]])],
                     ["filterObject", filterOp.equals({ foo: 42, bar: [42, 43], baz: { mumble: [42, 45] } })],
                     ["filterObject", filterOp.notEquals({ foo: 42, bar: [42, 43], baz: { mumble: [43, 45] } })],
+                    ["filterObject.foo", filterOp.equals(42)],
+                    ["filterObject.bar", filterOp.equals([42, 43])],
+                    ["filterObject.baz", filterOp.equals({ mumble: [42, 45] })],
+                    ["filterObject.baz.mumble", filterOp.equals([42, 45])],
+                    [" ", filterOp.equals("blank")],
+                    ["", filterOp.equals({ "": { "": 1 } })],
+                    [".", filterOp.equals(({ "": 1 }))],
+                    ["..", filterOp.equals(1)],
+                    [["."], filterOp.equals({ ".": { ".": 2 } })],
+                    [[".", "."], filterOp.equals(({ ".": 2 }))],
+                    [[".", ".", "."], filterOp.equals(2)],
                     ["filterNumber", filterOp.lessThan(43)],
                     ["filterNumber", filterOp.lessThan("43")],
                     ["filterString", filterOp.lessThan("Abce")],
@@ -114,9 +130,14 @@ describe("Objects", () => {
         };
         expect(ObjectMatcher.matchesFilter(filterObj, filter)).toBe(true);
 
-        filter.conditions.or = filter.conditions.and;
-        filter.conditions.and = undefined;
+        (filter.conditions as ObjectFilterConditions).or = (filter.conditions as ObjectFilterConditions).and;
+        (filter.conditions as ObjectFilterConditions).and = undefined;
         expect(ObjectMatcher.matchesFilter(filterObj, filter)).toBe(true);
+
+        (filter.conditions as ObjectFilterConditions).or.forEach(cond => {
+            filter.conditions = cond;
+            expect(ObjectMatcher.matchesFilter(filterObj, filter)).toBe(true);
+        });
     });
 
 });

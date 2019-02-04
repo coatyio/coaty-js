@@ -60,9 +60,7 @@ export class ThingObserverController extends Controller {
      */
     public queryThingsAtLocation(locationId: Uuid): Observable<Thing[]> {
         const objectFilter: ObjectFilter = {
-            conditions: {
-                and: [["locationId", filterOp.equals(locationId)]],
-            },
+            conditions: ["locationId", filterOp.equals(locationId)],
         };
 
         return this.communicationManager

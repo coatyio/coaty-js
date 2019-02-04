@@ -1,11 +1,12 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, Uuid } from "../../model/object";
-import { ObjectMatcher } from "../../model/object-filter";
+import { ObjectMatcher } from "../../model/object-matcher";
 import { CoreTypes } from "../../model/types";
 import { DbAdapterBase } from "../db-adapter";
 import { DbConnectionInfo } from "../db-connection-info";
 import {
+    AggregateProperties,
     DbJoinCondition,
     DbObjectFilter,
     IQueryIterator,
@@ -346,7 +347,7 @@ export class InMemoryAdapter extends DbAdapterBase {
 
     aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean> {
         const coll = this._db.collections.get(collectionName);
@@ -359,7 +360,7 @@ export class InMemoryAdapter extends DbAdapterBase {
         let aggregatedCount = 0;
         coll.objects.forEach(obj => {
             if (!matcher || matcher(obj)) {
-                aggregatedValue = aggregator(aggregatedValue, obj[aggregateProp]);
+                aggregatedValue = aggregator(aggregatedValue, ObjectMatcher.getFilterPropertyValue(aggregateProps, obj));
                 aggregatedCount++;
             }
         });
@@ -447,8 +448,11 @@ export class InMemoryAdapter extends DbAdapterBase {
             return x === y ? 0 : (x < y ? -1 : 1);
         };
         return (a: CoatyObject, b: CoatyObject) => {
-            for (const [prop, order] of filter.orderByProperties) {
-                const result = order === "Asc" ? baseComparer(a[prop], b[prop]) : baseComparer(b[prop], a[prop]);
+            for (const [props, order] of filter.orderByProperties) {
+                const propNames = ObjectMatcher.getFilterProperties(props);
+                const aVal = ObjectMatcher.getFilterPropertyValue(propNames, a);
+                const bVal = ObjectMatcher.getFilterPropertyValue(propNames, b);
+                const result = order === "Asc" ? baseComparer(aVal, bVal) : baseComparer(bVal, aVal);
                 if (result !== 0) {
                     return result;
                 }

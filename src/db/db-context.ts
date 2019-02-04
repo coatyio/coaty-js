@@ -17,6 +17,7 @@ import {
     SqlQueryOptions,
     SqlQueryResultSet,
 } from "./db-operations";
+import { AggregateProperties } from "./db-operations";
 import { AggregateOp } from "./db-operators";
 
 /**
@@ -275,17 +276,26 @@ export class DbContext implements IDbNoSqlOperations, IDbSqlOperations, IDbTrans
      * returned is `undefined`.
      * Returns a promise that if fulfilled yields the aggregated value of
      * matching object properties. The promise is rejected if an error occurred.
+     * 
+     * The object property to be applied for aggregation is specified either
+     * in dot notation or array notation. In dot notation, the name of the
+     * object property is specified as a string (e.g. `"volume"`). It may
+     * include dots (`.`) to access nested properties of subobjects (e.g.
+     * `"message.size"`). If a single property name contains dots itself,
+     * you obviously cannot use dot notation. Instead, specify the property
+     * or nested properties as an array of strings (e.g.
+     * `["property.with.dots, "subproperty.with.dots"]`).
      */
     aggregateObjects(
         collectionName: string,
-        aggregateProp: string,
+        aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean> {
         return Promise.resolve().then(() => {
             filter && this._throwIfObjectFilterInvalid(filter);
             return this._adapter.aggregateObjects(
                 collectionName,
-                aggregateProp,
+                aggregateProps,
                 aggregateOp,
                 filter);
         });

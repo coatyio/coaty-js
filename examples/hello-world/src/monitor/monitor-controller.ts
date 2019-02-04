@@ -59,9 +59,7 @@ export class MonitorController extends Controller {
         // Query Log objects that have a log level greater than `Debug`. 
         // Return top 100 results ordered descendingly by log date, then ascendingly by log level.
         const objectFilter: ObjectFilter = {
-            conditions: {
-                and: [["logLevel", filterOp.greaterThan(LogLevel.Debug)]],
-            },
+            conditions: ["logLevel", filterOp.greaterThan(LogLevel.Debug)],
             take: 100,
             orderByProperties: [["logDate", "Desc"], ["logLevel", "Asc"]],
         };

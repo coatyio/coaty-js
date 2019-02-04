@@ -72,15 +72,26 @@ describe("In-Memory NoSQL Database Access", () => {
 
             for (let i = 1; i <= testObjectsCount; i++) {
                 const obj: DbTestObject = {
-                    objectId: container.getRuntime().newUuid(),
-                    name: "Test Object " + i,
-                    coreType: "CoatyObject",
-                    objectType: OBJECT_TYPE_NAME_DB_TEST_OBJECT,
-                    externalId: "" + (testObjectsCount + i),
-                    testId: i,
-                    testValue: [i, i + 1, i + 2, "foo"],
-                    testText: `${i}`,
-                    testBool: (i % 2) === 0 ? true : false,
+                    "objectId": container.getRuntime().newUuid(),
+                    "name": "Test Object " + i,
+                    "coreType": "CoatyObject",
+                    "objectType": OBJECT_TYPE_NAME_DB_TEST_OBJECT,
+                    "externalId": "" + (testObjectsCount + i),
+                    "testId": i,
+                    "testValue": [i, i + 1, i + 2, "foo"],
+                    "testText": `${i}`,
+                    "testBool": (i % 2) === 0 ? true : false,
+                    "testObj": {
+                        "": i,
+                        "name": "Test SubObject " + i,
+                        "testId": i,
+                        "testValue": [i, i + 1, i + 2, "foo"],
+                        "testText": `${i}`,
+                        "testBool": (i % 2) === 0 ? true : false,
+                    },
+                    " ": "blank",
+                    "": { "": { "": i } },
+                    ".": { ".": { ".": i } },
                 };
                 testObjects.push(obj);
             }
@@ -259,7 +270,7 @@ describe("In-Memory NoSQL Database Access", () => {
         done => {
             const filter: DbObjectFilter = {
                 conditions: { and: [["testId", filterOp.between(10, 20)]] },
-                orderByProperties: [["testId", "Asc"]],
+                orderByProperties: [["testObj.testId", "Asc"]],
                 take: 3,
             };
 
@@ -308,9 +319,9 @@ describe("In-Memory NoSQL Database Access", () => {
 
                         expect(Array.isArray(obj[joinConditions[2].asProperty])).toBe(true);
                         expect(obj[joinConditions[2].asProperty].length).toBe(3);
-                        expect((<DbTestObject[]> obj[joinConditions[2].asProperty]).some(o => o.objectId === obj.objectId))
+                        expect((<DbTestObject[]>obj[joinConditions[2].asProperty]).some(o => o.objectId === obj.objectId))
                             .toBe(true);
-                        expect((<DbTestObject[]> obj[joinConditions[2].asProperty]).some(o => o.testId === obj.testId))
+                        expect((<DbTestObject[]>obj[joinConditions[2].asProperty]).some(o => o.testId === obj.testId))
                             .toBe(true);
                     }))
                 .then(([count, isBreak]) => {
@@ -449,7 +460,7 @@ describe("In-Memory NoSQL Database Access", () => {
             const firstTestId = testObjects.length - 20 - 1;
             const objectFilter: ObjectFilter = {
                 conditions: { and: [["testId", filterOp.between(firstTestId, 0)]] },
-                orderByProperties: [["testId", "Desc"]],
+                orderByProperties: [["testObj.testId", "Desc"]],
                 skip: 10,
                 take: 50,
             };
@@ -523,7 +534,12 @@ describe("In-Memory NoSQL Database Access", () => {
     it("Objects are counted by filters",
         done => {
             let filter: DbObjectFilter = {
-                conditions: { and: [["testId", filterOp.between(10, 15)]] },
+                conditions: {
+                    and: [
+                        ["testId", filterOp.between(10, 15)],
+                        ["testObj.testId", filterOp.between(10, 15)],
+                    ],
+                },
             };
             dbContext.countObjects("testobjects", filter)
                 .then(count => {
@@ -532,7 +548,22 @@ describe("In-Memory NoSQL Database Access", () => {
                 .then(() => {
                     filter = {
                         // Matches "20", "21", ..., "29", "30"
-                        conditions: { and: [["testText", filterOp.between("3", "20")]] },
+                        conditions: ["testText", filterOp.between("3", "20")],
+                    };
+                    return dbContext.countObjects("testobjects", filter);
+                })
+                .then(count => {
+                    expect(count).toBe(11);
+                })
+                .then(() => {
+                    filter = {
+                        // Matches "20", "21", ..., "29", "30"
+                        conditions: {
+                            and: [
+                                ["testText", filterOp.between("3", "20")],
+                                ["testObj.testText", filterOp.between("3", "20")],
+                            ],
+                        },
                     };
                     return dbContext.countObjects("testobjects", filter);
                 })
@@ -543,8 +574,45 @@ describe("In-Memory NoSQL Database Access", () => {
                     filter = {
                         conditions: {
                             and: [
+                                ["testObj.noname", filterOp.notEquals(6)],
+                                ["testObj.noname", filterOp.equals(undefined)],
+                                ["testObj.noname", filterOp.notEquals(undefined)],
+                                ["testObj.noname", filterOp.notEquals({ foo: 42 })],
+                                ["testObj.noname", filterOp.notEquals([1, 2, 3])],
+                                ["testobj.name", filterOp.notEquals(6)],
+                                ["testobj.name", filterOp.equals(undefined)],
+                                ["testobj.name", filterOp.notEquals(undefined)],
+                                ["testobj.name", filterOp.notEquals({ foo: 42 })],
+                                ["testobj.name", filterOp.notEquals([1, 2, 3])],
+                            ],
+                        },
+                    };
+                    return dbContext.countObjects("testobjects", filter);
+                })
+                .then(count => {
+                    expect(count).toBe(0);
+                })
+                .then(() => {
+                    filter = {
+                        conditions: {
+                            and: [
                                 ["name", filterOp.like("Test % 1_.%")],
                                 ["unknown", filterOp.notExists()],
+                                ["testObj.name", filterOp.like("Test SubObject %")],
+                                [["testObj", "name"], filterOp.like("Test SubObject %")],
+                                ["testObj.", filterOp.exists()],
+                                ["testobj.name", filterOp.notExists()],
+                                ["testObj.noname.noname", filterOp.notExists()],
+                                [" ", filterOp.exists()],
+                                [" ", filterOp.equals("blank")],
+                                ["", filterOp.exists()],
+                                [".", filterOp.exists()],
+                                ["..", filterOp.exists()],
+                                ["..", filterOp.between(10, 19)],
+                                [["."], filterOp.exists()],
+                                [[".", "."], filterOp.exists()],
+                                [[".", ".", "."], filterOp.exists()],
+                                [[".", ".", "."], filterOp.between(10, 19)],
                             ],
                         },
                     };
@@ -555,7 +623,12 @@ describe("In-Memory NoSQL Database Access", () => {
                 })
                 .then(() => {
                     filter = {
-                        conditions: { and: [["testValue", filterOp.equals([10, 11, 12, "foo"])]] },
+                        conditions: {
+                            and: [
+                                ["testValue", filterOp.equals([10, 11, 12, "foo"])],
+                                ["testObj.testValue", filterOp.equals([10, 11, 12, "foo"])],
+                            ],
+                        },
                     };
                     return dbContext.countObjects("testobjects", filter);
                 })
@@ -567,7 +640,13 @@ describe("In-Memory NoSQL Database Access", () => {
                         conditions: {
                             and: [
                                 ["testValue", filterOp.contains(["foo"])],
+                                ["testValue", filterOp.equals([13, 14, 15, "foo"])],
                                 ["testId", filterOp.equals(13)],
+                                ["testId", filterOp.notEquals(undefined)],
+                                ["testObj.testValue", filterOp.contains(["foo"])],
+                                ["testObj.testValue", filterOp.equals([13, 14, 15, "foo"])],
+                                ["testObj.testId", filterOp.equals(13)],
+                                ["testObj.testId", filterOp.notEquals(undefined)],
                             ],
                         },
                     };
@@ -582,6 +661,8 @@ describe("In-Memory NoSQL Database Access", () => {
                             and: [
                                 ["testValue", filterOp.contains([12, 11, "foo"])],
                                 ["testId", filterOp.equals(11)],
+                                ["testObj.testValue", filterOp.contains([12, 11, "foo"])],
+                                ["testObj.testId", filterOp.equals(11)],
                             ],
                         },
                     };
@@ -596,6 +677,8 @@ describe("In-Memory NoSQL Database Access", () => {
                             and: [
                                 ["testValue", filterOp.notContains([12, 11])],
                                 ["testId", filterOp.notBetween(1, 3)],
+                                ["testObj.testValue", filterOp.notContains([12, 11])],
+                                ["testObj.testId", filterOp.notBetween(1, 3)],
                             ],
                         },
                     };
@@ -610,6 +693,8 @@ describe("In-Memory NoSQL Database Access", () => {
                             or: [
                                 ["testValue", filterOp.contains([12, 11])],
                                 ["testId", filterOp.between(1, 3)],
+                                ["testObj.testValue", filterOp.contains([12, 11])],
+                                ["testObj.testId", filterOp.between(1, 3)],
                             ],
                         },
                     };
@@ -625,6 +710,9 @@ describe("In-Memory NoSQL Database Access", () => {
                                 ["testId", filterOp.in([1, "2", 4, 3])],
                                 ["testId", filterOp.in([3, 4, "5"])],
                                 ["testId", filterOp.notIn([4, 5])],
+                                ["testObj.testId", filterOp.in([1, "2", 4, 3])],
+                                ["testObj.testId", filterOp.in([3, 4, "5"])],
+                                ["testObj.testId", filterOp.notIn([4, 5])],
                             ],
                         },
                     };
@@ -641,15 +729,37 @@ describe("In-Memory NoSQL Database Access", () => {
     it("Object properties are aggregated",
         done => {
             let filter: DbObjectFilter = {
-                conditions: { and: [["testId", filterOp.between(10, 20)]] },
+                conditions: {
+                    and: [
+                        ["testId", filterOp.between(10, 20)],
+                        ["testObj.testId", filterOp.between(10, 20)],
+                    ],
+                },
             };
             dbContext.aggregateObjects("testobjects", "testId", AggregateOp.Sum, filter)
                 .then(value => {
                     expect(value).toBe(165);
                 })
+                .then(() => dbContext.aggregateObjects("testobjects", "testObj.testId", AggregateOp.Sum, filter))
+                .then(value => {
+                    expect(value).toBe(165);
+                })
+                .then(() => dbContext.aggregateObjects("testobjects", "..", AggregateOp.Sum, filter))
+                .then(value => {
+                    expect(value).toBe(165);
+                })
+                .then(() => dbContext.aggregateObjects("testobjects", [".", ".", "."], AggregateOp.Sum, filter))
+                .then(value => {
+                    expect(value).toBe(165);
+                })
                 .then(() => {
                     filter = {
-                        conditions: { and: [["testId", filterOp.between(10, 20)]] },
+                        conditions: {
+                            and: [
+                                ["testId", filterOp.between(10, 20)],
+                                ["testObj.testId", filterOp.between(10, 20)],
+                            ],
+                        },
                     };
                     return dbContext.aggregateObjects("testobjects", "testId", AggregateOp.Max, filter);
                 })
@@ -658,7 +768,26 @@ describe("In-Memory NoSQL Database Access", () => {
                 })
                 .then(() => {
                     filter = {
-                        conditions: { and: [["testBool", filterOp.equals(true)]] },
+                        conditions: {
+                            and: [
+                                ["testid", filterOp.between(10, 20)],
+                                ["testobj.testId", filterOp.between(10, 20)],
+                            ],
+                        },
+                    };
+                    return dbContext.aggregateObjects("testobjects", "testId", AggregateOp.Max, filter);
+                })
+                .then(value => {
+                    expect(value).toBe(undefined);
+                })
+                .then(() => {
+                    filter = {
+                        conditions: {
+                            and: [
+                                ["testBool", filterOp.equals(true)],
+                                ["testObj.testBool", filterOp.equals(true)],
+                            ],
+                        },
                     };
                     return dbContext.aggregateObjects("testobjects", "testBool", AggregateOp.Every, filter);
                 })
@@ -667,7 +796,12 @@ describe("In-Memory NoSQL Database Access", () => {
                 })
                 .then(() => {
                     filter = {
-                        conditions: { and: [["testBool", filterOp.notEquals(true)]] },
+                        conditions: {
+                            and: [
+                                ["testBool", filterOp.notEquals(true)],
+                                ["testObj.testBool", filterOp.notEquals(true)],
+                            ],
+                        },
                     };
                     return dbContext.aggregateObjects("testobjects", "testBool", AggregateOp.Some, filter);
                 })
@@ -676,7 +810,12 @@ describe("In-Memory NoSQL Database Access", () => {
                 })
                 .then(() => {
                     filter = {
-                        conditions: { and: [["testId", filterOp.equals(-1)]] },
+                        conditions: {
+                            and: [
+                                ["testId", filterOp.equals(-1)],
+                                ["testObj.testId", filterOp.equals(-1)],
+                            ],
+                        },
                     };
                     return dbContext.aggregateObjects("testobjects", "testBool", AggregateOp.Avg, filter);
                 })
@@ -713,7 +852,12 @@ describe("In-Memory NoSQL Database Access", () => {
     it("Objects are deleted by filter",
         done => {
             const filter: DbObjectFilter = {
-                conditions: { and: [["testId", filterOp.equals(testObjects.length - 3)]] },
+                conditions: {
+                    and: [
+                        ["testId", filterOp.equals(testObjects.length - 3)],
+                        ["testObj.testId", filterOp.equals(testObjects.length - 3)],
+                    ],
+                },
             };
             dbContext.deleteObjects("testobjects", filter)
                 .then(deletedCount => {
