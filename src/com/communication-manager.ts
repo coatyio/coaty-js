@@ -411,11 +411,12 @@ export class CommunicationManager implements IComponent {
      *    });
      * ```
      * 
-     * Observing raw subscription topics effectively suppresses observation of other communication
-     * event types by a communication manager: If at least one raw topic is observed, the
-     * communication manager dispatches all incoming messages as raw messages. To observe other
-     * communication events within the same Coaty agent, use another container that handles
-     * non-raw events.
+     * @remarks
+     * Observing raw subscription topics does *not* suppress observation of non-raw communication
+     * event types by the communication manager: If at least one raw topic is observed, the
+     * communication manager first dispatches *any* incoming message to *all* raw message observers.
+     * Then, event dispatching continues as usual by handling all non-raw communication event
+     * types which are observed.
      * 
      * The specified subscription topic must be a valid MQTT subscription topic. It must not contain the 
      * character `NULL (U+0000)`.
@@ -846,8 +847,8 @@ export class CommunicationManager implements IComponent {
          * Note: MQTT.js also support a deferred open scenario for pub/sub in
          * version 1.7.x. However, it doesn't work for reconnection subscribes.
          * A reconnect with clean: true will lose all subscriptions in the broker.
-         * This will be fixed in v2. Since we have implemented our own
-         * deferred connection scenario we should explicitely opt out in v2.
+         * This will be fixed in MQTT.js v2. Since we have implemented our own
+         * deferred connection scenario we explicitely opt out in v2.
          */
 
         // Apply all deferred subscriptions and keep them for later reconnects.
@@ -900,11 +901,12 @@ export class CommunicationManager implements IComponent {
 
     private _onClientMessage(topicName: string, payload: any) {
         let isDispatching = false;
+        let isDispatchedAsRaw = false;
         try {
 
             isDispatching = true;
             if (this._tryDispatchAsRawMessage(topicName, payload)) {
-                return;
+                isDispatchedAsRaw = true;
             }
             if (this._tryDispatchAsIoValueMessage(topicName, payload)) {
                 return;
@@ -1028,8 +1030,10 @@ export class CommunicationManager implements IComponent {
                 throw error;
             }
 
-            /* tslint:disable-next-line:max-line-length */
-            console.log(`CommunicationManager: failed to handle incoming message topic ${topicName}': ${error}`);
+            if (!isDispatchedAsRaw) {
+                /* tslint:disable-next-line:max-line-length */
+                console.log(`CommunicationManager: failed to handle incoming message topic ${topicName}': ${error}`);
+            }
         }
     }
 

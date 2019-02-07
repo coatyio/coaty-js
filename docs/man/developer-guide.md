@@ -1634,11 +1634,11 @@ this.communicationManager
     });
 ```
 
-Observing raw subscription topics effectively suppresses observation of other communication
-event types by a communication manager: If at least one raw topic is observed, the
-communication manager dispatches all incoming messages as raw messages. To observe other
-communication events within the same Coaty agent, use another container that handles
-non-raw events.
+> Observing raw subscription topics does *not* suppress observation of non-raw communication
+> event types by the communication manager: If at least one raw topic is observed, the
+> communication manager first dispatches *any* incoming message to *all* raw message observers.
+> Then, event dispatching continues as usual by handling all non-raw communication event
+> types which are observed.
 
 ### Deferred publication and subscription of events
 
