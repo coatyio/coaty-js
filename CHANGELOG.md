@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/coatyio/coaty-js/compare/v1.3.0...v1.4.0) (2019-02-07)
+
+This feature release provides a non-breaking change to handling Raw communication events.
+
+### Features
+
+* **com:** change handling of Raw events: observing raw subscription topics no longer suppresses observation of non-raw communication ([5dd9e9c](https://github.com/coatyio/coaty-js/commit/5dd9e9c))
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/coatyio/coaty-js/compare/v1.2.4...v1.3.0) (2019-02-04)
 
