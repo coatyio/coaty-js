@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/coatyio/coaty-js/compare/v1.4.0...v1.4.1) (2019-02-27)
+
+This patch release provides missing type definitions for the `scripts/broker` module.
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/coatyio/coaty-js/compare/v1.3.0...v1.4.0) (2019-02-07)
 
