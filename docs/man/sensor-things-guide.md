@@ -29,7 +29,7 @@ title: Coaty JS Documentation
 ## Sensor Things Types
 
 Sensor Things objects are inspired by the
-[OGC sensorThings specification](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html). The Coaty
+[OGC SensorThings API](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html). The Coaty
 implementation, however, heavily simplifies the
 [entity schema](http://docs.opengeospatial.org/is/15-078r6/15-078r6.html#24) that is specified in the
 OGC specification:

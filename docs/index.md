@@ -14,8 +14,8 @@ recommend reviewing this framework documentation:
   specification of Coaty communication protocol
 * [Rights Management]({{ site.baseurl }}{% link man/rights-management.md %}) -
   guidance notes on authentication and authorization in a Coaty application
-* [OGC sensorThings API]({{ site.baseurl }}{% link man/sensor-things-guide.md %}) -
-  a guide on integration of the `OGC sensorThings API` in Coaty
+* [OGC SensorThings API]({{ site.baseurl }}{% link man/sensor-things-guide.md %}) -
+  a guide on integration of the `OGC SensorThings API` in Coaty
 
 The framework sources include a fully documented
 [Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
@@ -24,7 +24,7 @@ exchange typed data in a decentralized Coaty application.
 
 The framework sources include a fully documented
 [Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things)
-that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
+that demonstrates how Coaty leverages the SensorThings API to manage a self-discovering
 network of sensors.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable

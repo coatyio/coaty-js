@@ -127,7 +127,7 @@ This documentation includes:
 * a specification of the [Coaty communication protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
 * guidance notes on [rights management](https://coatyio.github.io/coaty-js/man/rights-management/)
   in a Coaty application.
-* a guide on the [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
+* a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 The framework sources include a fully documented
 [Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
@@ -136,7 +136,7 @@ exchange typed data in a distributed Coaty application.
 
 The framework sources include a fully documented
 [Sensor Things example](https://github.com/coatyio/coaty-js/tree/master/examples/sensor-things)
-that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
+that demonstrates how Coaty leverages the SensorThings API to manage a self-discovering
 network of sensors.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -877,7 +877,7 @@ CoatyObject
 
 > Note: Besides these core types, the framework also provides some object types to manage sensor data.
 > These object types are defined in the `coaty/sensor-things` module and explained in detail in the
-> guide on [OGC sensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
+> guide on [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
 
 Coaty objects are characterized as follows:
 
@@ -1872,7 +1872,7 @@ Query - Retrieve communication event patterns. It enables declarative, seamless
 and transparent retrieval of objects across Coaty components independent
 of database implementations. The query event's object filter
 which specifies selection and ordering criteria can be directly passed to the
-database agnostic API for schemeless object retrieval.
+database agnostic API for schemaless object retrieval.
 
 The Unified Storage API uses the notion of *database adapters* to connect to specific
 databases. The framework provides ready-to-use built-in adapters. You can also

@@ -21,7 +21,7 @@ _This README assumes you are already familiar with
 [Sensor Things API](https://coatyio.github.io/coaty-js/man/sensor-things-guide/)
 and [Coaty communication](https://coatyio.github.io/coaty-js/man/communication-protocol/)._
 
-The sensorThings example demonstrates how Coaty and the sensorThings API can be used
+The SensorThings example demonstrates how Coaty and the SensorThings API can be used
 to manage a self-discovering network of sensors.
 
 This example is composed of:
@@ -29,7 +29,7 @@ This example is composed of:
 * a web dashboard to explore the sensor network
 * one configurable thing. Create any number of sensors for a better result.
 
-**Note :** Any thing and sensor using the sensorThings API and Coaty can be used with this example.
+**Note :** Any thing and sensor using the SensorThings API and Coaty can be used with this example.
 In fact, dashboard knows nothing specific about things and sensors. It just listens to `Advertise` events on
 `Thing` and `Sensor` objects and update its list of available things and sensors. Thus to be available
 on the dashboard, a sensor just has to advertise its associated Thing and respect the
@@ -45,7 +45,7 @@ To begin with, make sure that the `Node.js` JavaScript runtime (version 6 or hig
 installed on your target machine. Download and installation details can be found
 [here](http://nodejs.org/).
 
-Then, checkout the sensorThings example sources from
+Then, checkout the SensorThings example sources from
 [https://github.com/coatyio/coaty-js/tree/master/examples/sensor-things](https://github.com/coatyio/coaty-js/tree/master/examples/sensor-things).
 
 ### Install and build the sensor
@@ -64,11 +64,11 @@ npm install
 npm run build
 ```
 
-Before starting the sensorThings example, you need an MQTT broker listening on
+Before starting the SensorThings example, you need an MQTT broker listening on
 port 1883 and websocket port 9883. To make this example ready to use, the `broker`
 folder defines an npm package definition which uses the built-in broker of
 the Coaty framework. To make it usable, just run `cd broker &&  npm install`.
-To easily trace communication events distributed by the sensorThings application,
+To easily trace communication events distributed by the SensorThings application,
 this broker logs any MQTT messages to the console. Note that you should **not**
 use this broker as is for production purposes.
 
@@ -85,7 +85,7 @@ console window.
 
 ## Project Structure
 
-Here is the file structure of the sensorThings example. To keep it readable,
+Here is the file structure of the SensorThings example. To keep it readable,
 only main files are displayed:
 
 ```
@@ -162,7 +162,7 @@ Each sensor will:
 
 Default settings can be changed in `sensor/agent.ts`.
 
-You can build your own sensorThings compliant sensor script and use it with the dashboard.
+You can build your own SensorThings compliant sensor script and use it with the dashboard.
 You just need to advertise your associated Thing at least once.
 
 ---
