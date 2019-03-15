@@ -13,10 +13,10 @@ import { AgentInfo } from "coaty/runtime";
 export const agentInfo: AgentInfo = {
     packageInfo: {
         name: "sensor-things-dashboard",
-        version: "1.4.0",
+        version: "1.4.1",
     },
     buildInfo: {
-        buildDate: "2019-02-25T12:36:26+01:00",
+        buildDate: "2019-03-12T13:22:20+01:00",
         buildMode: "development",
     },
     configInfo: {
