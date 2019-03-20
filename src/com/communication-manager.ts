@@ -13,33 +13,16 @@ import { IComponent } from "../runtime/component";
 import { CommunicationOptions } from "../runtime/configuration";
 import { Runtime } from "../runtime/runtime";
 
-import {
-    AdvertiseEvent,
-    AdvertiseEventData,
-    AssociateEvent,
-    AssociateEventData,
-    ChannelEvent,
-    ChannelEventData,
-    CommunicationEvent,
-    CommunicationEventData,
-    CommunicationEventType,
-    CompleteEvent,
-    CompleteEventData,
-    DeadvertiseEvent,
-    DeadvertiseEventData,
-    DiscoverEvent,
-    DiscoverEventData,
-    IoStateEvent,
-    QueryEvent,
-    QueryEventData,
-    ResolveEvent,
-    ResolveEventData,
-    RetrieveEvent,
-    RetrieveEventData,
-    UpdateEvent,
-    UpdateEventData,
-} from "./communication-events";
+import { AdvertiseEvent, AdvertiseEventData } from "./advertise";
+import { AssociateEvent, AssociateEventData } from "./associate";
+import { ChannelEvent, ChannelEventData } from "./channel";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
+import { DeadvertiseEvent, DeadvertiseEventData } from "./deadvertise";
+import { DiscoverEvent, DiscoverEventData, ResolveEvent, ResolveEventData } from "./discover-resolve";
+import { IoStateEvent } from "./io-state";
+import { QueryEvent, QueryEventData, RetrieveEvent, RetrieveEventData } from "./query-retrieve";
+import { CompleteEvent, CompleteEventData, UpdateEvent, UpdateEventData } from "./update-complete";
 
 /**
  * Defines all communication states of the Communication Manager.
@@ -263,7 +246,7 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * @deprecated since version 1.5.0. Please use either observeAdvertiseWithCoreType
+     * @deprecated Please use either observeAdvertiseWithCoreType
      * or observeAdvertiseWithObjectType instead.
      * 
      * Observe Advertise events for the given target and the given

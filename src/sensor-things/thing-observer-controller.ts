@@ -3,7 +3,8 @@
 import { Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
 
-import { DiscoverEvent, QueryEvent } from "../com/communication-events";
+import { DiscoverEvent } from "../com/discover-resolve";
+import { QueryEvent } from "../com/query-retrieve";
 import { Controller } from "../controller";
 import { filterOp, ObjectFilter, Uuid } from "../model";
 import { Thing } from "./objects";

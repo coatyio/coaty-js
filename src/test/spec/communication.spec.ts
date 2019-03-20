@@ -6,13 +6,13 @@
 
 import {
     ChannelEvent,
-    CommunicationEventType,
     CommunicationManager,
     CommunicationState,
     DiscoverEvent,
     DiscoverEventData,
     UpdateEvent,
 } from "../../com";
+import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
 import { CoreTypes, DisplayType, User } from "../../model";
 import { Components, Configuration, Container } from "../../runtime";

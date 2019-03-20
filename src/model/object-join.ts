@@ -53,3 +53,27 @@ export interface ObjectJoinCondition {
      */
     isOneToOneRelation?: boolean;
 }
+
+/* Type validations for ObjectJoinCondition */
+
+export function areObjectJoinConditionsValid(joinConds: ObjectJoinCondition | ObjectJoinCondition[]): boolean {
+    if (joinConds === undefined) {
+        return true;
+    }
+    if (Array.isArray(joinConds)) {
+        return joinConds.every(jc => this._isJoinConditionValid(jc));
+    }
+    return this._isJoinConditionValid(joinConds);
+}
+
+export function isJoinConditionValid(joinCond: ObjectJoinCondition) {
+    /* tslint:disable-next-line:no-null-keyword */
+    return joinCond !== null &&
+        typeof joinCond === "object" &&
+        (typeof joinCond.localProperty === "string") &&
+        (typeof joinCond.asProperty === "string") &&
+        (joinCond.isLocalPropertyArray === undefined ||
+            typeof joinCond.isLocalPropertyArray === "boolean") &&
+        (joinCond.isOneToOneRelation === undefined ||
+            typeof joinCond.isOneToOneRelation === "boolean");
+}

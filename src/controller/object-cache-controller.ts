@@ -3,7 +3,7 @@
 import { Observable, of, Subscription } from "rxjs";
 import { filter, first, map } from "rxjs/operators";
 
-import { DiscoverEvent } from "../com/communication-events";
+import { DiscoverEvent } from "../com/discover-resolve";
 import { CoatyObject, Uuid } from "../model/object";
 import { CoreType } from "../model/types";
 import { Controller } from "./controller";

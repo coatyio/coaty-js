@@ -3,7 +3,8 @@
 import { Observable, Subscription } from "rxjs";
 import { filter, map } from "rxjs/operators";
 
-import { AdvertiseEvent, QueryEvent, RetrieveEvent } from "../com/communication-events";
+import { AdvertiseEvent } from "../com/advertise";
+import { QueryEvent, RetrieveEvent } from "../com/query-retrieve";
 import { DbContext } from "../db";
 import { CoatyObject, Uuid } from "../model/object";
 import { filterOp, ObjectFilter } from "../model/object-filter";

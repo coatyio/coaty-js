@@ -3,7 +3,7 @@
 import { BehaviorSubject, Observable, Subject, Subscription } from "rxjs";
 import { debounceTime, sampleTime } from "rxjs/operators";
 
-import { IoStateEvent } from "../com/communication-events";
+import { IoStateEvent } from "../com/io-state";
 import { Controller } from "../controller/controller";
 import { IoSource, IoSourceBackpressureStrategy } from "../model/io-point";
 import { Uuid } from "../model/object";

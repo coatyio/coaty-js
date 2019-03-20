@@ -4,7 +4,8 @@
  * Test suite for framework IO routing.
  */
 
-import { CommunicationEventType, CommunicationManager } from "../../com";
+import { CommunicationManager } from "../../com";
+import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io";
 import { CoreTypes, DisplayType, IoActor, IoSource, User } from "../../model";

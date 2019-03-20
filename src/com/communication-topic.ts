@@ -3,7 +3,7 @@
 import { CoatyObject, Uuid } from "../model/object";
 import { User } from "../model/user";
 
-import { CommunicationEventType } from "./communication-events";
+import { CommunicationEventType } from "./communication-event";
 
 /**
  * Encapsulates the internal representation of messaging topics

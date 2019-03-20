@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { AdvertiseEvent } from "../com/communication-events";
+import { AdvertiseEvent } from "../com/advertise";
 import { CommunicationManager } from "../com/communication-manager";
 import { Log, LogHost, LogLevel } from "../model/log";
 import { Component } from "../model/object";

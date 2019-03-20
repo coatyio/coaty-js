@@ -3,7 +3,8 @@
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import { AssociateEvent, DiscoverEvent } from "../com/communication-events";
+import { AssociateEvent } from "../com/associate";
+import { DiscoverEvent } from "../com/discover-resolve";
 import { Controller } from "../controller/controller";
 import { Device } from "../model/device";
 import { IoActor, IoSource } from "../model/io-point";

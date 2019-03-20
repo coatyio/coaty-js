@@ -2,7 +2,7 @@
 
 import { BehaviorSubject, Observable, Subscription } from "rxjs";
 
-import { IoStateEvent } from "../com/communication-events";
+import { IoStateEvent } from "../com/io-state";
 import { Controller } from "../controller/controller";
 import { IoActor } from "../model/io-point";
 import { Uuid } from "../model/object";

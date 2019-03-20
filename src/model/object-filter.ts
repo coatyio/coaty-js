@@ -547,3 +547,59 @@ export enum ObjectFilterOperator {
     NotIn,
 
 }
+
+/* Type validations for ObjectFilter */
+
+export function isObjectFilterValid(filter: ObjectFilter): boolean {
+    if (filter === undefined) {
+        return true;
+    }
+    /* tslint:disable-next-line:no-null-keyword */
+    return filter !== null &&
+        typeof filter === "object" &&
+        this._areFilterConditionsValid(filter.conditions) &&
+        (filter.skip === undefined || typeof filter.skip === "number") &&
+        (filter.take === undefined || typeof filter.take === "number") &&
+        (filter.orderByProperties === undefined ||
+            this._areOrderByPropertiesValid(filter.orderByProperties));
+}
+
+export function areFilterConditionsValid(conds: any): boolean {
+    if (conds === undefined) {
+        return true;
+    }
+    /* tslint:disable-next-line:no-null-keyword */
+    return conds !== null &&
+        this._isFilterConditionValid(conds) ||
+        (typeof conds === "object" &&
+            !(conds.and && conds.or) &&
+            (conds.and === undefined || this._isFilterConditionArrayValid(conds.and)) &&
+            (conds.or === undefined || this._isFilterConditionArrayValid(conds.or)));
+}
+
+export function isFilterConditionArrayValid(acond: ObjectFilterCondition[]) {
+    return Array.isArray(acond) &&
+        acond.every(cond => this._isFilterConditionValid(cond));
+}
+
+export function isFilterConditionValid(cond: ObjectFilterCondition) {
+    // @todo(HHo) refine validation checks for filter operator parameters
+    return Array.isArray(cond) &&
+        cond.length === 2 &&
+        cond[0] &&
+        (typeof cond[0] === "string" ||
+            (Array.isArray(cond[0]) && (<any[]>cond[0]).every(prop => typeof prop === "string"))) &&
+        Array.isArray(cond[1]) &&
+        cond[1].length >= 1 &&
+        typeof cond[1][0] === "number" &&
+        ObjectFilterOperator[cond[1][0]] !== undefined;
+}
+
+export function areOrderByPropertiesValid(orderProps: Array<[ObjectFilterProperties, "Asc" | "Desc"]>): boolean {
+    return Array.isArray(orderProps) &&
+        orderProps.every(o => Array.isArray(o) &&
+            o.length === 2 &&
+            (typeof o[0] === "string" ||
+                (Array.isArray(o[0]) && (<any[]>o[0]).every(prop => typeof prop === "string"))) &&
+            (o[1] === "Asc" || o[1] === "Desc"));
+}

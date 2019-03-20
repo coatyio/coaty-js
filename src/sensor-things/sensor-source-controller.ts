@@ -3,13 +3,12 @@
 import { Observable, Subject, Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import {
-    AdvertiseEvent,
-    ChannelEvent,
-    DeadvertiseEvent,
-    ResolveEvent,
-    RetrieveEvent,
-} from "../com/communication-events";
+import { AdvertiseEvent } from "../com/advertise";
+import { ChannelEvent } from "../com/channel";
+import { DeadvertiseEvent } from "../com/deadvertise";
+import { ResolveEvent } from "../com/discover-resolve";
+import { RetrieveEvent } from "../com/query-retrieve";
+
 import { Controller } from "../controller/controller";
 import { Uuid } from "../model/object";
 import { ObjectMatcher } from "../model/object-matcher";
@@ -551,6 +550,6 @@ export class SensorSourceController extends Controller {
 
     private _isSensorDefinitionArray(obj: any): boolean {
         return Array.isArray(obj) &&
-            (<SensorDefinition[]> obj).every(o => this._isSensorDefinition(o));
+            (<SensorDefinition[]>obj).every(o => this._isSensorDefinition(o));
     }
 }
