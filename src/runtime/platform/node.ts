@@ -273,7 +273,7 @@ export class MulticastDnsDiscovery {
      * @param port the router's port (default value is 80)
      * @param name the name of the mDNS service (default value is `Coaty WAMP Router`)
      * @param type the type of the mDNS service (default value is `coaty-wamp`)
-     * @param host the router IP address to be published with the service (deafult is local hostname)
+     * @param host the router IP address to be published with the service (default is local hostname)
      */
     public static publishWampRouterService(path?: string, realm?: string, port?: number, name?: string, type?: string, host?: string)
         : Promise<MulticastDnsService> {
