@@ -62,8 +62,8 @@ export function toDurationIsoString(duration: number) {
  * - duration and end timestamp
  * - duration only
  * 
- * The ISO 8601 standard string can be created using the toLocalTimeIntervalIsoString 
- * method in 'util/date.js'.
+ * The ISO 8601 standard string can be created using the function `toLocalTimeIntervalIsoString` 
+ * in the `coaty/util` module.
  */
 export interface TimeInterval {
     /**
