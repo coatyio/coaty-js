@@ -604,7 +604,7 @@ export class SensorDataObserverController extends ThingSensorObservationObserver
     observeObservations() {
         // Monitor incoming sensor observations.
         return this.sensorObservation$.subscribe(({ obs, sensor }) => {
-            console.log(`Incoming observation for sensor ${sensor.name}: result=${obs.result} resultTime=${obs.resultTime}`);
+            console.log(`Incoming observation for sensor ${sensor.name}: result=${obs.result} phenomenonTime=${obs.phenomenonTime}`);
         });
     }
 
