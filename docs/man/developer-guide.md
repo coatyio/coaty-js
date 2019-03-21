@@ -936,7 +936,7 @@ interface CoatyObject {
 ```
 
 The property `coreType` is the framework core type name of the object;
-it corresponds to the name of the interface that defines the object's shape.
+it corresponds with the name of the interface that defines the object's shape.
 
 The `objectType` property is the concrete type name of the object in a canonical
 form. Its form should follow the naming convention for Java packages to avoid name
@@ -2370,12 +2370,12 @@ The built-in database adapters provided by the Coaty framework use specific
 low-level database driver modules to connect to databases.
 
 The drivers used by built-in adapters are defined as (optional) peer dependencies
-in the package.json of the coaty npm module. To use a specific adapter in your
+in the package.json of the `coaty` npm module. To use a specific adapter in your
 agent project, you must install the associated driver module(s) as dependencies
 in the package.json. Refer to the framework's package.json
 to figure out which version of the driver modules should be installed. You
 only need to install driver modules for adapters that you really use in your
-agent project.
+application project.
 
 ### Postgres adapter
 
@@ -2383,6 +2383,10 @@ To make use of the built-in Postgres database adapter, install PostgreSQL
 version 9.5 or higher. Download and installation details can be found
 [here](https://www.postgresql.org/). Then, set up and start the database
 server as explained in the [Postgres documentation](https://www.postgresql.org/docs/).
+
+You also need to add the npm module `pg` as a dependency to your project's package.json
+and install it. The module version should correspond with the version of the `pg` module
+specified in the `coaty` framework package definition as a peer dependency.
 
 Next, create the target database(s) and user roles. This can be accomplished using
 
@@ -2572,8 +2576,9 @@ the database file cannot be created or opened. The database file name should
 include the extension, if desired, e.g. `"db/myservice.db"`. No further connection
 options are supported.
 
-As a prerequisite you need to install the npm module `sqlite3` as explained
-here: [sqlite3](https://www.npmjs.com/package/sqlite3).
+You also need to add the npm module `sqlite3` as a dependency to your project's package.json
+and install it. The module version should correspond with the version of the `sqlite3` module
+specified in the `coaty` framework package definition as a peer dependency.
 
 To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
 connection information and register the adapter before use:
@@ -2644,8 +2649,10 @@ UI components are created before the `deviceready` event is fired. Thus, you
 should never execute operations on a local database context on this adapter
 in the constructor of such a class.
 
-To use the SQLite Cordova adapter, you need to install the cordova-sqlite-storage
-plugin as explained here: [cordova-sqlite-storage](https://www.npmjs.com/package/cordova-sqlite-storage).
+To use the SQLite Cordova adapter, yo need to add the npm module `cordova-sqlite-storage`
+as a dependency to your project's package.json and install it. The module version should
+correspond with the version of the `cordova-sqlite-storage` module specified
+in the `coaty` framework package definition as a peer dependency.
 
 To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
 connection information and register the adapter before use:
@@ -3147,7 +3154,7 @@ You can use these coaty scripts as part of npm run scripts in your package.json
 
 ```json
 "scripts": {
-    "broker": "coaty-scripts broker [--verbose] [--port <port>]",
+    "broker": "coaty-scripts broker <options>",
     "build": "coaty-scripts info && <run your build script here>",
     "prepare-release": "coaty-scripts version-release %1 && npm run build && coaty-scripts cut-release %2",
     "push-release": "coaty-scripts push-release",
@@ -3181,9 +3188,20 @@ positional index of the desired npm run command parameter.
 
 ### Coaty broker for development
 
-For Coaty application development and testing purposes, the framework includes
-a Mosca MQTT broker. You can execute the `broker` script (inside an npm script)
-to run this broker:
+For Coaty development and testing purposes, the framework includes
+the Mosca MQTT broker. In your own application projects, you can also
+use this broker for development and testing.
+
+As a prerequisite, add the npm modules `mosca` and `rxjs` as dependencies
+to your project's package.json and install them. The module version should correspond
+with the version of same modules specified in the `coaty` framework package definition
+as peer dependencies.
+
+> Note: You should **not** use this broker in a production system. Instead, use a
+> high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ, Mosquitto,
+> or Crossbar.io WAMP router).
+
+The broker script provides the following options:
 
 ```sh
 coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>]
@@ -3203,10 +3221,6 @@ by mDNS cannot be resolved by DHCP.
 If the command line option `--verbose` is given, Mosca broker provides verbose logging
 of subscriptions. Additionally, all MQTT messages published by MQTT clients are logged
 on the console, including message topic and payload.
-
-> Note: You should **not** use this broker in a production system. Instead, use a
-> high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ, Mosquitto,
-> or Crossbar.io WAMP router).
 
 Alternatively, you can run this broker from within your application build scripts
 as follows:
@@ -3346,6 +3360,11 @@ from remote steps that affect the npm registry:
 * `cut-release` - cut the release using conventional changelog management
 * `push-release` - push release commits and release tag to the remote git repo
 * `publish-release` - publish the release to npm registry server
+
+To use the release scripts in your project, add the npm modules `conventional-changelog`
+and `conventional-recommended-bump` as dependencies to your project's package.json and
+install them. The module versions should correspond with the versions specified in the
+`coaty` framework package definition as peer dependencies.
 
 #### Version a release
 

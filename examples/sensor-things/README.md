@@ -64,10 +64,20 @@ npm install
 npm run build
 ```
 
+### Install the broker
+
 Before starting the SensorThings example, you need an MQTT broker listening on
 port 1883 and websocket port 9883. To make this example ready to use, the `broker`
-folder defines an npm package definition which uses the built-in broker of
-the Coaty framework. To make it usable, just run `cd broker &&  npm install`.
+folder defines an npm package definition which uses the broker scripts provided by
+the Coaty framework.
+
+To make it usable, just run
+
+```sh
+cd broker
+npm install
+```
+
 To easily trace communication events distributed by the SensorThings application,
 this broker logs any MQTT messages to the console. Note that you should **not**
 use this broker as is for production purposes.

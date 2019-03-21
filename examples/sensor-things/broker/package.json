@@ -11,6 +11,7 @@
     "private": true,
     "dependencies": {
         "coaty": "1.4.1",
-        "rxjs": "6.3.3"
+        "mosca": "2.8.3",
+        "rxjs": "6.4.0"
     }
 }

@@ -142,7 +142,7 @@ test_reports_dir     where JUnit XML output is written
 ```
 
 The test suite performs E2E communication messaging tests using the
-Mosca MQTT broker that is installed as a local npm dependency.
+Mosca MQTT broker that is installed as a local npm dev dependency.
 The broker's options are configured in `./test/support/mosca.config.json`.
 To avoid collisions with other brokers running on the local machine, the
 test broker listens to mqtt port 1898 and http/ws port 1998
