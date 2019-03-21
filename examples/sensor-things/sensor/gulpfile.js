@@ -5,7 +5,7 @@ const gulp = require("gulp");
 const sourcemaps = require("gulp-sourcemaps");
 const tsc = require("gulp-typescript");
 const tslint = require("gulp-tslint");
-const runSequence = require("run-sequence");
+const gulpSequence = require("gulp-sequence");
 const infoAgentScript = require("coaty/scripts/info");
 
 /**
@@ -64,8 +64,6 @@ gulp.task("lint:fix", () => {
         }));
 });
 
-gulp.task("build", () => {
-    return runSequence("clean", "agentinfo", "transpile", "lint");
-});
+gulp.task("build", gulpSequence("clean", "agentinfo", "transpile", "lint"));
 
 gulp.task("default", ["build"]);
