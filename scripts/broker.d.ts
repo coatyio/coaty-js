@@ -11,11 +11,13 @@
  * and the service type "coaty-mqtt". In this case, you can optionally specifiy a non-default hostname for
  * multicast DNS discovery with the command line option `--bonjourHost`. Useful for cases, where the normal
  * hostname provided by mDNS cannot be resolved by DHCP.
+ * 
+ * If you do not want to start the multicast DNS service for broker discovery, specify the `--nobonjour` option.
  *
  * If the command line option `--verbose` is given, Mosca broker provides verbose logging of subscriptions, etc.
  * Additionally, all MQTT messages published by MQTT clients are logged on the console, including message topic and payload.
  *
- * @param cmdArgs a string array specifying command arguments: [--verbose], [--port <port>], [--bonjourHost <hostname>]
+ * @param cmdArgs a string array specifying command arguments: [--verbose], [--port <port>], [--bonjourHost <hostname>], [--nobonjour]
  */
 export declare function broker(cmdArgs: string[]): Promise<any>;
 

@@ -97,7 +97,7 @@ efficient way. The key properties of the framework include:
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
 * standardized event based communication patterns on top of a open publish-subscribe
-  messaging protocol (currently MQTT),
+  messaging protocol (currently [MQTT](https://mqtt.org)),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
 * rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -259,8 +259,7 @@ component design that supports dependency injection (DI) and lifecycle managemen
 
 * **Communication Manager**: Each container contains exactly one instance
   of the `CommunicationManager` class that provides publish-subscribe for communication event
-  patterns to exchange typed object data by an underlying messaging
-  protocol (currently MQTT).
+  patterns to exchange typed object data by an underlying messaging protocol.
 
 * **Configuration**: A `Configuration` object that defines configuration options for the
   defined controllers as well as common, communication, and database related options.
@@ -1042,6 +1041,7 @@ communication event patterns to exchange object data in a decentralized Coaty ap
   receive responses by Retrieve events.
 * **Update - Complete**  Request or suggest an object update and receive
   accomplishments by Complete events.
+* **Call - Return**  Perform a remote operation and receive results by Return events.
 * **Associate** Used by IO Router to dynamically associate/disassociate IO sources
   with IO actors.
 * **IoValue** Send IO values from a publishing IO source to associated IO actors.
@@ -1049,10 +1049,7 @@ communication event patterns to exchange object data in a decentralized Coaty ap
 Coaty not only provides *one-way* communication event patterns, such as Advertise
 and Channel, that support classic publish-subscribe interaction between Coaty
 agents. With *two-way* event patterns, *request-response* interaction between
-Coaty agents can be realized, similar to, for example, HTTP/REST or remote
-procedure call (RPC): The Query-Retrieve pattern is used to enable remote
-retrieval of objects satisfying certain criteria. The Update-Complete pattern
-is used to update and synchronize object state across agents.
+Coaty agents can be realized, similar to, for example, HTTP/REST or RPC.
 
 While traditional request-response interaction is always directed towards
 a single concrete endpoint that must be known by the requester, Coaty two-way
@@ -3204,7 +3201,7 @@ as peer dependencies.
 The broker script provides the following options:
 
 ```sh
-coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>]
+coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>] [--nobonjour]
 ```
 
 Runs Mosca broker on MQTT port 1883 (or the one specified with command line option
@@ -3217,6 +3214,9 @@ service name "Coaty MQTT Broker" and the service type "coaty-mqtt". In this case
 can optionally specifiy a non-default hostname for multicast DNS discovery with the
 command line option `--bonjourHost`. Useful for cases, where the normal hostname provided
 by mDNS cannot be resolved by DHCP.
+
+If you do not want to start the multicast DNS service for broker discovery, specify
+the `--nobonjour` option.
 
 If the command line option `--verbose` is given, Mosca broker provides verbose logging
 of subscriptions. Additionally, all MQTT messages published by MQTT clients are logged

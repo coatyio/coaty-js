@@ -74,7 +74,7 @@ function run(brokerOptions) {
 module.exports.run = run;
 
 function getBrokerOptions(args) {
-    // Supported command args: [--verbose], [--port <port>], [--bonjourHost <hostname>]
+    // Supported command args: [--verbose], [--port <port>], [--bonjourHost <hostname>], [--nobonjour]
     let port = 1883;
     const logVerbose = args.includes("--verbose");
     const portIndex = args.indexOf("--port");
@@ -99,6 +99,7 @@ function getBrokerOptions(args) {
             process.exit(1);
         }
     }
+    const startBonjour = args.indexOf("--nobonjour") === -1;
 
-    return { logVerbose, port, bonjourHost };
+    return { logVerbose, port, bonjourHost, startBonjour };
 }
