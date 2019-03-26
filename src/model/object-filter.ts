@@ -1,11 +1,10 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 /**
- * Defines criteria for filtering and ordering a result
- * set of Coaty objects. Used in combination with Query events
- * and database operations, as well as the `ObjectMatcher` functionality.
+ * Defines criteria for filtering Coaty objects. Used in combination with Call events,
+ * and with the `ObjectMatcher` functionality.
  */
-export interface ObjectFilter {
+export interface ContextFilter {
 
     /**
      * A single condition or a set of conditions for filtering objects (optional).
@@ -32,6 +31,14 @@ export interface ObjectFilter {
      * typesafe `filterOp` functions to specify a filter expression.
      */
     conditions?: ObjectFilterCondition | ObjectFilterConditions;
+}
+
+/**
+ * Defines criteria for filtering and ordering a result
+ * set of Coaty objects. Used in combination with Query events
+ * and database operations, and with the `ObjectMatcher` functionality.
+ */
+export interface ObjectFilter extends ContextFilter {
 
     /**
      * Determines the ordering of result objects by an array of
@@ -174,32 +181,32 @@ export const filterOp = {
 
     /**
      * Checks if the filter property is less than the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     lessThan: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.LessThan, value],
 
     /**
      * Checks if the filter property is less than or equal to the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     lessThanOrEqual: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.LessThanOrEqual, value],
 
     /**
      * Checks if the filter property is greater than the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     greaterThan: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.GreaterThan, value],
 
     /**
      * Checks if the filter property is greater than or equal to the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     greaterThanOrEqual: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.GreaterThanOrEqual, value],
@@ -209,8 +216,8 @@ export const filterOp = {
      * prop >= value1 AND prop <= value2.
      * If the first argument `value1` is not less than or equal to the second
      * argument `value2`, those two arguments are automatically swapped.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     between: (value1: number | string, value2: number | string): [ObjectFilterOperator, number | string, number | string] =>
         [ObjectFilterOperator.Between, value1, value2],
@@ -220,8 +227,8 @@ export const filterOp = {
      * prop < value1 OR prop > value2.
      * If the first argument `value1` is not less than or equal to the second
      * argument `value2`, those two arguments are automatically swapped.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     notBetween: (value1: number | string, value2: number | string): [ObjectFilterOperator, number | string, number | string] =>
         [ObjectFilterOperator.NotBetween, value1, value2],
@@ -372,29 +379,29 @@ export enum ObjectFilterOperator {
 
     /**
      * Checks if the filter property is less than the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     LessThan,
 
     /**
      * Checks if the filter property is less than or equal to the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     LessThanOrEqual,
 
     /**
      * Checks if the filter property is greater than the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     GreaterThan,
 
     /**
      * Checks if the filter property is greater than or equal to the given value.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     GreaterThanOrEqual,
 
@@ -403,8 +410,8 @@ export enum ObjectFilterOperator {
      * prop >= operand AND prop <= operand2.
      * If the first operand is not less than or equal to the second
      * operand, those two arguments are automatically swapped.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     Between,
 
@@ -413,8 +420,8 @@ export enum ObjectFilterOperator {
      * prop < operand1 OR prop > operand2.
      * If the first operand is not less than or equal to the second
      * operand, those two arguments are automatically swapped.
-     * For string comparison, an application-specific lexical ordering is used.
-     * For database queries, the default database collation is used.
+     * For string comparison, a default lexical ordering is used.
+     * Note: Do not compare a number with a string, as the result is not defined.
      */
     NotBetween,
 
@@ -548,41 +555,45 @@ export enum ObjectFilterOperator {
 
 }
 
-/* Type validations for ObjectFilter */
+/* Type validation for ContextFilter and ObjectFilter */
 
-export function isObjectFilterValid(filter: ObjectFilter): boolean {
+export function isContextFilterValid(filter: ContextFilter): boolean {
     if (filter === undefined) {
         return true;
     }
     /* tslint:disable-next-line:no-null-keyword */
     return filter !== null &&
         typeof filter === "object" &&
-        this._areFilterConditionsValid(filter.conditions) &&
+        areFilterConditionsValid(filter.conditions);
+}
+
+export function isObjectFilterValid(filter: ObjectFilter): boolean {
+    return isContextFilterValid(filter) &&
         (filter.skip === undefined || typeof filter.skip === "number") &&
         (filter.take === undefined || typeof filter.take === "number") &&
         (filter.orderByProperties === undefined ||
-            this._areOrderByPropertiesValid(filter.orderByProperties));
+            areOrderByPropertiesValid(filter.orderByProperties));
 }
 
-export function areFilterConditionsValid(conds: any): boolean {
+function areFilterConditionsValid(conds: any): boolean {
     if (conds === undefined) {
         return true;
     }
     /* tslint:disable-next-line:no-null-keyword */
     return conds !== null &&
-        this._isFilterConditionValid(conds) ||
+        isFilterConditionValid(conds) ||
         (typeof conds === "object" &&
             !(conds.and && conds.or) &&
-            (conds.and === undefined || this._isFilterConditionArrayValid(conds.and)) &&
-            (conds.or === undefined || this._isFilterConditionArrayValid(conds.or)));
+            (conds.and === undefined || isFilterConditionArrayValid(conds.and)) &&
+            (conds.or === undefined || isFilterConditionArrayValid(conds.or)));
 }
 
-export function isFilterConditionArrayValid(acond: ObjectFilterCondition[]) {
+function isFilterConditionArrayValid(acond: ObjectFilterCondition[]) {
     return Array.isArray(acond) &&
-        acond.every(cond => this._isFilterConditionValid(cond));
+        acond.every(cond => isFilterConditionValid(cond));
 }
 
-export function isFilterConditionValid(cond: ObjectFilterCondition) {
+function isFilterConditionValid(cond: ObjectFilterCondition) {
     // @todo(HHo) refine validation checks for filter operator parameters
     return Array.isArray(cond) &&
         cond.length === 2 &&
@@ -595,7 +606,7 @@ export function isFilterConditionValid(cond: ObjectFilterCondition) {
         ObjectFilterOperator[cond[1][0]] !== undefined;
 }
 
-export function areOrderByPropertiesValid(orderProps: Array<[ObjectFilterProperties, "Asc" | "Desc"]>): boolean {
+function areOrderByPropertiesValid(orderProps: Array<[ObjectFilterProperties, "Asc" | "Desc"]>): boolean {
     return Array.isArray(orderProps) &&
         orderProps.every(o => Array.isArray(o) &&
             o.length === 2 &&
