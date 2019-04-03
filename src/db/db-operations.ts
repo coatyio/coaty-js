@@ -171,7 +171,7 @@ export interface IDbNoSqlOperations {
      * `"message.size"`). If a single property name contains dots itself,
      * you obviously cannot use dot notation. Instead, specify the property
      * or nested properties as an array of strings (e.g.
-     * `["property.with.dots, "subproperty.with.dots"]`).
+     * `["property.with.dots", "subproperty.with.dots"]`).
      */
     aggregateObjects(
         collectionName: string,

@@ -24,7 +24,7 @@ export interface ContextFilter {
      * `"message.name"`). If a single property name contains dots itself,
      * you obviously cannot use dot notation. Instead, specify the property
      * or nested properties as an array of strings (e.g.
-     * `["property.with.dots, "subproperty.with.dots"]`).
+     * `["property.with.dots", "subproperty.with.dots"]`).
      *
      * A filter expression is a tuple consisting of a filter operator and an
      * operator-specific number of filter operands. You should use one of the
@@ -51,7 +51,7 @@ export interface ObjectFilter extends ContextFilter {
      * include dots (`.`) to access nested properties of subobjects (e.g.
      * `"message.name"`). If a single property name contains dots itself, you obviously
      * cannot use dot notation. Instead, specify the property or nested properties
-     * as an array of strings (e.g. `["property.with.dots, "subproperty.with.dots"]`).
+     * as an array of strings (e.g. `["property.with.dots", "subproperty.with.dots"]`).
      */
     orderByProperties?: Array<[ObjectFilterProperties, "Asc" | "Desc"]>;
 
@@ -116,7 +116,7 @@ export type ObjectFilterConditions = {
      * `"message.name"`). If a single property name contains dots itself,
      * you obviously cannot use dot notation. Instead, specify the property
      * or nested properties as an array of strings (e.g.
-     * `["property.with.dots, "subproperty.with.dots"]`).
+     * `["property.with.dots", "subproperty.with.dots"]`).
      *
      * A filter expression is a tuple consisting of a filter operator and an
      * operator-specific number of filter operands. You should use one of the
@@ -141,7 +141,7 @@ export type ObjectFilterConditions = {
      * `"message.name"`). If a single property name contains dots itself,
      * you obviously cannot use dot notation. Instead, specify the property
      * or nested properties as an array of strings (e.g.
-     * `["property.with.dots, "subproperty.with.dots"]`).
+     * `["property.with.dots", "subproperty.with.dots"]`).
      *
      * A filter expression is a tuple consisting of a filter operator and an
      * operator-specific number of filter operands. You should use one of the
