@@ -18,8 +18,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   Coaty JS Framework documentation including Developer Guide, source code
   documentation, Coding Style Guide, specification of the Communication Protocol,
   guidance notes on Rights Management, and a guide on integration of the OGC
-  SensorThings API. The sources also include two fully documented examples:
-  a Hello World example, and a Sensor Things example.
+  SensorThings API.
 baseurl: "/coaty-js" # /projectname for GitHub project pages hosted on https://coatyio.github.io/coaty-js
 url: "https://coatyio.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  coatyio

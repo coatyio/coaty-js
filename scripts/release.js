@@ -67,12 +67,6 @@ function versionRelease(version) {
                 const [pkgLckPath, pkgLck] = getPackageObject(undefined, "package-lock.json");
                 pkgLck.version = newVersion;
                 fs.writeFileSync(pkgLckPath, JSON.stringify(pkgLck, undefined, tabAsSpace));
-
-                // If we are in the Coaty project update package version and 
-                // coaty dependency of all example projects.
-                if (pkg.name === "coaty") {
-                    updateExamplePackageVersions(newVersion, pkg.name);
-                }
             } catch (err) {
                 reject(new Error(`version couldn't be bumped: ${err.message}`));
                 return;
@@ -102,42 +96,6 @@ function versionRelease(version) {
         const isReleaseType = version === "major" || version === "minor" || version === "patch";
         bumpVersion(version, isReleaseType, true);
     });
-}
-
-function updateExamplePackageVersions(newVersion, frameworkName) {
-    "use strict";
-    const updater = (exPath, level, maxLevel) => {
-        fs.readdirSync(exPath).forEach(file => {
-            let projectPath = path.join(exPath, file);
-            if (fs.lstatSync(projectPath).isDirectory()) {
-                if (fs.existsSync(path.join(projectPath, "package.json"))) {
-                    const [exPkgPath, exPkg] = getPackageObject(projectPath, "package.json");
-                    exPkg.version = newVersion;
-                    if (exPkg.dependencies && exPkg.dependencies[frameworkName]) {
-                        exPkg.dependencies[frameworkName] = newVersion;
-                    }
-                    try {
-                        fs.writeFileSync(exPkgPath, JSON.stringify(exPkg, undefined, tabAsSpace));
-                    } catch (exerr) {
-                        utils.logError(`${file} example version couldn't be bumped: ${exerr.message}`);
-                    }
-                }
-                if (fs.existsSync(path.join(projectPath, "package-lock.json"))) {
-                    const [exPkgPath, exPkgLck] = getPackageObject(projectPath, "package-lock.json");
-                    exPkgLck.version = newVersion;
-                    try {
-                        fs.writeFileSync(exPkgPath, JSON.stringify(exPkgLck, undefined, tabAsSpace));
-                    } catch (exerr) {
-                        utils.logError(`${file} example version couldn't be bumped: ${exerr.message}`);
-                    }
-                }
-                if (level < maxLevel) {
-                    updater(projectPath, level + 1, maxLevel);
-                }
-            }
-        });
-    };
-    updater(path.resolve(process.cwd(), "examples"), 0, 1);
 }
 
 module.exports.versionRelease = versionRelease;

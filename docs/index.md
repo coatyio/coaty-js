@@ -17,15 +17,9 @@ recommend reviewing this framework documentation:
 * [OGC SensorThings API]({{ site.baseurl }}{% link man/sensor-things-guide.md %}) -
   a guide on integration of the `OGC SensorThings API` in Coaty
 
-The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
-that demonstrates best practices and the basic use of communication events to
-exchange typed data in a decentralized Coaty application.
-
-The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things)
-that demonstrates how Coaty leverages the SensorThings API to manage a self-discovering
-network of sensors.
+Coaty JS also includes a set of fully documented [code
+examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.

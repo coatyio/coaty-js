@@ -17,7 +17,7 @@ efficient way. The key properties of the framework include:
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
 * standardized event based communication patterns on top of an open publish-subscribe
-  messaging protocol (currently MQTT),
+  messaging protocol (currently [MQTT](https://mqtt.org)),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
 * rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -49,15 +49,9 @@ This documentation includes:
   in a Coaty application.
 * a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
-The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
-that demonstrates best practices and the basic use of communication events to
-exchange typed data in a distributed Coaty application.
-
-The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things)
-that demonstrates how Coaty leverages the SensorThings API to manage a self-discovering
-network of sensors.
+Coaty JS also includes a set of fully documented [code
+examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.
