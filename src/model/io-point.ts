@@ -78,7 +78,7 @@ export interface IoSource extends IoPoint {
      * The property value must be a non-empty string. You should choose
      * canonical names for value types to avoid naming collisions. For example,
      * by following the naming convention for Java packages, such as
-     * `com.mycompany.myapp.Temperature`.
+     * `com.mydomain.myapp.Temperature`.
      *
      * Note that this value type is different from the underlying data format
      * used by the IO source to publish IO data values. For example, an IO source
@@ -109,7 +109,7 @@ export interface IoActor extends IoPoint {
      * The property value must be a non-empty string. You should choose
      * canonical names for value types to avoid naming collisions. For example,
      * by following the naming convention for Java packages, such as
-     * `com.mycompany.myapp.Temperature`.
+     * `com.mydomain.myapp.Temperature`.
      *
      * Note that this value type is different from the underlying data format
      * used by the IO source to publish IO data values. For example, an IO source

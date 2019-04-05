@@ -67,7 +67,7 @@ describe("Historian", () => {
         snapshotController = container.getController(mocks.MockSnapshotController);
         objectToSnapshot = {
             objectId: snapshotController.runtime.newUuid(),
-            objectType: "com.mycompany.MyCustomObjectType",
+            objectType: "com.mydomain.mypackage.MyCustomObjectType",
             coreType: "CoatyObject",
             name: "",
         } as CoatyObject;
