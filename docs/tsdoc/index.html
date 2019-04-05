@@ -78,7 +78,7 @@
 					<li>a lightweight and modular object-oriented software architecture favoring a
 					resource-oriented and declarative programming style,</li>
 					<li>standardized event based communication patterns on top of an open publish-subscribe
-					messaging protocol (currently MQTT),</li>
+					messaging protocol (currently <a href="https://mqtt.org">MQTT</a>),</li>
 					<li>a platform-agnostic, extensible object model to discover, distribute, share,
 					query, and persist hierarchically typed data, and</li>
 					<li>rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -105,16 +105,11 @@
 					<li>a specification of the <a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">Coaty communication protocol</a>,</li>
 					<li>guidance notes on <a href="https://coatyio.github.io/coaty-js/man/rights-management/">rights management</a>
 					in a Coaty application.</li>
-					<li>a guide on the <a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">OGC sensorThings API integration</a> in Coaty JS.</li>
+					<li>a guide on the <a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">OGC SensorThings API integration</a> in Coaty JS.</li>
 				</ul>
-				<p>The framework sources include a fully documented
-					<a href="https://github.com/coatyio/coaty-js/blob/master/examples/hello-world">Hello World example</a>
-					that demonstrates best practices and the basic use of communication events to
-				exchange typed data in a distributed Coaty application.</p>
-				<p>The framework sources include a fully documented
-					<a href="https://github.com/coatyio/coaty-js/blob/master/examples/sensor-things">Sensor Things example</a>
-					that demonstrates how Coaty leverages the sensorThings API to manage a self-discovering
-				network of sensors.</p>
+				<p>Coaty JS also includes a set of fully documented <a href="https://github.com/coatyio/coaty-js-examples">code
+					examples</a> that demonstrate best
+				practices and typical usage patterns.</p>
 				<p>Finally, the unit tests delivered with the framework itself also provide a valuable
 				source of programming examples for experienced developers.</p>
 				<p>Note that the framework makes heavy use of the Reactive Programming paradigm
@@ -219,6 +214,12 @@
 						<a href="enums/operatingstate.html" class="tsd-kind-icon">Operating<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/remotecallerrorcode.html" class="tsd-kind-icon">Remote<wbr>Call<wbr>Error<wbr>Code</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/remotecallerrormessage.html" class="tsd-kind-icon">Remote<wbr>Call<wbr>Error<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
 						<a href="enums/taskstatus.html" class="tsd-kind-icon">Task<wbr>Status</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
@@ -241,6 +242,12 @@
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/basiciorouter.html" class="tsd-kind-icon">Basic<wbr>IoRouter</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/callevent.html" class="tsd-kind-icon">Call<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/calleventdata.html" class="tsd-kind-icon">Call<wbr>Event<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/channelevent.html" class="tsd-kind-icon">Channel<wbr>Event</a>
@@ -375,6 +382,12 @@
 						<a href="classes/retrieveeventdata.html" class="tsd-kind-icon">Retrieve<wbr>Event<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/returnevent.html" class="tsd-kind-icon">Return<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/returneventdata.html" class="tsd-kind-icon">Return<wbr>Event<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/rulebasediorouter.html" class="tsd-kind-icon">Rule<wbr>Based<wbr>IoRouter</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
@@ -454,6 +467,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/configuration.html" class="tsd-kind-icon">Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/contextfilter.html" class="tsd-kind-icon">Context<wbr>Filter</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/controllerconfig.html" class="tsd-kind-icon">Controller<wbr>Config</a>
@@ -668,6 +684,9 @@
 					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#sql" class="tsd-kind-icon">SQL</a>
 					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#areobjectjoinconditionsvalid" class="tsd-kind-icon">are<wbr>Object<wbr>Join<wbr>Conditions<wbr>Valid</a>
+					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-external">
 						<a href="globals.html#binaryinsert" class="tsd-kind-icon">binary<wbr>Insert</a>
 					</li>
@@ -685,6 +704,12 @@
 					</li>
 					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#includes" class="tsd-kind-icon">includes</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#iscontextfiltervalid" class="tsd-kind-icon">is<wbr>Context<wbr>Filter<wbr>Valid</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#isobjectfiltervalid" class="tsd-kind-icon">is<wbr>Object<wbr>Filter<wbr>Valid</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#istimeinterval" class="tsd-kind-icon">is<wbr>Time<wbr>Interval</a>

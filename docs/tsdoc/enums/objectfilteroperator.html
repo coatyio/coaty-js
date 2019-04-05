@@ -106,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">Between<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L409">model/object-filter.ts:409</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L416">model/object-filter.ts:416</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -115,8 +115,8 @@
 								prop &gt;= operand AND prop &lt;= operand2.
 								If the first operand is not less than or equal to the second
 								operand, those two arguments are automatically swapped.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -126,7 +126,7 @@
 					<div class="tsd-signature tsd-kind-icon">Contains<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L495">model/object-filter.ts:495</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L502">model/object-filter.ts:502</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -154,7 +154,7 @@ Contains([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>
 					<div class="tsd-signature tsd-kind-icon">Equals<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L454">model/object-filter.ts:454</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L461">model/object-filter.ts:461</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -172,7 +172,7 @@ Contains([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>
 					<div class="tsd-signature tsd-kind-icon">Exists<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L468">model/object-filter.ts:468</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L475">model/object-filter.ts:475</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -187,14 +187,14 @@ Contains([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>
 					<div class="tsd-signature tsd-kind-icon">Greater<wbr>Than<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L392">model/object-filter.ts:392</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L399">model/object-filter.ts:399</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Checks if the filter property is greater than the given value.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -204,14 +204,14 @@ Contains([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>
 					<div class="tsd-signature tsd-kind-icon">Greater<wbr>Than<wbr>OrEqual<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L399">model/object-filter.ts:399</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L406">model/object-filter.ts:406</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Checks if the filter property is greater than or equal to the given value.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -221,7 +221,7 @@ Contains([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>
 					<div class="tsd-signature tsd-kind-icon">In<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L532">model/object-filter.ts:532</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L539">model/object-filter.ts:539</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -243,14 +243,14 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 					<div class="tsd-signature tsd-kind-icon">Less<wbr>Than<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L378">model/object-filter.ts:378</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L385">model/object-filter.ts:385</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Checks if the filter property is less than the given value.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -260,14 +260,14 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 					<div class="tsd-signature tsd-kind-icon">Less<wbr>Than<wbr>OrEqual<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L385">model/object-filter.ts:385</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L392">model/object-filter.ts:392</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Checks if the filter property is less than or equal to the given value.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -277,7 +277,7 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 					<div class="tsd-signature tsd-kind-icon">Like<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L445">model/object-filter.ts:445</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L452">model/object-filter.ts:452</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -310,7 +310,7 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 					<div class="tsd-signature tsd-kind-icon">Not<wbr>Between<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L419">model/object-filter.ts:419</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L426">model/object-filter.ts:426</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -319,8 +319,8 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 								prop &lt; operand1 OR prop &gt; operand2.
 								If the first operand is not less than or equal to the second
 								operand, those two arguments are automatically swapped.
-								For string comparison, an application-specific lexical ordering is used.
-							For database queries, the default database collation is used.</p>
+								For string comparison, a default lexical ordering is used.
+							Note: Do not compare a number with a string, as the result is not defined.</p>
 						</div>
 					</div>
 				</section>
@@ -330,7 +330,7 @@ In({ <span class="hljs-string">"foo"</span>: <span class="hljs-number">47</span>
 					<div class="tsd-signature tsd-kind-icon">Not<wbr>Contains<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L517">model/object-filter.ts:517</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L524">model/object-filter.ts:524</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -358,7 +358,7 @@ NotContains([<span class="hljs-number">1</span>, <span class="hljs-number">2</sp
 					<div class="tsd-signature tsd-kind-icon">Not<wbr>Equals<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L463">model/object-filter.ts:463</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L470">model/object-filter.ts:470</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -376,7 +376,7 @@ NotContains([<span class="hljs-number">1</span>, <span class="hljs-number">2</sp
 					<div class="tsd-signature tsd-kind-icon">Not<wbr>Exists<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L473">model/object-filter.ts:473</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L480">model/object-filter.ts:480</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -391,7 +391,7 @@ NotContains([<span class="hljs-number">1</span>, <span class="hljs-number">2</sp
 					<div class="tsd-signature tsd-kind-icon">Not<wbr>In<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L547">model/object-filter.ts:547</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L554">model/object-filter.ts:554</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

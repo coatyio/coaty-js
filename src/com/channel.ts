@@ -3,6 +3,7 @@
 import { CoatyObject, Component } from "../model/object";
 import { CoreTypes } from "../model/types";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationTopic } from "./communication-topic";
 
 /**
  * Channel event.
@@ -11,6 +12,10 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
 
     get eventType() {
         return CommunicationEventType.Channel;
+    }
+
+    get eventTypeFilter() {
+        return this._channelId;
     }
 
     get channelId() {
@@ -36,17 +41,11 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
         eventData: ChannelEventData) {
         super(eventSource, eventData);
 
-        if (!ChannelEvent.isChannelIdValid(channelId)) {
+        if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
             throw new TypeError("in ChannelEvent: argument 'channelId' is not a valid channel identifier");
         }
 
         this._channelId = channelId;
-    }
-
-    static isChannelIdValid(channelId: string) {
-        return typeof channelId === "string" && channelId.length > 0 &&
-            channelId.indexOf("\u0000") === -1 && channelId.indexOf("#") === -1 &&
-            channelId.indexOf("+") === -1 && channelId.indexOf("/") === -1;
     }
 
     /**

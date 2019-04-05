@@ -15,6 +15,7 @@ import { Runtime } from "../runtime/runtime";
 
 import { AdvertiseEvent, AdvertiseEventData } from "./advertise";
 import { AssociateEvent, AssociateEventData } from "./associate";
+import { CallEvent, CallEventData, ReturnEvent, ReturnEventData } from "./call-return";
 import { ChannelEvent, ChannelEventData } from "./channel";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
@@ -53,10 +54,9 @@ export class CommunicationManager implements IComponent {
     /**
      * Defines the communication protocol version number, an integral number.
      * Increment this version whenever you add new communication events or
-     * change the shape of topics/payloads and adjust the compatibility
-     * check method isVersionCompatible if needed.
+     * change the shape of topics/payloads.
      */
-    static readonly PROTOCOL_VERSION: number = 1;
+    static readonly PROTOCOL_VERSION: number = 2;
 
     private _runtime: Runtime;
     private _options: CommunicationOptions;
@@ -246,8 +246,40 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * @deprecated Please use either observeAdvertiseWithCoreType
-     * or observeAdvertiseWithObjectType instead.
+     * Observe Call events for the given target and the given
+     * operation name and context object, emitted by the hot observable returned.
+     * 
+     * The operation name must be a non-empty string that does not contain
+     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, 
+     * `/ (U+002F)`.
+     * 
+     * The given context object is matched against the context filter specified
+     * in incoming Call event data to determine whether the Call event should be
+     * emitted or skipped by the observable. A Call event is skipped if and only 
+     * if a context filter and a context object are *both* specified and they do not
+     * match (checked by using `ObjectMatcher.matchesFilter`). In all other cases,
+     * the Call event is emitted.
+     *
+     * Call events that originate from the given event target, i.e.
+     * that have been published by specifying the given event target as
+     * event source, will not be emitted by the observable returned.
+     *
+     * @param eventTarget target for which Call events should be emitted
+     * @param operation the name of the operation to be invoked
+     * @param context a context object to be matched against the Call event data's context filter (optional)
+     * @returns a hot observable emitting incoming Call events whose context filter matches the given context
+     */
+    observeCall(eventTarget: CoatyObject, operation: string, context?: CoatyObject): Observable<CallEvent> {
+        if (!CommunicationTopic.isValidEventTypeFilter(operation)) {
+            throw new TypeError(`${operation} is not a valid operation name`);
+        }
+        return (this._observeRequest(eventTarget.objectId, CommunicationEventType.Call, operation) as Observable<CallEvent>)
+            .pipe(filter(event => event.eventData.matchesFilter(context)));
+    }
+
+    /**
+     * @deprecated Please use either `observeAdvertiseWithCoreType`
+     * or `observeAdvertiseWithObjectType` instead.
      * 
      * Observe Advertise events for the given target and the given
      * core or object type emitted by the hot observable returned.
@@ -279,7 +311,7 @@ export class CommunicationManager implements IComponent {
         // Optimization: in case core objects should be observed by core object type (an exotic case)
         // we do not subscribe on the object type filter but on the core type filter instead,
         // filtering out objects that do not satisfy the core object type.
-        // (see publishAdvertise method).
+        // (see `publishAdvertise`).
         if (objectType) {
             const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
             if (objectCoreType) {
@@ -287,7 +319,7 @@ export class CommunicationManager implements IComponent {
                     eventTarget.objectId,
                     CommunicationEventType.Advertise,
                     objectCoreType) as Observable<AdvertiseEvent>)
-                    .pipe(filter((event: AdvertiseEvent) => event.eventData.object.objectType === objectType));
+                    .pipe(filter(event => event.eventData.object.objectType === objectType));
             }
         }
 
@@ -361,7 +393,7 @@ export class CommunicationManager implements IComponent {
      * @returns a hot observable emitting incoming Channel events
      */
     observeChannel(eventTarget: CoatyObject, channelId: string): Observable<ChannelEvent> {
-        if (!ChannelEvent.isChannelIdValid(channelId)) {
+        if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
             throw new TypeError(`${channelId} is not a valid channel identifier`);
         }
         return this._observeRequest(eventTarget.objectId, CommunicationEventType.Channel, channelId) as Observable<ChannelEvent>;
@@ -503,6 +535,26 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
+     * Publish a Call event to request execution of a remote operation and receive
+     * results emitted by the hot observable returned.
+     * 
+     * Note that the Call event is lazily published when the
+     * first observer subscribes to the observable.
+     *
+     * Since the observable never emits a completed or error event,
+     * a subscriber should unsubscribe when the observable is no longer needed
+     * to release system resources and to avoid memory leaks. After all initial
+     * subscribers have unsubscribed no more response events will be emitted
+     * on the observable and an error will be thrown on resubscription.
+     *
+     * @param event the Call event to be published
+     * @returns a hot observable of associated Return events
+     */
+    publishCall(event: CallEvent): Observable<ReturnEvent> {
+        return this._publishClient(event, event.operation) as Observable<ReturnEvent>;
+    }
+
+    /**
      * Advertise an object.
      *
      * @param event the Advertise event to be published
@@ -518,7 +570,7 @@ export class CommunicationManager implements IComponent {
         // unless the advertised object is a core object with a core object type.
         // In this (exotic) case, core object type observers subscribe on the core type
         // followed by a local filter operation to filter out unwanted objects
-        // (see observeAdvertise method).
+        // (see `observeAdvertise`).
         if (CoreTypes.getObjectTypeFor(coreType) !== objectType) {
             this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType);
         }
@@ -614,15 +666,6 @@ export class CommunicationManager implements IComponent {
             this.runtime.newUuid(),
             CommunicationManager.PROTOCOL_VERSION,
             this._useReadableTopics).getTopicName();
-    }
-
-    /**
-     * Check whether the given protocol version is compatible with
-     * CommunicationManager.PROTOCOL_VERSION.
-     * @param version a communication protocol version
-     */
-    public isVersionCompatible(protocolVersion: number) {
-        return protocolVersion >= CommunicationManager.PROTOCOL_VERSION;
     }
 
     /**
@@ -899,17 +942,11 @@ export class CommunicationManager implements IComponent {
             const topic = CommunicationTopic.createByName(topicName);
             const msgPayload = payload.toString();
 
-            // Check compatibility of protocol version
-            if (!this.isVersionCompatible(topic.version)) {
-                /* tslint:disable-next-line:max-line-length */
-                console.log(`CommunicationManager: message not compatible with current protocol version: expected ${CommunicationManager.PROTOCOL_VERSION} or greater, got ${topic.version}`);
-                return;
-            }
-
             // Check whether incoming message is a response message
             if (topic.eventType === CommunicationEventType.Complete ||
                 topic.eventType === CommunicationEventType.Resolve ||
-                topic.eventType === CommunicationEventType.Retrieve) {
+                topic.eventType === CommunicationEventType.Retrieve ||
+                topic.eventType === CommunicationEventType.Return) {
                 // Dispatch incoming response message to associated observable.
                 const item = this._observedResponses.get(topic.messageToken);
                 if (item === undefined) {
@@ -929,6 +966,11 @@ export class CommunicationManager implements IComponent {
                 if (item.request.eventType === CommunicationEventType.Query &&
                     topic.eventType !== CommunicationEventType.Retrieve) {
                     console.log(`CommunicationManager: expected Retrieve response message for Query, got: ${topicName}`);
+                    return;
+                }
+                if (item.request.eventType === CommunicationEventType.Call &&
+                    topic.eventType !== CommunicationEventType.Return) {
+                    console.log(`CommunicationManager: expected Return response message for Call, got: ${topicName}`);
                     return;
                 }
 
@@ -953,6 +995,10 @@ export class CommunicationManager implements IComponent {
                 if (message.eventType === CommunicationEventType.Retrieve) {
                     const retrieveEvent = message as RetrieveEvent;
                     retrieveEvent.eventRequest.ensureValidResponseParameters(retrieveEvent.eventData);
+                }
+                if (message.eventType === CommunicationEventType.Return) {
+                    const returnEvent = message as ReturnEvent;
+                    returnEvent.eventRequest.ensureValidResponseParameters(returnEvent.eventData);
                 }
 
                 isDispatching = true;
@@ -979,7 +1025,7 @@ export class CommunicationManager implements IComponent {
                             eventSource: sourceId,
                             eventData: JSON.parse(msgPayload),
                             eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
-                            channelId: topic.eventTypeFilter,
+                            eventTypeFilter: topic.eventTypeFilter,
                         });
 
                         if (message instanceof DiscoverEvent) {
@@ -996,6 +1042,12 @@ export class CommunicationManager implements IComponent {
                         }
                         if (message instanceof UpdateEvent) {
                             message.complete = (event: CompleteEvent) => {
+                                message.ensureValidResponseParameters(event.eventData);
+                                this._publishClient(event, undefined, topic.messageToken);
+                            };
+                        }
+                        if (message instanceof CallEvent) {
+                            message.returnEvent = (event: ReturnEvent) => {
                                 message.ensureValidResponseParameters(event.eventData);
                                 this._publishClient(event, undefined, topic.messageToken);
                             };
@@ -1024,7 +1076,7 @@ export class CommunicationManager implements IComponent {
      * Create a new instance of the specified event object.
      * Performs a safety type check to ensure that the given event data is valid.
      *
-     * @param event an event object parsed by JSON or created by the application.
+     * @param event an event object deserialized by JSON (on incoming event) or created by the application (for publishing).
      */
     private _createEventInstance(event: any): CommunicationEvent<CommunicationEventData> {
         let instance: CommunicationEvent<CommunicationEventData>;
@@ -1047,7 +1099,7 @@ export class CommunicationManager implements IComponent {
             case CommunicationEventType.Channel:
                 instance = new ChannelEvent(
                     event.eventSource,
-                    event.channelId,
+                    event.eventTypeFilter,
                     ChannelEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Discover:
@@ -1080,6 +1132,17 @@ export class CommunicationManager implements IComponent {
                     event.eventSource,
                     CompleteEventData.createFrom(event.eventData));
                 break;
+            case CommunicationEventType.Call:
+                instance = new CallEvent(
+                    event.eventSource,
+                    event.eventTypeFilter,
+                    CallEventData.createFrom(event.eventData));
+                break;
+            case CommunicationEventType.Return:
+                instance = new ReturnEvent(
+                    event.eventSource,
+                    ReturnEventData.createFrom(event.eventData));
+                break;
             default:
                 throw new TypeError(`Couldn't create event instance for event type ${event.eventType}`);
         }
@@ -1106,7 +1169,7 @@ export class CommunicationManager implements IComponent {
                 this._associatedUser,
                 eventSource || eventSourceId,
                 eventType,
-                undefined,
+                eventTypeFilter,
                 forMessageToken,
                 CommunicationManager.PROTOCOL_VERSION,
                 this._useReadableTopics,
@@ -1151,6 +1214,9 @@ export class CommunicationManager implements IComponent {
                 break;
             case CommunicationEventType.Update:
                 responseType = CommunicationEventType.Complete;
+                break;
+            case CommunicationEventType.Call:
+                responseType = CommunicationEventType.Return;
                 break;
             default:
                 break;
@@ -1217,6 +1283,7 @@ export class CommunicationManager implements IComponent {
             const topicFilter = (eventType === CommunicationEventType.Raw) ?
                 eventTypeFilter :
                 CommunicationTopic.getTopicFilter(
+                    CommunicationManager.PROTOCOL_VERSION,
                     eventTypeName,
                     (eventType === CommunicationEventType.Associate) ?
                         this._associatedUser :
@@ -1244,7 +1311,12 @@ export class CommunicationManager implements IComponent {
         publisher: () => void,
         cleanup: (item: ObservedResponseItem) => void) {
         const eventTypeName = CommunicationTopic.getEventTypeName(eventType);
-        const topicFilter = CommunicationTopic.getTopicFilter(eventTypeName, undefined, messageToken);
+        const topicFilter = CommunicationTopic.getTopicFilter(
+            CommunicationManager.PROTOCOL_VERSION,
+            eventTypeName,
+            undefined,
+            messageToken,
+        );
         const item = new ObservedResponseItem(topicFilter, messageToken, request, publisher, cleanup);
 
         this._observedResponses.set(item.messageToken, item);
@@ -1460,7 +1532,7 @@ export class CommunicationManager implements IComponent {
             const associatedTopic = event.eventData.associatedTopic;
 
             if (associatedTopic !== undefined &&
-                !CommunicationTopic.isValidIoValueTopic(associatedTopic, this.isVersionCompatible)) {
+                !CommunicationTopic.isValidIoValueTopic(associatedTopic, CommunicationManager.PROTOCOL_VERSION)) {
                 /* tslint:disable-next-line:max-line-length */
                 console.log(`CommunicationManager: associated topic of incoming ${CommunicationEventType[event.eventType]} event is invalid: '${associatedTopic}'`);
                 return;

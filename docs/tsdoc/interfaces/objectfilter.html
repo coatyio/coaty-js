@@ -69,7 +69,7 @@
 					<div class="lead">
 						<p>Defines criteria for filtering and ordering a result
 							set of Coaty objects. Used in combination with Query events
-						and database operations, as well as the <code>ObjectMatcher</code> functionality.</p>
+						and database operations, and with the <code>ObjectMatcher</code> functionality.</p>
 					</div>
 				</div>
 			</section>
@@ -77,10 +77,15 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ObjectFilter</span>
+						<a href="contextfilter.html" class="tsd-signature-type">ContextFilter</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a>
+								<span class="target">ObjectFilter</span>
+								<ul class="tsd-hierarchy">
+									<li>
+										<a href="dbobjectfilter.html" class="tsd-signature-type">DbObjectFilter</a>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</li>
@@ -93,7 +98,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectfilter.html#conditions" class="tsd-kind-icon">conditions</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="objectfilter.html#conditions" class="tsd-kind-icon">conditions</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectfilter.html#orderbyproperties" class="tsd-kind-icon">order<wbr>ByProperties</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectfilter.html#skip" class="tsd-kind-icon">skip</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectfilter.html#take" class="tsd-kind-icon">take</a></li>
@@ -104,13 +109,14 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a name="conditions" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> conditions</h3>
 					<div class="tsd-signature tsd-kind-icon">conditions<span class="tsd-signature-symbol">:</span> <a href="objectfiltercondition.html" class="tsd-signature-type">ObjectFilterCondition</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#objectfilterconditions" class="tsd-signature-type">ObjectFilterConditions</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="contextfilter.html">ContextFilter</a>.<a href="contextfilter.html#conditions">conditions</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L34">model/object-filter.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L33">model/object-filter.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -130,7 +136,7 @@
 							<code>&quot;message.name&quot;</code>). If a single property name contains dots itself,
 							you obviously cannot use dot notation. Instead, specify the property
 							or nested properties as an array of strings (e.g.
-						<code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
+						<code>[&quot;property.with.dots&quot;, &quot;subproperty.with.dots&quot;]</code>).</p>
 						<p>A filter expression is a tuple consisting of a filter operator and an
 							operator-specific number of filter operands. You should use one of the
 						typesafe <code>filterOp</code> functions to specify a filter expression.</p>
@@ -142,7 +148,7 @@
 					<div class="tsd-signature tsd-kind-icon">order<wbr>ByProperties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../globals.html#objectfilterproperties" class="tsd-signature-type">ObjectFilterProperties</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"Asc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Desc"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L49">model/object-filter.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L56">model/object-filter.ts:56</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -157,7 +163,7 @@
 							include dots (<code>.</code>) to access nested properties of subobjects (e.g.
 							<code>&quot;message.name&quot;</code>). If a single property name contains dots itself, you obviously
 							cannot use dot notation. Instead, specify the property or nested properties
-						as an array of strings (e.g. <code>[&quot;property.with.dots, &quot;subproperty.with.dots&quot;]</code>).</p>
+						as an array of strings (e.g. <code>[&quot;property.with.dots&quot;, &quot;subproperty.with.dots&quot;]</code>).</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -166,7 +172,7 @@
 					<div class="tsd-signature tsd-kind-icon">skip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L65">model/object-filter.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L72">model/object-filter.ts:72</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -184,7 +190,7 @@
 					<div class="tsd-signature tsd-kind-icon">take<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/model/object-filter.ts#L57">model/object-filter.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/model/object-filter.ts#L64">model/object-filter.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -213,7 +219,7 @@
 					<li class="current tsd-kind-interface tsd-is-external">
 						<a href="objectfilter.html" class="tsd-kind-icon">Object<wbr>Filter</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="objectfilter.html#conditions" class="tsd-kind-icon">conditions</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">

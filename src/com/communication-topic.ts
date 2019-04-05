@@ -145,13 +145,14 @@ export class CommunicationTopic {
 
     /**
      * Gets a topic filter for subscription.
+     * @param version the protocol version
      * @param eventTypeName the event name topic level
      * @param associatedUser user associated with the topic, or undefined
      * @param messageToken message token with the topic, or undefined
      */
-    static getTopicFilter(eventTypeName: string, associatedUser: User, messageToken: string): string {
+    static getTopicFilter(version: number, eventTypeName: string, associatedUser: User, messageToken: string): string {
         /* tslint:disable-next-line:max-line-length */
-        return `/${CommunicationTopic.PROTOCOL_NAME}/+/${eventTypeName}/${associatedUser ? associatedUser.objectId : "+"}/+/${messageToken || "+"}/`;
+        return `/${CommunicationTopic.PROTOCOL_NAME}/${version}/${eventTypeName}/${associatedUser ? associatedUser.objectId : "+"}/+/${messageToken || "+"}/`;
     }
 
     /**
@@ -191,11 +192,11 @@ export class CommunicationTopic {
      *
      * @param topic a topic name
      * @param protocolVersionChecker check function for communication protocol version
-     * @Returns true if the given topic name is a valid IoValue topic; false otherwise
+     * @returns true if the given topic name is a valid IoValue topic; false otherwise
      */
     static isValidIoValueTopic(
         topic: string,
-        protocolVersionChecker: (protocolVersion: number) => boolean): boolean {
+        protocolVersion: number) {
         if (!CommunicationTopic._isValidMqttTopicWithoutWildcards(topic)) {
             return false;
         }
@@ -207,16 +208,7 @@ export class CommunicationTopic {
 
             // Matches internal topic structure (but could still be external)
             const [eventType] = this._parseEvent(event);
-            if (eventType !== CommunicationEventType.Advertise &&
-                eventType !== CommunicationEventType.Deadvertise &&
-                eventType !== CommunicationEventType.Channel &&
-                eventType !== CommunicationEventType.Discover &&
-                eventType !== CommunicationEventType.Resolve &&
-                eventType !== CommunicationEventType.Query &&
-                eventType !== CommunicationEventType.Retrieve &&
-                eventType !== CommunicationEventType.Update &&
-                eventType !== CommunicationEventType.Associate &&
-                eventType !== CommunicationEventType.IoValue) {
+            if (typeof eventType !== "number" || (eventType <= 0 || eventType >= CommunicationEventType.MAX)) {
                 // Valid external topic
                 return true;
             }
@@ -224,7 +216,7 @@ export class CommunicationTopic {
             // Assume internal topic
             try {
                 if (eventType === CommunicationEventType.IoValue &&
-                    protocolVersionChecker(this._parseVersion(version))) {
+                    this._parseVersion(version) === protocolVersion) {
                     return true;
                 }
                 return false;
@@ -235,6 +227,18 @@ export class CommunicationTopic {
             // Valid external topic
             return true;
         }
+    }
+
+    /**
+     * Determines whether the given data is valid as an event type filter.
+     *
+     * @param filter an event type filter
+     * @returns true if the given topic name is a valid event type filter; false otherwise
+     */
+    static isValidEventTypeFilter(filter: string) {
+        return typeof filter === "string" && filter.length > 0 &&
+            filter.indexOf("\u0000") === -1 && filter.indexOf("#") === -1 &&
+            filter.indexOf("+") === -1 && filter.indexOf("/") === -1;
     }
 
     private static _isValidMqttTopicWithoutWildcards(topic: string): boolean {

@@ -67,8 +67,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Predefined event types used by Coaty communication event patterns to
-						discover, distribute, and share data.</p>
+						<p>Predefined event types used by Coaty communication event patterns.
+						Note: add new types to the end to maintain existing enum values.</p>
 					</div>
 				</div>
 			</section>
@@ -81,15 +81,18 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#advertise" class="tsd-kind-icon">Advertise</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#associate" class="tsd-kind-icon">Associate</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#call" class="tsd-kind-icon">Call</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#channel" class="tsd-kind-icon">Channel</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#complete" class="tsd-kind-icon">Complete</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#deadvertise" class="tsd-kind-icon">Deadvertise</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#discover" class="tsd-kind-icon">Discover</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#iovalue" class="tsd-kind-icon">Io<wbr>Value</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#max" class="tsd-kind-icon">MAX</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#query" class="tsd-kind-icon">Query</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#raw" class="tsd-kind-icon">Raw</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#resolve" class="tsd-kind-icon">Resolve</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#retrieve" class="tsd-kind-icon">Retrieve</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#return" class="tsd-kind-icon">Return</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="communicationeventtype.html#update" class="tsd-kind-icon">Update</a></li>
 							</ul>
 						</section>
@@ -104,7 +107,7 @@
 					<div class="tsd-signature tsd-kind-icon">Advertise<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L16">com/communication-events.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L12">com/communication-event.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -114,7 +117,17 @@
 					<div class="tsd-signature tsd-kind-icon">Associate<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L25">com/communication-events.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L21">com/communication-event.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="call" class="tsd-anchor"></a>
+					<h3>Call</h3>
+					<div class="tsd-signature tsd-kind-icon">Call<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L23">com/communication-event.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -124,7 +137,7 @@
 					<div class="tsd-signature tsd-kind-icon">Channel<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L18">com/communication-events.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L14">com/communication-event.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -134,7 +147,7 @@
 					<div class="tsd-signature tsd-kind-icon">Complete<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L24">com/communication-events.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L20">com/communication-event.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -144,7 +157,7 @@
 					<div class="tsd-signature tsd-kind-icon">Deadvertise<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L17">com/communication-events.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L13">com/communication-event.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -154,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">Discover<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L19">com/communication-events.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L15">com/communication-event.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,7 +177,17 @@
 					<div class="tsd-signature tsd-kind-icon">Io<wbr>Value<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L26">com/communication-events.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L22">com/communication-event.ts:22</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="max" class="tsd-anchor"></a>
+					<h3>MAX</h3>
+					<div class="tsd-signature tsd-kind-icon">MAX<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L27">com/communication-event.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -174,17 +197,17 @@
 					<div class="tsd-signature tsd-kind-icon">Query<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L21">com/communication-events.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L17">com/communication-event.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="raw" class="tsd-anchor"></a>
 					<h3>Raw</h3>
-					<div class="tsd-signature tsd-kind-icon">Raw<span class="tsd-signature-symbol">:</span> </div>
+					<div class="tsd-signature tsd-kind-icon">Raw<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L15">com/communication-events.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L11">com/communication-event.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,7 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">Resolve<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L20">com/communication-events.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L16">com/communication-event.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +227,17 @@
 					<div class="tsd-signature tsd-kind-icon">Retrieve<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L22">com/communication-events.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L18">com/communication-event.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="return" class="tsd-anchor"></a>
+					<h3>Return</h3>
+					<div class="tsd-signature tsd-kind-icon">Return<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L24">com/communication-event.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +247,7 @@
 					<div class="tsd-signature tsd-kind-icon">Update<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/f42fd33/src/com/communication-events.ts#L23">com/communication-events.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/71af192/src/com/communication-event.ts#L19">com/communication-event.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -242,6 +275,9 @@
 								<a href="communicationeventtype.html#associate" class="tsd-kind-icon">Associate</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="communicationeventtype.html#call" class="tsd-kind-icon">Call</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="communicationeventtype.html#channel" class="tsd-kind-icon">Channel</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
@@ -257,6 +293,9 @@
 								<a href="communicationeventtype.html#iovalue" class="tsd-kind-icon">Io<wbr>Value</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="communicationeventtype.html#max" class="tsd-kind-icon">MAX</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="communicationeventtype.html#query" class="tsd-kind-icon">Query</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
@@ -267,6 +306,9 @@
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="communicationeventtype.html#retrieve" class="tsd-kind-icon">Retrieve</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="communicationeventtype.html#return" class="tsd-kind-icon">Return</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="communicationeventtype.html#update" class="tsd-kind-icon">Update</a>

@@ -76,27 +76,27 @@ describe("IO Routing", () => {
             TEST_TIMEOUT);
 
         it("validates external IoValue topics", () => {
-            const versionChecker = container.getCommunicationManager().isVersionCompatible;
-            expect(CommunicationTopic.isValidIoValueTopic("", versionChecker)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("+", versionChecker)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("#", versionChecker)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/#", versionChecker)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/+/", versionChecker)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar\u0000/", versionChecker)).toBeFalsy();
+            const version = CommunicationManager.PROTOCOL_VERSION;
+            expect(CommunicationTopic.isValidIoValueTopic("", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic("+", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic("#", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic("/foo/#", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic("/foo/+/", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar\u0000/", version)).toBeFalsy();
 
-            expect(CommunicationTopic.isValidIoValueTopic("/", versionChecker)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("//", versionChecker)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("foo", versionChecker)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar", versionChecker)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("foo/bar/", versionChecker)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/coaty/IOVALUE/user/source/token/", versionChecker)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("/", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("//", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("foo", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("foo/bar/", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("/coaty/IOVALUE/user/source/token/", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic(
                 "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/IOVALUE/user/source/token/",
-                versionChecker)).toBeTruthy();
+                version)).toBeTruthy();
         });
 
         it("validates internal IoValue topics", () => {
-            const versionChecker = container.getCommunicationManager().isVersionCompatible;
+            const version = CommunicationManager.PROTOCOL_VERSION;
             let topic = CommunicationTopic.createByLevels(
                 configuration1.common.associatedUser,
                 "source45567",
@@ -106,7 +106,7 @@ describe("IO Routing", () => {
                 CommunicationManager.PROTOCOL_VERSION,
                 true).getTopicName();
 
-            expect(CommunicationTopic.isValidIoValueTopic(topic, versionChecker)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeTruthy();
 
             topic = CommunicationTopic.createByLevels(
                 configuration1.common.associatedUser,
@@ -116,7 +116,7 @@ describe("IO Routing", () => {
                 "token236526",
                 CommunicationManager.PROTOCOL_VERSION - 1,
                 true).getTopicName();
-            expect(CommunicationTopic.isValidIoValueTopic(topic, versionChecker)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
             topic = CommunicationTopic.createByLevels(
                 configuration1.common.associatedUser,
@@ -126,7 +126,7 @@ describe("IO Routing", () => {
                 "token236526",
                 CommunicationManager.PROTOCOL_VERSION,
                 true).getTopicName();
-            expect(CommunicationTopic.isValidIoValueTopic(topic, versionChecker)).toBeFalsy();
+            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
         });
 

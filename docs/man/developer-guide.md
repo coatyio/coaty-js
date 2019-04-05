@@ -41,6 +41,7 @@ this guide.
   * [Discover - Resolve event pattern - an example](#discover---resolve-event-pattern---an-example)
   * [Query - Retrieve event pattern - an example](#query---retrieve-event-pattern---an-example)
   * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
+  * [Call - Return event pattern - an example](#call---return-event-pattern---an-example)
   * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
   * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
   * [Distributed lifecycle management](#distributed-lifecycle-management)
@@ -129,15 +130,9 @@ This documentation includes:
   in a Coaty application.
 * a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
-The framework sources include a fully documented
-[Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world)
-that demonstrates best practices and the basic use of communication events to
-exchange typed data in a distributed Coaty application.
-
-The framework sources include a fully documented
-[Sensor Things example](https://github.com/coatyio/coaty-js/tree/master/examples/sensor-things)
-that demonstrates how Coaty leverages the SensorThings API to manage a self-discovering
-network of sensors.
+Coaty JS also includes a set of fully documented [code
+examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.
@@ -847,8 +842,9 @@ database key as defined in the `databases` option of your configuration; `collec
 of the collection to be used. If the collection doesn't exist, it will be created in the given
 database.
 
-To see an example of the `HistorianController` in action, take a look at the [Hello World example](https://github.com/coatyio/coaty-js/blob/master/examples/hello-world/README.md)
-delivered with the Coaty framework sources.
+To see an example of the `HistorianController` in action, take a look at the
+[Hello World
+example](https://github.com/coatyio/coaty-js-examples/tree/master/hello-world).
 
 ## Object model
 
@@ -938,9 +934,12 @@ The property `coreType` is the framework core type name of the object;
 it corresponds with the name of the interface that defines the object's shape.
 
 The `objectType` property is the concrete type name of the object in a canonical
-form. Its form should follow the naming convention for Java packages to avoid name
-collisions. All predefined object types use the form `coaty.<InterfaceName>`,
-e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class).
+form. It should be defined using a hierarchical naming pattern with some levels in the
+hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
+following Java package naming conventions (i.e. `com.domain.package.Type`).
+All predefined object types use the form `coaty.<InterfaceName>`,
+e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class). Do not use the
+reserved toplevel namespace `coaty.*` for your application defined object types.
 
 The concrete and core type names of all predefined object types are defined
 as static properties of the `CoreTypes` class in the framework `model` module.
@@ -1041,7 +1040,8 @@ communication event patterns to exchange object data in a decentralized Coaty ap
   receive responses by Retrieve events.
 * **Update - Complete**  Request or suggest an object update and receive
   accomplishments by Complete events.
-* **Call - Return**  Perform a remote operation and receive results by Return events.
+* **Call - Return**  Request execution of a remote operation and receive results by
+  Return events.
 * **Associate** Used by IO Router to dynamically associate/disassociate IO sources
   with IO actors.
 * **IoValue** Send IO values from a publishing IO source to associated IO actors.
@@ -1076,11 +1076,9 @@ In this way inefficient database polling is replaced by an efficient
 push-based approach.
 
 Internally, events are emitted and received by the Communication Manager using
-publish-subscribe messaging with an MQTT message broker. Events are passed to Coaty
-controllers by following the Reactive Programming paradigm using RxJS
-observables. An introduction to Reactive Programming can be found
-[here](http://reactivex.io/). Examples and explanations can be found on
-the [RxJS](https://rxjs.dev/) and [Learn RxJS](https://www.learnrxjs.io/) websites.
+publish-subscribe messaging with an MQTT message broker. Events are passed to
+Coaty controllers by following the Reactive Programming paradigm using RxJS
+observables.
 
 The Communication Manager provides features to transparently control the underlying
 publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
@@ -1158,16 +1156,19 @@ emit all the Complete events which are direct responses to the published request
 Use `publishQuery` to send Query events. The observable returned will
 emit all the Retrieve events which are direct responses to the published request.
 
-*Note that all publish methods for request-response event patterns, i.e.
-`publishDiscover`, `publishUpdate` and `publishQuery`, publish the specified
-event **lazily**, i.e **not until** the first observer subscribes to the
-observable returned by the method.* In this way race conditions on the
-response event can be avoided. Since the observable never emits a completed
-or event, a subscriber should *unsubscribe* when the observable is no
-longer needed to release system resources and to avoid memory leaks.
-After all initial subscribers have unsubscribed no more response events
-will be emitted on the observable. Instead, errors will be emitted to all
-subsequent resubscriptions.
+Use `publishCall` to send Call events. The observable returned will
+emit all the Return events which are direct responses to the published request.
+
+> Note that all publish methods for request-response event patterns, i.e.
+> `publishDiscover`, `publishUpdate`, `publishQuery`, and `publishCall` publish
+> the specified event **lazily**, i.e **not until** the first observer subscribes
+> to the observable returned by the method. In this way race conditions on the
+> response event can be avoided. Since the observable never emits a completed
+> event, a subscriber should *unsubscribe* when the observable is no
+> longer needed to release system resources and to avoid memory leaks.
+> After all initial subscribers have unsubscribed no more response events
+> will be emitted on the observable. Instead, errors will be emitted to all
+> subsequent resubscriptions.
 
 For example, you can unsubscribe automatically after the expected response
 event is received by using the `Observable.take` operator like the following:
@@ -1204,19 +1205,19 @@ will *never* receive the published event on its associated observable.
 
 ### Observing events
 
-Use any of the `observeDiscover`, `observeQuery`, `observeUpdate`,
+Use any of the `observeDiscover`, `observeQuery`, `observeUpdate`, `observeCall`,
 `observeAdvertiseWithCoreType`, `observeAdvertiseWithObjectType`, `observeDeadvertise`,
 `observeChannel`, or `observeAssociate` methods to observe incoming request events
-in your agent. For `observeDiscover`, `observeQuery` or `observeUpdate`, invoke the
-`resolve`, `retrieve`, or `complete` method on the received event to send a
-response event.
+in your agent. For `observeDiscover`, `observeQuery`, `observeUpdate`, or `observeCall`,
+invoke the `resolve`, `retrieve`, `complete`, or `returnEvent` method on the received
+event object to send a response event.
 
-Note that there is no guarantee that response events are ever delivered by the
-Discover, Query, and Update communication patterns. Depending on your system
-design and context such a communication pattern might return no responses at all
-or not within a certain time interval. In your agent project, you should handle these
-cases by chaining a timeout handler to the observable returned by the observe
-method (see code examples below in the next sections).
+> Note that there is no guarantee that response events are ever delivered by the
+> Discover, Query, Update, and Call communication patterns. Depending on your system
+> design and context such a communication pattern might return no responses at all
+> or not within a certain time interval. In your agent project, you should handle these
+> cases by chaining a timeout handler to the observable returned by the observe
+> method (see code examples below in the next sections).
 
 ### Advertise event pattern - an example
 
@@ -1567,7 +1568,7 @@ the client. Since objects are treated as immutable entities on the client
 this approach is in line.
 
 ```ts
-import { filter, take, timeout } from "rxjs/operators";
+import { filter, take, map } from "rxjs/operators";
 
 // Publish a partial Update event on a finished task object and observe first
 // Complete event response from the persistent storage agent.
@@ -1576,7 +1577,7 @@ this.communicationManager.publishUpdate(
         {
             status: TaskStatus.Done,
             doneTimestamp: Date.now(),
-        })))
+        }))
     .pipe(
         // Unsubscribe automatically after first response event arrives.
         take(1),
@@ -1600,6 +1601,170 @@ this.communicationManager.observeUpdate(this.identity)
         }
     });
 ```
+
+### Call - Return event pattern - an example
+
+The Call-Return pattern is used to request execution of remote operations
+between agents. It is a one-to-many, two-way communication pattern where an
+agent can request an operation with parameters to be performed by other agents
+that are observing this operation and that can return results - or errors in
+case the operation fails - to the requesting agent.
+
+Unlike with classic remote procedure call (RPC), the Call-Return pattern
+supports non-blocking remote operations to be executed by multiple remote
+agents. The calling agent does not need to have any knowledge what other agents
+are currently offering the operation, where these agents reside or how to
+address them. This opens up the possibility to realize dynamic scenarios such as
+load balancing or failover for remote operation calls. The calling agent can
+also specify a context filter that defines conditions under which the operation
+is allowed to be performed by a remote agent.
+
+Typical use cases of the Call-Return pattern include smart distribution of
+computational workloads to dedicated worker agents, and non safety critical, non
+latency sensitive decentralized command and control applications.
+
+> If you intend to use this pattern for safety critical remote operations,
+> always consider strong encryption/security between Coaty agents and the
+> broker, strong authentication and authorization, a higher QoS level, separate
+> encryption of parameters/results, and a failure-tolerant broker
+> implementation.
+
+The following code snippet shows how to publish and observe Call events and how
+to handle results delivered by Return events. You can find a complete and fully
+documented code example that demonstrates the use of remote operations
+[here](https://github.com/coatyio/coaty-js-examples/tree/master/remote-operations).
+
+```ts
+// Publish a Call event to switch on all lights with 70% brightness on the
+// 6th, 7th, and 8th floor and observe all Return events received from light control agents.
+const contextFilter: ContextFilter = { conditions: ["floor", filterOp.between(6, 8)] };
+
+this.communicationManager.publishCall(
+        CallEvent.with(
+            this.identity,
+            "com.mydomain.lights.switchLight",
+            { status: "on", brightness: 0.7 },
+            contextFilter))
+    .subscribe(
+        returnEvent => {
+            if (returnEvent.eventData.isError) {
+                // An error has been returned by a light control agent.
+                console.log(returnEvent.eventData.error.code);           // 10001
+                console.log(returnEvent.eventData.error.message);        // "Failed"
+                console.log(returnEvent.eventData.error.executionInfo);  // { lightId: "<id of light>" }
+            } else {
+                // A light has been switched on/off successfully by a light control agent.
+                console.log(returnEvent.eventData.result);               // true
+                console.log(returnEvent.eventData.error.executionInfo);  // { lightId: "<id of light>" }
+            }
+        });
+
+// A light control agent observes requests for switching on/off an associated light
+// in its execution context (i.e 7th floor). If the context matches the passed in
+// context filter, the Call event is emitted on the subscription handler which responds
+// with a Return event.
+const context: LightControlContext = {
+    coreType: "CoatyObject",
+    objectId: Runtime.newUuid(),
+    objectType: "com.mydomain.lights.LightControlContext",
+    name: "LightControlContext for seventh floor",
+    floor: 7,
+};
+
+this.communicationManager.observeCall(this.identity, "com.mydomain.lights.switchLight", context)
+    .subscribe(event => {
+        // For each remote call that matches the given context, a Call event is emitted.
+        const status = event.eventData.getParameterByName("status");
+        const brightness = event.eventData.getParameterByName("brightness");
+
+        const executionInfo = { lightId: this.lightId };
+
+        switch (status) {
+            case "on":
+                // Try to switch light on with requested brightness, then return result or error.
+                switchLightOn(this.lightId, brightness)
+                    .then(() => event.returnEvent(ReturnEvent.withResult(this.identity, true, executionInfo)))
+                    .catch(error => event.returnEvent(ReturnEvent.withError(this.identity, 10001, "Failed", executionInfo)));
+                break;
+            case "off":
+                // Try to switch light off, then return result or error.
+                switchLightOff(this.lightId)
+                    .then(() => event.returnEvent(ReturnEvent.withResult(this.identity, true, executionInfo)))
+                    .catch(error => event.returnEvent(ReturnEvent.withError(this.identity, 10002, "Failed", executionInfo)));
+                break;
+            default:
+                // Invalid parameter, return an error immediately.
+                event.returnEvent(ReturnEvent.withError(this.identity,
+                            RemoteCallErrorCode.InvalidParameters,
+                            RemoteCallErrorMessage.InvalidParameters,
+                            executionInfo));
+                break;
+        }
+    });
+```
+
+The name of the remote operation should be defined using a hierarchical naming
+pattern with some levels in the hierarchy separated by periods (`.`, pronounced
+"dot") to avoid name collisions, following Java package naming conventions (i.e.
+`com.domain.package.operationname`).
+
+Operation parameters (optional) must be specified either by-position through a
+JSON array or by-name through a JSON object. On the remote end, individual
+parameters can be retrieved by using either the getter
+`CallEventData.parameters` or the methods
+`CallEventData.getParameterbyName(<name>)`, or
+`CallEventData.getParameterbyIndex(<zero-based index>)`.
+
+If given, an (optional) context filter defines contextual constraints by
+conditions that must match a local context object provided by the remote end in
+order to allow execution of the remote operation. A context filter is defined by
+the `ContextFilter` interface. Note that you can also use an `ObjectFilter` (as
+used by the [Query-Retrieve event
+pattern](#query---retrieve-event-pattern---an-example)) because its interface
+definition extends the `ContextFilter` interface.
+
+On the remote end, a context object (any Coaty object) to be matched against the
+context filter of the incoming Call event data can be specified. It determines
+whether the Call event should be emitted or skipped by the observable. A Call
+event is skipped if and only if a context filter and a context object are *both*
+specified and they do not match (checked by using
+`ObjectMatcher.matchesFilter`). In all other cases, the Call event is emitted.
+
+> Tip: If your application needs to perform a more complex logic of context
+> matching (e.g. if the context cannot be described by a single Coaty object),
+> simply invoke `observeCall` without context parameter and realize your custom
+> matching logic with an RxJS `filter` operator:
+>
+> ```js
+> import { filter } from "rxjs/operators";
+>
+> this.communicationManager.observeCall(this.identity, "com.mydomain.lights.switchLight")
+>     .pipe(filter(event => isMatchingFilter(event.eventData.filter))
+>     .subscribe(event => ...);
+> ```
+
+If the remote operation executes successfully, the agent should respond with a
+Return event passing in the operation result (any JSON value). If the operation
+fails, the agent should respond with a Return event passing in an error object,
+containing  `code` and `message` properties.
+
+The error message provides a short description of the error. The error code
+given is an integer that indicates the error type that occurred, either a
+predefined error or an application defined one. Predefined error codes are
+within the range -32768 to -32000. Any code within this range, but not defined
+explicitly in the table below is reserved for future use. Application defined
+error codes must be defined outside this range.
+
+| Error Code   | Error Message    |
+|--------------|------------------|
+| -32602       | Invalid params   |
+
+All predefined error codes and messages are defined by the enums
+`RemoteCallErrorCode` and `RemoteCallErrorMessage`, respectively.
+
+The optional `executionInfo` property (any JSON value) in Return event data may
+be used to specify additional parameters of the execution environment, such as
+the execution time of the operation, or the ID of the operated control unit.
 
 ### Observing and publishing raw MQTT messages
 
@@ -2155,9 +2320,11 @@ aggregateObjects(
 ```
 
 In the following we will explain the NoSQL operation for finding objects.
-Detailed descriptions of all supported operations are documented in the code of class
-`DbContext`. Code examples can be found in the framework's Hello World example and
-in the unit tests under `ts/test/spec/db-nosql.spec.ts` and `ts/test/spec/db-in-memory.spec.ts`.
+Detailed descriptions of all supported operations are documented in the code of
+class `DbContext`. For usage examples, take a look at the [Coaty JS Hello World
+example](https://github.com/coatyio/coaty-js-examples/tree/master/hello-world)
+and at the unit tests found under `ts/test/spec/db-nosql.spec.ts` and
+`ts/test/spec/db-in-memory.spec.ts`.
 
 A NoSQL operation for finding objects looks like the following:
 
@@ -3011,7 +3178,8 @@ Use the `logCommunicationState` method to log changes in online/offline communic
 Use the `logInfo`, `logError`, and `logEvent` methods to log a given informational message,
 error, or event to the console, also providing a logging timestamp.
 
-Usage examples can be found in the examples provided with the framework's source code.
+Usage examples can be found in the [Coaty JS code
+examples](https://github.com/coatyio/coaty-js-examples).
 
 ## Multicast DNS discovery
 

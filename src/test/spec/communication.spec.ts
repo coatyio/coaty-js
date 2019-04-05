@@ -10,11 +10,13 @@ import {
     CommunicationState,
     DiscoverEvent,
     DiscoverEventData,
+    RemoteCallErrorCode,
+    RemoteCallErrorMessage,
     UpdateEvent,
 } from "../../com";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
-import { CoreTypes, DisplayType, User } from "../../model";
+import { ContextFilter, CoreTypes, DisplayType, filterOp, User } from "../../model";
 import { Components, Configuration, Container } from "../../runtime";
 
 import * as mocks from "./communication.mocks";
@@ -96,7 +98,7 @@ describe("Communication", () => {
 
         it("has correct filter structure for associated user", () => {
             const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Discover);
-            const topicFilter = CommunicationTopic.getTopicFilter(eventName, associatedUser, undefined);
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, associatedUser, undefined);
             const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
             expect(start).toBe("");
             expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
@@ -104,13 +106,13 @@ describe("Communication", () => {
             expect(sender).toBe("+");
             expect(evt).toBe(eventName);
             expect(token).toBe("+");
-            expect(v).toBe("+");
+            expect(v).toBe(version.toString());
             expect(end).toBe("");
         });
 
         it("has correct filter structure for any user", () => {
             const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Advertise, "CoatyObject");
-            const topicFilter = CommunicationTopic.getTopicFilter(eventName, undefined, undefined);
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, undefined, undefined);
             const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
             expect(start).toBe("");
             expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
@@ -118,14 +120,14 @@ describe("Communication", () => {
             expect(sender).toBe("+");
             expect(evt).toBe(eventName);
             expect(token).toBe("+");
-            expect(v).toBe("+");
+            expect(v).toBe(version.toString());
             expect(end).toBe("");
         });
 
         it("has correct filter structure for response subscription", () => {
             const messageToken = "62879980-94c9-47a9-92d5-61c9e86f7742";
             const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Resolve, "CoatyObject");
-            const topicFilter = CommunicationTopic.getTopicFilter(eventName, undefined, messageToken);
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, undefined, messageToken);
             const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
             expect(start).toBe("");
             expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
@@ -133,7 +135,7 @@ describe("Communication", () => {
             expect(sender).toBe("+");
             expect(evt).toBe(eventName);
             expect(token).toBe(messageToken);
-            expect(v).toBe("+");
+            expect(v).toBe(version.toString());
             expect(end).toBe("");
         });
 
@@ -147,6 +149,7 @@ describe("Communication", () => {
         const components1: Components = {
             controllers: {
                 MockDeviceController: mocks.MockDeviceController,
+                MockOperationsCallController: mocks.MockOperationsCallController,
             },
         };
 
@@ -181,12 +184,16 @@ describe("Communication", () => {
                     identity: { name: "MockDeviceController1" },
                     shouldAdvertiseIdentity: true,
                 },
+                MockOperationsCallController: {
+                    identity: { name: "MockOperationsCallController1" },
+                },
             },
         };
 
         const components2: Components = {
             controllers: {
                 MockObjectController: mocks.MockObjectController,
+                MockOperationsExecutionController: mocks.MockOperationsExecutionController,
             },
         };
 
@@ -205,6 +212,9 @@ describe("Communication", () => {
                     identity: { name: "MockObjectController1" },
                     shouldAdvertiseIdentity: true,
                     responseDelay: responseDelay,
+                },
+                MockOperationsExecutionController: {
+                    identity: { name: "MockOperationsExecutionController1" },
                 },
             },
         };
@@ -519,6 +529,70 @@ describe("Communication", () => {
                     for (let i = 1; i <= eventCount; i++) {
                         expect(logger.eventData[i - 1].object.name).toBe("Channeled_" + i);
                     }
+                });
+            });
+        }, TEST_TIMEOUT);
+
+        it("all Call - Return events are handled", (done) => {
+
+            const callController = container1.getController(mocks.MockOperationsCallController);
+            const contextFilter1: ContextFilter = { conditions: ["floor", filterOp.between(6, 8)] };
+            const contextFilter2: ContextFilter = { conditions: ["floor", filterOp.equals(10)] };
+            const logger: mocks.ReturnEventLogger = { eventData: {} };
+
+            delayAction(500, undefined, () => {
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "green" }, contextFilter1, logger, "res11");
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "black" }, contextFilter1, logger, "res12");
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "red" }, contextFilter2, logger, "res13");
+                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, contextFilter1, logger, "res14");
+                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, undefined, logger, "res15");
+                callController.publishCallEvent("coaty.test.add", [42, 43], undefined, logger, "res2");
+                callController.publishCallEvent("coaty.test.add", [], undefined, logger, "res3");
+                callController.publishCallEvent("coaty.test.undefined", {}, undefined, logger, "res4");
+
+                delayAction(1000, done, () => {
+                    const expectedResultCount = 6;
+                    expect(Object.keys(logger.eventData).length).toBe(expectedResultCount);
+
+                    expect(logger.eventData.res11.isError).toBe(false);
+                    expect(logger.eventData.res11.error).toBeUndefined();
+                    expect(logger.eventData.res11.result).toEqual({ color: "green", state: "on" });
+                    expect(logger.eventData.res11.executionInfo).toEqual({ duration: 4711 });
+
+                    expect(logger.eventData.res12.isError).toBe(true);
+                    expect(logger.eventData.res12.error).toEqual({
+                        code: RemoteCallErrorCode.InvalidParameters,
+                        message: RemoteCallErrorMessage.InvalidParameters,
+                    });
+                    expect(logger.eventData.res12.result).toBeUndefined();
+                    expect(logger.eventData.res12.executionInfo).toEqual({ duration: 4711 });
+
+                    expect(logger.eventData.res13).toBeUndefined();
+
+                    expect(logger.eventData.res14.isError).toBe(false);
+                    expect(logger.eventData.res14.error).toBeUndefined();
+                    expect(logger.eventData.res14.result).toEqual({ state: "off" });
+                    expect(logger.eventData.res14.executionInfo).toEqual({ duration: 4711 });
+
+                    expect(logger.eventData.res15.isError).toBe(false);
+                    expect(logger.eventData.res15.error).toBeUndefined();
+                    expect(logger.eventData.res15.result).toEqual({ state: "off" });
+                    expect(logger.eventData.res15.executionInfo).toEqual({ duration: 4711 });
+
+                    expect(logger.eventData.res2.isError).toBe(false);
+                    expect(logger.eventData.res2.error).toBeUndefined();
+                    expect(logger.eventData.res2.result).toEqual(85);
+                    expect(logger.eventData.res2.executionInfo).toEqual({ duration: 4712 });
+
+                    expect(logger.eventData.res3.isError).toBe(true);
+                    expect(logger.eventData.res3.error).toEqual({
+                        code: RemoteCallErrorCode.InvalidParameters,
+                        message: RemoteCallErrorMessage.InvalidParameters,
+                    });
+                    expect(logger.eventData.res3.result).toBeUndefined();
+                    expect(logger.eventData.res3.executionInfo).toEqual({ duration: 4712 });
+
+                    expect(logger.eventData.res4).toBeUndefined();
                 });
             });
         }, TEST_TIMEOUT);

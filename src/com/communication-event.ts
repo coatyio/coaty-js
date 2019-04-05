@@ -8,7 +8,7 @@ import { CoreTypes } from "../model/types";
  * Note: add new types to the end to maintain existing enum values.
  */
 export enum CommunicationEventType {
-    Raw,
+    Raw = 0,
     Advertise,
     Deadvertise,
     Channel,
@@ -22,6 +22,9 @@ export enum CommunicationEventType {
     IoValue,
     Call,
     Return,
+
+    // Indicates the valid range of event type enum values.
+    MAX,
 }
 
 /**
@@ -31,6 +34,11 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
 
     /** @internal For internal use in framework only. Do not use in application code. */
     abstract get eventType(): CommunicationEventType;
+
+    /** @internal For internal use in framework only. Do not use in application code. */
+    get eventTypeFilter(): string {
+        return undefined;
+    }
 
     /** @internal For internal use in framework only. Do not use in application code. */
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;

@@ -54,19 +54,19 @@ export interface ObjectJoinCondition {
     isOneToOneRelation?: boolean;
 }
 
-/* Type validations for ObjectJoinCondition */
+/* Type validation for ObjectJoinCondition */
 
 export function areObjectJoinConditionsValid(joinConds: ObjectJoinCondition | ObjectJoinCondition[]): boolean {
     if (joinConds === undefined) {
         return true;
     }
     if (Array.isArray(joinConds)) {
-        return joinConds.every(jc => this._isJoinConditionValid(jc));
+        return joinConds.every(jc => isJoinConditionValid(jc));
     }
-    return this._isJoinConditionValid(joinConds);
+    return isJoinConditionValid(joinConds);
 }
 
-export function isJoinConditionValid(joinCond: ObjectJoinCondition) {
+function isJoinConditionValid(joinCond: ObjectJoinCondition) {
     /* tslint:disable-next-line:no-null-keyword */
     return joinCond !== null &&
         typeof joinCond === "object" &&

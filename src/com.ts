@@ -8,6 +8,7 @@
 
 export * from "./com/advertise";
 export * from "./com/associate";
+export * from "./com/call-return";
 export * from "./com/channel";
 export * from "./com/communication-manager";
 export * from "./com/deadvertise";

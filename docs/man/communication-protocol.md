@@ -5,7 +5,12 @@ title: Coaty JS Documentation
 
 # Coaty Communication Protocol
 
-> This specification conforms to Coaty Communication Protocol Version 1
+> This specification conforms to Coaty Communication Protocol Version 2
+
+## Version History
+
+* **Version 2**: add Call-Return pattern; backward compatible with v1
+* **Version 1**: initial specification
 
 ## Table of Contents
 
@@ -22,6 +27,7 @@ title: Coaty JS Documentation
   * [Payloads for Discover - Resolve Event](#payloads-for-discover---resolve-event)
   * [Payloads for Query - Retrieve Event](#payloads-for-query---retrieve-event)
   * [Payloads for Update - Complete Event](#payloads-for-update---complete-event)
+  * [Payloads for Call - Return Event](#payloads-for-call---return-event)
   * [Payload for Associate Event](#payload-for-associate-event)
   * [IO Routing](#io-routing)
 
@@ -30,8 +36,8 @@ title: Coaty JS Documentation
 Communication between components in the Coaty framework is based
 on distributed publish-subscribe messaging using an MQTT message broker.
 A communication message is comprised of a topic name and a payload.
-The format of topic names and payloads conforms to the MQTT Specification
-Version 3.1.1.
+The format of topic names and payloads conforms to the [MQTT](https://mqtt.org/)
+Specification Version 3.1.1.
 
 ## Message Topics and Payloads
 
@@ -51,12 +57,13 @@ topic name that can contain wildcard tokens for topic levels:
   `level/level2` but not `level1`
 
 Within the framework, message payloads are always specified as UTF-8 encoded
-strings in JavaScript Object Notation (JSON) format. Binary payload formats are
+strings in JavaScript Object Notation ([JSON](http://www.json.org)) format (see
+[RFC 4627](https://www.ietf.org/rfc/rfc4627.txt)). Binary payload formats are
 not supported. The reason behind is that messaging should only be used to transfer object
 metadata but not content itself, such as multimedia content in the form of audio,
-video or documents. To upload or download content data a separate data transfer
-component is used that gets the target URL as a topic payload from the
-messaging system.
+video or documents. To upload or download content data an appropriate data transfer
+communication protocol should be used that gets the target data location (e.g. a URL)
+from the message payload.
 
 Note that MQTT allows applications to send MQTT Control Packets of size up to
 256 MB. For Publish messages, this includes the message topic of size up to 64K,
@@ -85,6 +92,7 @@ discover, distribute, and share object information in a decentralized applicatio
   receive responses by Retrieve events.
 * **Update - Complete**  Request or suggest an object update and receive
   accomplishments by Complete events.
+* **Call - Return**  Request execution of a remote operation and receive results by Return events.
 * **Associate** Used by IO Router to dynamically associate/disassociate IO sources with IO actors.
 * **IoValue** Send IO values from a publishing IO source to associated IO actors.
 
@@ -113,12 +121,10 @@ A topic name is composed as follows:
 
 `/coaty/<ProtocolVersion>/<Event>/<AssociatedUserId>/<SourceObjectId>/<MessageToken>/`
 
-The protocol version topic level contains a single decimal integer, starting with 1.
-By checking the protocol version number of an incoming message topic against its own
-version, a communication manager should determine whether the message can be handled
-or should be ignored. The protocol version will be incremented if there is any backward
-incompatible change to the communication protocol, e.g. when new event types are added
-or the shape of topics or message payloads is changed.
+The protocol version topic level represents the communication protocol version of
+the publishing party, as a positive integer. The receiving party should check the
+protocol version in the topic of any incoming message against its own protocol version.
+If both versions are not equal, the incoming message should be ignored.
 
 When publishing an Advertise event the Event topic level **must** include a filter
 field of the form: `Advertise:<filter>`. The filter field
@@ -136,10 +142,13 @@ identifier field of the form: `Channel:<channelId>`. The channel ID field must
 not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
 `+ (U+002B)`, and `/ (U+002F)`.
 
-For request-response event patterns (Discover - Resolve, Query - Retrieve,
-Update - Complete) the receiver must respond with an outbound message
-(Resolve/Retrieve/Complete) containing the original message token of the
-incoming message topic.
+When publishing a Call event the Event topic level **must** include an operation
+name field of the form: `Call:<operationname>`. The operation name field must
+not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
+`+ (U+002B)`, and `/ (U+002F)`.
+
+For any request-response event pattern the receiving party must respond with an
+outbound message containing the original message token of the incoming message topic.
 
 ### Readable Topics
 
@@ -150,7 +159,7 @@ Associated User ID, Source Object ID, and Message Tokens.
 Readable Associated User ID and Source Object ID levels are composed of the name
 of the user/object and the original UUID, separated by an underscore.
 The name must be normalized to conform to the topic specification: any
-occurences of the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and
+occurrences of the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and
 `/ (U+002F)` must be replaced by an underscore character `_ (U+005F)`.
 
 The readable option for Associated User ID *must* *not* be used
@@ -183,6 +192,9 @@ the Advertise filter field: `Advertise:<filter>` or `Advertise::<filter>`.
 
 When subscribing to a Channel event the Event topic level **must** include
 the channel ID field: `Channel:<channelId>`.
+
+When subscribing to a Call event the Event topic level **must** include
+the operation name field: `Call:<operationname>`.
 
 When subscribing to Associate events which are published by an IO router,
 the Associated User ID level should also be filtered (the readable topic option
@@ -218,9 +230,12 @@ The property `coreType` is the framework core type name of the object;
 it corresponds to the name of the interface that defines the object's shape.
 
 The `objectType` property is the concrete type name of the object in a canonical
-form. Its form should follow the naming convention for Java packages to avoid name
-collisions. All predefined object types use the form `coaty.<InterfaceName>`,
-e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class).
+form. It should be defined using a hierarchical naming pattern with some levels in the
+hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
+following Java package naming conventions (i.e. `com.domain.package.Type`).
+All predefined object types use the form `coaty.<InterfaceName>`,
+e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class). Do not use the
+reserved toplevel namespace `coaty.*` for your application defined object types.
 
 The concrete and core type names of all predefined object types are defined
 as static properties of the `CoreTypes` class in the framework `model` module.
@@ -257,7 +272,7 @@ An Advertise event accepts this JSON payload:
 
 ```js
 {
-  "object:" <object>,
+  "object": <object>,
   "privateData": <any>
 }
 ```
@@ -281,7 +296,7 @@ A Channel event accepts the following JSON payloads:
 
 ```js
 {
-  "object:" <object1>,
+  "object": <object1>,
   "privateData": <any>
 }
 ```
@@ -290,7 +305,7 @@ or
 
 ```js
 {
-  "objects:" [ <object1>, <object2>, ... ],
+  "objects": [ <object1>, <object2>, ... ],
   "privateData": <any>
 }
 ```
@@ -375,7 +390,7 @@ object attribute filtering and joining:
 {
   "objectTypes": ["object type", ...],
   "coreTypes": ["core type", ...],
-  "objectFilter": DbObjectFilter,
+  "objectFilter": ObjectFilter,
   "objectJoinConditions": ObjectJoinCondition | ObjectJoinCondition[]
 }
 ```
@@ -452,7 +467,7 @@ objects and storing them in an extra property. A join condition looks like the f
   // property of the related object is a one to one relation. If true, the extra property
   // 'asProperty' contains a single related object; otherwise it contains an array of
   // related objects (optional).
-  "isOneToOneRelation": <boolean>,
+  "isOneToOneRelation": <boolean>
 
 }
 ```
@@ -461,7 +476,7 @@ The Retrieve response event accepts the following JSON payload:
 
 ```js
 {
-  "objects": [ <object>, ... ]
+  "objects": [ <object>, ... ],
   "privateData": <any>
 }
 ```
@@ -512,13 +527,104 @@ The payload for the Complete response event looks like the following:
 
 ```js
 {
-  "object:" <object>,
+  "object": <object>,
   "privateData": <any>
 }
 ```
 
 The property `privateData` is optional. It contains application-specific
 options in the form of an object hash (key-value pairs).
+
+### Payloads for Call - Return Event
+
+The Call-Return pattern is used to request execution of a remote operation and to receive
+results - or errors in case the operation fails - by one or multiple agents.
+
+The name of the remote operation is not specified in the payload but in
+the Event topic level of the Call Event (`Call:<operationname>`). The operation
+name should be defined using a hierarchical naming pattern with some levels in the
+hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
+following Java package naming conventions (i.e. `com.domain.package.operationname`).
+For example, the remote operation to switch on/off lights in the `lights` package
+of domain `mydomain` could be named `"com.mydomain.lights.switchLight"`.
+
+The payload of the Call event contains the optional parameter values passed to the
+operation to be invoked, and an optional context filter that defines conditions
+under which the operation is allowed to be executed by a remote end.
+
+```js
+{
+  "parameters": [ <valueParam1>, ... ] | { "<nameParam1>": <valueParam1>, ... },
+  "filter": ContextFilter
+}
+```
+
+If parameters are given, they must be specified either by-position through a JSON array
+or by-name through a JSON object.
+
+The optional `filter` property defines contextual constraints by conditions that must match
+a local context object provided by the remote end in order to allow execution of the remote
+operation:
+
+```js
+{
+  // Conditions for filtering objects by logical 'and' or 'or' combination.
+  "conditions": ["<propertyName>[.<subpropertyName>]*", <filterOperator1>, ...<filterOperands1>] |
+  {
+     and: | or: [
+       ["<propertyName1>[.<subpropertyName1>]*", <filterOperator1>, ...<filterOperands1>],
+       ["<propertyName2>[.<subpropertyName2>]*", <filterOperator2>, ...<filterOperands2>],
+       ...
+     ]
+  }
+}
+```
+
+More details and valid filter operators are specified [here](#payloads-for-query---retrieve-event).
+
+A filter match fails if and only if a context filter in the payload and a context object
+at the remote end are *both* specified and they do not match (by checking object property values
+against the filter conditions). In all other cases, the match is considered successfull.
+
+The payload for the Return response event has two forms. If the remote operation
+executes successfully, the payload looks like the following:
+
+```js
+{
+  "result": <any>,
+  "executionInfo": <any>
+}
+```
+
+The `result` property contains the return value of the operation call which can be
+any JSON value.
+
+The optional `executionInfo` property (any JSON value) in Return event data may be used to
+specify additional parameters of the execution environment, such as the execution time
+of the operation, or the ID of the operated control unit.
+
+If an error occurred while executing the remote operation, the response payload looks
+like the following:
+
+```js
+{
+  "error": { "code": <integer>, "message": <string> },
+  "executionInfo": <any>
+}
+```
+
+The error code given is an integer that indicates the error type
+that occurred, either a predefined error or an application defined one.
+Predefined error codes are within the range -32768 to -32000.
+Any code within this range, but not defined explicitly in the table below is reserved
+for future use. Application defined error codes must be defined outside this range.
+
+| Error Code   | Error Message    |
+|--------------|------------------|
+| -32602       | Invalid params   |
+
+The error message provides a short description of the error. Predefined
+error messages exist for all predefined error codes.
 
 ### Payload for Associate Event
 

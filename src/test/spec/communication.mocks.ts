@@ -5,13 +5,18 @@ import { filter, take } from "rxjs/operators";
 import {
     AdvertiseEvent,
     AdvertiseEventData,
+    CallEvent,
     ChannelEvent,
     ChannelEventData,
     DiscoverEvent,
+    RemoteCallErrorCode,
+    RemoteCallErrorMessage,
     ResolveEvent,
+    ReturnEvent,
+    ReturnEventData,
 } from "../../com";
 import { Controller } from "../../controller";
-import { CoreTypes } from "../../model";
+import { CoatyObject, ContextFilter, CoreTypes } from "../../model";
 
 import { Spy } from "./utils";
 
@@ -23,6 +28,10 @@ export interface AdvertiseEventLogger {
 export interface ChannelEventLogger {
     count: number;
     eventData: ChannelEventData[];
+}
+
+export interface ReturnEventLogger {
+    eventData: { [key: string]: ReturnEventData };
 }
 
 export interface RawEventLogger {
@@ -62,7 +71,7 @@ export class MockDeviceController extends Controller {
             });
 
         this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, "com.mycompany.MyCustomObjectType")
+            .observeAdvertiseWithObjectType(this.identity, "com.mydomain.mypackage.MyCustomObjectType")
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -108,7 +117,7 @@ export class MockObjectController extends Controller {
                     this.identity,
                     {
                         objectId: this.runtime.newUuid(),
-                        objectType: (i % 2) !== 0 ? CoreTypes.OBJECT_TYPE_OBJECT : "com.mycompany.MyCustomObjectType",
+                        objectType: (i % 2) !== 0 ? CoreTypes.OBJECT_TYPE_OBJECT : "com.mydomain.mypackage.MyCustomObjectType",
                         coreType: "CoatyObject",
                         name: "Advertised_" + i,
                     }));
@@ -180,6 +189,95 @@ export class MockObjectController extends Controller {
             .pipe(filter(event => event.eventUserId &&
                 event.eventData.object.name === "MockDeviceController1"))
             .subscribe(event => Spy.set(this.identity.name, Spy.NO_VALUE, event));
+    }
+
+}
+
+export class MockOperationsCallController extends Controller {
+
+    publishCallEvent(
+        op: string,
+        params: { [key: string]: any },
+        contextFilter: ContextFilter,
+        logger: ReturnEventLogger,
+        loggerKey: string) {
+        this.communicationManager.publishCall(
+            CallEvent.with(
+                this.identity,
+                op,
+                params,
+                contextFilter,
+            ))
+            .subscribe(returnEvent => {
+                logger.eventData[loggerKey] = returnEvent.eventData;
+            });
+    }
+}
+
+export class MockOperationsExecutionController extends Controller {
+
+    context: CoatyObject;
+
+    onInit() {
+        super.onInit();
+
+        this.context = {
+            coreType: "CoatyObject",
+            objectId: this.runtime.newUuid(),
+            objectType: "coaty.test.TestContextObject",
+            name: "TestContext",
+        };
+        this.context["floor"] = 7;
+
+        this._handleCallEvents(
+            "coaty.test.switchLight",
+            event => {
+                const color = event.eventData.getParameterByName("color");
+                const state = event.eventData.getParameterByName("state");
+                if (color === "black" && state === "on") {
+                    return new Error("Cannot turn on black light");
+                }
+                return {
+                    state,
+                    color,
+                };
+            },
+            4711,
+        );
+        this._handleCallEvents(
+            "coaty.test.add",
+            event => {
+                const add1 = event.eventData.getParameterByIndex(0);
+                const add2 = event.eventData.getParameterByIndex(1);
+                if (add1 !== undefined && add2 !== undefined) {
+                    return add1 + add2;
+                }
+                return new Error("Invalid param for add operation");
+            },
+            4712,
+        );
+    }
+
+    private _handleCallEvents(operation: string, resultFunc: (event: CallEvent) => any, duration: number) {
+        this.communicationManager
+            .observeCall(this.identity, operation, this.context)
+            .subscribe(event => {
+                const result = resultFunc(event);
+                if (result instanceof Error) {
+                    event.returnEvent(ReturnEvent.withError(
+                        this.identity,
+                        RemoteCallErrorCode.InvalidParameters,
+                        RemoteCallErrorMessage.InvalidParameters,
+                        { duration },
+                    ));
+                } else {
+                    event.returnEvent(ReturnEvent.withResult(
+                        this.identity,
+                        result,
+                        { duration },
+                    ));
+                }
+            });
     }
 
 }

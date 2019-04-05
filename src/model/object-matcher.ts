@@ -2,7 +2,7 @@
 
 import { contains, equals, includes } from "../util/deep";
 import { CoatyObject } from "./object";
-import { ObjectFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectFilterProperties } from "./object-filter";
+import { ContextFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectFilterProperties } from "./object-filter";
 
 /**
  * Provides a static `matchesFilter` method to match an object against a
@@ -29,13 +29,15 @@ export class ObjectMatcher {
     }
 
     /**
-     * Determines whether the given object matches the given object filter.
-     * Only the filter conditions are heeded for the result.
+     * Determines whether the given object matches the given context filter.
+     * Note that if you pass in an `ObjectFilter`, only the filter conditions are 
+     * heeded for the result.
+     * 
      * @param obj The object to pass the filter on.
-     * @param filter The filter to apply.
+     * @param filter The context filter to apply.
      * @returns true on match; false otherwise
      */
-    static matchesFilter(obj: CoatyObject, filter: ObjectFilter): boolean {
+    static matchesFilter(obj: CoatyObject, filter: ContextFilter): boolean {
         if (obj === undefined) {
             return false;
         }
