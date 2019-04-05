@@ -18,7 +18,7 @@ recommend reviewing this framework documentation:
   a guide on integration of the `OGC SensorThings API` in Coaty
 
 Coaty JS also includes a set of fully documented [code
-examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+examples](https://github.com/coatyio/coaty-examples) that demonstrate best
 practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable

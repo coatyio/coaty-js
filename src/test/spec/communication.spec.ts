@@ -277,7 +277,7 @@ describe("Communication", () => {
             let isResubError = false;
             const obs = container2.getCommunicationManager()
                 .publishUpdate(UpdateEvent.withPartial(
-                    container2.getController(mocks.MockObjectController).identity,
+                    container2.getController("MockObjectController").identity,
                     "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d", { foo: 1 }));
             const subscription = obs.subscribe(event => event);
             subscription.unsubscribe();
@@ -295,7 +295,7 @@ describe("Communication", () => {
                 // Note: this Discover request event will never be published because there is 
                 // no subscription on the response observable
                 .publishDiscover(DiscoverEvent.withObjectTypes(
-                    container2.getController(mocks.MockObjectController).identity,
+                    container2.getController("MockObjectController").identity,
                     ["coaty.test.MockObject"])))
                 .not.toThrow();
         });
@@ -303,7 +303,7 @@ describe("Communication", () => {
         it("throws on invalid Discover event data", () => {
             expect(() => container2.getCommunicationManager()
                 .publishDiscover(new DiscoverEvent(
-                    container2.getController(mocks.MockObjectController).identity,
+                    container2.getController("MockObjectController").identity,
                     new DiscoverEventData(
                         undefined,
                         "f608cdb1-3350-4c62-8feb-4589f26f2efe",
@@ -455,7 +455,7 @@ describe("Communication", () => {
 
         it("all Advertise events are received", (done) => {
 
-            const deviceController = container1.getController(mocks.MockDeviceController);
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
             const logger: mocks.AdvertiseEventLogger = {
                 count: 0,
                 eventData: [],
@@ -466,7 +466,7 @@ describe("Communication", () => {
 
             delayAction(500, undefined, () => {
                 container2
-                    .getController(mocks.MockObjectController)
+                    .getController<mocks.MockObjectController>("MockObjectController")
                     .publishAdvertiseEvents(eventCount);
 
                 delayAction(1000, done, () => {
@@ -482,7 +482,7 @@ describe("Communication", () => {
 
         it("throws on invalid Channel event identifier", () => {
             expect(() => ChannelEvent.withObject(
-                container2.getController(mocks.MockObjectController).identity,
+                container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "/foo/+/",
                 {
                     objectId: container2.getRuntime().newUuid(),
@@ -495,7 +495,7 @@ describe("Communication", () => {
 
         it("not throws on valid Channel event identifier", () => {
             expect(() => ChannelEvent.withObject(
-                container2.getController(mocks.MockObjectController).identity,
+                container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "foo_bar-baz",
                 {
                     objectId: container2.getRuntime().newUuid(),
@@ -508,7 +508,7 @@ describe("Communication", () => {
 
         it("all Channel events are received", (done) => {
 
-            const deviceController = container1.getController(mocks.MockDeviceController);
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
             const logger: mocks.ChannelEventLogger = {
                 count: 0,
                 eventData: [],
@@ -520,7 +520,7 @@ describe("Communication", () => {
 
             delayAction(500, undefined, () => {
                 container2
-                    .getController(mocks.MockObjectController)
+                    .getController<mocks.MockObjectController>("MockObjectController")
                     .publishChannelEvents(eventCount, channelId);
 
                 delayAction(1000, done, () => {
@@ -535,7 +535,7 @@ describe("Communication", () => {
 
         it("all Call - Return events are handled", (done) => {
 
-            const callController = container1.getController(mocks.MockOperationsCallController);
+            const callController = container1.getController<mocks.MockOperationsCallController>("MockOperationsCallController");
             const contextFilter1: ContextFilter = { conditions: ["floor", filterOp.between(6, 8)] };
             const contextFilter2: ContextFilter = { conditions: ["floor", filterOp.equals(10)] };
             const logger: mocks.ReturnEventLogger = { eventData: {} };
@@ -614,7 +614,7 @@ describe("Communication", () => {
 
         it("all Raw topics are received", (done) => {
 
-            const deviceController = container1.getController(mocks.MockDeviceController);
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
             const logger1: mocks.RawEventLogger = {
                 count: 0,
                 eventData: [],
@@ -632,11 +632,10 @@ describe("Communication", () => {
             deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
 
             delayAction(500, undefined, () => {
-                container2
-                    .getController(mocks.MockObjectController)
+                container2.getController<mocks.MockObjectController>("MockObjectController")
                     .publishRawEvents(eventCount, topicFilter1);
                 container2
-                    .getController(mocks.MockObjectController)
+                    .getController<mocks.MockObjectController>("MockObjectController")
                     .publishRawEvents(eventCount, topic2);
 
                 delayAction(1000, done, () => {
@@ -721,8 +720,8 @@ describe("Communication", () => {
 
         it("All Advertise non-echo events are received", (done) => {
 
-            const deviceController = container.getController(mocks.MockDeviceController);
-            const objectController = container.getController(mocks.MockObjectController);
+            const deviceController = container.getController<mocks.MockDeviceController>("MockDeviceController");
+            const objectController = container.getController<mocks.MockObjectController>("MockObjectController");
             const logger: mocks.AdvertiseEventLogger = {
                 count: 0,
                 eventData: [],

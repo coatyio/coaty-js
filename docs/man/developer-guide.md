@@ -131,7 +131,7 @@ This documentation includes:
 * a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 Coaty JS also includes a set of fully documented [code
-examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+examples](https://github.com/coatyio/coaty-examples) that demonstrate best
 practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -155,7 +155,7 @@ enable TypeScript linting within the IDE.
 ## Getting started
 
 To build and run Coaty agents with the Coaty JS technology stack
-you need to install the `Node.js` JavaScript runtime (version 6 or higher) globally on
+you need to install the `Node.js` JavaScript runtime (version 8 or higher) globally on
 your target machine. Download and installation details can be found [here](http://nodejs.org/).
 
 The framework uses the package dependency manager `npm` to download dependent libraries.
@@ -551,7 +551,7 @@ these container methods:
 ```ts
 container.getRuntime()
 container.getCommunicationManager()
-container.getController(classType)
+container.getController(controllerName)
 container.mapControllers(callback)
 ```
 
@@ -650,7 +650,7 @@ controller class by defining a `onContainerResolved` lifecycle method:
 ```ts
 onContainerResolved(container: Container) {
     // Access and cache another controller
-    this._tasksController = container.getController(TasksController);
+    this._tasksController = container.getController("TasksController");
 }
 ```
 
@@ -844,7 +844,7 @@ database.
 
 To see an example of the `HistorianController` in action, take a look at the
 [Hello World
-example](https://github.com/coatyio/coaty-js-examples/tree/master/hello-world).
+example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js).
 
 ## Object model
 
@@ -1632,7 +1632,7 @@ latency sensitive decentralized command and control applications.
 The following code snippet shows how to publish and observe Call events and how
 to handle results delivered by Return events. You can find a complete and fully
 documented code example that demonstrates the use of remote operations
-[here](https://github.com/coatyio/coaty-js-examples/tree/master/remote-operations).
+[here](https://github.com/coatyio/coaty-examples/tree/master/remote-operations/js).
 
 ```ts
 // Publish a Call event to switch on all lights with 70% brightness on the
@@ -2322,7 +2322,7 @@ aggregateObjects(
 In the following we will explain the NoSQL operation for finding objects.
 Detailed descriptions of all supported operations are documented in the code of
 class `DbContext`. For usage examples, take a look at the [Coaty JS Hello World
-example](https://github.com/coatyio/coaty-js-examples/tree/master/hello-world)
+example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js)
 and at the unit tests found under `ts/test/spec/db-nosql.spec.ts` and
 `ts/test/spec/db-in-memory.spec.ts`.
 
@@ -3179,7 +3179,7 @@ Use the `logInfo`, `logError`, and `logEvent` methods to log a given information
 error, or event to the console, also providing a logging timestamp.
 
 Usage examples can be found in the [Coaty JS code
-examples](https://github.com/coatyio/coaty-js-examples).
+examples](https://github.com/coatyio/coaty-examples).
 
 ## Multicast DNS discovery
 

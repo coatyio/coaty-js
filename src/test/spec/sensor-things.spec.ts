@@ -153,7 +153,7 @@ describe("Sensor things", () => {
                     // Note: this Discover request event will never be published because there is 
                     // no subscription on the response observable
                     .publishDiscover(DiscoverEvent.withObjectTypes(
-                        container2.getController(mocks.MockEmitterController).identity, [element])))
+                        container2.getController<mocks.MockEmitterController>("MockEmitterController").identity, [element])))
                     .not.toThrow();
                 testFunction(elementArray);
             };
@@ -178,13 +178,13 @@ describe("Sensor things", () => {
                     eventData: [],
                 };
                 const eventCount = 5;
-                const deviceController = container1.getController(mocks.MockReceiverController);
+                const deviceController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
 
                 deviceController.watchForAdvertiseEvents(logger, element);
 
                 delayAction(500, undefined, () => {
                     container2
-                        .getController(mocks.MockEmitterController)
+                        .getController<mocks.MockEmitterController>("MockEmitterController")
                         .publishAdvertiseEvents(eventCount, element);
 
                     delayAction(1000, undefined, () => {
@@ -215,7 +215,7 @@ describe("Sensor things", () => {
                     return;
                 }
                 const element = elementArray.shift();
-                const deviceController = container1.getController(mocks.MockReceiverController);
+                const deviceController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
                 const logger: mocks.ChannelEventLogger = {
                     count: 0,
                     eventData: [],
@@ -227,7 +227,7 @@ describe("Sensor things", () => {
 
                 delayAction(500, undefined, () => {
                     container2
-                        .getController(mocks.MockEmitterController)
+                        .getController<mocks.MockEmitterController>("MockEmitterController")
                         .publishChannelEvents(eventCount, element, channelId);
 
                     delayAction(1000, undefined, () => {

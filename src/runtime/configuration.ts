@@ -145,10 +145,10 @@ export interface CommunicationOptions {
 }
 
 /**
- * Controller options mapped by controller class name
+ * Controller options mapped by controller name (as specified in `Components`)
  */
 export interface ControllerConfig {
-    [controllerClassName: string]: ControllerOptions;
+    [controllerName: string]: ControllerOptions;
 }
 
 /**

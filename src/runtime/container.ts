@@ -21,10 +21,10 @@ export interface Components {
      * Application-specific controller classes to be registered
      * with the runtime container. The configuration options for a
      * controller class listed here are specified in the controller
-     * configuration under a key that matches the given name of the
-     * controller class.
+     * configuration under a key that matches the associated name of the
+     * controller.
      */
-    controllers?: { [className: string]: IControllerStatic<Controller> };
+    controllers?: { [controllerName: string]: IControllerStatic<Controller> };
 }
 
 /**
@@ -37,7 +37,7 @@ export class Container {
 
     private _runtime: Runtime;
     private _comManager: CommunicationManager;
-    private _controllers = new Map<IControllerStatic<IController>, IController>();
+    private _controllers = new Map<string, [IController, IControllerStatic<IController>]>();
     private _isShutdown = false;
     private _operatingStateSubscription: Subscription;
 
@@ -99,21 +99,21 @@ export class Container {
      * The request is silently ignored if the container has already
      * been shut down.
      * 
-     * @param className the name of the controller class (must match the controller name specified in controller config options)
-     * @param classType the class type of the controller
+     * @param controllerName the name of the controller (must match the name associated with the controller in `Components`)
+     * @param controllerType the class type of the controller
      * @param config the controller's configuration options
      * @returns the resolved controller instance or `undefined` if no controller could be resolved
      */
     registerController<T extends IController>(
-        className: string,
-        classType: IControllerStatic<T>,
+        controllerName: string,
+        controllerType: IControllerStatic<T>,
         config: ControllerConfig) {
 
         if (this._isShutdown) {
             return;
         }
 
-        const ctrl = this._resolveController(className, classType, this._runtime, config, this._comManager);
+        const ctrl = this._resolveController(controllerName, controllerType, this._runtime, config, this._comManager);
         if (ctrl) {
             ctrl.onContainerResolved(this);
             this._comManager.observeOperatingState()
@@ -143,23 +143,23 @@ export class Container {
     }
 
     /**
-     * Gets the registered controller of the given class type.
-     * Returns undefined if the controller class type is not registered.
-     * @param classType the class type of the controller
+     * Gets the registered controller of the given controller name.
+     * Returns undefined if a controller with the given name is not registered in the `Components`.
+     * @param controllerName the name of the controller specified as `Components` key for the controller
      */
-    getController<T extends IController>(classType: IControllerStatic<T>): T {
-        return this._controllers && this._controllers.get(classType) as T;
+    getController<T extends IController>(controllerName: string): T {
+        return this._controllers && this._controllers.get(controllerName)[0] as T;
     }
 
     /**
      * Creates a new array with the results of calling the provided callback
-     * function once for each registered controller classType/classInstance 
-     * pair.
-     * @param callback function that produces an element of the new array
+     * function once for each registered controller name/controllerType/controller instance 
+     * triple.
+     * @param callback function that returns an element of the new array
      */
-    mapControllers<T>(callback: (classType: IControllerStatic<IController>, controller: IController) => T) {
+    mapControllers<T>(callback: (controllerName: string, controllerType: IControllerStatic<IController>, controller: IController) => T) {
         const results: T[] = [];
-        this._controllers && this._controllers.forEach((value, index) => results.push(callback(index, value)));
+        this._controllers && this._controllers.forEach((value, name) => results.push(callback(name, value[1], value[0])));
         return results;
     }
 
@@ -187,19 +187,19 @@ export class Container {
 
         // Resolve controllers
         components.controllers &&
-            Object.keys(components.controllers).forEach(className => {
-                const classType = components.controllers[className];
-                this._resolveController(className, classType, runtime, config.controllers, comManager);
+            Object.keys(components.controllers).forEach(controllerName => {
+                const controllerType = components.controllers[controllerName];
+                this._resolveController(controllerName, controllerType, runtime, config.controllers, comManager);
             });
 
         // Then call initialization method of each controller
         this._controllers &&
-            this._controllers.forEach(ctrl => ctrl.onContainerResolved(this));
+            this._controllers.forEach(ctrl => ctrl[0].onContainerResolved(this));
 
         // Observe operating state and dispatch to registered controllers
         this._operatingStateSubscription = comManager.observeOperatingState()
             .subscribe(state => this._controllers &&
-                this._controllers.forEach(ctrl => this._dispatchOperatingState(state, ctrl)));
+                this._controllers.forEach(ctrl => this._dispatchOperatingState(state, ctrl[0])));
 
         // Finally start communication manager if auto-connect option is set
         if (config.communication.shouldAutoStart) {
@@ -208,15 +208,15 @@ export class Container {
     }
 
     private _resolveController<T extends IController>(
-        className: string,
-        classType: IControllerStatic<T>,
+        controllerName: string,
+        controllerType: IControllerStatic<T>,
         runtime: Runtime,
         config: ControllerConfig,
         comManager: CommunicationManager): IController {
-        if (className && classType) {
-            const ctrl = new classType(runtime, (config && config[className]) || {}, comManager, className);
+        if (controllerName && controllerType) {
+            const ctrl = new controllerType(runtime, (config && config[controllerName]) || {}, comManager, controllerName);
             ctrl.onInit();
-            this._controllers.set(classType, ctrl);
+            this._controllers.set(controllerName, [ctrl, controllerType]);
             return ctrl;
         }
         return undefined;
@@ -225,7 +225,7 @@ export class Container {
     private _releaseComponents() {
         // Dispose Communication Manager first to trigger operating state changes
         this._comManager.onDispose();
-        this._controllers.forEach(ctrl => ctrl.onDispose());
+        this._controllers.forEach(ctrl => ctrl[0].onDispose());
 
         this._operatingStateSubscription && this._operatingStateSubscription.unsubscribe();
 

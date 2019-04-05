@@ -4,10 +4,6 @@
 
 // ENSURE THAT THIS FILE HAS UNIX STYLE LINE ENDINGS
 
-const brokerScript = require("./broker");
-const infoScript = require("./info");
-const releaseScripts = require("./release");
-
 const utils = require("./utils");
 
 if (process.argv.length > 2) {
@@ -43,25 +39,25 @@ if (process.argv.length > 2) {
     let cmdPromise = undefined;
     switch (cmd) {
         case "broker":
-            cmdPromise = brokerScript.broker(cmdArgs);
-            break; 
+            cmdPromise = require("./broker").broker(cmdArgs);
+            break;
         case "info":
-            cmdPromise = infoScript.info(...cmdArgs);
+            cmdPromise = require("./info").info(...cmdArgs);
             break;
         case "version-release":
-            cmdPromise = releaseScripts.versionRelease(...cmdArgs);
+            cmdPromise = require("./release").versionRelease(...cmdArgs);
             break;
         case "cut-release":
-            cmdPromise = releaseScripts.cutRelease(...cmdArgs);
+            cmdPromise = require("./release").cutRelease(...cmdArgs);
             break;
         case "push-release":
-            cmdPromise = releaseScripts.pushRelease(...cmdArgs);
+            cmdPromise = require("./release").pushRelease(...cmdArgs);
             break;
         case "publish-release":
-            cmdPromise = releaseScripts.publishRelease(...cmdArgs);
+            cmdPromise = require("./release").publishRelease(...cmdArgs);
             break;
         case "update-changelog":
-            cmdPromise = releaseScripts.updateChangelog(...cmdArgs);
+            cmdPromise = require("./release").updateChangelog(...cmdArgs);
             break;
         default:
             cmdPromise = Promise.reject(new Error(`undefined script '${cmd}'`));

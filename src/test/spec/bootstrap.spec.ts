@@ -122,7 +122,7 @@ describe("Bootstrapping", () => {
         expect(regFunc).not.toThrow();
 
         delayAction(200, done, () => {
-            expect(container.getController<mocks.MockObjectController1>(mocks.MockObjectController1).operatingState)
+            expect(container.getController<mocks.MockObjectController1>("MockObjectController1").operatingState)
                 .toBe("STARTING");
         });
 

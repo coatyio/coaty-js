@@ -40,9 +40,7 @@ export interface IDbAdapter extends
     IDbLocalStore {
 }
 
-export interface IDbAdapterConstructor {
-    new(connectionInfo: DbConnectionInfo): IDbAdapter & IDbAdapterExtension;
-}
+export type IDbAdapterConstructor = new(connectionInfo: DbConnectionInfo) => IDbAdapter & IDbAdapterExtension;
 
 /**
  * The base class for deriving custom database adapters and managing extensions.

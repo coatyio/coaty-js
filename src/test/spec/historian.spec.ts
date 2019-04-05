@@ -64,7 +64,7 @@ describe("Historian", () => {
 
     beforeAll(done => {
         container = Container.resolve(components, configuration);
-        snapshotController = container.getController(mocks.MockSnapshotController);
+        snapshotController = container.getController<mocks.MockSnapshotController>("MockSnapshotController");
         objectToSnapshot = {
             objectId: snapshotController.runtime.newUuid(),
             objectType: "com.mydomain.mypackage.MyCustomObjectType",
@@ -97,7 +97,7 @@ describe("Historian", () => {
             for (let i = 1; i <= snapshotCount; i++) {
                 objectToSnapshot.name = "mycustomobject_" + i;
                 container
-                    .getController(HistorianController)
+                    .getController<HistorianController>("HistorianController")
                     .generateSnapshot(objectToSnapshot, "TAG_MY_CUSTOM_OBJECT");
             }
 
@@ -116,7 +116,7 @@ describe("Historian", () => {
     }, TEST_TIMEOUT);
 
     it("find snapshot objects in database", (done) => {
-        const historianController = container.getController(HistorianController);
+        const historianController = container.getController<HistorianController>("HistorianController");
         historianController.findSnapshotsByParentId(objectToSnapshot.objectId)
             .then(snapshots => {
                 expect(snapshots.length).toBe(snapshotCount);

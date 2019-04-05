@@ -217,8 +217,8 @@ describe("IO Routing", () => {
             TEST_TIMEOUT);
 
         it("actor receives all values from source", (done) => {
-            const actorController = container.getController(mocks.MockIoActorController);
-            const sourceController = container.getController(IoSourceController);
+            const actorController = container.getController<mocks.MockIoActorController>("MockIoActorController");
+            const sourceController = container.getController<IoSourceController>("IoSourceController");
             const logger: mocks.IoActorLogger = { values: [], stateEvents: [] };
             const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];
             const sourceAssociations: boolean[] = [];
@@ -476,8 +476,8 @@ describe("IO Routing", () => {
             TEST_TIMEOUT);
 
         it("actor1 receives all values from both sources", (done) => {
-            const actor1Controller = container2.getController(mocks.MockIoActorController);
-            const sourceController = container1.getController(IoSourceController);
+            const actor1Controller = container2.getController<mocks.MockIoActorController>("MockIoActorController");
+            const sourceController = container1.getController<IoSourceController>("IoSourceController");
             const logger1: mocks.IoActorLogger = { values: [], stateEvents: [] };
             const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];
 
@@ -526,9 +526,9 @@ describe("IO Routing", () => {
             // Register Monitor device with actor2
             container3 = Container.resolve(components3, configuration3);
 
-            const actor1Controller = container2.getController(mocks.MockIoActorController);
-            const actor2Controller = container3.getController(mocks.MockIoActorController);
-            const sourceController = container1.getController(IoSourceController);
+            const actor1Controller = container2.getController<mocks.MockIoActorController>("MockIoActorController");
+            const actor2Controller = container3.getController<mocks.MockIoActorController>("MockIoActorController");
+            const sourceController = container1.getController<IoSourceController>("IoSourceController");
             const logger1: mocks.IoActorLogger = { values: [], stateEvents: [] };
             const logger2: mocks.IoActorLogger = { values: [], stateEvents: [] };
             const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];

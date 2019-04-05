@@ -676,7 +676,7 @@ describe("Postgres NoSQL Database Access", () => {
                 },
             ];
 
-            container.getController(MockQueryingController)
+            container.getController<MockQueryingController>("MockQueryingController")
                 .query(objectFilter, objectJoinConditions)
                 .pipe(
                     take(1),

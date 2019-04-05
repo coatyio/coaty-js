@@ -17,9 +17,7 @@ export interface ISensorIo {
  * Defines static constructor signature for sensor IO interfaces. To be 
  * used for constructor dependency injection in the sensor controller. 
  */
-export interface ISensorIoStatic<T extends ISensorIo> {
-    new(parameters?: number): T;
-}
+export type ISensorIoStatic<T extends ISensorIo> = new(parameters?: number) => T;
 
 /**
  * The base class for sensor hardware-level IO control. Some IO

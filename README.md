@@ -50,7 +50,7 @@ This documentation includes:
 * a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
 
 Coaty JS also includes a set of fully documented [code
-examples](https://github.com/coatyio/coaty-js-examples) that demonstrate best
+examples](https://github.com/coatyio/coaty-examples) that demonstrate best
 practices and typical usage patterns.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
@@ -74,7 +74,7 @@ enable TypeScript linting within the IDE.
 ## Getting started
 
 To build and run Coaty agents with the Coaty JS technology stack
-you need to install the `Node.js` JavaScript runtime (version 6 or higher) globally on
+you need to install the `Node.js` JavaScript runtime (version 8 or higher) globally on
 your target machine. Download and installation details can be found [here](http://nodejs.org/).
 
 The framework uses the package dependency manager `npm` to download dependent libraries.
@@ -131,7 +131,6 @@ Last but certainly not least, a big *Thank You!* to the following folks that
 helped to implement Coaty and make it even better:
 
 * Markus Sauer (@markussauer)
-* Hubertus Hohl (@ffa500)
 * Alihan Livdumlu (@adragonite)
 * Atakan Dulker (@phynics)
 * Antoine Beyet

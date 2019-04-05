@@ -23,8 +23,8 @@ export function provideComponents(container: Container): any[] {
         { provide: Container, useValue: container },
         { provide: Runtime, useValue: container.getRuntime() },
         { provide: CommunicationManager, useValue: container.getCommunicationManager() },
-        ...container.mapControllers((classType, controller) => {
-            return { provide: classType, useValue: controller };
+        ...container.mapControllers((controllerName, controllerType, controller) => {
+            return { provide: controllerType, useValue: controller };
         }),
     ];
 }

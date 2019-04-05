@@ -53,9 +53,8 @@ export interface IController extends IComponent {
  * IController interface. To be used for constructor dependency injection
  * in the Coaty container.
  */
-export interface IControllerStatic<T extends IController> {
-    new(runtime: Runtime, options: ControllerOptions, communicationManager: CommunicationManager, controllerType: string): T;
-}
+export type IControllerStatic<T extends IController> =
+    new (runtime: Runtime, options: ControllerOptions, communicationManager: CommunicationManager, controllerName: string) => T;
 
 /**
  * The base controller class for object controllers and IO controllers. 
@@ -64,7 +63,7 @@ export abstract class Controller implements IController {
 
     private _runtime: Runtime;
     private _options: ControllerOptions;
-    private _controllerType: string;
+    private _controllerName: string;
     private _identity: Component;
     private _communicationManager: CommunicationManager;
     private _isCommonJsPlatform: boolean;
@@ -74,12 +73,12 @@ export abstract class Controller implements IController {
         runtime: Runtime,
         options: ControllerOptions,
         communicationManager: CommunicationManager,
-        controllerType: string) {
+        controllerName: string) {
 
         this._runtime = runtime;
         this._options = options;
         this._communicationManager = communicationManager;
-        this._controllerType = controllerType;
+        this._controllerName = controllerName;
         this._isCommonJsPlatform = runtime.isCommonJsPlatform;
         this._isWebPlatform = runtime.isWebPlatform;
     }
@@ -287,7 +286,7 @@ export abstract class Controller implements IController {
             coreType: "Component",
             objectId: this.runtime.newUuid(),
             parentObjectId: this.communicationManager.identity.objectId,
-            name: this._controllerType,
+            name: this._controllerName,
         };
         this.initializeIdentity(identity);
         Object.assign(identity, this.options.identity || {});
@@ -316,7 +315,7 @@ export abstract class Controller implements IController {
             parentObjectId: this.identity.objectId,
             objectType: CoreTypes.OBJECT_TYPE_LOG,
             coreType: "Log",
-            name: `${this._controllerType}`,
+            name: `${this._controllerName}`,
             logLevel: logLevel,
             logMessage: message,
             logDate: toLocalIsoString(new Date(), true),
