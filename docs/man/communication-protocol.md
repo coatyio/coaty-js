@@ -548,11 +548,11 @@ following Java package naming conventions (i.e. `com.domain.package.operationnam
 For example, the remote operation to switch on/off lights in the `lights` package
 of domain `mydomain` could be named `"com.mydomain.lights.switchLight"`.
 
-The payload of the Call event contains the optional parameter values passed to the
-operation to be invoked, and an optional context filter that defines conditions
-under which the operation is allowed to be executed by a remote end.
+The payload of the Call event contains the optional parameter values passed to
+the referenced operation to be invoked, and an optional context filter that
+defines conditions under which the operation should be executed by a remote end.
 
-```js
+```json
 {
   "parameters": [ <valueParam1>, ... ] | { "<nameParam1>": <valueParam1>, ... },
   "filter": ContextFilter
@@ -599,9 +599,10 @@ executes successfully, the payload looks like the following:
 The `result` property contains the return value of the operation call which can be
 any JSON value.
 
-The optional `executionInfo` property (any JSON value) in Return event data may be used to
-specify additional parameters of the execution environment, such as the execution time
-of the operation, or the ID of the operated control unit.
+The optional `executionInfo` property (any JSON value) in the Return event data
+may be used to specify additional parameters of the execution environment, such
+as the execution time of the operation, or the ID and name of the operated
+control unit.
 
 If an error occurred while executing the remote operation, the response payload looks
 like the following:

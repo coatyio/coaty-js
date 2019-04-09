@@ -1617,7 +1617,7 @@ are currently offering the operation, where these agents reside or how to
 address them. This opens up the possibility to realize dynamic scenarios such as
 load balancing or failover for remote operation calls. The calling agent can
 also specify a context filter that defines conditions under which the operation
-is allowed to be performed by a remote agent.
+should be performed by a remote agent.
 
 Typical use cases of the Call-Return pattern include smart distribution of
 computational workloads to dedicated worker agents, and non safety critical, non
@@ -1658,7 +1658,9 @@ this.communicationManager.publishCall(
                 console.log(returnEvent.eventData.error.executionInfo);  // { lightId: "<id of light>" }
             }
         });
+```
 
+```ts
 // A light control agent observes requests for switching on/off an associated light
 // in its execution context (i.e 7th floor). If the context matches the passed in
 // context filter, the Call event is emitted on the subscription handler which responds
@@ -1671,7 +1673,10 @@ const context: LightControlContext = {
     floor: 7,
 };
 
-this.communicationManager.observeCall(this.identity, "com.mydomain.lights.switchLight", context)
+this.communicationManager.observeCall(
+        this.identity,
+        "com.mydomain.lights.switchLight",
+        context)
     .subscribe(event => {
         // For each remote call that matches the given context, a Call event is emitted.
         const status = event.eventData.getParameterByName("status");
@@ -1738,7 +1743,9 @@ specified and they do not match (checked by using
 > ```js
 > import { filter } from "rxjs/operators";
 >
-> this.communicationManager.observeCall(this.identity, "com.mydomain.lights.switchLight")
+> this.communicationManager.observeCall(
+>         this.identity,
+>         "com.mydomain.lights.switchLight")
 >     .pipe(filter(event => isMatchingFilter(event.eventData.filter))
 >     .subscribe(event => ...);
 > ```
