@@ -114,7 +114,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L141">runtime/container.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L141">runtime/container.ts:141</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -130,19 +130,19 @@
 					<a name="getcontroller" class="tsd-anchor"></a>
 					<h3>get<wbr>Controller</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Controller&lt;T&gt;<span class="tsd-signature-symbol">(</span>classType<span class="tsd-signature-symbol">: </span><a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Controller&lt;T&gt;<span class="tsd-signature-symbol">(</span>controllerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L150">runtime/container.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L150">runtime/container.ts:150</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the registered controller of the given class type.
-									Returns undefined if the controller class type is not registered.</p>
+									<p>Gets the registered controller of the given controller name.
+									Returns undefined if a controller with the given name is not registered in the <code>Components</code>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -154,9 +154,9 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>classType: <a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>controllerName: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the class type of the controller</p>
+										<p>the name of the controller specified as <code>Components</code> key for the controller</p>
 									</div>
 								</li>
 							</ul>
@@ -174,7 +174,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L134">runtime/container.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L134">runtime/container.ts:134</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -196,14 +196,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L160">runtime/container.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L160">runtime/container.ts:160</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Creates a new array with the results of calling the provided callback
-										function once for each registered controller classType/classInstance
-									pair.</p>
+										function once for each registered controller name/controllerType/controller instance
+									triple.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -217,19 +217,22 @@
 								<li>
 									<h5>callback: <span class="tsd-signature-type">function</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>function that produces an element of the new array</p>
+										<p>function that returns an element of the new array</p>
 									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
 											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>classType<span class="tsd-signature-symbol">: </span><a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">&gt;</span>, controller<span class="tsd-signature-symbol">: </span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>controllerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, controllerType<span class="tsd-signature-symbol">: </span><a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">&gt;</span>, controller<span class="tsd-signature-symbol">: </span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>classType: <a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">&gt;</span></h5>
+															<h5>controllerName: <span class="tsd-signature-type">string</span></h5>
+														</li>
+														<li>
+															<h5>controllerType: <a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a><span class="tsd-signature-symbol">&gt;</span></h5>
 														</li>
 														<li>
 															<h5>controller: <a href="../interfaces/icontroller.html" class="tsd-signature-type">IController</a></h5>
@@ -250,13 +253,13 @@
 					<a name="registercontroller" class="tsd-anchor"></a>
 					<h3>register<wbr>Controller</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">register<wbr>Controller&lt;T&gt;<span class="tsd-signature-symbol">(</span>className<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, classType<span class="tsd-signature-symbol">: </span><a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/controllerconfig.html" class="tsd-signature-type">ControllerConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+						<li class="tsd-signature tsd-kind-icon">register<wbr>Controller&lt;T&gt;<span class="tsd-signature-symbol">(</span>controllerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, controllerType<span class="tsd-signature-symbol">: </span><a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/controllerconfig.html" class="tsd-signature-type">ControllerConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L107">runtime/container.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L107">runtime/container.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -276,13 +279,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>className: <span class="tsd-signature-type">string</span></h5>
+									<h5>controllerName: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the name of the controller class (must match the controller name specified in controller config options)</p>
+										<p>the name of the controller (must match the name associated with the controller in <code>Components</code>)</p>
 									</div>
 								</li>
 								<li>
-									<h5>classType: <a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>controllerType: <a href="../globals.html#icontrollerstatic" class="tsd-signature-type">IControllerStatic</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>the class type of the controller</p>
 									</div>
@@ -309,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L171">runtime/container.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L171">runtime/container.ts:171</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -333,7 +336,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L53">runtime/container.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L53">runtime/container.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -401,7 +404,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/cd8fea4/src/runtime/container.ts#L80">runtime/container.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L80">runtime/container.ts:80</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

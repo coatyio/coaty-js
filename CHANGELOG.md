@@ -1,5 +1,18 @@
 # Changelog
 
+# [1.5.0](https://github.com/coatyio/coaty-js/compare/v1.4.1...v1.5.0) (2019-04-09)
+
+This feature release introduces the Call-Return communication pattern enabling execution of context-filtered remote operations by Coaty agents. Coaty JS code examples are now hosted separately under [coaty-examples](https://github.com/coatyio/coaty-examples).
+
+### Features
+
+* **com:** add one-to-many, two-way communication pattern [Call-Return](https://coatyio.github.io/coaty-js/man/developer-guide/#call---return-event-pattern---an-example) for performing context-filtered remote operations ([bbcde9a](https://github.com/coatyio/coaty-js/commit/bbcde9a))
+* **examples:** move framework code examples to separate GitHub project [coaty-js-examples](https://github.com/coatyio/coaty-js-examples) ([71af192](https://github.com/coatyio/coaty-js/commit/71af192))
+* **examples:** use npm module gulpSequence instead of runSequence in gulpfiles ([5299f80](https://github.com/coatyio/coaty-js/commit/5299f80))
+* **runtime:** change method signatures of `Container.getController` and `Container.mapControllers` to use unique controller name instead of non-unique controller type (BREAKING CHANGE) ([fb5d73e](https://github.com/coatyio/coaty-js/commit/fb5d73e))
+* **scripts:** define option '--nobonjour' in broker script to disable automatic multicast DNS broker discovery ([05f572e](https://github.com/coatyio/coaty-js/commit/05f572e))
+* **scripts:** make Mosca broker module a **peer** dependency of Coaty and update hello-world and sensor-things examples ([bc675ca](https://github.com/coatyio/coaty-js/commit/bc675ca))
+
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/coatyio/coaty-js/compare/v1.4.0...v1.4.1) (2019-02-27)
 
