@@ -3293,10 +3293,12 @@ MulticastDnsDiscovery.findWampRouterService()
     });
 ```
 
-Note that the find functions described above can only be used in Node.js programs.
-If you want to discover a bonjour service within a cordova app, use the
-plugin `cordova-plugin-zeroconf`. In an Ionic app, you can use `@ionic-native/zeroconf`
-plugin which is a wrapper around the cordova plugin.
+> Note that the find functions described above can only be used in Node.js
+> programs. If you want to discover a bonjour service within a cordova app, use
+> the plugin `cordova-plugin-zeroconf`. In an Ionic app, you can use
+> `@ionic-native/zeroconf` plugin which is a wrapper around the cordova plugin.
+> In a pure browser environment, it is not possible to discover mDns services
+> with JavaScript.
 
 ### Stop publishing mDNS services
 
