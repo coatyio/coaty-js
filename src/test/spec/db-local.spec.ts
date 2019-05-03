@@ -40,7 +40,7 @@ describe("Local Store Access", () => {
     beforeAll(
         done => {
             container = Container.resolve(components, configuration);
-            connectionInfo = container.getRuntime().databaseOptions["localdb"];
+            connectionInfo = container.runtime.databaseOptions["localdb"];
             dbContext = new DbLocalContext(connectionInfo, SqLiteNodeAdapter);
 
             dbContext.callExtension("deleteDatabase", connectionInfo.connectionString)

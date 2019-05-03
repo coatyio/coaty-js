@@ -549,8 +549,8 @@ You can access the components within a container directly using one of
 these container methods:
 
 ```ts
-container.getRuntime()
-container.getCommunicationManager()
+container.runtime
+container.communicationManager
 container.getController(controllerName)
 container.mapControllers(callback)
 ```
@@ -3269,8 +3269,8 @@ import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
 
 MulticastDnsDiscovery.findMqttBrokerService()
     .then(srv => {
-        container.getCommunicationManager().options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
-        container.getCommunicationManager().start();
+        container.communicationManager.options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
+        container.communicationManager.start();
     })
     .catch(error => {
         NodeUtils.logError(error, "Couldn't discover Coaty broker:");
@@ -3283,9 +3283,9 @@ import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
 
 MulticastDnsDiscovery.findWampRouterService()
     .then(srv => {
-        container.getCommunicationManager().options.routerUrl = `ws://${srv.host}:${srv.port}${srv.txt.path}`;
-        container.getCommunicationManager().options.realm = srv.txt.realm;
-        container.getCommunicationManager().start();
+        container.communicationManager.options.routerUrl = `ws://${srv.host}:${srv.port}${srv.txt.path}`;
+        container.communicationManager.options.realm = srv.txt.realm;
+        container.communicationManager.start();
     })
     .catch(error => {
         NodeUtils.logError(error, "Couldn't discover Coaty router:");

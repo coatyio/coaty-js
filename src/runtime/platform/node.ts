@@ -51,7 +51,7 @@ export class NodeUtils {
      * @param container a Coaty container
      */
     public static logCommunicationState(container: Container) {
-        const manager = container.getCommunicationManager();
+        const manager = container.communicationManager;
         manager.observeCommunicationState()
             .subscribe(state => {
                 NodeUtils.logInfo(`MQTT: ${manager.identity.name} ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);

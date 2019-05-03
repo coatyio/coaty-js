@@ -275,7 +275,7 @@ describe("Communication", () => {
         it("throws on resubscription for response events", (done) => {
             let isResubOkay = false;
             let isResubError = false;
-            const obs = container2.getCommunicationManager()
+            const obs = container2.communicationManager
                 .publishUpdate(UpdateEvent.withPartial(
                     container2.getController("MockObjectController").identity,
                     "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d", { foo: 1 }));
@@ -291,7 +291,7 @@ describe("Communication", () => {
         }, TEST_TIMEOUT);
 
         it("not throws on valid Discover event data", () => {
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 // Note: this Discover request event will never be published because there is 
                 // no subscription on the response observable
                 .publishDiscover(DiscoverEvent.withObjectTypes(
@@ -301,7 +301,7 @@ describe("Communication", () => {
         });
 
         it("throws on invalid Discover event data", () => {
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 .publishDiscover(new DiscoverEvent(
                     container2.getController("MockObjectController").identity,
                     new DiscoverEventData(
@@ -418,7 +418,7 @@ describe("Communication", () => {
                     .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.parentObjectId)
-                    .toBe(container1.getCommunicationManager().identity.objectId);
+                    .toBe(container1.communicationManager.identity.objectId);
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.name)
                     .toBe("MockDeviceController1");
@@ -442,13 +442,13 @@ describe("Communication", () => {
                     .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.parentObjectId)
-                    .toBe(container1.getCommunicationManager().identity.objectId);
+                    .toBe(container1.communicationManager.identity.objectId);
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.name)
                     .toBe("MockDeviceController1");
 
                 // Check custom identity properties of communication manager in container1
-                expect(container1.getCommunicationManager().identity.name)
+                expect(container1.communicationManager.identity.name)
                     .toBe("Agent1");
             });
         }, TEST_TIMEOUT);
@@ -485,7 +485,7 @@ describe("Communication", () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "/foo/+/",
                 {
-                    objectId: container2.getRuntime().newUuid(),
+                    objectId: container2.runtime.newUuid(),
                     objectType: CoreTypes.OBJECT_TYPE_OBJECT,
                     coreType: "CoatyObject",
                     name: "Channeled",
@@ -498,7 +498,7 @@ describe("Communication", () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "foo_bar-baz",
                 {
-                    objectId: container2.getRuntime().newUuid(),
+                    objectId: container2.runtime.newUuid(),
                     objectType: CoreTypes.OBJECT_TYPE_OBJECT,
                     coreType: "CoatyObject",
                     name: "Channeled",
@@ -598,16 +598,16 @@ describe("Communication", () => {
         }, TEST_TIMEOUT);
 
         it("throws on invalid Raw topics", () => {
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 .publishRaw("", "abc"))
                 .toThrow();
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 .publishRaw("foo/\0", "abc"))
                 .toThrow();
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 .publishRaw("/foo/+", "abc"))
                 .toThrow();
-            expect(() => container2.getCommunicationManager()
+            expect(() => container2.communicationManager
                 .publishRaw("/foo/#", "abc"))
                 .toThrow();
         });

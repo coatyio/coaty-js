@@ -104,7 +104,7 @@ describe("Postgres NoSQL Database Access", () => {
     beforeAll(
         done => {
             container = Container.resolve(components, configuration);
-            connectionInfo = container.getRuntime().databaseOptions["testdb"];
+            connectionInfo = container.runtime.databaseOptions["testdb"];
             sharedDbContext = new DbContext(connectionInfo);
             shouldShareDbContext = true;
 
@@ -119,7 +119,7 @@ describe("Postgres NoSQL Database Access", () => {
 
             for (let i = 1; i <= testObjectsCount; i++) {
                 const obj: DbTestObject = {
-                    "objectId": container.getRuntime().newUuid(),
+                    "objectId": container.runtime.newUuid(),
                     "name": "Test Object " + i,
                     "coreType": "CoatyObject",
                     "objectType": OBJECT_TYPE_NAME_DB_TEST_OBJECT,
@@ -143,7 +143,7 @@ describe("Postgres NoSQL Database Access", () => {
                 testObjects.push(obj);
             }
 
-            serverConnectionInfo = container.getRuntime().databaseOptions["testdbadmin"];
+            serverConnectionInfo = container.runtime.databaseOptions["testdbadmin"];
             serverDbCtx = new DbContext(serverConnectionInfo);
 
             serverDbCtx.callExtension("deleteDatabase", "coatyjstestdb")

@@ -83,7 +83,7 @@ describe("SQL Database Access", () => {
     beforeAll(
         done => {
             container = Container.resolve(components, configuration);
-            serverConnectionInfo = container.getRuntime().databaseOptions["testdbserver"];
+            serverConnectionInfo = container.runtime.databaseOptions["testdbserver"];
             serverDbCtx = new DbContext(serverConnectionInfo);
 
             // Continue in case database/user cannot be deleted because client connections
@@ -103,7 +103,7 @@ describe("SQL Database Access", () => {
                     done();
                 });
 
-            connectionInfo = container.getRuntime().databaseOptions["testdb"];
+            connectionInfo = container.runtime.databaseOptions["testdb"];
             dbContext = new DbContext(connectionInfo);
 
             testData = [];

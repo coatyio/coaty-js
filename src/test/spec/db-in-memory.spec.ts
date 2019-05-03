@@ -65,14 +65,14 @@ describe("In-Memory NoSQL Database Access", () => {
     beforeAll(
         done => {
             container = Container.resolve(components, configuration);
-            connectionInfo = container.getRuntime().databaseOptions["testdb"];
+            connectionInfo = container.runtime.databaseOptions["testdb"];
             dbContext = new DbContext(connectionInfo);
             testObjects = [];
             testObjectsCount = 100;
 
             for (let i = 1; i <= testObjectsCount; i++) {
                 const obj: DbTestObject = {
-                    "objectId": container.getRuntime().newUuid(),
+                    "objectId": container.runtime.newUuid(),
                     "name": "Test Object " + i,
                     "coreType": "CoatyObject",
                     "objectType": OBJECT_TYPE_NAME_DB_TEST_OBJECT,

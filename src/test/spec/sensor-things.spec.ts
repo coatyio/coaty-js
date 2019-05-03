@@ -149,7 +149,7 @@ describe("Sensor things", () => {
                     return;
                 }
                 const element = elementArray.shift();
-                expect(() => container2.getCommunicationManager()
+                expect(() => container2.communicationManager
                     // Note: this Discover request event will never be published because there is 
                     // no subscription on the response observable
                     .publishDiscover(DiscoverEvent.withObjectTypes(

@@ -68,7 +68,7 @@ describe("Bootstrapping", () => {
                 getConfigUrl("bootstrap.config.json")))
             .then(
                 container => {
-                    expect(container.getRuntime().options.associatedUser.name).toBe("Barney");
+                    expect(container.runtime.options.associatedUser.name).toBe("Barney");
                     done();
                 },
                 reason => {
@@ -215,7 +215,7 @@ describe("Bootstrapping", () => {
                 components,
                 provideConfiguration(getConfigFile("bootstrap.config.js")));
 
-            expect(container.getRuntime().newUuid()).toMatch(UUID_REGEX);
+            expect(container.runtime.newUuid()).toMatch(UUID_REGEX);
             expect(Runtime.newUuid()).toMatch(UUID_REGEX);
         });
 

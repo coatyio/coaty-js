@@ -21,8 +21,8 @@ export function provideComponents(container: Container): any[] {
 
     return [
         { provide: Container, useValue: container },
-        { provide: Runtime, useValue: container.getRuntime() },
-        { provide: CommunicationManager, useValue: container.getCommunicationManager() },
+        { provide: Runtime, useValue: container.runtime },
+        { provide: CommunicationManager, useValue: container.communicationManager },
         ...container.mapControllers((controllerName, controllerType, controller) => {
             return { provide: controllerType, useValue: controller };
         }),
