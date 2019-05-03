@@ -137,7 +137,7 @@ describe("Sensor things", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);
@@ -221,7 +221,7 @@ describe("Sensor things", () => {
                     eventData: [],
                 };
                 const eventCount = 4;
-                const channelId = "CHANNEL_ID_42";
+                const channelId = "42";
 
                 deviceController.watchForChannelEvents(logger, channelId);
 

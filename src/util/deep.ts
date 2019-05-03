@@ -20,8 +20,6 @@
  * @param b a JavaScript value
  */
 export function equals(a: any, b: any): boolean {
-    "use strict";
-
     if (a === b) {
         return true;
     }
@@ -138,8 +136,6 @@ export function equals(a: any, b: any): boolean {
  * @param b a JavaScript value to be contained in another value
  */
 export function contains(a: any, b: any): boolean {
-    "use strict";
-
     const containsInternal = (x: any, y: any, isToplevel: boolean) => {
         if (Array.isArray(x)) {
             if (!Array.isArray(y)) {
@@ -186,8 +182,6 @@ export function contains(a: any, b: any): boolean {
  * @param b a JavaScript array containing another value on toplevel
  */
 export function includes(a: any[], b: any): boolean {
-    "use strict";
-
     if (!Array.isArray(a)) {
         throw new TypeError(`first argument must be an array`);
     }
@@ -205,14 +199,10 @@ export function includes(a: any[], b: any): boolean {
  * @param obj any value that can be represented as a JSON value
  */
 export function clone(obj: any): any {
-    "use strict";
-
     return cloneDeep(obj, new Set<object>());
 }
 
 function cloneDeep(obj: any, refs: Set<object>) {
-    "use strict";
-
     /* tslint:disable-next-line:no-null-keyword */
     if (obj === undefined || obj === null ||
         typeof obj === "number" || typeof obj === "boolean" || typeof obj === "string") {

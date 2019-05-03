@@ -6,8 +6,6 @@
  * @param includeMillis whether to include milliseconds in the string (defaults to false)
  */
 export function toLocalIsoString(date: Date, includeMillis: boolean = false) {
-    "use strict";
-
     const pad = (n: number, length: number = 2, padChar: string = "0") => {
         let str = "" + n;
         while (str.length < length) {
@@ -41,8 +39,6 @@ export function toLocalIsoString(date: Date, includeMillis: boolean = false) {
  * @param duration a duration given in milliseconds
  */
 export function toDurationIsoString(duration: number) {
-    "use strict";
-
     if (duration < 0) {
         throw new Error("Duration cannot be negative.");
     }
@@ -140,8 +136,6 @@ export function isValidTimeInterval(interval: TimeInterval): boolean {
  * @param includeMillis whether to include milliseconds in the string (defaults to false)
  */
 export function toLocalIntervalIsoString(interval: TimeInterval, includeMillis: boolean = false) {
-    "use strict";
-
     if (!isValidTimeInterval(interval)) {
         throw new Error ("Time interval is not valid: " + interval);
     }

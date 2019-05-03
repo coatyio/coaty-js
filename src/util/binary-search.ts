@@ -32,8 +32,6 @@ export function binarySearch<T>(
     compareFn: (a: T, b: T) => number,
     startIndex: number = 0,
     endIndex: number = source.length - 1): number {
-    "use strict";
-
     if (startIndex < 0) {
         throw new TypeError("startIndex is out of range");
     }
@@ -80,8 +78,6 @@ export function binaryInsert<T>(
     source: T[],
     item: T,
     compareFn: (a: T, b: T) => number) {
-    "use strict";
-
     const pos = binarySearch(source, item, compareFn);
     if (pos >= 0) {
         // binarySearch might return any position for identical items, 

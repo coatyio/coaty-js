@@ -1241,8 +1241,6 @@ class PooledClient implements IQueryable {
  * @param text a value to be used as identifier
  */
 function asIdentifier(text: any) {
-    "use strict";
-
     if (typeof text !== "string") {
         text = JSON.stringify(text);
     }
@@ -1272,8 +1270,6 @@ function asIdentifier(text: any) {
  * @param text a value to be used as literal
  */
 function asLiteral(text: any) {
-    "use strict";
-
     if (typeof text !== "string") {
         text = JSON.stringify(text);
     }

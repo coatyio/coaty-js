@@ -382,8 +382,6 @@ export type SqlQueryBuilder = (
  * @param values the evaluated expressions of all template placeholders.
  */
 export function SQL(parts: TemplateStringsArray, ...values: any[]): SqlQueryBuilder {
-    "use strict";
-
     // Template placeholder annotations
     const IDENT = "{IDENT}";
     const LITERAL = "{LIT}";
@@ -442,8 +440,6 @@ export function SQL(parts: TemplateStringsArray, ...values: any[]): SqlQueryBuil
  * @param params the bound parameters supplied to the query
  */
 export function RAW(text: string, ...params: any[]): SqlQueryBuilder {
-    "use strict";
-
     return (
         placeholder: string,
         appendIndex: boolean,

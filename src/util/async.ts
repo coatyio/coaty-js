@@ -63,8 +63,6 @@ export class Async {
         items: T[],
         asyncFunc: (item: T, previousValue?: R, index?: number) => Promise<R>,
         initialValue?: R): Promise<R> {
-        "use strict";
-
         return new Promise<R>((resolve, reject) => {
             const series = (index: number, result: R) => {
                 if (index === items.length) {

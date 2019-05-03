@@ -80,7 +80,7 @@ describe("Historian", () => {
             container.shutdown();
 
             delayAction(1000, done, () => {
-                // give Mosca time to log output messages
+                // give broker time to log output messages
             });
         },
         TEST_TIMEOUT);

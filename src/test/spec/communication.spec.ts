@@ -267,7 +267,7 @@ describe("Communication", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);
@@ -514,7 +514,7 @@ describe("Communication", () => {
                 eventData: [],
             };
             const eventCount = 4;
-            const channelId = "CHANNEL_ID_42";
+            const channelId = "42";
 
             deviceController.watchForChannelEvents(logger, channelId);
 
@@ -548,7 +548,7 @@ describe("Communication", () => {
                 callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, undefined, logger, "res15");
                 callController.publishCallEvent("coaty.test.add", [42, 43], undefined, logger, "res2");
                 callController.publishCallEvent("coaty.test.add", [], undefined, logger, "res3");
-                callController.publishCallEvent("coaty.test.undefined", {}, undefined, logger, "res4");
+                callController.publishCallEvent("coaty.test.xyz", {}, undefined, logger, "res4");
 
                 delayAction(1000, done, () => {
                     const expectedResultCount = 6;
@@ -713,7 +713,7 @@ describe("Communication", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);

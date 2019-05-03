@@ -41,7 +41,6 @@ const tabAsSpace = 4;
  * that is rejected in case an error occured.
  */
 function versionRelease(version) {
-    "use strict";
     return new Promise((resolve, reject) => {
         const [pkgPath, pkg] = getPackageObject();
         const bumpVersion = (version, isReleaseType, throwOnEqual) => {
@@ -108,7 +107,6 @@ module.exports.versionRelease = versionRelease;
  * by conventional commits.
  */
 function cutRelease(releaseNote) {
-    "use strict";
     const [pkgPath, pkg] = getPackageObject();
     const msg = getCommitTagMessage(pkg.version);
     return updateChangelogInternal(pkg.version, releaseNote)
@@ -129,7 +127,6 @@ module.exports.cutRelease = cutRelease;
  * Push to current branch w/ the release tag to the remote git repo.
  */
 function pushRelease() {
-    "use strict";
     return Promise.resolve()
         .then(() => runCommand("git push --follow-tags"))
         .then(output => "pushed tagged release");
@@ -148,7 +145,6 @@ module.exports.pushRelease = pushRelease;
  * `latest` tag.
  */
 function publishRelease(npmDistTag) {
-    "use strict";
     const tag = npmDistTag || "latest";
     const distPath = path.resolve(process.cwd(), "dist");
     const distFolders = [];
@@ -202,7 +198,6 @@ module.exports.publishRelease = publishRelease;
  * by conventional commits.
  */
 function updateChangelog(pkgVersion, releaseNote) {
-    "use strict";
     const [pkgPath, pkg] = getPackageObject();
     const msg = getCommitTagMessage(pkg.version);
     return updateChangelogInternal(pkgVersion, releaseNote)
@@ -214,7 +209,6 @@ function updateChangelog(pkgVersion, releaseNote) {
 module.exports.updateChangelog = updateChangelog;
 
 function createIfMissing(file) {
-    "use strict";
     try {
         fs.accessSync(file, fs.F_OK);
     } catch (err) {
@@ -244,7 +238,6 @@ function getCommitTagMessage(version) {
  * terminates with a non-zero exit code.
  */
 function runCommand(command) {
-    "use strict";
     return new Promise((resolve, reject) => {
         utils.logInfo(`Command: ${command}`);
         childProcess.exec(command, (error, stdout, stderr) => {
@@ -262,7 +255,6 @@ function runCommand(command) {
 }
 
 function runCommandWithRedirectedIo(command) {
-    "use strict";
     return new Promise((resolve, reject) => {
         try {
             utils.logInfo(`Command: ${command}`);
@@ -275,7 +267,6 @@ function runCommandWithRedirectedIo(command) {
 }
 
 function updateChangelogInternal(newVersion, releaseNote) {
-    "use strict";
     return new Promise((resolve, reject) => {
         const changelog = path.resolve(process.cwd(), "CHANGELOG.md");
         const versionAnchor = "<a name=\"";

@@ -70,7 +70,7 @@ describe("IO Routing", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);
@@ -211,7 +211,7 @@ describe("IO Routing", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);
@@ -470,7 +470,7 @@ describe("IO Routing", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give Mosca time to log output messages
+                    // give broker time to log output messages
                 });
             },
             TEST_TIMEOUT);

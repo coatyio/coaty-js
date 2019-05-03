@@ -17,8 +17,6 @@
  * ```
  */
 
-"use strict";
-
 const chalk = require("chalk");
 const childProcess = require("child_process");
 const fse = require("fs-extra");

@@ -7,7 +7,6 @@ const utils = require("./utils");
  * Returns a promise that resolves to the generated `AgentInfo` object.
  */
 function info(agentInfoFolder, defaultBuildMode) {
-    "use strict";
     return new Promise((resolve, reject) => {
         const result = generateAgentInfoFile(agentInfoFolder || "./src/", undefined, undefined, defaultBuildMode);
         resolve(result[1]);
@@ -36,7 +35,6 @@ module.exports.info = info;
  * information from (defaults to "package.json")
  */
 function gulpBuildAgentInfo(agentInfoFolder, agentInfoFilename, packageFile) {
-    "use strict";
     if (agentInfoFilename === undefined) {
         agentInfoFilename = "agent.info.ts";
     }
@@ -75,7 +73,6 @@ module.exports.gulpBuildAgentInfo = gulpBuildAgentInfo;
  * COATY_ENV)
  */
 function generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile, defaultBuildMode) {
-    "use strict";
     if (agentInfoFilename === undefined) {
         agentInfoFilename = "agent.info.ts";
     }
@@ -110,7 +107,6 @@ module.exports.generateAgentInfoFile = generateAgentInfoFile;
  * @param defaultBuildMode the default build mode (defaults to "development")
  */
 function generateAgentInfo(packageFile, defaultBuildMode) {
-    "use strict";
     if (defaultBuildMode === undefined) {
         defaultBuildMode = "development";
     }

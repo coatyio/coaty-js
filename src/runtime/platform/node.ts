@@ -114,8 +114,6 @@ export class NodeUtils {
  * @param localConfigFile a local configuration file
  */
 export function provideConfiguration(localConfigFile: string = "app.config"): Configuration {
-    "use strict";
-
     try {
         const path = require("path");
         if (!path.isAbsolute(localConfigFile)) {
@@ -138,8 +136,6 @@ export function provideConfiguration(localConfigFile: string = "app.config"): Co
  * @param configurationUrl a Url to load the configuration from
  */
 export function provideConfigurationAsync(configurationUrl: string): Promise<Configuration> {
-    "use strict";
-
     return new Promise<Configuration>((resolve, reject) => {
         const fetch = require("node-fetch");
         fetch(configurationUrl)

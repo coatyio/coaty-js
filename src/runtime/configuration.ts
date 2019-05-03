@@ -207,8 +207,6 @@ export interface DatabaseOptions {
 export function mergeConfigurations(
     primary: Configuration,
     secondary: Configuration): Configuration {
-    "use strict";
-
     const result = {};
 
     Object.keys(primary).forEach(prop => {

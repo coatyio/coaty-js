@@ -17,8 +17,6 @@ import { Runtime } from "../../runtime/runtime";
  * @returns an array of Provider objects
  */
 export function provideComponents(container: Container): any[] {
-    "use strict";
-
     return [
         { provide: Container, useValue: container },
         { provide: Runtime, useValue: container.runtime },
