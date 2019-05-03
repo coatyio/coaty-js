@@ -22,53 +22,76 @@ function run(brokerOptions) {
         bonjourHost: undefined,
     };
     Object.assign(options, brokerOptions);
-    const defaultMoscaSettings = {
-        logger: {
-            // verbose: 30, veryVerbose: 20
-            level: (options.logVerbose ? 30 : "warn")
-        },
-        port: options.port,
-        http: {
-            port: options.port + 8000,
-            // static: "./"
-        }
-    };
-    const moscaSettings = options.moscaSettings || defaultMoscaSettings;
-    const mosca = require("mosca");
-    const server = new mosca.Server(moscaSettings);
+
+    const port = options.port;
+    const wsPort = options.wsPort || options.port + 8000;
+
     const node = require("../runtime-node");
 
-    server.on("ready", () => {
-        utils.logInfo(`Coaty MQTT Broker running on MQTT port ${moscaSettings.port} and websocket port ${moscaSettings.http.port}...`);
-        if (options.startBonjour && moscaSettings.port === defaultPort) {
-            node.MulticastDnsDiscovery.publishMqttBrokerService(
-                moscaSettings.port,
-                moscaSettings.http.port,
-                undefined,
-                undefined,
-                options.bonjourHost)
-                .then(srv => utils.logInfo(`Published multicast DNS for host ${srv.host} on FQDN "${srv.fqdn}:${srv.port}"`))
-                .catch(error => utils.logError(`Error while publishing multicast DNS: ${error}`));
+    const aedes = require("aedes")();
+    const tcpServer = require('net').createServer(aedes.handle);
+    const wsServer = require('http').createServer();
+    const ws = require('websocket-stream');
 
-            node.NodeUtils.handleProcessTermination(undefined, () => {
-                return node.MulticastDnsDiscovery.unpublishMulticastDnsServices()
-                    .then(() => {
-                        utils.logInfo(`Unpublished multicast DNS service. Exiting...`);
-                    });
-            });
-        }
-        if (options.onReady) {
-            options.onReady();
-        }
+    ws.createServer({ server: wsServer }, aedes.handle);
+
+    tcpServer.listen(port, () => {
+        wsServer.listen(wsPort, () => {
+            utils.logInfo(`Coaty MQTT Broker running on TCP port ${port} and websocket port ${wsPort}...`);
+            if (options.startBonjour && port === defaultPort) {
+                node.MulticastDnsDiscovery.publishMqttBrokerService(
+                    port,
+                    wsPort,
+                    undefined,
+                    undefined,
+                    options.bonjourHost)
+                    .then(srv => utils.logInfo(`Published multicast DNS for host ${srv.host} on FQDN "${srv.fqdn}:${srv.port}"`))
+                    .catch(error => utils.logError(`Error while publishing multicast DNS: ${error}`));
+
+                node.NodeUtils.handleProcessTermination(undefined, () => {
+                    return node.MulticastDnsDiscovery.unpublishMulticastDnsServices()
+                        .then(() => {
+                            utils.logInfo(`Unpublished multicast DNS service. Exiting...`);
+                        });
+                });
+            }
+            if (options.onReady) {
+                options.onReady();
+            }
+        })
     });
 
-    if (options.logVerbose) {
-        server.on("published", (packet, client) => {
-            utils.logMessage(`Published by ${client ? client.id : "broker"}: "topic:" ${packet.topic} ${packet.payload}`);
-        });
+    if (!options.logVerbose) {
+        return;
     }
 
-    return server;
+    aedes.on("publish", (packet, client) => {
+        utils.logMessage(`publish by ${client ? client.id : "broker"} on topic ${packet.topic} with payload ${packet.payload.toString()}`);
+    });
+
+    aedes.on("subscribe", (subscriptions, client) => {
+        utils.logMessage(`subscribe by ${client ? client.id : "broker"}: on topic ${subscriptions.map(s => s.topic).join(", ")}`);
+    });
+
+    aedes.on("unsubscribe", (unsubscriptions, client) => {
+        utils.logMessage(`subscribe by ${client ? client.id : "broker"} on topic ${unsubscriptions.join(", ")}`);
+    });
+
+    aedes.on("client", (client) => {
+        utils.logMessage(`client connect ${client.id}`);
+    });
+
+    aedes.on("clientDisconnect", (client) => {
+        utils.logMessage(`client disconnect ${client.id}`);
+    });
+
+    aedes.on("clientError", (client, err) => {
+        utils.logError(`client error ${client.id} ${err.message}`);
+    });
+
+    aedes.on("connectionError", (client, err) => {
+        utils.logError(`connection error ${client} ${err.message}`);
+    });
 }
 
 module.exports.run = run;

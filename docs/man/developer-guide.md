@@ -3411,18 +3411,13 @@ positional index of the desired npm run command parameter.
 
 ### Coaty broker for development
 
-For Coaty development and testing purposes, the framework includes
-the Mosca MQTT broker. In your own application projects, you can also
-use this broker for development and testing.
+For Coaty development and testing purposes, the framework includes the
+[Aedes](https://www.npmjs.com/package/aedes) MQTT broker. In your own
+application projects, you can also use this broker for development and testing.
 
-As a prerequisite, add the npm modules `mosca` and `rxjs` as dependencies
-to your project's package.json and install them. The module version should correspond
-with the version of same modules specified in the `coaty` framework package definition
-as peer dependencies.
-
-> Note: You should **not** use this broker in a production system. Instead, use a
-> high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ, Mosquitto,
-> or Crossbar.io WAMP router).
+> Note: You should **not** use this broker in a production system. Instead, use
+> a high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ,
+> Mosquitto, or Crossbar.io WAMP router).
 
 The broker script provides the following options:
 
@@ -3430,9 +3425,9 @@ The broker script provides the following options:
 coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>] [--nobonjour]
 ```
 
-Runs Mosca broker on MQTT port 1883 (or the one specified with command line option
-`--port <number>`) and websocket port 9883. The websocket port is computed from the
-given MQTT port by adding 8000.
+Runs Coaty broker on MQTT port 1883 (or the one specified with command line
+option `--port <number>`) and websocket port 9883. The websocket port is
+computed from the given MQTT port by adding 8000.
 
 If the broker is launched on standard port 1883, a multicast DNS service for broker
 discovery is published additionally. The broker is then discoverable under the mDNS
@@ -3444,12 +3439,12 @@ by mDNS cannot be resolved by DHCP.
 If you do not want to start the multicast DNS service for broker discovery, specify
 the `--nobonjour` option.
 
-If the command line option `--verbose` is given, Mosca broker provides verbose logging
-of subscriptions. Additionally, all MQTT messages published by MQTT clients are logged
-on the console, including message topic and payload.
+If the command line option `--verbose` is given, Coaty broker provides verbose
+logging of subscriptions. Additionally, all MQTT messages published by MQTT
+clients are logged on the console, including message topic and payload.
 
-Alternatively, you can run this broker from within your application build scripts
-as follows:
+Alternatively, you can run the Coaty broker from within your application build
+scripts as follows:
 
 ```js
 const broker = require("coaty/scripts/broker");
@@ -3463,8 +3458,9 @@ broker.run({ logVerbose: true, ... });
 
 Options are defined in an object hash including the following properties:
 
-* `port`: the MQTT port (default is 1883); the websocket port is computed from
-  port by adding 8000.
+* `port`: the MQTT port (default is 1883).
+* `wsPort`: the MQTT websocket port (default value is computed from port by
+  adding 8000).
 * `logVerbose`: true for detailed logging of subscriptions and published messages
   (default is false).
 * `startBonjour`: true, if multicast DNS broker discovery service should be
@@ -3475,8 +3471,6 @@ Options are defined in an object hash including the following properties:
    mDNS service (optional). Useful for cases, where the normal hostname provided
    by mDNS cannot be resolved by DHCP.
 * `onReady`: callback function to be invoked when broker is ready (default none).
-* `moscaSettings`: if given, these settings completely override the default mosca
-   settings computed by the other options.
 
 ### Generate project meta info at build time
 

@@ -1,0 +1,7 @@
+{
+    "port": 1898,
+    "wsPort": 1998,
+    "logVerbose": false,
+    "staticServe": "./",
+    "staticPort": 1999
+}

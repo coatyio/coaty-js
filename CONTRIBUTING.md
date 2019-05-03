@@ -137,20 +137,20 @@ The default values provided here can be overwritten by
 
 ```
 test_config          Jasmine config options
-test_broker_config   the Mosca broker config
+test_broker_config   the Coaty broker config
 test_reports_dir     where JUnit XML output is written
 ```
 
-The test suite performs E2E communication messaging tests using the
-Mosca MQTT broker that is installed as a local npm dev dependency.
-The broker's options are configured in `./test/support/mosca.config.json`.
-To avoid collisions with other brokers running on the local machine, the
-test broker listens to mqtt port 1898 and http/ws port 1998
-(Mosca and most other brokers use 1883/9883 by default). Note that the
-broker is only running while the test suite is executed.
+The test suite performs E2E communication messaging tests using the Coaty broker
+that is installed as a local npm dev dependency. The broker's options are
+configured in `./test/support/broker.config.json`. To avoid collisions with
+other brokers running on the local machine, the test broker listens to mqtt port
+1898 and http/ws port 9898 (typically brokers use 1883/9883 by default). Note
+that the broker is only running while the test suite is executed.
 
-To support debugging of communication-related unit tests use the `test:debug` target.
-Any published and subscribed messages are logged to the console by the broker.
+To support debugging of communication-related unit tests use the `test:debug`
+target. Any published and subscribed messages are logged to the console by the
+broker.
 
 ## Release Coaty framework
 

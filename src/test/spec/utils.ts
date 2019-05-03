@@ -1,7 +1,5 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-"use strict";
-
 /**
  * Utilities for testing.
  */
@@ -17,23 +15,17 @@ export const UUID_REGEX = new RegExp(UUID_REGEX_STRING);
 const TEST_CONFIG_DIR = "dist/es5-commonjs/test/config";
 
 /* tslint:disable-next-line:no-var-requires */
-const MOSCA_HTTP_PORT = "" + require(path.resolve("./test/support/mosca.config.json")).http.port;
+const STATIC_HTTP_PORT = "" + require(path.resolve("./test/support/broker.config.json")).staticPort;
 
 export function getConfigFile(filename: string): string {
-    "use strict";
-
     return path.resolve(path.join(TEST_CONFIG_DIR, filename));
 }
 
 export function getConfigUrl(configName: string): string {
-    "use strict";
-
-    return `http://localhost:${MOSCA_HTTP_PORT}/${TEST_CONFIG_DIR}/${configName}`;
+    return `http://localhost:${STATIC_HTTP_PORT}/${TEST_CONFIG_DIR}/${configName}`;
 }
 
 export function delayAction(delay: number, done: () => void, action?: () => void) {
-    "use strict";
-
     setTimeout(
         () => {
             action && action();
@@ -43,16 +35,12 @@ export function delayAction(delay: number, done: () => void, action?: () => void
 }
 
 export function skipTestIf(condition: boolean, reason?: string) {
-    "use strict";
-
     if (condition) {
         pending(reason);
     }
 }
 
 export function failTest(error: Error, done?: () => void) {
-    "use strict";
-
     fail(error);
     done && done();
 }

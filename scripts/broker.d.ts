@@ -3,7 +3,7 @@
 // Type definitions for coaty/scripts/broker
 
 /**
- * Run Mosca broker on MQTT port 1883 (or the one specified with command line option `--port <number>`)
+ * Run Coaty broker on MQTT port 1883 (or the one specified with command line option `--port <number>`)
  * and websocket port 9883. The websocket port is computed from given MQTT port by adding 8000.
  *
  * If the broker is launched on standard port 1883, a multicast DNS service for broker discovery
@@ -14,7 +14,7 @@
  * 
  * If you do not want to start the multicast DNS service for broker discovery, specify the `--nobonjour` option.
  *
- * If the command line option `--verbose` is given, Mosca broker provides verbose logging of subscriptions, etc.
+ * If the command line option `--verbose` is given, Coaty broker provides verbose logging of subscriptions, etc.
  * Additionally, all MQTT messages published by MQTT clients are logged on the console, including message topic and payload.
  *
  * @param cmdArgs a string array specifying command arguments: [--verbose], [--port <port>], [--bonjourHost <hostname>], [--nobonjour]
@@ -22,16 +22,21 @@
 export declare function broker(cmdArgs: string[]): Promise<any>;
 
 /**
- * Run Mosca broker with the given broker options.
+ * Run Coaty broker with the given broker options.
  *
  * @param brokerOptions an object hash of broker options
  */
 export declare function run(brokerOptions: {
 
     /**
-     * The MQTT port (default is 1883); the websocket port is computed from port by adding 8000.
+     * The MQTT port (default is 1883).
      */
     port?: number;
+
+    /**
+     * The MQTT websocket port (default value is computed from port by adding 8000).
+     */
+    wsPort?: number;
 
     /**
      * true for detailed logging of subscriptions and published messages (default is false).
@@ -50,11 +55,6 @@ export declare function run(brokerOptions: {
      * Useful for cases, where the normal hostname provided by mDNS cannot be resolved by DHCP.
      */
     bonjourHost?: string;
-
-    /**
-     * If given, these settings completely override the default mosca settings computed by the other options.
-     */
-    moscaSettings?: object;
 
     /**
      * Callback function to be invoked when broker is ready (default none).
