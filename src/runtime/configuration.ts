@@ -137,8 +137,8 @@ export interface CommunicationOptions {
      * the characters "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
      * However, broker implementations are free to allow non-compliant Client IDs.
      * 
-     * By default, non-compliant Client IDs of the form "COATY<uuid>" are used where
-     * <uuid> specifies the `objectId` of the communication manager's `identity` object.
+     * By default, non-compliant Client IDs of the form "COATYuuid" are used where
+     * uuid specifies the `objectId` of the communication manager's `identity` object.
      * If you experience issues with a specific broker, specify this option as `true`.
      */
     useProtocolCompliantClientId?: boolean;
