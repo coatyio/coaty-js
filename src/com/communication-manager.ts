@@ -702,7 +702,7 @@ export class CommunicationManager implements IComponent {
         return Object.assign(defaultIdentity, this.options.identity || {});
     }
 
-    private _updateState(newState: CommunicationState) {
+    private _updateCommunicationState(newState: CommunicationState) {
         if (this._state.getValue() !== newState) {
             this._state.next(newState);
         }
@@ -890,7 +890,7 @@ export class CommunicationManager implements IComponent {
         }
 
         // Emitted on successful (re)connection.
-        this._updateState(CommunicationState.Online);
+        this._updateCommunicationState(CommunicationState.Online);
 
         // console.log("CommunicationManager: connected");
     }
@@ -903,7 +903,7 @@ export class CommunicationManager implements IComponent {
 
     private _onClientDisconnected() {
         // Emitted after a disconnection requested by calling end().
-        this._updateState(CommunicationState.Offline);
+        this._updateCommunicationState(CommunicationState.Offline);
 
         // console.log("CommunicationManager: disconnected");
     }
@@ -912,7 +912,7 @@ export class CommunicationManager implements IComponent {
         // Emitted when the client goes offline, i.e. when the 
         // connection to the server is closed (for whatever reason) and 
         // the client reconnects.
-        this._updateState(CommunicationState.Offline);
+        this._updateCommunicationState(CommunicationState.Offline);
 
         // console.log("CommunicationManager: offline");
     }
@@ -920,7 +920,7 @@ export class CommunicationManager implements IComponent {
     private _onClientError(error) {
         // Emitted when the client cannot connect (i.e.connack rc != 0) 
         // or when a parsing error occurs.
-        this._updateState(CommunicationState.Offline);
+        this._updateCommunicationState(CommunicationState.Offline);
 
         console.log(`CommunicationManager: error on connect: ${error}`);
     }
