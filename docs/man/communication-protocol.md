@@ -108,10 +108,9 @@ Any topic used in the framework consists of the following topic levels:
 * **Source Object ID** - globally unique ID (UUID) of the event source that is
   publishing a topic. Each component can act as an event source.
 * **Event** - one of the predefined events listed above.
-* **Message Tokens** - UUID(s) that uniquely identify one or more messages.
-  Multiple tokens are separated by a `|` character. Used to associate response
-  messages to request messages in the Discover-Resolve, Query-Retrieve or
-  Update-Complete event patterns.
+* **Message Token** - UUID that uniquely identifies a messages. Used to
+  correlate a response message to the request message in Discover-Resolve,
+  Query-Retrieve, Update-Complete, and Call-Return event patterns.
 
 UUIDs (Universally Unique Identifiers) must conform to the UUID version 4 format as
 specified in RFC 4122. In the string representation of a UUID the hexadecimal
