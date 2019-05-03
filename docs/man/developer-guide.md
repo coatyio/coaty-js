@@ -3463,13 +3463,14 @@ console.log(agentInfo.configInfo.serviceHost));
 Package information exposed by the `AgentInfo.packageInfo` object is extracted from the
 project's package.json file.
 
-The build mode exposed by the `AgentInfo.buildInfo` object is determined by the value of the
-environment variable `NODE_ENV` at build time. Typical values include `production`
-or `development`, but could be any other string as well. You should set this
-environment variable to a proper value before starting the build process. If this
-variable is not set, a `development` build mode is assumed. Note that `NODE_ENV` is
-also used by Node.js, e.g. the express server uses it at run time to determine whether
-it is a production or development environment.
+The build mode exposed by the `AgentInfo.buildInfo` object indicates whether the
+agent is built for a production, development, staging, or any other custom build
+environment. Its value is determined by the value of the environment variable
+`COATY_ENV` at build time. Typical values include `production` or `development`,
+but could be any other string as well. You should set this environment variable
+to a proper value before starting the build process. If this variable is not
+set, a `development` build mode is assumed unless a default build mode has been
+specified in the info script or function.
 
 The `serviceHost` property exposed by the `AgentInfo.configInfo` object represents the host
 name used for MQTT broker connections and REST based services.
@@ -3478,21 +3479,34 @@ If not set, the value defaults to an empty string.
 
 #### Generate project info by script
 
-The example explained next refers to the Ionic build process.
+The examples explained next refer to the Angular CLI and Ionic build process.
 
-In the build and watch script of your package.json add a call to run
+In the build and serve/watch scripts of your package.json add a call to run
 `coaty-scripts info`:
 
 ```json
+ // Angular CLI
+ "scripts": {
+    "build": "coaty-scripts info ./src/app && ng build",
+    "build:prod": "coaty-scripts info ./src/app production && ng build --prod",
+    "serve": "coaty-scripts info ./src/app && ng serve",
+    ...
+  },
+```
+
+```json
+ // Ionic
  "scripts": {
     "build": "coaty-scripts info && ionic-app-scripts build",
+    "build:prod": "coaty-scripts info ./src/ production && ionic-app-scripts build --prod",
     "watch": "coaty-scripts info && ionic-app-scripts watch",
     ...
   },
 ```
 
 By default, the generated `agent.info.ts` file is written to `"./src/"`. You can
-customize this location by supplying a second argument to the script.
+customize this location by supplying an explicit first argument to the info
+script. You can also specify the default build mode to use as a second argument.
 
 #### Generate project info by gulp task
 
@@ -3506,9 +3520,7 @@ const infoScript = require("coaty/scripts/info");
 gulp.task("agentinfo", infoScript.gulpBuildAgentInfo("path_to"));
 
 // Add the gulp task as a step of the build task
-gulp.task("build", () => {
-  runSequence("clean", "agentinfo", "transpile", "tslint");
-});
+gulp.task("build", gulp.series("clean", "agentinfo", "transpile", "tslint"));
 ```
 
 Note that the `agentinfo` gulp task must be run **before** transpiling the TypeScript
@@ -3520,12 +3532,13 @@ To integrate generation of project info into your custom Node.js based build pro
 can use the function `generateAgentInfoFile` which is exported by the `runtime` module:
 
 ```js
-var infoScript = require("coaty/scripts/info");
+const infoScript = require("coaty/scripts/info");
 
-var agentInfoFolder = "./src/";
-var agentInfoFilename = "agent.info.ts";   // optional parameter
-var packageFile = "package.json";      // optional parameter
-infoScript.generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile);
+const agentInfoFolder = "./src/";
+const agentInfoFilename = "agent.info.ts";   // optional parameter
+const packageFile = "package.json";          // optional parameter
+const defaultBuildMode = "development";      // optional parameter
+infoScript.generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile, defaultBuildMode);
 ```
 
 ### Release a project

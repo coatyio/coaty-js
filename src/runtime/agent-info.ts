@@ -51,11 +51,12 @@ export interface AgentBuildInfo {
     buildDate: string;
 
     /**
-     * The build mode of the agent project. Determines whether the agent
-     * is built for a production, development, staging, or any other custom
-     * build environment.
+     * The build mode of the agent project. Indicates whether the agent is
+     * built for a production, development, staging, or any other custom build
+     * environment.
      *
-     * The value is acquired from environment variable setting `NODE_ENV`.
+     * By default, the value is acquired from environment variable setting
+     * `COATY_ENV` if specified; otherwise it defaults to "development".
      */
     buildMode: "production" | "development" | "staging" | "testing" | string;
 

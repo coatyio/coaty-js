@@ -6,10 +6,10 @@ const utils = require("./utils");
  * Coaty script command for generating agent info file.
  * Returns a promise that resolves to the generated `AgentInfo` object.
  */
-function info(agentInfoFolder) {
+function info(agentInfoFolder, defaultBuildMode) {
     "use strict";
     return new Promise((resolve, reject) => {
-        const result = generateAgentInfoFile(agentInfoFolder || "./src/");
+        const result = generateAgentInfoFile(agentInfoFolder || "./src/", undefined, undefined, defaultBuildMode);
         resolve(result[1]);
     });
 }
@@ -17,23 +17,23 @@ function info(agentInfoFolder) {
 module.exports.info = info;
 
 /**
- * Returns a gulp task function for generating a TypeScript file including
- * agent info in the specified folder.
+ * Returns a gulp task function for generating a TypeScript file including agent
+ * info in the specified folder.
  *
  * Agent project package information is acquired from the specified package.json
  * file and the build mode is determined by environment variable setting
- * `NODE_ENV`. Set `NODE_ENV` to "development", "production", "testing", etc.
- * before building your application. Note that `NODE_ENV` is also used by Node.js
- * , e.g. the express server uses it at run time to determine whether it is a
- * production or development environment. If the `NODE_ENV` variable is not set,
- * its value should default to "development", as in express `app.get("env")`.
+ * `COATY_ENV`. Set `COATY_ENV` to "development", "production", "testing", etc.
+ * before building your application. If the `COATY_ENV` variable is not set, its
+ * value defaults to "development".
  *
  * This function is intended to be used in a gulp task definition within a
  * gulpfile.
  *
  * @param agentInfoFolder the folder where to write the agent info file
- * @param agentInfoFilename the file name of the agent info file (defaults to "agent.info.ts")
- * @param packageFile the path to the package.json to extract package information from (defaults to "package.json")
+ * @param agentInfoFilename the file name of the agent info file (defaults to
+ * "agent.info.ts")
+ * @param packageFile the path to the package.json to extract package
+ * information from (defaults to "package.json")
  */
 function gulpBuildAgentInfo(agentInfoFolder, agentInfoFilename, packageFile) {
     "use strict";
@@ -53,26 +53,28 @@ function gulpBuildAgentInfo(agentInfoFolder, agentInfoFilename, packageFile) {
 module.exports.gulpBuildAgentInfo = gulpBuildAgentInfo;
 
 /**
- * Generates a TypeScript file including agent info in the specified
- * folder and returns its absolute file path and the build mode as a tuple array.
+ * Generates a TypeScript file including agent info in the specified folder and
+ * returns its absolute file path and the build mode as a tuple array.
  *
  * Agent project package information is acquired from the specified package.json
  * file and the build mode is determined by environment variable setting
- * `NODE_ENV`. Set `NODE_ENV` to "development", "production", "staging", etc.
- * before building your application. Note that `NODE_ENV` is also used by Node.js
- * , e.g. the express server uses it at run time to determine whether it is a
- * production or development environment. If the `NODE_ENV` variable is not set,
- * its value should default to "development", as in express `app.get("env")`.
- * The service host name is acquired from the environment variable
- * `COATY_SERVICE_HOST`.
+ * `COATY_ENV`. Set `COATY_ENV` to "development", "production", "staging", etc.
+ * before building your application. If the `COATY_ENV` variable is not set, its
+ * value defaults to "development", unless overriden by the given
+ * `defaultBuildMode` parameter. The service host name is acquired from the
+ * environment variable `COATY_SERVICE_HOST`.
  *
  * This function is intended to be used in a Node.js program only.
  *
  * @param agentInfoFolder the folder where to write the agent info file
- * @param agentInfoFilename the file name of the agent info file (defaults to "agent.info.ts")
- * @param packageFile the path to the package.json to extract package information from (defaults to "package.json")
+ * @param agentInfoFilename the file name of the agent info file (defaults to
+ * "agent.info.ts")
+ * @param packageFile the path to the package.json to extract package
+ * information from (defaults to "package.json")
+ * @param defaultBuildMode the default build mode to use (if not overriden by
+ * COATY_ENV)
  */
-function generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile) {
+function generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile, defaultBuildMode) {
     "use strict";
     if (agentInfoFilename === undefined) {
         agentInfoFilename = "agent.info.ts";
@@ -82,7 +84,7 @@ function generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile) 
     }
     const fs = require("fs");
     const path = require("path");
-    const agentInfoResult = generateAgentInfo(packageFile);
+    const agentInfoResult = generateAgentInfo(packageFile, defaultBuildMode);
     const agentInfoCode = agentInfoResult[0];
     const buildMode = agentInfoResult[1];
     const file = path.resolve(agentInfoFolder, agentInfoFilename);
@@ -96,14 +98,15 @@ function generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile) 
 module.exports.generateAgentInfoFile = generateAgentInfoFile;
 
 /**
- * Generates code for a TypeScript file which exports
- * agent information as a `AgentInfo` object on a variable named
- * `agentInfo`. The information is acquired from the specified package.json
- * file and build mode from environment variable setting `NODE_ENV`.
- * The service host name is acquired from the environment variable
- * `COATY_SERVICE_HOST`.
+ * Generates code for a TypeScript file which exports agent information as a
+ * `AgentInfo` object on a variable named `agentInfo`. The information is
+ * acquired from the specified package.json file and build mode from environment
+ * variable setting `COATY_ENV`, unless overriden by the given
+ * `defaultBuildMode` parameter. The service host name is acquired from the
+ * environment variable `COATY_SERVICE_HOST`.
  *
- * @param packageFile the path to the package.json to extract package information from
+ * @param packageFile the path to the package.json to extract package
+ * information from
  * @param defaultBuildMode the default build mode (defaults to "development")
  */
 function generateAgentInfo(packageFile, defaultBuildMode) {
@@ -113,7 +116,7 @@ function generateAgentInfo(packageFile, defaultBuildMode) {
     }
     const path = require("path");
     const pkg = require(path.resolve(packageFile));
-    const buildMode = process.env.NODE_ENV || defaultBuildMode;
+    const buildMode = process.env.COATY_ENV || defaultBuildMode;
     const buildDate = utils.toLocalIsoString(new Date());
     const serviceHost = process.env.COATY_SERVICE_HOST || "";
     const copyrightYear = new Date().getFullYear();
