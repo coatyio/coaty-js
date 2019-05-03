@@ -399,14 +399,13 @@ explicitely by invoking its `start` method.
 
 ### Bootstrap a Coaty container in Angular or Ionic
 
-Coaty projects built with Angular or Ionic can inject all
-components of a Coaty container as Angular providers to make use of Angular
-constructor dependency injection.
+Coaty projects built with Angular or Ionic can inject all components of a Coaty
+container as Angular providers to make use of Angular constructor dependency
+injection.
 
-Use the `provideComponents` function to retrieve Angular providers for
-all components of the given Coaty container. The returned array of providers
-should be passed as `extraProviders` argument to the Angular bootstrap
-function:
+Use the `provideComponents` function to retrieve Angular providers for all
+components of the given Coaty container. The returned array of providers should
+be passed as `extraProviders` argument to the Angular bootstrap function:
 
 ```ts
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
@@ -420,11 +419,11 @@ import { AppModule } from "./app.module";
 const container = Container.resolve(components, configuration);
 
 platformBrowserDynamic(provideComponents(container)).bootstrapModule(AppModule)
-    .catch(err => console.log(err));
+    .catch(err => console.error(err));
 ```
 
-You can now use any of the container components as constructor dependencies
-in your Angular app or view components:
+You can now use any of the container components as constructor dependencies in
+your Angular app or view components:
 
 ```ts
 @Component(...)
@@ -450,13 +449,13 @@ export class ViewComponent1 {
 }
 ```
 
-Note that the Communication Manager must be started and stopped inside the Angular 2 zone,
-so that Angular data bindings on observables returned by the
-Communication Manager are triggered whenever new events are emitted.
-In Angular, this can be achieved e.g. by starting/stopping the Communication Manager
-within a `zone.run` invocation on the Angular root component. You can
-also start/stop the Communication Manager inside every Angular view component
-*without* using `zone.run`.
+Note that the Communication Manager should be started and stopped inside the
+Angular zone, so that Angular data bindings on observables returned by the
+Communication Manager are triggered whenever new events are emitted. In Angular,
+this can be achieved e.g. by starting/stopping the Communication Manager within
+a `zone.run` invocation on the Angular root component. You can also start/stop
+the Communication Manager inside every Angular view component or *without* using
+`zone.run`.
 
 In Ionic you can start the communication manager after the platform is ready:
 
@@ -477,24 +476,44 @@ export class MyApp {
 }
 ```
 
+Aa an alternative to the aforementioned approach, you can also create and
+resolve Coaty containers explicitely in an Angular service class. Then, inject
+this service into your view components to access the container components, such
+as controllers, communication manager, runtime and options. This approach is
+especially useful if you want to host multiple Coaty containers within your app,
+e.g. to embed distinct Coaty containers in lazy loaded Angular modules. The
+Coaty [Remote
+Operations](https://github.com/coatyio/coaty-examples/tree/master/remote-operations/js)
+example uses this method.
+
+The local communication flow between a Coaty controller and an Angular view
+component should be modelled by RxJS observables. Either use the Coaty event
+observables directly or create your own ones. Observables can be efficiently
+handled inside Angular view templates using the `async` pipe.
+
+> To optimize change detection on complex hierarchical Angular views, your
+> Angular and Ionic view components that process data from Coaty events should
+> always use the change detection strategy `OnPush`.
+
 Subscriptions to observables retrieved by the Communication Manager should be
 unsubscribed as soon as they are no longer needed. If you bind an observable
-using the async pipe in Angular, subscriptions are automatically
+using the `async` pipe in Angular, associated subscriptions are automatically
 disposed before the view component is destroyed. If you subscribe to an
-observable explicitely in a view component, you should unsubscribe when the
-view is destroyed by implementing the `OnDestroy` cleanup interface.
+observable explicitely in a view component, you should unsubscribe when the view
+is destroyed in the `OnDestroy` interface method.
 
 #### Coaty and Angular CLI
 
-If you make use of Angular CLI to bundle your Coaty web app for the browser,
-you have to consider the following topic. Starting with Angular CLI 6, the underlying
-webpack doesn't configure any shims for Node.js any more. But the
-MQTT.js client library used by Coaty JS requires some Node.js polyfills
-(for process, global, Buffer, etc.) when run in the browser.
+If you make use of Angular CLI to bundle your Coaty web app for the browser, you
+have to consider the following topic. Starting with Angular CLI 6, the
+underlying webpack doesn't configure any shims for Node.js any more. But the
+MQTT.js client library used by Coaty JS requires some Node.js polyfills (for
+process, global, Buffer, etc.) when run in the browser.
 
-To solve this problem, webpack needs to be reconfigured to polyfill or mock required Node.js
-globals and modules. This extra Node.js configuration is specified in a
-`webpack.node-polyfills.config.js` file in the root folder of the project:
+To solve this problem, webpack needs to be reconfigured to polyfill or mock
+required Node.js globals and modules. This extra Node.js configuration is
+specified in a `webpack.node-polyfills.config.js` file in the root folder of the
+project:
 
 ```js
 module.exports = {
@@ -546,7 +565,7 @@ npm install @angular-builders/dev-server --save-dev
 ### Access Coaty container components
 
 You can access the components within a container directly using one of
-these container methods:
+these container accessors/methods:
 
 ```ts
 container.runtime
@@ -674,7 +693,7 @@ onCommunicationManagerStopping()
 ```
 
 Usually, in the starting method, RxJS subscriptions for incoming communication events
-are set up; whereas in the stopping method these subscriptions are unsubscribed.
+are set up; whereas in the stopping method these subscriptions should be unsubscribed.
 
 > Ensure you always call the corresponding super method in your overridden method.
 
@@ -1159,6 +1178,14 @@ emit all the Retrieve events which are direct responses to the published request
 Use `publishCall` to send Call events. The observable returned will
 emit all the Return events which are direct responses to the published request.
 
+Note that when publishing an event, an event source object (of type
+`CoatyObject`) must be specfied that uniquely identifies the source component,
+i.e. the Coaty controller. Likewise, when observing events, an event target
+object (of type `CoatyObject`) must be specified that uniquely identifies the
+target component. To suppress echo events, a component that acts both as an
+event source and as an event target for the same event type will *never* receive
+the published event on its associated observable.
+
 > Note that all publish methods for request-response event patterns, i.e.
 > `publishDiscover`, `publishUpdate`, `publishQuery`, and `publishCall` publish
 > the specified event **lazily**, i.e **not until** the first observer subscribes
@@ -1171,7 +1198,7 @@ emit all the Return events which are direct responses to the published request.
 > subsequent resubscriptions.
 
 For example, you can unsubscribe automatically after the expected response
-event is received by using the `Observable.take` operator like the following:
+event is received by using the RxJS `take` operator like the following:
 
 ```ts
 import { take, timeout } from "rxjs/operators";
@@ -1181,7 +1208,7 @@ this.communicationManager.publishDiscover(...)
         // Unsubscribe automatically after first response event arrives.
         take(1),
 
-        // Issue an error notification if no event is emitted within 2000ms.
+        // Issue an error notification if no response is emitted within 2000ms.
         timeout(2000)
     )
     .subscribe(
@@ -1193,15 +1220,32 @@ this.communicationManager.publishDiscover(...)
         });
 ```
 
-The template code above also shows how the `timeout` operator can be used to
-handle the case when no response event is received within a particular period of time.
+A similar coding pattern to easily unsubscribe from observables uses the RxJS
+`takeUntil` operator with an RxJS `Subject` like the following:
 
-Note that when publishing an event, an event source object (of type `CoatyObject`)
-must be specfied that uniquely identifies the source component. Likewise, when
-observing events, an event target object (of type `CoatyObject`) must be specified
-that uniquely identifies the target component. To suppress echo events, a component
-that acts both as an event source and as an event target for the same event type
-will *never* receive the published event on its associated observable.
+```ts
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+
+const destroyed$ = new Subject();
+
+this.communicationManager.publishDiscover(...)
+    .pipe(
+        // After first emission on the given subject, stop processing and unsubscribe.
+        takeUntil(destroyed$),
+    )
+    .subscribe(
+        event => {
+            // Handle response events until destroyed subject emits.
+        });
+
+// Cancel processing of response events.
+destroyed$.next();
+destroyed$.complete();
+```
+
+This pattern is especially useful if you want to unsubscribe from multiple
+observables whenever a single condition occurs.
 
 ### Observing events
 
@@ -1720,6 +1764,11 @@ parameters can be retrieved by using either the getter
 `CallEventData.getParameterbyName(<name>)`, or
 `CallEventData.getParameterbyIndex(<zero-based index>)`.
 
+> To prevent security vulnerabilities, always validate the operation parameters
+> on the remote end and the operation results on the calling end. If invalid
+> parameters are encountered, respond with an `InvalidParams` error Return
+> event.
+
 If given, an (optional) context filter defines contextual constraints by
 conditions that must match a local context object provided by the remote end in
 order to allow execution of the remote operation. A context filter is defined by
@@ -1822,10 +1871,10 @@ agent is offline will be applied only after the next (re)connect.
 Publications issued while the agent is online will *not* be deferred, i.e.
 not reapplied after a reconnect.
 
-In your controller classes we recommend to subscribe
-to observe methods when the Communication Manager is starting and unsubscribe from
-observe methods when the Communication Manager is stopping. Use the
-aforementioned controller lifecycle methods to implement this subscription pattern.
+In your controller classes we recommend to subscribe to observe methods when the
+Communication Manager is starting and unsubscribe from observe methods when the
+Communication Manager is stopping. Use the aforementioned controller lifecycle
+methods to implement this subscription pattern.
 
 ### Distributed lifecycle management
 
