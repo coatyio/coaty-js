@@ -324,6 +324,9 @@ function updateChangelogInternal(newVersion, releaseNote) {
                 return;
             }
 
+            // Insert new version anchor before heading
+            content = `<a name="${newVersion}"></a>` + "\n" + content;
+
             // Insert release note after heading
             if (releaseNote) {
                 const startHeadingIndex = content.indexOf("# ");

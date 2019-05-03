@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Container | coaty v1.5.0</title>
+	<title>Container | coaty v1.6.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">coaty v1.5.0</a>
+					<a href="../index.html" class="title">coaty v1.6.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -87,6 +87,13 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="container.html#communicationmanager" class="tsd-kind-icon">communication<wbr>Manager</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="container.html#runtime" class="tsd-kind-icon">runtime</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="container.html#getcommunicationmanager" class="tsd-kind-icon">get<wbr>Communication<wbr>Manager</a></li>
@@ -103,6 +110,53 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="communicationmanager" class="tsd-anchor"></a>
+					<h3>communication<wbr>Manager</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> communicationManager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L159">runtime/container.ts:159</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the communication manager of this container.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="runtime" class="tsd-anchor"></a>
+					<h3>runtime</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> runtime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="runtime.html" class="tsd-signature-type">Runtime</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L143">runtime/container.ts:143</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the runtime object of this container.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="runtime.html" class="tsd-signature-type">Runtime</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="getcommunicationmanager" class="tsd-anchor"></a>
@@ -114,13 +168,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L141">runtime/container.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L152">runtime/container.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the communication manager of this container.</p>
-								</div>
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>since 1.6.0. Use getter <code>communicationManager</code>.</p>
+										<p>Gets the communication manager of this container.</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></h4>
 						</li>
@@ -136,7 +193,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L150">runtime/container.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L168">runtime/container.ts:168</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -174,13 +231,16 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L134">runtime/container.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L136">runtime/container.ts:136</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the runtime object of this container.</p>
-								</div>
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>since 1.6.0. Use getter <code>runtime</code>.</p>
+										<p>Gets the runtime object of this container.</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="runtime.html" class="tsd-signature-type">Runtime</a></h4>
 						</li>
@@ -196,7 +256,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L160">runtime/container.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L178">runtime/container.ts:178</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -259,7 +319,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L107">runtime/container.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L107">runtime/container.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -312,7 +372,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L171">runtime/container.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L189">runtime/container.ts:189</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -336,7 +396,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L53">runtime/container.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L53">runtime/container.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -404,7 +464,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/d4e4f22/src/runtime/container.ts#L80">runtime/container.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/9f3b318/src/runtime/container.ts#L80">runtime/container.ts:80</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -479,6 +539,12 @@
 					<li class="current tsd-kind-class tsd-is-external">
 						<a href="container.html" class="tsd-kind-icon">Container</a>
 						<ul>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="container.html#communicationmanager" class="tsd-kind-icon">communication<wbr>Manager</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="container.html#runtime" class="tsd-kind-icon">runtime</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="container.html#getcommunicationmanager" class="tsd-kind-icon">get<wbr>Communication<wbr>Manager</a>
 							</li>

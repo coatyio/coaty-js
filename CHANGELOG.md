@@ -1,5 +1,17 @@
 # Changelog
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/coatyio/coaty-js/compare/v1.5.0...v1.6.0) (2019-05-03)
+
+This feature release integrates a new Coaty development broker. Due to concerns regarding performance and vulnerability, the Mosca broker has been replaced by [Aedes](https://www.npmjs.com/package/aedes). To upgrade your Coaty apps, remove/uninstall 'mosca' dependency from package.json.
+
+### Features
+
+* **runtime:** deprecate `container.getCommunicationManager()` and `container.getRuntime()`; use `container.communicationManager` and `container.runtime` instead (the deprecated methods will be removed in the next major release) ([efe43de](https://github.com/coatyio/coaty-js/commit/efe43de))
+* **scripts:** add `defaultBuildMode` parameter to Coaty `info` script and function; use `COATY_ENV` environment variable to determine build mode instead of `NODE_ENV`, as documented [here](https://coatyio.github.io/coaty-js/man/developer-guide/#generate-project-meta-info-at-build-time) ([08152ba](https://github.com/coatyio/coaty-js/commit/08152ba))
+* **scripts:** include a new Coaty development broker instead of Mosca. To upgrade your Coaty apps, remove/uninstall "mosca" dependency from package.json. ([ffbba3f](https://github.com/coatyio/coaty-js/commit/ffbba3f))
+
+<a name="1.5.0"></a>
 # [1.5.0](https://github.com/coatyio/coaty-js/compare/v1.4.1...v1.5.0) (2019-04-09)
 
 This feature release introduces the Call-Return communication pattern enabling execution of context-filtered remote operations by Coaty agents. Coaty JS code examples are now hosted separately under [coaty-examples](https://github.com/coatyio/coaty-examples).
@@ -7,7 +19,7 @@ This feature release introduces the Call-Return communication pattern enabling e
 ### Features
 
 * **com:** add one-to-many, two-way communication pattern [Call-Return](https://coatyio.github.io/coaty-js/man/developer-guide/#call---return-event-pattern---an-example) for performing context-filtered remote operations ([bbcde9a](https://github.com/coatyio/coaty-js/commit/bbcde9a))
-* **examples:** move framework code examples to separate GitHub project [coaty-js-examples](https://github.com/coatyio/coaty-js-examples) ([71af192](https://github.com/coatyio/coaty-js/commit/71af192))
+* **examples:** move framework code examples to separate GitHub project [coaty-examples](https://github.com/coatyio/coaty-examples) ([71af192](https://github.com/coatyio/coaty-js/commit/71af192))
 * **examples:** use npm module gulpSequence instead of runSequence in gulpfiles ([5299f80](https://github.com/coatyio/coaty-js/commit/5299f80))
 * **runtime:** change method signatures of `Container.getController` and `Container.mapControllers` to use unique controller name instead of non-unique controller type (BREAKING CHANGE) ([fb5d73e](https://github.com/coatyio/coaty-js/commit/fb5d73e))
 * **scripts:** define option '--nobonjour' in broker script to disable automatic multicast DNS broker discovery ([05f572e](https://github.com/coatyio/coaty-js/commit/05f572e))
