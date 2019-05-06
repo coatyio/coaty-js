@@ -324,8 +324,11 @@ function updateChangelogInternal(newVersion, releaseNote) {
                 return;
             }
 
-            // Insert new version anchor before heading
-            content = `<a name="${newVersion}"></a>` + "\n" + content;
+            // Insert new version anchor tag before heading if needed.
+            // (newer versions of conventional-changelog generate no anchor tag anymore)
+            if (!content.startsWith(versionAnchor)) {
+                content = `<a name="${newVersion}"></a>` + "\n" + content;
+            }
 
             // Insert release note after heading
             if (releaseNote) {
