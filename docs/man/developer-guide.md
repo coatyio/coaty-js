@@ -1085,7 +1085,9 @@ handle such responses. For example, the requester can decide to
 
 * just take the first response and ignore all others,
 * only take responses received within a given time interval,
-* handle any response over time.
+* only take responses until a specific condition is met,
+* handle any response over time, or
+* process responses as defined by any other application-specific logic.
 
 In the latter case innovative scenarios beyond classic request-response
 can be realized. For example, a Query event responder could
@@ -1198,15 +1200,16 @@ the published event on its associated observable.
 > subsequent resubscriptions.
 
 For example, you can unsubscribe automatically after the expected response
-event is received by using the RxJS `take` operator like the following:
+event is received by using the RxJS `first` operator like the following:
 
 ```ts
-import { take, timeout } from "rxjs/operators";
+import { first, timeout } from "rxjs/operators";
 
 this.communicationManager.publishDiscover(...)
     .pipe(
         // Unsubscribe automatically after first response event arrives.
-        take(1),
+        // Could also use the 'take' operator: take(1).
+        first(),
 
         // Issue an error notification if no response is emitted within 2000ms.
         timeout(2000)
