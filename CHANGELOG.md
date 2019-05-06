@@ -1,5 +1,15 @@
 # Changelog
 
+<a name="1.6.1"></a>
+## [1.6.1](https://github.com/coatyio/coaty-js/compare/v1.6.0...v1.6.1) (2019-05-06)
+
+This patch release fixes two minor issues in the broker and release scripts.
+
+### Bug Fixes
+
+* **scripts/broker:** fix wrong log message on 'unsubscribe' ([5380959](https://github.com/coatyio/coaty-js/commit/5380959))
+* **scripts/release:** ensure version anchor tag is inserted in generated Changelog ([05a20ac](https://github.com/coatyio/coaty-js/commit/05a20ac))
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/coatyio/coaty-js/compare/v1.5.0...v1.6.0) (2019-05-03)
 
