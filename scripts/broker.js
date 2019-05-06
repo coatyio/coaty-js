@@ -66,31 +66,31 @@ function run(brokerOptions) {
     }
 
     aedes.on("publish", (packet, client) => {
-        utils.logMessage(`publish by ${client ? client.id : "broker"} on topic ${packet.topic} with payload ${packet.payload.toString()}`);
+        utils.logMessage(`PUBLISH by ${client ? client.id : "broker"} on topic ${packet.topic} with payload ${packet.payload.toString()}`);
     });
 
     aedes.on("subscribe", (subscriptions, client) => {
-        utils.logMessage(`subscribe by ${client ? client.id : "broker"}: on topic ${subscriptions.map(s => s.topic).join(", ")}`);
+        utils.logMessage(`SUBSCRIBE by ${client ? client.id : "broker"}: on topic ${subscriptions.map(s => s.topic).join(", ")}`);
     });
 
     aedes.on("unsubscribe", (unsubscriptions, client) => {
-        utils.logMessage(`subscribe by ${client ? client.id : "broker"} on topic ${unsubscriptions.join(", ")}`);
+        utils.logMessage(`UNSUBSCRIBE by ${client ? client.id : "broker"} on topic ${unsubscriptions.join(", ")}`);
     });
 
     aedes.on("client", (client) => {
-        utils.logMessage(`client connect ${client.id}`);
+        utils.logMessage(`CLIENT CONNECT ${client.id}`);
     });
 
     aedes.on("clientDisconnect", (client) => {
-        utils.logMessage(`client disconnect ${client.id}`);
+        utils.logMessage(`CLIENT DISCONNECT ${client.id}`);
     });
 
     aedes.on("clientError", (client, err) => {
-        utils.logError(`client error ${client.id} ${err.message}`);
+        utils.logError(`CLIENT ERROR ${client.id} ${err.message}`);
     });
 
     aedes.on("connectionError", (client, err) => {
-        utils.logError(`connection error ${client} ${err.message}`);
+        utils.logError(`CONNECTION ERROR ${client} ${err.message}`);
     });
 }
 
