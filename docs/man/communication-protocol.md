@@ -121,9 +121,7 @@ A topic name is composed as follows:
 `/coaty/<ProtocolVersion>/<Event>/<AssociatedUserId>/<SourceObjectId>/<MessageToken>/`
 
 The protocol version topic level represents the communication protocol version of
-the publishing party, as a positive integer. The receiving party should check the
-protocol version in the topic of any incoming message against its own protocol version.
-If both versions are not equal, the incoming message should be ignored.
+the publishing party, as a positive integer.
 
 When publishing an Advertise event the Event topic level **must** include a filter
 field of the form: `Advertise:<filter>`. The filter field
@@ -177,13 +175,13 @@ in production systems.
 
 Each communication client should subscribe to topics according to the defined
 topic structure. These subscriptions should be kept for the lifetime of the
-communication client. Associated User ID, Source Object ID, Message Token and
-Protocol Version levels should be treated as wildcards.
+communication client. Associated User ID, Source Object ID, and Message Token
+levels should be treated as wildcards.
 
 Basically, the Event level is filtered to support event-specific subscriptions:
 
 ```
-/coaty/+/Event/+/+/+/
+/coaty/<ProtocolVersion>/Event/+/+/+/
 ```
 
 When subscribing to an Advertise event the Event topic level **must** include

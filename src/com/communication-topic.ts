@@ -191,7 +191,7 @@ export class CommunicationTopic {
      * for publishing and subscription.
      *
      * @param topic a topic name
-     * @param protocolVersionChecker check function for communication protocol version
+     * @param protocolVersion communication protocol version
      * @returns true if the given topic name is a valid IoValue topic; false otherwise
      */
     static isValidIoValueTopic(
