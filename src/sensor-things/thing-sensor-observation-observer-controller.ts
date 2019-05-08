@@ -221,6 +221,9 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
             this._sensorSubscriptions.get(id).forEach(sub => sub.unsubscribe());
             this._sensorSubscriptions.delete(id);
         });
+        if (removedSensors.length === 0) {
+            return;
+        }
         this._registeredSensorsChangeInfo$.next({
             added: [],
             removed: removedSensors,

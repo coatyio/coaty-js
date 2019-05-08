@@ -563,7 +563,7 @@ The following example shows how to use this controller to observe sensors and se
 measurements:
 
 ```ts
-import { ThingSensorObservationObserverController } from "coaty/sensor-things";
+import { Thing, ThingSensorObservationObserverController } from "coaty/sensor-things";
 import { Subscription } from "rxjs";
 
 export class SensorDataObserverController extends ThingSensorObservationObserverController {
@@ -593,11 +593,18 @@ export class SensorDataObserverController extends ThingSensorObservationObserver
     }
 
     observeSensors() {
-        // Monitor information about changes in the currently registered sensors. 
+        // Monitor information about changes in the currently registered sensors.
         return this.registeredSensorsChangeInfo$.subscribe(changeInfo => {
             console.log("New Sensors added", JSON.stringify(changeInfo.added));
             console.log("Sensors removed", JSON.stringify(changeInfo.removed));
             console.log("Sensors changed", JSON.stringify(changeInfo.changed));
+            console.log("Sensors total (after changes)", JSON.stringify(changeInfo.total));
+
+            // Access the Thing objects associated with added/removed/changed/total sensors.
+            changeInfo.added.forEach(sensor => console.log(sensor["thing"] as Thing));
+            changeInfo.removed.forEach(sensor => console.log(sensor["thing"] as Thing));
+            changeInfo.changed.forEach(sensor => console.log(sensor["thing"] as Thing));
+            changeInfo.total.forEach(sensor => console.log(sensor["thing"] as Thing));
         });
     }
 
