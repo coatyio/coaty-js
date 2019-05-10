@@ -1242,13 +1242,17 @@ this.communicationManager.publishDiscover(...)
             // Handle response events until destroyed subject emits.
         });
 
-// Cancel processing of response events.
+// Cancel processing of response events by either emitting a value or a complete notification.
 destroyed$.next();
 destroyed$.complete();
 ```
 
 This pattern is especially useful if you want to unsubscribe from multiple
-observables whenever a single condition occurs.
+observables on an external trigger. However, note that the `takeUntil` operator
+should always be the *last* operator in a pipe, so that previous operators that
+involve subscriptions of another observable source are properly unsubscribed as
+well and don’t leak. A detailed explanation is given
+[here](https://blog.angularindepth.com/rxjs-avoiding-takeuntil-leaks-fb5182d047ef).
 
 ### Observing events
 
