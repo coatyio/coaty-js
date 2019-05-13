@@ -61,4 +61,8 @@ export declare function run(brokerOptions: {
      */
     onReady?: () => void;
 
+    /**
+     * Options passed to underlying MQTT broker instance.
+     */
+    brokerSpecificOpts?: any;
 });

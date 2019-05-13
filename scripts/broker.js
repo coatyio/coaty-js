@@ -28,12 +28,15 @@ function run(brokerOptions) {
 
     const node = require("../runtime-node");
 
-    const aedes = require("aedes")();
+    const aedes = require("aedes")(brokerOptions.brokerSpecificOpts || {});
     const tcpServer = require('net').createServer(aedes.handle);
     const wsServer = require('http').createServer();
     const ws = require('websocket-stream');
 
-    ws.createServer({ server: wsServer }, aedes.handle);
+    ws.createServer({
+        perMessageDeflate: false,
+        server: wsServer,
+    }, aedes.handle);
 
     tcpServer.listen(port, () => {
         wsServer.listen(wsPort, () => {

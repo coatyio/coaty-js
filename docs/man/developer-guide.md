@@ -3478,6 +3478,7 @@ Options are defined in an object hash including the following properties:
    mDNS service (optional). Useful for cases, where the normal hostname provided
    by mDNS cannot be resolved by DHCP.
 * `onReady`: callback function to be invoked when broker is ready (default none).
+* `brokerSpecificOpts`: options passed to underlying Aedes broker instance.
 
 ### Generate project meta info at build time
 
