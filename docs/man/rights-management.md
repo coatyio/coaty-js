@@ -42,7 +42,7 @@ To set up an authenticated communication in an MQTT based IoT network, follow th
 * On login/start-up the user authenticates against the installed IAM, providing his/her credentials.
 * On successful authentication, IAM returns an authentication token.
 * Pass user ID and authentication token as user/password fields to the MQTT client (using
-  Coaty container configuration `Configuration.CommunicationOptions.brokerOptions`).
+  Coaty container configuration `Configuration.CommunicationOptions.mqttClientOptions`).
 * On connection the MQTT client passes this information to the MQTT broker.
 * The broker checks authentication information against the IAM. Connections are only set up
   if this check succeeds.
@@ -59,7 +59,7 @@ Authentication as described above will only make sense when the traffic between 
 broker is secured at least on the TCP network layer to prevent spoofing and man-in-the-middle attacks.
 To secure communications on the network layer instruct the MQTT client to set up an SSL/TLS
 connection by passing in an X509 user certificate (using Coaty container configuration
-`Configuration.CommunicationOptions.brokerOptions`).
+`Configuration.CommunicationOptions.mqttClientOptions`).
 
 ## Role based rights management
 
@@ -136,7 +136,7 @@ const configuration: Configuration =
            }
         },
         communication: {
-            brokerOptions: {
+            mqttClientOptions: {
                 servers: [
                     {
                         host: host,

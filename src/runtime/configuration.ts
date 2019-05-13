@@ -73,14 +73,20 @@ export interface CommonOptions {
 export interface CommunicationOptions {
 
     /**
-     * Connection Url to MQTT broker (schema 'protocol://host:port')
-     * (optional).
-     * If the `servers` option in property `brokerOptions` is specified this
+     * Connection Url to MQTT broker (schema 'protocol://host:port') (optional).
+     * If the `servers` option in property `mqttClientOptions` is specified this
      * property is ignored.
      */
     brokerUrl?: string;
 
     /**
+     * Options passed to MQTT Client (see MQTT.js connect options).
+     */
+    mqttClientOptions?: any;
+
+    /**
+     * @deprecated use `mqttClientOptions`.
+     * 
      * Options to connect to MQTT broker (see MQTT.js connect options).
      */
     brokerOptions?: any;

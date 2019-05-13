@@ -735,34 +735,35 @@ export class CommunicationManager implements IComponent {
 
         const lastWill = this._advertiseIdentityOrDevice();
 
-        // Determine connection info for broker
-        const brokerUrl = this._getBrokerUrl(this.options.brokerUrl, this.options.brokerOptions);
-        const brokerOpts: any = {};
+        // Determine connection info and options for MQTT client
+        const mqttClientOptions = this.options.mqttClientOptions || this.options.brokerOptions;
+        const brokerUrl = this._getBrokerUrl(this.options.brokerUrl, mqttClientOptions);
+        const mqttClientOpts: any = {};
 
-        if (this.options.brokerOptions && typeof this.options.brokerOptions === "object") {
-            Object.assign(brokerOpts, this.options.brokerOptions);
+        if (mqttClientOptions && typeof mqttClientOptions === "object") {
+            Object.assign(mqttClientOpts, mqttClientOptions);
         }
 
         if (lastWill) {
-            brokerOpts.will = lastWill;
+            mqttClientOpts.will = lastWill;
         }
 
-        brokerOpts.clientId = this._brokerClientId;
+        mqttClientOpts.clientId = this._brokerClientId;
 
         // Support for clean/persistent sessions in broker:
         // If you want to receive QOS 1 and 2 messages that were published while your client was offline, 
         // you need to connect with an unique clientId and set 'clean' to false (MQTT.js default is true).
-        brokerOpts.clean = brokerOpts.clean === undefined ? false : brokerOpts.clean;
+        mqttClientOpts.clean = mqttClientOpts.clean === undefined ? false : mqttClientOpts.clean;
 
         // Do not support automatic resubscription/republication of topics on reconnection by MQTT.js v2
         // because communication manager provides its own implementation.
         //
         // If connection is broken, do not queue outgoing QoS zero messages.
-        brokerOpts.queueQoSZero = false;
+        mqttClientOpts.queueQoSZero = false;
         // If connection is broken and reconnects, subscribed topics are not automatically subscribed again.
-        brokerOpts.resubscribe = false;
+        mqttClientOpts.resubscribe = false;
 
-        const client = connect(brokerUrl, brokerOpts);
+        const client = connect(brokerUrl, mqttClientOpts);
 
         client.on("connect", (connack) => {
             // Emitted on successful (re)connection.

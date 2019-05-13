@@ -309,7 +309,7 @@ const configuration: Configuration = {
           // Options used for communication
           identity: ... ,
           brokerUrl: ... ,
-          brokerOptions: ... ,
+          mqttClientOptions: ... ,
           shouldAutoStart: ... ,
           shouldAdvertiseIdentity: ... ,
           shouldAdvertiseDevice: ... ,
