@@ -143,7 +143,7 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
             .subscribe(thing => this._onThingReceived(thing));
 
         this._thingOfflineSubscription = this.communicationManager.observeDeadvertise(this.identity)
-            .subscribe(event => event.eventData.objectIds.forEach(id => this._onThingDeadvertised(id)));
+            .subscribe(event => event.eventData.objectIds.forEach(id => this._onDeadvertised(id)));
     }
 
     private _onThingReceived(thing: Thing) {
@@ -204,12 +204,12 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
             });
     }
 
-    private _onThingDeadvertised(comManagerId: string) {
+    private _onDeadvertised(objectId: string) {
         // Clean up associated sensors and sensor observations
         const removedThingIds = new Set<Uuid>();
         const removedSensors = [];
         this._registeredSensors.forEach((s, id) => {
-            if (s["thing"].parentObjectId === comManagerId) {
+            if (s["thing"].parentObjectId === objectId) {
                 removedThingIds.add(s["thing"].objectId);
                 this._observationSubscriptions.get(id).unsubscribe();
                 this._observationSubscriptions.delete(id);
