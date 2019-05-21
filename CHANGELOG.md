@@ -1,5 +1,20 @@
 # Changelog
 
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/coatyio/coaty-js/compare/v1.6.1...v1.7.0) (2019-05-21)
+
+This feature release provides enhanced identity management of communication manager and controllers as well as parameterizing of the Coaty broker.
+
+### Features
+
+* **com:** observe and resolve Discover events for a communication manager's or controller's identity in addition to advertising it initially ([0b0e01d](https://github.com/coatyio/coaty-js/commit/0b0e01d))
+* **runtime:** deprecate `Configuration.CommunicationOptions.brokerOptions`; use `Configuration.CommunicationOptions.mqttClientOptions` instead (the deprecated option will be removed in the next major release) ([298815b](https://github.com/coatyio/coaty-js/commit/298815b))
+* **scripts:** support passing specific options to Coaty broker instance ([c0e9d5f](https://github.com/coatyio/coaty-js/commit/c0e9d5f))
+
+### Performance Improvements
+
+* **sensor-things:** emit data by ThingSensorObservationObserverController.registeredSensorChangeInfo$ only if changes occur ([5c2793b](https://github.com/coatyio/coaty-js/commit/5c2793b))
+
 <a name="1.6.1"></a>
 ## [1.6.1](https://github.com/coatyio/coaty-js/compare/v1.6.0...v1.6.1) (2019-05-06)
 
