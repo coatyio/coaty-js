@@ -350,10 +350,14 @@ const configuration: Configuration = {
 ```
 
 Note that both controllers and the Communication Manager maintain an `identity`
-object of type `Component` that provides metadata of the component, including its `name`,
-a unique object ID, etc. By default, these identity objects are advertised when
-the components are set up and deadvertised on normal or abnormal termination
-of a Coaty agent. Using the controller and/or communication options, you can opt out
+object of type `Component` that provides metadata of the component, including
+its `name`, a unique object ID, etc. By default, these identity objects are
+advertised when the components are set up and deadvertised on normal or abnormal
+termination of a Coaty agent. The communication managers's identity is also
+discoverable (by publishing a Discover event with core type "Component") if and
+only if the identity has been advertised.
+
+Using the controller and/or communication options, you can opt out
 of de/advertisement by setting `shouldAdvertiseIdentity` to `false`.
 For details, see this [section](#distributed-lifecycle-management).
 
@@ -1501,7 +1505,7 @@ import { filter, map } from "rxjs/operators";
 const discoveredTasks = this.communicationManager
     .publishDiscover(DiscoverEvent.withObjectTypes(this.identity, ["com.helloworld.Task"]))
     .pipe(
-        filter(event => !!event.eventData.object),
+        filter(event => event.eventData.object !== undefined),
         map(event => event.eventData.object as HelloWorldTask)
     );
 
@@ -1509,7 +1513,7 @@ const advertisedTasks = this.communicationManager
     .observeAdvertiseWithObjectType(this.identity, "com.helloworld.Task")
     .pipe(
         map(event => event.eventData.object as HelloWorldTask),
-        filter(task => !!task)
+        filter(task => task !== undefined)
     );
 
 return merge(discoveredTasks, advertisedTasks)
@@ -1887,9 +1891,12 @@ methods to implement this subscription pattern.
 
 Whenever a Coaty container is resolved by creating its communication manager and
 controller components, the identities of these components are advertised as
-`Component` objects automatically. You can prevent publishing Advertise events for
-identity components by setting the controller and/or communication configuration option
-`shouldAdvertiseIdentity` to `false`.
+`Component` objects automatically. You can prevent publishing Advertise events
+for identity components by setting the controller and/or communication
+configuration option `shouldAdvertiseIdentity` to `false`. Additionally, a
+communication manager's or controller's identity is also discoverable (by
+publishing a Discover event with core type "Component" or with the object ID of
+a component) if and only if the identity has also been advertised.
 
 Each identity component is initialized with default property values. For example,
 the `name` of a controller identity refers to the controller's type; the `name`
@@ -1912,6 +1919,11 @@ manager of a Coaty container sends a last will message consisting of a Deadverti
 event with the object ID of its identity component and its associated device (if defined).
 Whenever the agent disconnects normally or abnormally, the broker publishes its last will
 message to all subscribers which observe Deadvertise events.
+
+Note that to get the identities of components advertised *before* your Coaty
+agent has started can be accomplished by publishing a Discover event with core
+type "Component" initially (see example in this
+[section](#discover---resolve-event-pattern---an-example)).
 
 Using this pattern, agents can detect the online/offline state of other Coaty agents
 and act accordingly. One typical use case is to set the parent object ID of

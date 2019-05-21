@@ -70,6 +70,7 @@ export class CommunicationManager implements IComponent {
     private _deadvertiseIds: Uuid[];
     private _associateSubscription: Subscription;
     private _discoverDeviceSubscription: Subscription;
+    private _discoverIdentitySubscription: Subscription;
 
     // Represents the current communication state in an observable
     private _state: BehaviorSubject<CommunicationState>;
@@ -732,6 +733,7 @@ export class CommunicationManager implements IComponent {
 
         this._observeAssociate();
         this._observeDiscoverDevice();
+        this._observeDiscoverIdentity();
 
         const lastWill = this._advertiseIdentityOrDevice();
 
@@ -828,6 +830,7 @@ export class CommunicationManager implements IComponent {
         this._unobserveObservedItems();
         this._unobserveAssociate();
         this._unobserveDiscoverDevice();
+        this._unobserveDiscoverIdentity();
 
         this._deadvertiseIdentityOrDevice();
 
@@ -1501,8 +1504,10 @@ export class CommunicationManager implements IComponent {
         this._discoverDeviceSubscription =
             this._observeRequest(this.identity.objectId, CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
-                    event.eventData.isDiscoveringTypes &&
-                    event.eventData.isCoreTypeCompatible("Device")))
+                    (event.eventData.isDiscoveringTypes &&
+                        event.eventData.isCoreTypeCompatible("Device")) ||
+                    (event.eventData.isDiscoveringObjectId &&
+                        event.eventData.objectId === this._associatedDevice.objectId)))
                 .subscribe((event: DiscoverEvent) =>
                     event.resolve(ResolveEvent.withObject(this.identity, this._associatedDevice)));
     }
@@ -1511,6 +1516,30 @@ export class CommunicationManager implements IComponent {
         if (this._discoverDeviceSubscription) {
             this._discoverDeviceSubscription.unsubscribe();
             this._discoverDeviceSubscription = undefined;
+        }
+    }
+
+    private _observeDiscoverIdentity() {
+        if (!(this.options.shouldAdvertiseIdentity === undefined ||
+            this.options.shouldAdvertiseIdentity === true)) {
+            return;
+        }
+
+        this._discoverIdentitySubscription =
+            this._observeRequest(this.identity.objectId, CommunicationEventType.Discover)
+                .pipe(filter((event: DiscoverEvent) =>
+                    (event.eventData.isDiscoveringTypes &&
+                        event.eventData.isCoreTypeCompatible("Component")) ||
+                    (event.eventData.isDiscoveringObjectId &&
+                        event.eventData.objectId === this.identity.objectId)))
+                .subscribe((event: DiscoverEvent) =>
+                    event.resolve(ResolveEvent.withObject(this.identity, this.identity)));
+    }
+
+    private _unobserveDiscoverIdentity() {
+        if (this._discoverIdentitySubscription) {
+            this._discoverIdentitySubscription.unsubscribe();
+            this._discoverIdentitySubscription = undefined;
         }
     }
 

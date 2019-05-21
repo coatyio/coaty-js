@@ -1,7 +1,11 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { Subscription } from "rxjs";
+import { filter } from "rxjs/operators";
+
 import { AdvertiseEvent } from "../com/advertise";
 import { CommunicationManager } from "../com/communication-manager";
+import { ResolveEvent } from "../com/discover-resolve";
 import { Log, LogHost, LogLevel } from "../model/log";
 import { Component } from "../model/object";
 import { CoreTypes } from "../model/types";
@@ -68,6 +72,7 @@ export abstract class Controller implements IController {
     private _communicationManager: CommunicationManager;
     private _isCommonJsPlatform: boolean;
     private _isWebPlatform: boolean;
+    private _discoverIdentitySubscription: Subscription;
 
     constructor(
         runtime: Runtime,
@@ -203,27 +208,31 @@ export abstract class Controller implements IController {
 
     /**
      * Called when the communication manager is about to start or restart.
-     * Implement side effects here. Ensure that super.onCommunicationManagerStarting
-     * is called in your override. The base implementation advertises
-     * its identity if requested by the controller option property `shouldAdvertiseIdentity`
-     * (if this property is not specified, the identity is advertised by default).
+     * Implement side effects here. Ensure that
+     * super.onCommunicationManagerStarting is called in your override. The base
+     * implementation advertises its identity if requested by the controller
+     * option property `shouldAdvertiseIdentity` (if this property is not
+     * specified, the identity is advertised by default). The base
+     * implementation also observes Discover events for core type "Component" or
+     * the identity's object ID and resolves them with the controller's
+     * identity.
      */
     onCommunicationManagerStarting() {
         if (this.options.shouldAdvertiseIdentity === undefined ||
             this.options.shouldAdvertiseIdentity === true) {
+            this._observeDiscoverIdentity();
             this._advertiseIdentity();
         }
     }
 
     /**
-     * Called when the communication manager is about to stop.
-     * Implement side effects here. Ensure that
-     * super.onCommunicationManagerStopping is called in your override.
-     * The base implementation does nothing.
+     * Called when the communication manager is about to stop. Implement side
+     * effects here. Ensure that super.onCommunicationManagerStopping is called
+     * in your override. The base implementation stops observing Discover events
+     * for identity.
      */
     onCommunicationManagerStopping() {
-        /* tslint:disable:no-empty */
-        /* tslint:enable:no-empty */
+        this._unobserveDiscoverIdentity();
     }
 
     /**
@@ -274,6 +283,25 @@ export abstract class Controller implements IController {
     protected extendLogObject(log: Log) {
         /* tslint:disable:empty-block */
         /* tslint:enable:empty-block */
+    }
+
+    private _observeDiscoverIdentity() {
+        this._discoverIdentitySubscription =
+            this.communicationManager.observeDiscover(this.identity)
+                .pipe(filter(event =>
+                    (event.eventData.isDiscoveringTypes &&
+                        event.eventData.isCoreTypeCompatible("Component")) ||
+                    (event.eventData.isDiscoveringObjectId &&
+                        event.eventData.objectId === this.identity.objectId)))
+                .subscribe(event =>
+                    event.resolve(ResolveEvent.withObject(this.identity, this.identity)));
+    }
+
+    private _unobserveDiscoverIdentity() {
+        if (this._discoverIdentitySubscription) {
+            this._discoverIdentitySubscription.unsubscribe();
+            this._discoverIdentitySubscription = undefined;
+        }
     }
 
     private _advertiseIdentity() {

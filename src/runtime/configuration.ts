@@ -106,10 +106,14 @@ export interface CommunicationOptions {
     shouldAutoStart?: boolean;
 
     /**
-     * Determines whether the communication manager should advertise its identity
-     * automatically when started and deadvertise
-     * its identity when stopped or terminated abnormally (via last will).
-     * If not specified or undefined, de/advertisements will be done by default.
+     * Determines whether the communication manager should advertise its
+     * identity automatically when started and deadvertise its identity when
+     * stopped or terminated abnormally (via last will). If not specified or
+     * undefined, de/advertisements will be done by default.
+     *
+     * The communication managers's identity is also discoverable (by publishing
+     * a Discover event with core type "Component" or with the object id of a
+     * component) if and only if the identity has also been advertised.
      */
     shouldAdvertiseIdentity?: boolean;
 
@@ -117,8 +121,12 @@ export interface CommunicationOptions {
      * Determines whether the communication manager should advertise the
      * associated device (defined in Runtime.options.associatedDevice)
      * automatically when started and deadvertise the device when stopped or
-     * terminated abnormally (via last will).
-     * If not specified or undefined, de/advertisements will be done by default.
+     * terminated abnormally (via last will). If not specified or undefined,
+     * de/advertisements will be done by default.
+     *
+     * The associated device is also discoverable (by publishing a Discover
+     * event with core type "Device" or with the object id of a device) if and
+     * only if the device has also been advertised.
      */
     shouldAdvertiseDevice?: boolean;
 
@@ -171,11 +179,14 @@ export interface ControllerOptions {
 
     /**
      * Determines whether the controller should advertise its identity
-     * automatically when it is instantiated and deadvertise
-     * its identity when the communication manager is stopped or terminated
-     * abnormally (via last will).
-     * If not specified or undefined, the identity is advertised/deadvertised
-     * by default.
+     * automatically when it is instantiated and deadvertise its identity when
+     * the communication manager is stopped or terminated abnormally (via last
+     * will). If not specified or undefined, the identity is
+     * advertised/deadvertised by default.
+     *
+     * The communication managers's identity is also discoverable (by publishing
+     * a Discover event with core type "Component" or with the object id of a
+     * component) if and only if the identity has also been advertised.
      */
     shouldAdvertiseIdentity?: boolean;
 
