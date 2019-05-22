@@ -754,7 +754,7 @@ export class CommunicationManager implements IComponent {
 
         // Support for clean/persistent sessions in broker:
         // If you want to receive QOS 1 and 2 messages that were published while your client was offline, 
-        // you need to connect with an unique clientId and set 'clean' to false (MQTT.js default is true).
+        // you need to connect with a unique clientId and set 'clean' to false (MQTT.js default is true).
         mqttClientOpts.clean = mqttClientOpts.clean === undefined ? false : mqttClientOpts.clean;
 
         // Do not support automatic resubscription/republication of topics on reconnection by MQTT.js v2
@@ -909,6 +909,10 @@ export class CommunicationManager implements IComponent {
 
     private _onClientReconnect() {
         // Emitted when a reconnect starts.
+
+        // Ensure Advertise events for identity/device are published on
+        // reconnection (via deferredPublications).
+        this._advertiseIdentityOrDevice();
 
         // console.log("CommunicationManager: reconnecting...");
     }
