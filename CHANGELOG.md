@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.7.1"></a>
+## [1.7.1](https://github.com/coatyio/coaty-js/compare/v1.7.0...v1.7.1) (2019-05-22)
+
+This patch release fixes a potential race condition leading to messages being lost under rare circumstances.
+
+### Bug Fixes
+
+* **com:** fix potential race condition in communication manager where topics are published while MQTT client is disconnecting ([884c953](https://github.com/coatyio/coaty-js/commit/884c953))
+
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/coatyio/coaty-js/compare/v1.6.1...v1.7.0) (2019-05-21)
 
