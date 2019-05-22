@@ -129,7 +129,7 @@ module.exports.cutRelease = cutRelease;
 function pushRelease() {
     return Promise.resolve()
         .then(() => runCommand("git push --follow-tags"))
-        .then(output => "pushed tagged release");
+        .then(output => "pushed tagged release\n\nYou can now publish the pushed release: npm run publish-release");
 }
 
 module.exports.pushRelease = pushRelease;
