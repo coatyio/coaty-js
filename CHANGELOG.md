@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.7.2"></a>
+## [1.7.2](https://github.com/coatyio/coaty-js/compare/v1.7.1...v1.7.2) (2019-05-22)
+
+This patch release fixes an issue with reconnections not republishing initial Advertise events.
+
+### Bug Fixes
+
+* **com:** republish Advertise events for identity/device on reconnection ([97b206d](https://github.com/coatyio/coaty-js/commit/97b206d))
+
 <a name="1.7.1"></a>
 ## [1.7.1](https://github.com/coatyio/coaty-js/compare/v1.7.0...v1.7.1) (2019-05-22)
 
