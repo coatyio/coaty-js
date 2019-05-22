@@ -1347,13 +1347,14 @@ Whenever the agent disconnects normally or abnormally, the broker publishes its 
 message to all subscribers which observe Deadvertise events. For details, see this
 [section](#distributed-lifecycle-management).
 
-Using this pattern, agents can detect the online/offline state of other Coaty agents
-and act accordingly. One typical use case is to set the parent object ID of
-advertised application root objects originating from a specific Coaty agent to the
-identity ID (or associated device ID) of the agent's communication manager. In case this
-agent is disconnected, other agents can observe Deadvertise events and check whether one of
-the deadvertised object IDs correlates with the parent object ID of any application root object
-the agent is managing and invoke specific actions.
+Using this pattern, agents can detect the online/offline state of other Coaty
+agents and act accordingly. One typical use case is to set the parent object ID
+(or a custom property) of advertised application root objects originating from a
+specific Coaty agent to the identity ID (or associated device ID) of the agent's
+communication manager. In case this agent is disconnected, other agents can
+observe Deadvertise events and check whether one of the deadvertised object IDs
+correlates with the parent object ID (or custom property) of any application
+root object the agent is managing and invoke specific actions.
 
 The following example shows how to implement this communication pattern with the Sensor Things API
 to observe the online/offline state of things and sensors.
@@ -1925,14 +1926,16 @@ agent has started can be accomplished by publishing a Discover event with core
 type "Component" initially (see example in this
 [section](#discover---resolve-event-pattern---an-example)).
 
-Using this pattern, agents can detect the online/offline state of other Coaty agents
-and act accordingly. One typical use case is to set the parent object ID of
-advertised application root objects originating from a specific Coaty agent to the
-identity ID (or associated device ID) of the agent's communication manager. In case this
-agent is disconnected, other agents can observe Deadvertise events and check whether one of
-the deadvertised object IDs correlates with the parent object ID of any application root object
-the agent is managing and invoke specific actions. An example of this pattern can be found
-in this [section](#deadvertise-event-pattern---an-example).
+Using this pattern, agents can detect the online/offline state of other Coaty
+agents and act accordingly. One typical use case is to set the parent object ID
+(or a custom property) of advertised application root objects originating from a
+specific Coaty agent to the identity ID (or associated device ID) of the agent's
+communication manager. In case this agent is disconnected, other agents can
+observe Deadvertise events and check whether one of the deadvertised object IDs
+correlates with the parent object ID (or custom property) of any application
+root object the agent is managing and invoke specific actions. An example of
+this pattern can be found in this
+[section](#deadvertise-event-pattern---an-example).
 
 ## IO Routing
 

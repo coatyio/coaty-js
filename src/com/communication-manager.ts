@@ -886,11 +886,19 @@ export class CommunicationManager implements IComponent {
             this._deferredSubscriptions.forEach(sub => this._client.subscribe(sub));
         }
 
-        // Apply all deferred offline publications and clear them.
+        // Apply all deferred offline publications and clear them if
+        // successfully published.
         if (this._deferredPublications) {
-            this._deferredPublications.forEach(pub =>
-                this._client.publish(pub.topic, pub.payload, pub.options));
+            const deferred = [...this._deferredPublications];
             this._deferredPublications = [];
+            deferred.forEach((pub, index) =>
+                this._client.publish(pub.topic, pub.payload, pub.options, err => {
+                    // If client is disconnected or disconnecting, keep this
+                    // publication cached.
+                    if (err) {
+                        this._deferredPublications.push(pub);
+                    }
+                }));
         }
 
         // Emitted on successful (re)connection.
@@ -1250,9 +1258,7 @@ export class CommunicationManager implements IComponent {
         return () => {
             const payload = isDataRaw ? data : JSON.stringify(data);
             const pubOptions: IClientPublishOptions = { qos: 0, retain: shouldRetain };
-            if (this._isClientConnected) {
-                this._client.publish(topicName, payload, pubOptions);
-            } else {
+            const deferPublication = () => {
                 const msg = {
                     topic: topicName,
                     payload: payload,
@@ -1263,6 +1269,18 @@ export class CommunicationManager implements IComponent {
                 } else {
                     this._deferredPublications.push(msg);
                 }
+            };
+            if (this._client) {
+                this._client.publish(topicName, payload, pubOptions, err => {
+                    // If publication fails because client is disconnecting or
+                    // disconnected, add message to publication cache to be
+                    // published later on reconnect.
+                    if (err) {
+                        deferPublication();
+                    }
+                });
+            } else {
+                deferPublication();
             }
         };
     }
@@ -1376,6 +1394,7 @@ export class CommunicationManager implements IComponent {
         }
 
         // Advertise identity
+        // (cp. _observeDiscoverIdentity)
         if (this.options.shouldAdvertiseIdentity === undefined ||
             this.options.shouldAdvertiseIdentity === true) {
             this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
