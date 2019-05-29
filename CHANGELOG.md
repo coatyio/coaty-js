@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.8.0"></a>
+# [1.8.0](https://github.com/coatyio/coaty-js/compare/v1.7.2...v1.8.0) (2019-05-29)
+
+This feature release adds a new convenience controller for distributed lifecycle management.
+
+### Features
+
+* **controller:** add convenience controller class [`ObjectLifecycleController`](https://coatyio.github.io/coaty-js/man/developer-guide/#object-lifecycle-controller) for distributed lifecycle management ([471360c](https://github.com/coatyio/coaty-js/commit/471360c))
+
 <a name="1.7.2"></a>
 ## [1.7.2](https://github.com/coatyio/coaty-js/compare/v1.7.1...v1.7.2) (2019-05-22)
 

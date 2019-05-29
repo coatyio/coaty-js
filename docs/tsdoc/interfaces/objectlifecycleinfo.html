@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RemoteCallErrorCode | coaty v1.8.0</title>
+	<title>ObjectLifecycleInfo | coaty v1.8.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="remotecallerrorcode.html">RemoteCallErrorCode</a>
+					<a href="objectlifecycleinfo.html">ObjectLifecycleInfo</a>
 				</li>
 			</ul>
-			<h1>Enumeration RemoteCallErrorCode</h1>
+			<h1>Interface ObjectLifecycleInfo</h1>
 		</div>
 	</div>
 </header>
@@ -67,39 +67,100 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Defines error codes for pre-defined remote call errors.</p>
+						<p>Represents the current objects kept for lifecycle management by the
+							<code>ObjectLifecycleController</code>. Changes are provided by the properties <code>added</code>,
+						<code>removed</code>, or <code>changed</code> where exactly one is set.</p>
 					</div>
-					<p>The integer error codes from and including -32768 to -32000 are reserved for pre-defined errors
-						encountered while executing a remote call. Any code within this range, but not defined explicitly
-					below is reserved for future use. The remaining integers are available for application defined errors.</p>
-					<p>The predefined error messages corresponding to these predefined error codes are defined by enum
-					<code>RemoteCallErrorMessage</code>.</p>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ObjectLifecycleInfo</span>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Enumeration members</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="remotecallerrorcode.html#invalidparameters" class="tsd-kind-icon">Invalid<wbr>Parameters</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#addedids" class="tsd-kind-icon">added<wbr>Ids</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#changedids" class="tsd-kind-icon">changed<wbr>Ids</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#objects" class="tsd-kind-icon">objects</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#removedids" class="tsd-kind-icon">removed<wbr>Ids</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Enumeration members</h2>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-					<a name="invalidparameters" class="tsd-anchor"></a>
-					<h3>Invalid<wbr>Parameters</h3>
-					<div class="tsd-signature tsd-kind-icon">Invalid<wbr>Parameters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;-32602</span></div>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="addedids" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> added<wbr>Ids</h3>
+					<div class="tsd-signature tsd-kind-icon">added<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/471360c/src/com/call-return.ts#L219">com/call-return.ts:219</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/471360c/src/controller/object-lifecycle-controller.ts#L29">controller/object-lifecycle-controller.ts:29</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of object ids which have been newly advertised or discovered
+							(optional).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="changedids" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> changed<wbr>Ids</h3>
+					<div class="tsd-signature tsd-kind-icon">changed<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/471360c/src/controller/object-lifecycle-controller.ts#L40">controller/object-lifecycle-controller.ts:40</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of object ids which have been readvertised or rediscovered with
+							different object properties (optional).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="objects" class="tsd-anchor"></a>
+					<h3>objects</h3>
+					<div class="tsd-signature tsd-kind-icon">objects<span class="tsd-signature-symbol">:</span> <a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/471360c/src/controller/object-lifecycle-controller.ts#L23">controller/object-lifecycle-controller.ts:23</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of objects currently monitored for lifecycle management after most
+							recent changes have been applied.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="removedids" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> removed<wbr>Ids</h3>
+					<div class="tsd-signature tsd-kind-icon">removed<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/471360c/src/controller/object-lifecycle-controller.ts#L34">controller/object-lifecycle-controller.ts:34</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of object ids which have been deadvertised (optional).</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -115,11 +176,20 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-enum tsd-is-external">
-						<a href="remotecallerrorcode.html" class="tsd-kind-icon">Remote<wbr>Call<wbr>Error<wbr>Code</a>
+					<li class="current tsd-kind-interface tsd-is-external">
+						<a href="objectlifecycleinfo.html" class="tsd-kind-icon">Object<wbr>Lifecycle<wbr>Info</a>
 						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-								<a href="remotecallerrorcode.html#invalidparameters" class="tsd-kind-icon">Invalid<wbr>Parameters</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="objectlifecycleinfo.html#addedids" class="tsd-kind-icon">added<wbr>Ids</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="objectlifecycleinfo.html#changedids" class="tsd-kind-icon">changed<wbr>Ids</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="objectlifecycleinfo.html#objects" class="tsd-kind-icon">objects</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="objectlifecycleinfo.html#removedids" class="tsd-kind-icon">removed<wbr>Ids</a>
 							</li>
 						</ul>
 					</li>
