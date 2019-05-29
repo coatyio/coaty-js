@@ -27,6 +27,7 @@ this guide.
     * [Register controllers at run time](#register-controllers-at-run-time)
   * [Convenience controllers](#convenience-controllers)
     * [Connection State Controller](#connection-state-controller)
+    * [Object Lifecycle Controller](#object-lifecycle-controller)
     * [Object Cache Controller](#object-cache-controller)
     * [Historian Controller](#historian-controller)
 * [Object model](#object-model)
@@ -745,6 +746,76 @@ connection state of the associated communication manager transitions to offline,
 `false` if it transitions to online. When subscribed, the current connection state is
 emitted immediately.
 
+#### Object Lifecycle Controller
+
+The `ObjectLifecycleController` class supports [distributed lifecycle
+management](#distributed-lifecycle-management). It keeps track of specific
+agents/objects in a Coaty network by monitoring identity components of
+communication managers, controllers or custom object types. The controller
+observes advertisements and deadvertisements of such objects and initially
+discovers them. Changes are emitted on an observable that applications can
+subscribe to.
+
+You can use this controller standalone by adding it to the container components
+or make your custom controller class extend this controller class.
+
+Basically, to keep track of identity components, the `shouldAdvertiseIdentity`
+option in `CommunicationOptions` and/or `ControllerOptions` must be set to
+`true`. Note that this controller also supports tracking the identities of the
+communication manager and the *other* controllers inside its *own* agent
+container.
+
+If you want to keep track of custom object types (not commmunication manager or
+controller identities), you have to implement the remote side of the distributed
+object lifecycle management, i.e. advertise your custom objects and
+observe/respond to appropriate Discover events explicitely. Note that a custom
+object must have the identity UUID of its associated communication manager set
+as its `parentObjectId`.
+
+The following example shows how to keep track of identity components of specific
+agents whose communication manager has an identity named `"LightAgent"`.
+
+This approach assumes the lifecycle container has been added to the container
+components:
+
+```ts
+import { ObjectLifecycleController } from "coaty/controller";
+
+const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+
+lifecycleController
+    .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+    .subscribe(info => {
+        // Called whenever identity components for light agents
+        // are (re)advertised, discovered, or deadvertised.
+        console.log(info.objects);      // Currently tracked identity components
+        console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
+        console.log(info.removedIds);   // UUIDs of deadvertised identity components
+        console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
+    });
+```
+
+This approach assumes your custom controller class inherits from the lifecycle container class:
+
+```ts
+import { ObjectLifecycleController } from "coaty/controller";
+
+class MyCustomController extends ObjectLifecycleController {
+
+    onCommunicationManagerStarting() {
+        this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+            .subscribe(info => {
+                // Called whenever identity components for light agents are
+                // (re)advertised, discovered, or deadvertised.
+                console.log(info.objects);      // Currently tracked identity components
+                console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
+                console.log(info.removedIds);   // UUIDs of deadvertised identity components
+                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
+            });
+    }
+}
+```
+
 #### Object Cache Controller
 
 The `ObjectCacheController` class discovers objects by given object Ids
@@ -752,9 +823,10 @@ and maintains a local cache of resolved objects. The controller will also
 update existing objects in its cache whenever such objects are advertised
 by other parties.
 
-To realize an object cache controller for a specific core types or for specific objects,
-define a custom controller class that extends the abstract `ObjectCacheController` class and
-set the core type and/or the filter predicate of objects to be cached in the `OnInit` method.
+To realize an object cache controller for a specific core types or for specific
+objects, define a custom controller class that extends the abstract
+`ObjectCacheController` class and set the core type and/or the filter predicate
+of objects to be cached in the `OnInit` method.
 
 ```ts
 import { ObjectCacheController } from "coaty/controller";
@@ -1356,8 +1428,17 @@ observe Deadvertise events and check whether one of the deadvertised object IDs
 correlates with the parent object ID (or custom property) of any application
 root object the agent is managing and invoke specific actions.
 
-The following example shows how to implement this communication pattern with the Sensor Things API
-to observe the online/offline state of things and sensors.
+To ease programming this pattern, Coaty provides a convenience controller class
+named [`ObjectLifecycleController`](#object-lifecycle-controller). It keeps
+track of specific agents/objects in a Coaty network by monitoring identity
+components of communication managers, controllers or custom object types. The
+controller observes advertisements and deadvertisements of such objects and
+initially discovers them. Changes are emitted on an observable that applications
+can subscribe to.
+
+If you want to programm this pattern explicitely, the following example shows
+how to observe the online/offline state of things and sensors with the Sensor
+Things API.
 
 The sensor device advertises the associated Thing object:
 
@@ -1936,6 +2017,14 @@ correlates with the parent object ID (or custom property) of any application
 root object the agent is managing and invoke specific actions. An example of
 this pattern can be found in this
 [section](#deadvertise-event-pattern---an-example).
+
+To ease programming this pattern, Coaty provides a convenience controller class
+named [`ObjectLifecycleController`](#object-lifecycle-controller). It keeps
+track of specific agents/objects in a Coaty network by monitoring identity
+components of communication managers, controllers or custom object types. The
+controller observes advertisements and deadvertisements of such objects and
+initially discovers them. Changes are emitted on an observable that applications
+can subscribe to.
 
 ## IO Routing
 

@@ -16,6 +16,7 @@ import {
 } from "../../com";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
+import { ObjectLifecycleController, ObjectLifecycleInfo } from "../../controller/object-lifecycle-controller";
 import { ContextFilter, CoreTypes, DisplayType, filterOp, User } from "../../model";
 import { Components, Configuration, Container } from "../../runtime";
 
@@ -664,6 +665,7 @@ describe("Communication", () => {
             controllers: {
                 MockDeviceController: mocks.MockDeviceController,
                 MockObjectController: mocks.MockObjectController,
+                ObjectLifecycleController: ObjectLifecycleController,
             },
         };
 
@@ -682,7 +684,10 @@ describe("Communication", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                shouldAdvertiseIdentity: false,
+                shouldAdvertiseIdentity: true,
+                identity: {
+                    name: "IntraCommunicationTestContainer",
+                },
                 shouldAdvertiseDevice: false,
                 brokerUrl: "mqtt://localhost:1898",
             },
@@ -717,6 +722,58 @@ describe("Communication", () => {
                 });
             },
             TEST_TIMEOUT);
+
+        it("All objects are tracked by ObjectLifecycleController", (done) => {
+
+            const deviceController = container.getController<mocks.MockDeviceController>("MockDeviceController");
+            const objectController = container.getController<mocks.MockObjectController>("MockObjectController");
+            const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+            const lifecycleInfos = new Map<string, ObjectLifecycleInfo[]>(
+                [
+                    ["all", []],
+                    ["container", []],
+                    ["controller", []],
+                ]);
+
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Component")
+                .subscribe(info => {
+                    lifecycleInfos.get("all").push(info);
+                });
+
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "IntraCommunicationTestContainer")
+                .subscribe(info => {
+                    lifecycleInfos.get("container").push(info);
+                });
+
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "MockObjectController")
+                .subscribe(info => {
+                    lifecycleInfos.get("controller").push(info);
+                });
+
+            delayAction(1000, done, () => {
+                expect(lifecycleInfos.get("all").length).toBe(3);
+                expect(lifecycleInfos.get("all")[0].objects.length).toBe(1);
+                expect(lifecycleInfos.get("all")[0].addedIds.length).toBe(1);
+                expect(lifecycleInfos.get("all")[0].objects).toContain(container.communicationManager.identity);
+                expect(lifecycleInfos.get("all")[2].objects.length).toBe(3);
+                expect(lifecycleInfos.get("all")[2].addedIds.length).toBe(1);
+                expect(lifecycleInfos.get("all")[2].objects).toContain(container.communicationManager.identity);
+                expect(lifecycleInfos.get("all")[2].objects).toContain(deviceController.identity);
+                expect(lifecycleInfos.get("all")[2].objects).toContain(objectController.identity);
+
+                expect(lifecycleInfos.get("container").length).toBe(1);
+                expect(lifecycleInfos.get("container")[0].addedIds.length).toBe(1);
+                expect(lifecycleInfos.get("container")[0].addedIds).toContain(container.communicationManager.identity.objectId);
+                expect(lifecycleInfos.get("container")[0].objects.length).toBe(1);
+                expect(lifecycleInfos.get("container")[0].objects).toContain(container.communicationManager.identity);
+
+                expect(lifecycleInfos.get("controller").length).toBe(1);
+                expect(lifecycleInfos.get("controller")[0].addedIds.length).toBe(1);
+                expect(lifecycleInfos.get("controller")[0].addedIds).toContain(objectController.identity.objectId);
+                expect(lifecycleInfos.get("controller")[0].objects.length).toBe(1);
+                expect(lifecycleInfos.get("controller")[0].objects).toContain(objectController.identity);
+            });
+        }, TEST_TIMEOUT);
 
         it("All Advertise non-echo events are received", (done) => {
 

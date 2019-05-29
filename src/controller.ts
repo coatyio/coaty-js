@@ -9,4 +9,5 @@
 export { Controller } from "./controller/controller";
 export { ConnectionStateController } from "./controller/connection-state-controller";
 export { ObjectCacheController } from "./controller/object-cache-controller";
+export { ObjectLifecycleController } from "./controller/object-lifecycle-controller";
 export { HistorianController } from "./controller/historian-controller";
