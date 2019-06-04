@@ -765,13 +765,6 @@ option in `CommunicationOptions` and/or `ControllerOptions` must be set to
 communication manager and the *other* controllers inside its *own* agent
 container.
 
-If you want to keep track of custom object types (not commmunication manager or
-controller identities), you have to implement the remote side of the distributed
-object lifecycle management, i.e. advertise your custom objects and
-observe/respond to appropriate Discover events explicitely. Note that a custom
-object must have the identity UUID of its associated communication manager set
-as its `parentObjectId`.
-
 The following example shows how to keep track of identity components of specific
 agents whose communication manager has an identity named `"LightAgent"`.
 
@@ -779,31 +772,48 @@ This approach assumes the lifecycle container has been added to the container
 components:
 
 ```ts
-import { ObjectLifecycleController } from "coaty/controller";
+import { Controller, ObjectLifecycleController } from "coaty/controller";
+import { Subscription } from "rxjs";
 
-const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+class MyController extends Controller {
 
-lifecycleController
-    .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
-    .subscribe(info => {
-        // Called whenever identity components for light agents
-        // are (re)advertised, discovered, or deadvertised.
-        console.log(info.objects);      // Currently tracked identity components
-        console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
-        console.log(info.removedIds);   // UUIDs of deadvertised identity components
-        console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
-    });
+    private _lifecycleSubscription: Subscription;
+
+    onCommunicationManagerStarting() {
+        const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+        this._lifecycleSubscription = lifecycleController
+            .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+            .subscribe(info => {
+                // Called whenever identity components for light agents
+                // are (re)advertised, discovered, or deadvertised.
+                console.log(info.objects);      // Currently tracked identity components
+                console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
+                console.log(info.removedIds);   // UUIDs of deadvertised identity components
+                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        if (this._lifecycleSubscription) {
+            // Stop observing lifecycle info of identity components for light agents.
+            this._lifecycleSubscription.unsubscribe();
+        }
+    }
+}
 ```
 
 This approach assumes your custom controller class inherits from the lifecycle container class:
 
 ```ts
 import { ObjectLifecycleController } from "coaty/controller";
+import { Subscription } from "rxjs";
 
-class MyCustomController extends ObjectLifecycleController {
+class MyController extends ObjectLifecycleController {
+
+    private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
-        this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever identity components for light agents are
                 // (re)advertised, discovered, or deadvertised.
@@ -812,6 +822,97 @@ class MyCustomController extends ObjectLifecycleController {
                 console.log(info.removedIds);   // UUIDs of deadvertised identity components
                 console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
             });
+    }
+
+    onCommunicationManagerStopping() {
+        if (this._lifecycleSubscription) {
+            // Stop observing lifecycle info of identity components for light agents.
+            this._lifecycleSubscription.unsubscribe();
+        }
+    }
+}
+```
+
+To keep track of identity components, the code shown above is sufficient.
+However, if you want to keep track of *custom object types* (not commmunication
+manager or controller identities), you have to implement the remote side of the
+distributed object lifecycle management, i.e. advertise/readvertise/deadvertise
+your custom objects and observe/resolve corresponding Discover events
+explicitely. To facilitate this, the `ObjectLifecycleController` provides these
+convenience methods: `advertiseDiscoverableObject`,
+`readvertiseDiscoverableObject`, and `deadvertiseDiscoverableObject`.
+
+Usually, a custom object should have the identity UUID of its associated
+communication manager set as its `parentObjectId` to be automatically
+deadvertised when the agent terminates abnormally. You can automate this by
+passing `true` to the optional parameter `shouldSetParentObjectId` of method
+`advertiseDiscoverableObject` (`true` is also the default parameter value).
+
+The following example shows how to keep track of a custom Coaty object.
+
+The first controller is responsible for advertising the custom object, and for
+making it discoverable. Note that when the communication manager is stopped the
+custom object is automatically deadvertised.
+
+```ts
+import { ObjectLifecycleController } from "coaty/controller";
+import { Subscription } from "rxjs";
+
+class CustomObjectAdvertisingController extends ObjectLifecycleController {
+
+    myCustomObject: CoatyObject;
+
+    private _myCustomObjectLifecycleSubscription: Subscription;
+
+    onInit() {
+        this.myCustomObject = {
+            objectType: "com.example.MyCustomObject",
+            coreType: "CoatyObject",
+            name: "MyCustomObject",
+            objectId: this.runtime.newUuid()
+        };
+    }
+
+    onCommunicationManagerStarting() {
+        this._myCustomObjectLifecycleSubscription = this.advertiseDiscoverableObject(this.myCustomObject);
+    }
+
+    onCommunicationManagerStopping() {
+        if (_myCustomObjectLifecycleSubscription) {
+            // Stop observing/resolving Discover events for the custom object that have
+            // been set up in advertiseDiscoverableObject.
+            _myCustomObjectLifecycleSubscription.unsubscribe();
+        }
+    }
+}
+```
+
+The second controller keeps track of custom objects as advertised/discoverable
+by the first controller:
+
+```ts
+
+class CustomObjectTrackingController extends ObjectLifecycleController {
+
+    private _lifecycleSubscription: Subscription;
+
+    onCommunicationManagerStarting() {
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
+            .subscribe(info => {
+                // Called whenever custom objects of type "com.example.MyCustomObject" are
+                // (re)advertised, discovered, or deadvertised.
+                console.log(info.objects);      // Currently tracked objects
+                console.log(info.addedIds);     // UUIDs of newly advertised or discovered objects
+                console.log(info.removedIds);   // UUIDs of deadvertised objects
+                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered objects
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        if (this._lifecycleSubscription) {
+            // Stop observing lifecycle info for custom objects of type "com.example.MyCustomObject".
+            this._lifecycleSubscription.unsubscribe();
+        }
     }
 }
 ```

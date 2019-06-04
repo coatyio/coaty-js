@@ -4,6 +4,7 @@
         "bootstrap.spec.js",
         "util.spec.js",
         "object.spec.js",
+        "object-lifecycle.spec.js",
         "communication.spec.js",
         "io-routing.spec.js",
         "db-in-memory.spec.js",

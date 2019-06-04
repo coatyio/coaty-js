@@ -1,9 +1,11 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { merge, Observable } from "rxjs";
+import { merge, Observable, Subscription } from "rxjs";
 import { filter, map, share } from "rxjs/operators";
 
-import { DiscoverEvent } from "../com/discover-resolve";
+import { AdvertiseEvent } from "../com/advertise";
+import { DeadvertiseEvent } from "../com/deadvertise";
+import { DiscoverEvent, ResolveEvent } from "../com/discover-resolve";
 import { CoatyObject, Uuid } from "../model/object";
 import { CoreType } from "../model/types";
 import { equals } from "../util/deep";
@@ -47,7 +49,7 @@ export interface ObjectLifecycleInfo {
  * objects and initially discovers them. Changes are emitted on an observable
  * that applications can subscribe to.
  *
- * You can use this controller standalone by adding it to the container
+ * You can use this controller either standalone by adding it to the container
  * components or make your custom controller class extend this controller class.
  *
  * Basically, to keep track of identity components, the
@@ -58,10 +60,17 @@ export interface ObjectLifecycleInfo {
  *
  * If you want to keep track of custom object types (not commmunication manager
  * or controller identities), you have to implement the remote side of the
- * distributed object lifecycle management, i.e. advertise your custom objects
- * and observe/respond to appropriate Discover events explicitely. Note that a
- * custom object must have the identity UUID of its associated communication
- * manager set as its `parentObjectId`.
+ * distributed object lifecycle management, i.e.
+ * advertise/readvertise/deadvertise your custom objects and observe/resolve
+ * corresponding Discover events explicitely. To facilitate this, this
+ * controller provides convenience methods: `advertiseDiscoverableObject`,
+ * `readvertiseDiscoverableObject`, and `deadvertiseDiscoverableObject`.
+ *
+ * Usually, a custom object should have the identity UUID of its associated
+ * communication manager set as its `parentObjectId` to be automatically
+ * deadvertised when the agent terminates abnormally. You can automate this by
+ * passing `true` to the optional parameter `shouldSetParentObjectId` of method
+ * `advertiseDiscoverableObject` (`true` is also the default parameter value).
  */
 export class ObjectLifecycleController extends Controller {
 
@@ -108,6 +117,81 @@ export class ObjectLifecycleController extends Controller {
         objectFilter?: (obj: CoatyObject) => boolean,
     ): Observable<ObjectLifecycleInfo> {
         return this._observeObjectLifecycleInfo(undefined, objectType, objectFilter);
+    }
+
+    /**
+     * Advertises the given Coaty object and makes it discoverable by its
+     * `objectType` or `objectId`.
+     *
+     * The optional `shouldSetParentObjectId` parameter determines whether the
+     * parent object ID of the given object should be set to the communication
+     * manager's identity objectId property (default is `true`). This is
+     * required if you want to observe the object's lifecycle info by method
+     * `observeObjectLifecycleInfoByObjectType` and get notified when the
+     * advertising agent terminates abnormally.
+     *
+     * The returned subscription should be unsubscribed when the object is
+     * deadvertised explicitely in your application code (see method
+     * `deadvertiseDiscoverableObject`) or at the latest when the communication
+     * manager is stopped (i.e. in the controller lifecycle method
+     * `onCommunicationManagerStopping`).
+     *
+     * @param object a CoatyObject that is advertised and discoverable
+     * @param shouldSetParentObjectId determines whether the parent object ID of
+     * the given object should be set to the communication manager's identity
+     * objectId (default is `true`)
+     * @returns subscription on DiscoverEvent observable
+     */
+    advertiseDiscoverableObject(object: CoatyObject, shouldSetParentObjectId = true): Subscription {
+        if (shouldSetParentObjectId) {
+            object.parentObjectId = this.communicationManager.identity.objectId;
+        }
+        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, object));
+        return this.communicationManager
+            .observeDiscover(this.identity)
+            .pipe(filter((event: DiscoverEvent) =>
+                (event.eventData.isDiscoveringTypes &&
+                    event.eventData.isObjectTypeCompatible(object.objectType)) ||
+                (event.eventData.isDiscoveringObjectId &&
+                    event.eventData.objectId === object.objectId)))
+            .subscribe(event =>
+                event.resolve(ResolveEvent.withObject(this.identity, object)));
+    }
+
+    /**
+     * Readvertises the given Coaty object, usually after some properties have
+     * changed. The object reference should have been advertised before once
+     * using the method `advertiseDiscoverableObject`.
+     *
+     * @param object a CoatyObject that should be advertised again after
+     * properties have changed
+     */
+    readvertiseDiscoverableObject(object: CoatyObject) {
+        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, object));
+    }
+
+    /**
+     * Deadvertises the given Coaty object and unsubscribes the given
+     * subscription resulting from a corresponding invocation of method
+     * `advertiseDiscoverableObject`.
+     *
+     * Note that if you want to keep a Coaty object for the whole lifetime of
+     * its agent you don't necessarily need to invoke this method explicitely.
+     * Deadvertise events are published automatically by or on behalf of an
+     * agent whenever its communication manager is stopped or when the agent
+     * terminates abnormally.
+     *
+     * @param object a CoatyObject to be deadvertised
+     * @param discoverableSubscription subscription on DiscoverEvent to be
+     * unsubscribed
+     */
+    deadvertiseDiscoverableObject(object: CoatyObject, discoverableSubscription: Subscription) {
+        if (discoverableSubscription) {
+            // Stop observing Discover events that have been set up in
+            // advertiseDiscoverableObject.
+            discoverableSubscription.unsubscribe();
+        }
+        this.communicationManager.publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, object.objectId));
     }
 
     private _observeObjectLifecycleInfo(
