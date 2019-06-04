@@ -785,12 +785,10 @@ class MyController extends Controller {
         this._lifecycleSubscription = lifecycleController
             .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
             .subscribe(info => {
-                // Called whenever identity components for light agents
-                // are (re)advertised, discovered, or deadvertised.
-                console.log(info.objects);      // Currently tracked identity components
-                console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
-                console.log(info.removedIds);   // UUIDs of deadvertised identity components
-                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
+                // Called whenever identity components for light agents have changed.
+                console.log(info.added);     // newly advertised or discovered identity components
+                console.log(info.changed);   // readvertised or rediscovered identity components
+                console.log(info.removed);   // deadvertised identity components
             });
     }
 
@@ -818,12 +816,10 @@ class MyController extends ObjectLifecycleController {
         super.onCommunicationManagerStarting();
         this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
             .subscribe(info => {
-                // Called whenever identity components for light agents are
-                // (re)advertised, discovered, or deadvertised.
-                console.log(info.objects);      // Currently tracked identity components
-                console.log(info.addedIds);     // UUIDs of newly advertised or discovered identity components
-                console.log(info.removedIds);   // UUIDs of deadvertised identity components
-                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered identity components
+                // Called whenever identity components for light agents have changed.
+                console.log(info.added);     // newly advertised or discovered identity components
+                console.log(info.changed);   // readvertised or rediscovered identity components
+                console.log(info.removed);   // deadvertised identity components
             });
     }
 
@@ -885,7 +881,7 @@ class CustomObjectAdvertisingController extends ObjectLifecycleController {
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
         if (_myCustomObjectLifecycleSubscription) {
-            // Stop observing/resolving Discover events for the custom object that have
+            // Stop observing/resolving Discover events for the custom object that has
             // been set up in advertiseDiscoverableObject.
             _myCustomObjectLifecycleSubscription.unsubscribe();
         }
@@ -906,12 +902,10 @@ class CustomObjectTrackingController extends ObjectLifecycleController {
         super.onCommunicationManagerStarting();
         this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
             .subscribe(info => {
-                // Called whenever custom objects of type "com.example.MyCustomObject" are
-                // (re)advertised, discovered, or deadvertised.
-                console.log(info.objects);      // Currently tracked objects
-                console.log(info.addedIds);     // UUIDs of newly advertised or discovered objects
-                console.log(info.removedIds);   // UUIDs of deadvertised objects
-                console.log(info.changedIds);   // UUIDs of readvertised or rediscovered objects
+                // Called whenever custom lifecycle objects of type "com.example.MyCustomObject" have changed.
+                console.log(info.added);     // newly advertised or discovered objects
+                console.log(info.changed);   // readvertised or rediscovered objects
+                console.log(info.removed);   // deadvertised objects
             });
     }
 

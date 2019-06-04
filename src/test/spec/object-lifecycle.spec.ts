@@ -1,7 +1,7 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
 /**
- * Test suite for object lifecycle management.
+ * Test suite for object lifecycle management controller.
  */
 
 import { ObjectLifecycleController } from "../../controller";
@@ -84,22 +84,20 @@ describe("Object Lifecycle Management", () => {
 
                         expect(lifecycleInfo.length).toBe(3);
 
-                        expect(lifecycleInfo[0].objects.length).toBe(1);
-                        expect(lifecycleInfo[0].objects[0]).toEqual(originalObjectToTrack);
-                        expect(lifecycleInfo[0].addedIds).toEqual([objectToTrack.objectId]);
-                        expect(lifecycleInfo[0].removedIds).toBe(undefined);
-                        expect(lifecycleInfo[0].changedIds).toBe(undefined);
+                        expect(lifecycleInfo[0].added.length).toBe(1);
+                        expect(lifecycleInfo[0].added).toContain(originalObjectToTrack);
+                        expect(lifecycleInfo[0].changed).toBe(undefined);
+                        expect(lifecycleInfo[0].removed).toBe(undefined);
 
-                        expect(lifecycleInfo[1].objects.length).toBe(1);
-                        expect(lifecycleInfo[1].objects[0]).toEqual(objectToTrack);
-                        expect(lifecycleInfo[1].addedIds).toBe(undefined);
-                        expect(lifecycleInfo[1].removedIds).toBe(undefined);
-                        expect(lifecycleInfo[1].changedIds).toEqual([objectToTrack.objectId]);
+                        expect(lifecycleInfo[1].changed.length).toBe(1);
+                        expect(lifecycleInfo[1].added).toBe(undefined);
+                        expect(lifecycleInfo[1].changed).toContain(objectToTrack);
+                        expect(lifecycleInfo[1].removed).toBe(undefined);
 
-                        expect(lifecycleInfo[2].objects.length).toBe(0);
-                        expect(lifecycleInfo[2].addedIds).toBe(undefined);
-                        expect(lifecycleInfo[2].removedIds).toEqual([objectToTrack.objectId]);
-                        expect(lifecycleInfo[2].changedIds).toBe(undefined);
+                        expect(lifecycleInfo[2].removed.length).toBe(1);
+                        expect(lifecycleInfo[2].added).toBe(undefined);
+                        expect(lifecycleInfo[2].changed).toBe(undefined);
+                        expect(lifecycleInfo[2].removed).toContain(objectToTrack);
                     });
                 });
             });
@@ -132,16 +130,15 @@ describe("Object Lifecycle Management", () => {
 
                     expect(lifecycleInfo.length).toBe(2);
 
-                    expect(lifecycleInfo[0].objects.length).toBe(1);
-                    expect(lifecycleInfo[0].objects[0]).toEqual(objectToTrack);
-                    expect(lifecycleInfo[0].addedIds).toEqual([objectToTrack.objectId]);
-                    expect(lifecycleInfo[0].removedIds).toBe(undefined);
-                    expect(lifecycleInfo[0].changedIds).toBe(undefined);
+                    expect(lifecycleInfo[0].added.length).toBe(1);
+                    expect(lifecycleInfo[0].added).toContain(objectToTrack);
+                    expect(lifecycleInfo[0].changed).toBe(undefined);
+                    expect(lifecycleInfo[0].removed).toBe(undefined);
 
-                    expect(lifecycleInfo[1].objects.length).toBe(0);
-                    expect(lifecycleInfo[1].addedIds).toBe(undefined);
-                    expect(lifecycleInfo[1].removedIds).toEqual([objectToTrack.objectId]);
-                    expect(lifecycleInfo[1].changedIds).toBe(undefined);
+                    expect(lifecycleInfo[1].removed.length).toBe(1);
+                    expect(lifecycleInfo[1].added).toBe(undefined);
+                    expect(lifecycleInfo[1].changed).toBe(undefined);
+                    expect(lifecycleInfo[1].removed).toContain(objectToTrack);
                 });
             });
         });

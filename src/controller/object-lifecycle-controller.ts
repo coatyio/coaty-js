@@ -12,34 +12,31 @@ import { equals } from "../util/deep";
 import { Controller } from "./controller";
 
 /**
- * Represents the current objects kept for lifecycle management by the
+ * Represents changes in the objects kept for lifecycle management by the
  * `ObjectLifecycleController`. Changes are provided by the properties `added`,
- * `removed`, or `changed` where exactly one is set.
+ * `removed`, or `changed` where exactly one is set and the others are not
+ * defined.
  */
 export interface ObjectLifecycleInfo {
 
-    /** 
-     * Array of objects currently monitored for lifecycle management after most
-     * recent changes have been applied.
+    /**
+     * Array of objects which have been newly advertised or discovered
+     * (optional). The value is not defined if no additions occured.
      */
-    objects: CoatyObject[];
+    added?: CoatyObject[];
 
     /**
-     * Array of object ids which have been newly advertised or discovered
-     * (optional).
+     * Array of objects which have been readvertised or rediscovered with
+     * different object properties (optional). The value is not defined if no
+     * changes occured.
      */
-    addedIds?: Uuid[];
+    changed?: CoatyObject[];
 
     /** 
-     * Array of object ids which have been deadvertised (optional).
+     * Array of objects which have been deadvertised (optional). The value is
+     * not defined if no removals occured.
      */
-    removedIds?: Uuid[];
-
-    /**
-     * Array of object ids which have been readvertised or rediscovered with
-     * different object properties (optional).
-     */
-    changedIds?: Uuid[];
+    removed?: CoatyObject[];
 }
 
 /**
@@ -244,13 +241,11 @@ export class ObjectLifecycleController extends Controller {
         registry.set(obj.objectId, obj);
         if (robj === undefined) {
             return {
-                objects: Array.from(registry.values()),
-                addedIds: [obj.objectId],
+                added: [obj],
             };
         } else if (!equals(obj, robj)) {
             return {
-                objects: Array.from(registry.values()),
-                changedIds: [robj.objectId],
+                changed: [obj],
             };
         } else {
             return undefined;
@@ -258,18 +253,17 @@ export class ObjectLifecycleController extends Controller {
     }
 
     private _removeFromRegistry(registry: Map<Uuid, CoatyObject>, objectIds: Uuid[]): ObjectLifecycleInfo {
-        const removedIds: Uuid[] = [];
-        objectIds.forEach(objectId => this._updateRegistryOnRemove(registry, objectId, removedIds));
-        if (removedIds.length === 0) {
+        const removed: CoatyObject[] = [];
+        objectIds.forEach(objectId => this._updateRegistryOnRemove(registry, objectId, removed));
+        if (removed.length === 0) {
             return undefined;
         }
         return {
-            objects: Array.from(registry.values()),
-            removedIds,
+            removed,
         };
     }
 
-    private _updateRegistryOnRemove(registry: Map<Uuid, CoatyObject>, objectId: Uuid, removedIds: Uuid[]) {
+    private _updateRegistryOnRemove(registry: Map<Uuid, CoatyObject>, objectId: Uuid, removed: CoatyObject[]) {
         const obj = registry.get(objectId);
 
         // Cleanup: check if objects are registered that have a parent object
@@ -278,14 +272,14 @@ export class ObjectLifecycleController extends Controller {
         registry.forEach(o => {
             if (o.parentObjectId === objectId) {
                 registry.delete(o.objectId);
-                removedIds.push(o.objectId);
+                removed.push(o);
             }
         });
 
         if (obj !== undefined) {
             // Unregister the target object to be removed.
             registry.delete(objectId);
-            removedIds.push(objectId);
+            removed.push(obj);
         }
     }
 

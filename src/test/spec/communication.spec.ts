@@ -17,7 +17,7 @@ import {
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
 import { ObjectLifecycleController, ObjectLifecycleInfo } from "../../controller/object-lifecycle-controller";
-import { ContextFilter, CoreTypes, DisplayType, filterOp, User } from "../../model";
+import { Component, ContextFilter, CoreTypes, DisplayType, filterOp, User } from "../../model";
 import { Components, Configuration, Container } from "../../runtime";
 
 import * as mocks from "./communication.mocks";
@@ -752,26 +752,22 @@ describe("Communication", () => {
 
             delayAction(1000, done, () => {
                 expect(lifecycleInfos.get("all").length).toBe(3);
-                expect(lifecycleInfos.get("all")[0].objects.length).toBe(1);
-                expect(lifecycleInfos.get("all")[0].addedIds.length).toBe(1);
-                expect(lifecycleInfos.get("all")[0].objects).toContain(container.communicationManager.identity);
-                expect(lifecycleInfos.get("all")[2].objects.length).toBe(3);
-                expect(lifecycleInfos.get("all")[2].addedIds.length).toBe(1);
-                expect(lifecycleInfos.get("all")[2].objects).toContain(container.communicationManager.identity);
-                expect(lifecycleInfos.get("all")[2].objects).toContain(deviceController.identity);
-                expect(lifecycleInfos.get("all")[2].objects).toContain(objectController.identity);
+                expect(lifecycleInfos.get("all")[0].added.length).toBe(1);
+                expect(lifecycleInfos.get("all")[0].added).toContain(container.communicationManager.identity);
+                expect(lifecycleInfos.get("all")[1].added.length).toBe(1);
+                expect([deviceController.identity, objectController.identity])
+                    .toContain(lifecycleInfos.get("all")[1].added[0] as Component);
+                expect(lifecycleInfos.get("all")[2].added.length).toBe(1);
+                expect([deviceController.identity, objectController.identity])
+                    .toContain(lifecycleInfos.get("all")[2].added[0] as Component);
 
                 expect(lifecycleInfos.get("container").length).toBe(1);
-                expect(lifecycleInfos.get("container")[0].addedIds.length).toBe(1);
-                expect(lifecycleInfos.get("container")[0].addedIds).toContain(container.communicationManager.identity.objectId);
-                expect(lifecycleInfos.get("container")[0].objects.length).toBe(1);
-                expect(lifecycleInfos.get("container")[0].objects).toContain(container.communicationManager.identity);
+                expect(lifecycleInfos.get("container")[0].added.length).toBe(1);
+                expect(lifecycleInfos.get("container")[0].added).toContain(container.communicationManager.identity);
 
                 expect(lifecycleInfos.get("controller").length).toBe(1);
-                expect(lifecycleInfos.get("controller")[0].addedIds.length).toBe(1);
-                expect(lifecycleInfos.get("controller")[0].addedIds).toContain(objectController.identity.objectId);
-                expect(lifecycleInfos.get("controller")[0].objects.length).toBe(1);
-                expect(lifecycleInfos.get("controller")[0].objects).toContain(objectController.identity);
+                expect(lifecycleInfos.get("controller")[0].added.length).toBe(1);
+                expect(lifecycleInfos.get("controller")[0].added).toContain(objectController.identity);
             });
         }, TEST_TIMEOUT);
 
