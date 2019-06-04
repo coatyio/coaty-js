@@ -780,6 +780,7 @@ class MyController extends Controller {
     private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
         const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
         this._lifecycleSubscription = lifecycleController
             .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
@@ -794,6 +795,7 @@ class MyController extends Controller {
     }
 
     onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
         if (this._lifecycleSubscription) {
             // Stop observing lifecycle info of identity components for light agents.
             this._lifecycleSubscription.unsubscribe();
@@ -813,6 +815,7 @@ class MyController extends ObjectLifecycleController {
     private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
         this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever identity components for light agents are
@@ -825,6 +828,7 @@ class MyController extends ObjectLifecycleController {
     }
 
     onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
         if (this._lifecycleSubscription) {
             // Stop observing lifecycle info of identity components for light agents.
             this._lifecycleSubscription.unsubscribe();
@@ -874,10 +878,12 @@ class CustomObjectAdvertisingController extends ObjectLifecycleController {
     }
 
     onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
         this._myCustomObjectLifecycleSubscription = this.advertiseDiscoverableObject(this.myCustomObject);
     }
 
     onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
         if (_myCustomObjectLifecycleSubscription) {
             // Stop observing/resolving Discover events for the custom object that have
             // been set up in advertiseDiscoverableObject.
@@ -897,6 +903,7 @@ class CustomObjectTrackingController extends ObjectLifecycleController {
     private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
         this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
             .subscribe(info => {
                 // Called whenever custom objects of type "com.example.MyCustomObject" are
@@ -909,6 +916,7 @@ class CustomObjectTrackingController extends ObjectLifecycleController {
     }
 
     onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
         if (this._lifecycleSubscription) {
             // Stop observing lifecycle info for custom objects of type "com.example.MyCustomObject".
             this._lifecycleSubscription.unsubscribe();
