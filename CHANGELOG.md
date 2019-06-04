@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.9.0"></a>
+# [1.9.0](https://github.com/coatyio/coaty-js/compare/v1.8.0...v1.9.0) (2019-06-04)
+
+This feature release provides additional convenience methods for ObjectLifecycleController.
+
+### Features
+
+* **controller:** add new methods to [`ObjectLifecycleController`](https://coatyio.github.io/coaty-js/man/developer-guide/#object-lifecycle-controller) to advertise/readvertise/deadvertise custom objects and observe/resolve corresponding Discover events ([48df161](https://github.com/coatyio/coaty-js/commit/48df161))
+
 <a name="1.8.0"></a>
 # [1.8.0](https://github.com/coatyio/coaty-js/compare/v1.7.2...v1.8.0) (2019-05-29)
 
