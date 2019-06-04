@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.9.1"></a>
+## [1.9.1](https://github.com/coatyio/coaty-js/compare/v1.9.0...v1.9.1) (2019-06-04)
+
+This patch release provides a breaking change to the object lifecycle controller's public interface.
+
+### Bug Fixes
+
+* **controller:** redesign ObjectLifecycleInfo interface; BREAKING CHANGE: provide change info as objects ([592a252](https://github.com/coatyio/coaty-js/commit/592a252))
+
 <a name="1.9.0"></a>
 # [1.9.0](https://github.com/coatyio/coaty-js/compare/v1.8.0...v1.9.0) (2019-06-04)
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ObjectLifecycleInfo | coaty v1.9.0</title>
+	<title>ObjectLifecycleInfo | coaty v1.9.1</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">coaty v1.9.0</a>
+					<a href="../index.html" class="title">coaty v1.9.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -67,9 +67,10 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents the current objects kept for lifecycle management by the
+						<p>Represents changes in the objects kept for lifecycle management by the
 							<code>ObjectLifecycleController</code>. Changes are provided by the properties <code>added</code>,
-						<code>removed</code>, or <code>changed</code> where exactly one is set.</p>
+							<code>removed</code>, or <code>changed</code> where exactly one is set and the others are not
+						defined.</p>
 					</div>
 				</div>
 			</section>
@@ -88,10 +89,9 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#addedids" class="tsd-kind-icon">added<wbr>Ids</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#changedids" class="tsd-kind-icon">changed<wbr>Ids</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#objects" class="tsd-kind-icon">objects</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#removedids" class="tsd-kind-icon">removed<wbr>Ids</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#added" class="tsd-kind-icon">added</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#changed" class="tsd-kind-icon">changed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="objectlifecycleinfo.html#removed" class="tsd-kind-icon">removed</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,65 +100,51 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="addedids" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> added<wbr>Ids</h3>
-					<div class="tsd-signature tsd-kind-icon">added<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="added" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> added</h3>
+					<div class="tsd-signature tsd-kind-icon">added<span class="tsd-signature-symbol">:</span> <a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/48df161/src/controller/object-lifecycle-controller.ts#L31">controller/object-lifecycle-controller.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/592a252/src/controller/object-lifecycle-controller.ts#L26">controller/object-lifecycle-controller.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Array of object ids which have been newly advertised or discovered
-							(optional).</p>
+							<p>Array of objects which have been newly advertised or discovered
+							(optional). The value is not defined if no additions occured.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="changedids" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> changed<wbr>Ids</h3>
-					<div class="tsd-signature tsd-kind-icon">changed<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="changed" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> changed</h3>
+					<div class="tsd-signature tsd-kind-icon">changed<span class="tsd-signature-symbol">:</span> <a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/48df161/src/controller/object-lifecycle-controller.ts#L42">controller/object-lifecycle-controller.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/592a252/src/controller/object-lifecycle-controller.ts#L33">controller/object-lifecycle-controller.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Array of object ids which have been readvertised or rediscovered with
-							different object properties (optional).</p>
+							<p>Array of objects which have been readvertised or rediscovered with
+								different object properties (optional). The value is not defined if no
+							changes occured.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="objects" class="tsd-anchor"></a>
-					<h3>objects</h3>
-					<div class="tsd-signature tsd-kind-icon">objects<span class="tsd-signature-symbol">:</span> <a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="removed" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> removed</h3>
+					<div class="tsd-signature tsd-kind-icon">removed<span class="tsd-signature-symbol">:</span> <a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/48df161/src/controller/object-lifecycle-controller.ts#L25">controller/object-lifecycle-controller.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/592a252/src/controller/object-lifecycle-controller.ts#L39">controller/object-lifecycle-controller.ts:39</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Array of objects currently monitored for lifecycle management after most
-							recent changes have been applied.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="removedids" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> removed<wbr>Ids</h3>
-					<div class="tsd-signature tsd-kind-icon">removed<wbr>Ids<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/48df161/src/controller/object-lifecycle-controller.ts#L36">controller/object-lifecycle-controller.ts:36</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Array of object ids which have been deadvertised (optional).</p>
+							<p>Array of objects which have been deadvertised (optional). The value is
+							not defined if no removals occured.</p>
 						</div>
 					</div>
 				</section>
@@ -180,16 +166,13 @@
 						<a href="objectlifecycleinfo.html" class="tsd-kind-icon">Object<wbr>Lifecycle<wbr>Info</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="objectlifecycleinfo.html#addedids" class="tsd-kind-icon">added<wbr>Ids</a>
+								<a href="objectlifecycleinfo.html#added" class="tsd-kind-icon">added</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="objectlifecycleinfo.html#changedids" class="tsd-kind-icon">changed<wbr>Ids</a>
+								<a href="objectlifecycleinfo.html#changed" class="tsd-kind-icon">changed</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="objectlifecycleinfo.html#objects" class="tsd-kind-icon">objects</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="objectlifecycleinfo.html#removedids" class="tsd-kind-icon">removed<wbr>Ids</a>
+								<a href="objectlifecycleinfo.html#removed" class="tsd-kind-icon">removed</a>
 							</li>
 						</ul>
 					</li>
