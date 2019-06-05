@@ -769,20 +769,25 @@ The following example shows how to keep track of identity components of specific
 agents whose communication manager has an identity named `"LightAgent"`.
 
 This approach assumes the lifecycle container has been added to the container
-components:
+components under the name `ObjectLifecycleController`:
 
 ```ts
 import { Controller, ObjectLifecycleController } from "coaty/controller";
+import { Container } from "coaty/runtime";
 import { Subscription } from "rxjs";
 
 class MyController extends Controller {
 
+    private _lifecycleController: ObjectLifecycleController;
     private _lifecycleSubscription: Subscription;
+
+    onContainerResolved(container: Container) {
+        this._lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+    }
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
-        this._lifecycleSubscription = lifecycleController
+        this._lifecycleSubscription = this._lifecycleController
             .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever identity components for light agents have changed.
