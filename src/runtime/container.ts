@@ -162,11 +162,17 @@ export class Container {
 
     /**
      * Gets the registered controller of the given controller name.
-     * Returns undefined if a controller with the given name is not registered in the `Components`.
+     * Returns `undefined` if a controller with the given name is not registered in `Components`.
      * @param controllerName the name of the controller specified as `Components` key for the controller
      */
     getController<T extends IController>(controllerName: string): T {
-        return this._controllers && this._controllers.get(controllerName)[0] as T;
+        if (this._controllers) {
+            const ctrl = this._controllers.get(controllerName);
+            if (ctrl) {
+                return ctrl[0] as T;
+            }
+        }
+        return undefined;
     }
 
     /**

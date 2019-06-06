@@ -201,6 +201,23 @@ describe("Bootstrapping", () => {
                 .not.toHaveBeenCalled();
         });
 
+        it("gets controllers that are registered", () => {
+            const container = Container.resolve(
+                components,
+                provideConfiguration(getConfigFile("bootstrap.config.js")));
+
+            expect(container.getController("FooController"))
+                .toBeUndefined();
+            expect(container.getController("MockObjectController1"))
+                .toBeDefined();
+            expect(container.getController("MockObjectController2"))
+                .toBeDefined();
+            expect(container.getController("MockObjectController3"))
+                .toBeDefined();
+            expect(container.getController("MockObjectController4"))
+                .toBeDefined();
+        });
+
         it("has proper package version info in runtime", () => {
             Container.resolve(
                 components,
