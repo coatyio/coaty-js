@@ -17,7 +17,7 @@ import { Container } from "../container";
 export class NodeUtils {
 
     /**
-     * Perform synchronous and asynchrounous cleanup of allocated resources
+     * Perform synchronous and asynchronous cleanup of allocated resources
      * (e.g. file descriptors, handles, DB connections, etc.) before shutting down the Node.js process.
      * 
      * @param cleanup callback function for synchronous cleanup (optional)
