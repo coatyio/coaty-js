@@ -1,5 +1,18 @@
 # Changelog
 
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/coatyio/coaty-js/compare/v1.9.1...v1.10.0) (2019-06-12)
+
+This feature release adds support for secure communication with the Coaty development broker.
+
+### Bug Fixes
+
+* **runtime:** return `undefined` in `Container.getController()` instead of throwing an error if controller with the given name is not registered ([2e61b34](https://github.com/coatyio/coaty-js/commit/2e61b34))
+
+### Features
+
+* **scripts/broker:** add support for secure TLS communication with Coaty development broker (see documentation [here](https://coatyio.github.io/coaty-js/man/developer-guide/#coaty-broker-for-development)) ([9f23519](https://github.com/coatyio/coaty-js/commit/9f23519))
+
 <a name="1.9.1"></a>
 ## [1.9.1](https://github.com/coatyio/coaty-js/compare/v1.9.0...v1.9.1) (2019-06-04)
 
