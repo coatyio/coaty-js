@@ -1,5 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+const fs = require("fs");
 const utils = require("./utils");
 
 // For JSDoc documentation, see type definition file (d.ts)
@@ -28,9 +29,14 @@ function run(brokerOptions) {
 
     const node = require("../runtime-node");
 
-    const aedes = require("aedes")(brokerOptions.brokerSpecificOpts || {});
-    const tcpServer = require('net').createServer(aedes.handle);
-    const wsServer = require('http').createServer();
+    const aedes = require("aedes")(brokerOptions.brokerSpecificOpts || {});  
+    const isTls = typeof brokerOptions.tlsServerOpts === "object";
+    const tcpServer = isTls ?
+        require('tls').createServer(brokerOptions.tlsServerOpts, aedes.handle) :
+        require('net').createServer(aedes.handle);
+    const wsServer = isTls ?
+        require('https').createServer(brokerOptions.tlsServerOpts) :
+        require('http').createServer();
     const ws = require('websocket-stream');
 
     ws.createServer({
@@ -40,7 +46,7 @@ function run(brokerOptions) {
 
     tcpServer.listen(port, () => {
         wsServer.listen(wsPort, () => {
-            utils.logInfo(`Coaty MQTT Broker running on TCP port ${port} and websocket port ${wsPort}...`);
+            utils.logInfo(`Coaty MQTT Broker running on TCP ${isTls ? "secure " : ""}port ${port} and websocket ${isTls ? "secure " : ""}port ${wsPort}...`);
             if (options.startBonjour && port === defaultPort) {
                 node.MulticastDnsDiscovery.publishMqttBrokerService(
                     port,
@@ -99,33 +105,55 @@ function run(brokerOptions) {
 
 module.exports.run = run;
 
+/**
+ * Converts command arguments to broker options.
+ * 
+ * Supported command args include:
+ * [--verbose], [--port <port>], [--bonjourHost <hostname>], [--nobonjour],
+ * [--tls-cert], [--tls-key], [--tls-pfx], [--tls-passphrase]
+ *
+ * @param args comand args
+ */
 function getBrokerOptions(args) {
-    // Supported command args: [--verbose], [--port <port>], [--bonjourHost <hostname>], [--nobonjour]
-    let port = 1883;
-    const logVerbose = args.includes("--verbose");
-    const portIndex = args.indexOf("--port");
-    if (portIndex !== -1) {
+    const processArgNoVal = (name) => {
+        return args.indexOf(name) !== -1;
+    }
+    const processArgVal = (name, defaultValue, converter) => {
+        let value;
+        const index = args.indexOf(name);
+        if (index === -1) {
+            return defaultValue;
+        }
         try {
-            port = parseInt(args[portIndex + 1], 10);
-            if (isNaN(port)) {
-                throw new Error();
-            }
+            value = args[index + 1];
+            return converter ? converter(value) : value;
         } catch (error) {
-            utils.logError(`Invalid broker port.`);
+            utils.logError(`${name} argument: value is missing or invalid: ${error}`);
             process.exit(1);
         }
-    }
-    let bonjourHost;
-    const hostIndex = args.indexOf("--bonjourHost");
-    if (hostIndex !== -1) {
-        try {
-            bonjourHost = args[hostIndex + 1];
-        } catch (error) {
-            utils.logError(`Invalid bonjourHost argument.`);
-            process.exit(1);
-        }
-    }
-    const startBonjour = args.indexOf("--nobonjour") === -1;
+    };
 
-    return { logVerbose, port, bonjourHost, startBonjour };
+    const logVerbose = processArgNoVal("--verbose");
+    const port = processArgVal("--port", 1883, value => {
+        const val = parseInt(value);
+        if (isNaN(val)) {
+            throw new Error();
+        }
+        return val;
+    });
+    const bonjourHost = processArgVal("--bonjourHost", undefined);
+    const startBonjour = !processArgNoVal("--nobonjour");
+    const tlsCert = processArgVal("--tls-cert", undefined, file => fs.readFileSync(file));
+    const tlsKey = processArgVal("--tls-key", undefined, file => fs.readFileSync(file));
+    const tlsPfx = processArgVal("--tls-pfx", undefined, file => fs.readFileSync(file));
+    const tlsPassphrase = processArgVal("--tls-passphrase", undefined);
+
+    let tlsServerOpts;
+    if (tlsCert && tlsKey) {
+        tlsServerOpts = { cert: tlsCert, key: tlsKey };
+    } else if (tlsPfx && tlsPassphrase) {
+        tlsServerOpts = { pfx: tlsPfx, passphrase: tlsPassphrase };
+    }
+
+    return { logVerbose, port, bonjourHost, startBonjour, tlsServerOpts };
 }

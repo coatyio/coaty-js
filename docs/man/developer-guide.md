@@ -3642,25 +3642,35 @@ The broker script provides the following options:
 
 ```sh
 coaty-scripts broker [--verbose] [--port <port>] [--bonjourHost <hostname>] [--nobonjour]
+                     [--tls-cert <cert-file>] [--tls-key <key-file>]
+                     [--tls-pfx <pfx-file>] [--tls-passphrase <passphrase>]
 ```
 
 Runs Coaty broker on MQTT port 1883 (or the one specified with command line
 option `--port <number>`) and websocket port 9883. The websocket port is
 computed from the given MQTT port by adding 8000.
 
-If the broker is launched on standard port 1883, a multicast DNS service for broker
-discovery is published additionally. The broker is then discoverable under the mDNS
-service name "Coaty MQTT Broker" and the service type "coaty-mqtt". In this case, you
-can optionally specifiy a non-default hostname for multicast DNS discovery with the
-command line option `--bonjourHost`. Useful for cases, where the normal hostname provided
-by mDNS cannot be resolved by DHCP.
+If the broker is launched on standard port 1883, a multicast DNS service for
+broker discovery is published additionally. The broker is then discoverable
+under the mDNS service name "Coaty MQTT Broker" and the service type
+"coaty-mqtt". In this case, you can optionally specifiy a non-default hostname
+for multicast DNS discovery with the command line option `--bonjourHost`. Useful
+for cases, where the normal hostname provided by mDNS cannot be resolved by
+DHCP.
 
-If you do not want to start the multicast DNS service for broker discovery, specify
-the `--nobonjour` option.
+If you do not want to start the multicast DNS service for broker discovery,
+specify the `--nobonjour` option.
 
 If the command line option `--verbose` is given, Coaty broker provides verbose
 logging of subscriptions. Additionally, all MQTT messages published by MQTT
 clients are logged on the console, including message topic and payload.
+
+You can also opt to run a broker with secure communication for both TCP and
+Websocket by specifying either the command line options `--tls-cert` and
+`--tls-key` or the options `tls-pfx` and `tls-passphrase`. Cert, key, and pfx
+options should point to a corresponding file (in PEM, CRT, or PFX format,
+respectively) relative to your project's root folder or to an absolute path
+location. Passphrase is a string used to decrypt the PFX.
 
 Alternatively, you can run the Coaty broker from within your application build
 scripts as follows:
@@ -3690,7 +3700,35 @@ Options are defined in an object hash including the following properties:
    mDNS service (optional). Useful for cases, where the normal hostname provided
    by mDNS cannot be resolved by DHCP.
 * `onReady`: callback function to be invoked when broker is ready (default none).
-* `brokerSpecificOpts`: options passed to underlying Aedes broker instance.
+* `brokerSpecificOpts`: options passed to underlying Aedes broker instance
+  (optional). For details, see
+  [https://github.com/mcollina/aedes#aedesopts](https://github.com/mcollina/aedes#aedesopts).
+* `tlsServerOpts`: options for secure communication for both TCP and Websocket
+  via node's [TLS
+  implementation](https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener).
+  Do *not* specify this property if you do not want secure communication.
+
+For example, to run a secure Coaty broker with a custom keep alive ping
+interval, use the following options:
+
+```js
+const fs = require("fs");
+
+broker.run({
+    brokerSpecificOpts: {
+        heartbeatInterval: 10000,   // 10sec; default is 60sec
+    },
+    tlsServerOpts: {
+        // Specify either cert-key pair (in CRT or PEM format).
+        key: fs.readFileSync("coaty-local.key"),
+        cert: fs.readFileSync("coaty-local.crt"),
+
+        // Alternatively, specify PFX format with passphrase.
+        // pfx: fs.readFileSync("coaty-local.pfx"),
+        // passphrase: "the passphrase to decrypt the PFX"
+    },
+});
+```
 
 ### Generate project meta info at build time
 
