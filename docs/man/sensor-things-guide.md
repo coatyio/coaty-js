@@ -649,22 +649,25 @@ SensorObserverController                       SensorSourceController
 ```
 
 SensorObserverController and SensorSourceController provide full counter-operative
-functionality and covers all necessary methods for Sensors. Application can use
+functionality and cover all necessary methods for Sensors. Applications can use
 ThingObserverController to find the Things in the system, however, they should
 create their own ThingSourceController to handle the requests from ThingObserverController.
 
 ### Detecting online and offline state of Sensor Things agents
 
-To detect the online/offline state of Sensor Things objects, the Deadvertise event
-communication pattern in combination with the MQTT last will concept can be used.
-This is described in detail in the Coaty developer guide under section
-*Deadvertise event pattern - an example*.
+To detect the online/offline state of Sensor Things objects, the Deadvertise
+event communication pattern in combination with the MQTT last will concept can
+be used. To ease programming this pattern, Coaty provides a convenience
+controller class named `ObjectLifecycleController`. This is described in detail
+in the Coaty Developer Guide under section [*Deadvertise event pattern - an
+example*](https://coatyio.github.io/coaty-js/man/developer-guide/#deadvertise-event-pattern---an-example).
 
 Basically, the idea is to set the parent object ID of advertised Thing objects
-originating from a specific Coaty sensor agent to the identity ID (or associated device ID)
-of the agent's communication manager. In case this agent is disconnected other agents can observe
-Deadvertise events and check whether one of the deadvertised object IDs correlates with the
-parent object ID of any Thing objects the agent is managing and invoke specific actions.
+originating from a specific Coaty sensor agent to the identity ID (or associated
+device ID) of the agent's communication manager. In case this agent is
+disconnected other agents can observe Deadvertise events and check whether one
+of the deadvertised object IDs correlates with the parent object ID of any Thing
+objects the agent is managing and invoke specific actions.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a
