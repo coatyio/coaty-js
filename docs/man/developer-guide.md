@@ -2981,7 +2981,7 @@ const configuration: Configuration = {
 };
 
 import { DbContext } from "coaty/db";
-import { InMemoryAdapter } from "coaty/db-in-memory";
+import { InMemoryAdapter } from "coaty/db-adapter-in-memory";
 
 const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"], InMemoryAdapter);
 
