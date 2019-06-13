@@ -3708,25 +3708,22 @@ Options are defined in an object hash including the following properties:
   implementation](https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener).
   Do *not* specify this property if you do not want secure communication.
 
-For example, to run a secure Coaty broker with a custom keep alive ping
-interval, use the following options:
+For example, to run a secure Coaty broker with a server certificate, use the
+following options:
 
 ```js
 const fs = require("fs");
 
 broker.run({
-    brokerSpecificOpts: {
-        heartbeatInterval: 10000,   // 10sec; default is 60sec
-    },
     tlsServerOpts: {
         // Specify either cert-key pair (in CRT or PEM format).
-        key: fs.readFileSync("coaty-local.key"),
-        cert: fs.readFileSync("coaty-local.crt"),
+        key: fs.readFileSync("server.key"),
+        cert: fs.readFileSync("server.crt"),
 
         // Alternatively, specify PFX format with passphrase.
-        // pfx: fs.readFileSync("coaty-local.pfx"),
+        // pfx: fs.readFileSync("server.pfx"),
         // passphrase: "the passphrase to decrypt the PFX"
-    },
+    }
 });
 ```
 
