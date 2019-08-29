@@ -101,7 +101,13 @@ export class CommunicationManager implements IComponent {
     private _ioValueItems: Map<Uuid, AnyValueItem>;
 
     // Support deferred pub/sub on client (re)connection
-    private _deferredPublications: Array<{ topic: string, payload: string, options: IClientPublishOptions }>;
+    private _deferredPublications: Array<{
+        topic: string,
+        payload: any,
+        options: IClientPublishOptions,
+        isAdvertiseIdentity: boolean,
+        isAdvertiseDevice: boolean,
+    }>;
     private _deferredSubscriptions: string[];
 
     constructor(runtime: Runtime, options: CommunicationOptions) {
@@ -577,8 +583,7 @@ export class CommunicationManager implements IComponent {
         }
 
         // Ensure a Deadvertise event/last will is emitted for an advertised Component or Device.
-        if (event.eventData.object.coreType === "Component" ||
-            event.eventData.object.coreType === "Device") {
+        if (coreType === "Component" || coreType === "Device") {
             this._deadvertiseIds.find(id => id === event.eventData.object.objectId) ||
                 this._deadvertiseIds.push(event.eventData.object.objectId);
         }
@@ -1212,13 +1217,31 @@ export class CommunicationManager implements IComponent {
         // Ensure deferred advertisements of identity and associated device are always 
         // published before any other communication events.
         let shouldPublishDeferredFirst = false;
-        if (eventType === CommunicationEventType.Advertise &&
-            ((eventData as AdvertiseEventData).object.coreType === "Component" ||
-                (eventData as AdvertiseEventData).object.coreType === "Device")) {
-            shouldPublishDeferredFirst = true;
+        let isAdvertiseIdentity = false;
+        let isAdvertiseDevice = false;
+        if (eventType === CommunicationEventType.Advertise) {
+            const object = (eventData as AdvertiseEventData).object;
+            if (object.coreType === "Component") {
+                shouldPublishDeferredFirst = true;
+                if (object.objectId === this.identity.objectId) {
+                    isAdvertiseIdentity = true;
+                }
+            } else if (object.coreType === "Device") {
+                shouldPublishDeferredFirst = true;
+                if (this._associatedDevice && object.objectId === this._associatedDevice.objectId) {
+                    isAdvertiseDevice = true;
+                }
+            }
         }
 
-        const publisher = this._getPublisher(topic.getTopicName(), eventData.toJsonObject(), false, false, shouldPublishDeferredFirst);
+        const publisher = this._getPublisher(
+            topic.getTopicName(),
+            eventData.toJsonObject(),
+            false,
+            false,
+            shouldPublishDeferredFirst,
+            isAdvertiseIdentity,
+            isAdvertiseDevice);
         let responseType: CommunicationEventType;
 
         switch (eventType) {
@@ -1258,15 +1281,24 @@ export class CommunicationManager implements IComponent {
         return undefined;
     }
 
-    private _getPublisher(topicName: string, data: any, isDataRaw = false, shouldRetain = false, publishDeferredFirst = false) {
+    private _getPublisher(
+        topicName: string,
+        data: any,
+        isDataRaw = false,
+        shouldRetain = false,
+        publishDeferredFirst = false,
+        isAdvertiseIdentity = false,
+        isAdvertiseDevice = false) {
         return () => {
             const payload = isDataRaw ? data : JSON.stringify(data);
             const pubOptions: IClientPublishOptions = { qos: 0, retain: shouldRetain };
             const deferPublication = () => {
                 const msg = {
                     topic: topicName,
-                    payload: payload,
+                    payload,
                     options: pubOptions,
+                    isAdvertiseIdentity,
+                    isAdvertiseDevice,
                 };
                 if (publishDeferredFirst) {
                     this._deferredPublications.unshift(msg);
@@ -1389,19 +1421,25 @@ export class CommunicationManager implements IComponent {
     }
 
     private _advertiseIdentityOrDevice() {
-        // Advertise associated device if existing
+        // Advertise associated device once if existing.
         // (cp. _observeDiscoverDevice)
         if ((this.options.shouldAdvertiseDevice === undefined ||
             this.options.shouldAdvertiseDevice === true) &&
             this._associatedDevice) {
-            this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this._associatedDevice));
+            // Republish only once on failed reconnection attempts.
+            if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseDevice)) {
+                this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this._associatedDevice));
+            }
         }
 
-        // Advertise identity
+        // Advertise identity once if needed.
         // (cp. _observeDiscoverIdentity)
         if (this.options.shouldAdvertiseIdentity === undefined ||
             this.options.shouldAdvertiseIdentity === true) {
-            this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
+            // Republish only once on failed reconnection attempts.
+            if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseIdentity)) {
+                this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
+            }
         }
 
         if (this._deadvertiseIds.length === 0) {
