@@ -526,9 +526,9 @@ module.exports = {
     // This allows code originally written for the Node.js environment to run in other environments
     // like the browser.
     //
-    // Starting with Angular CLI 6, webpack doesn't configure these shims for Node.js global variables 
-    // any more by default. Nut some of these (process, global, Buffer, etc.) are required by 
-    // MQTT.js sdependency modules when run in the browser.
+    // Starting with Angular CLI 6, webpack doesn't configure these shims for Node.js global variables
+    // any more by default. But some of these (process, global, Buffer, etc.) are required by
+    // MQTT.js dependency modules when run in the browser.
     node: {
         console: false,
         global: true,
@@ -552,7 +552,7 @@ the custom webpack config file by using custom builders for the build and serve 
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "customWebpackConfig": {
-                "path": "./webpack.extra.config.js"
+                "path": "./webpack.node-polyfills.config.js"
              },
 
 
