@@ -6,8 +6,8 @@ recommend reviewing this framework documentation:
 
 * [Developer Guide]({{ site.baseurl }}{% link man/developer-guide.md %}) -
   how to build a Coaty application with the Coaty JS framework
-* [Source Code Documentation]({{ site.baseurl }}{% link tsdoc/index.html %}) -
-  complete documentation of all public types and members of the Coaty JS sources
+* [API Documentation]({{ site.baseurl }}{% link tsdoc/index.html %}) - complete
+  code documentation of all public types and members of the Coaty JS sources
 * [Coding Style Guide]({{ site.baseurl }}{% link man/coding-style-guide.md %}) -
   guidelines for coding with the Coaty JS framework
 * [Communication Protocol]({{ site.baseurl }}{% link man/communication-protocol.md %}) -

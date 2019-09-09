@@ -28,8 +28,8 @@ The Coaty JS package provides the cross-platform implementation targeted at
 JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
 services.
 
-Coaty JS comes with complete source code documentation, a Developer Guide,
-a Coding Style Guide, and best-practice examples.
+Coaty JS comes with complete API documentation, a Developer Guide, a Coding
+Style Guide, and best-practice examples.
 
 ## Learn how to use
 
@@ -40,7 +40,7 @@ This documentation includes:
 
 * a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide/)
   that provides the basics to get started developing an agent project with the Coaty JS framework,
-* a complete [code documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
+* a complete [API documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
   of all public type and member definitions of the Coaty JS framework sources,
 * a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/)
   for Coaty JS framework and application developers,
