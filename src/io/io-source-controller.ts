@@ -7,6 +7,7 @@ import { IoStateEvent } from "../com/io-state";
 import { Controller } from "../controller/controller";
 import { IoSource, IoSourceBackpressureStrategy } from "../model/io-point";
 import { Uuid } from "../model/object";
+import { clone } from "../util/deep";
 
 /**
  * A tuple related to an IoSource:
@@ -82,7 +83,7 @@ export class IoSourceController extends Controller {
             typeof value === "boolean" ||
             typeof value === "number" ||
             typeof value === "object") {
-            value = JSON.parse(JSON.stringify(value));
+            value = clone(value);
         }
 
         updateSubject.next(value);
