@@ -176,27 +176,33 @@ export class MulticastDnsDiscovery {
     private static readonly bonjour = bonjourFunc();
 
     /**
-     * Publish a multicast DNS (a.k.a mDNS, Bonjour, Zeroconf) service with the given parameters. Typically used for 
-     * discovering the Coaty broker/router or for discovering Coaty configuration URLs hosted on 
-     * a web server. The published mDNS service contains a JSON TXT record including specific connection
-     * parameters. The keys and values of these parameters are always strings so you can 
-     * easily concat them to form a URL, etc.
-     * 
-     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
-     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
-     * can pass the target IP address of your mDNS service explicitely.
-     * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
-     * If an error occurs while publishing, the promise is rejected.
-     * 
+     * Publish a multicast DNS (a.k.a mDNS, Bonjour, Zeroconf) service with the
+     * given parameters. Typically used for discovering the Coaty broker/router
+     * or for discovering Coaty configuration URLs hosted on a web server. The
+     * published mDNS service contains a JSON TXT record including specific
+     * connection parameters. The keys and values of these parameters are always
+     * strings so you can easily concat them to form a URL, etc.
+     *
+     * Note that the `host` parameter is optional. By default, the local
+     * hostname is used (not the local host IP address!). To resolve this
+     * hostname, your network DNS system must be configured properly. If this is
+     * not the case, you can pass the target IP address of your mDNS service
+     * explicitely.
+     *
+     * The function returns a promise that is resolved with the published
+     * service object of type `MulticastDnsService`. If an error occurs while
+     * publishing, the promise is rejected.
+     *
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
-     * 
+     *
      * @param name the name of the mDNS service
      * @param type the type of the mDNS service
      * @param port the port of the mDNS service
-     * @param txtRecord the TXT record containing additional key value pairs (optional)
-     * @param host the host IP address to be published with the service (optional, defaults to local hostname)
+     * @param txtRecord the TXT record containing additional key value pairs
+     * (optional)
+     * @param host the host IP address to be published with the service
+     * (optional, defaults to local hostname)
      */
     public static publishMulticastDnsService(
         name: string,
@@ -219,25 +225,32 @@ export class MulticastDnsDiscovery {
     }
 
     /**
-     * Publish Coaty MQTT broker information using a multicast DNS (a.k.a mDNS, Bonjour) service with the given parameters.
-     * 
-     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
-     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
-     * can pass the target IP address of your mDNS service explicitely.
-     * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
-     * If an error occurs while publishing, the promise is rejected.
-     * 
-     * The broker's websocket port (`ws-port`) is published in the TXT record of the service.
-     * 
+     * Publish Coaty MQTT broker information using a multicast DNS (a.k.a mDNS,
+     * Bonjour) service with the given parameters.
+     *
+     * Note that the `host` parameter is optional. By default, the local
+     * hostname is used (not the local host IP address!). To resolve this
+     * hostname, your network DNS system must be configured properly. If this is
+     * not the case, you can pass the target IP address of your mDNS service
+     * explicitely.
+     *
+     * The function returns a promise that is resolved with the published
+     * service object of type `MulticastDnsService`. If an error occurs while
+     * publishing, the promise is rejected.
+     *
+     * The broker's websocket port (`ws-port`) is published in the TXT record of
+     * the service.
+     *
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
-     * 
+     *
      * @param port the broker's port (default value is 1883)
      * @param wsPort the broker's websocket port (default value is 9883)
-     * @param name the name of the mDNS service (default value is `Coaty MQTT Broker`)
+     * @param name the name of the mDNS service (default value is `Coaty MQTT
+     * Broker`)
      * @param type the type of the mDNS service (default value is `coaty-mqtt`)
-     * @param host the broker IP address to be published with the service (default is local hostname)
+     * @param host the broker IP address to be published with the service
+     * (default is local hostname)
      */
     public static publishMqttBrokerService(port?: number, wsPort?: number, name?: string, type?: string, host?: string)
         : Promise<MulticastDnsService> {
@@ -250,26 +263,33 @@ export class MulticastDnsDiscovery {
     }
 
     /**
-     * Publish Coaty WAMP router information using a multicast DNS (a.k.a mDNS, Bonjour) service with the given parameters.
-     * 
-     * Note that the `host` parameter is optional. By default, the local hostname is used (not the local host IP address!).
-     * To resolve this hostname, your network DHCP system must be configured properly. If this is not the case, you
-     * can pass the target IP address of your mDNS service explicitely.
-     * 
-     * The function returns a promise that is resolved with the published service object of type `MulticastDnsService`.
-     * If an error occurs while publishing, the promise is rejected.
-     * 
-     * The WAMP router's URL path (`path`) and realm (`realm`) is published in the TXT record of the service.
-     * 
+     * Publish Coaty WAMP router information using a multicast DNS (a.k.a mDNS,
+     * Bonjour) service with the given parameters.
+     *
+     * Note that the `host` parameter is optional. By default, the local
+     * hostname is used (not the local host IP address!). To resolve this
+     * hostname, your network DNS system must be configured properly. If this is
+     * not the case, you can pass the target IP address of your mDNS service
+     * explicitely.
+     *
+     * The function returns a promise that is resolved with the published
+     * service object of type `MulticastDnsService`. If an error occurs while
+     * publishing, the promise is rejected.
+     *
+     * The WAMP router's URL path (`path`) and realm (`realm`) is published in
+     * the TXT record of the service.
+     *
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
-     * 
+     *
      * @param path the router's URL path (default value is `/`)
      * @param realm the router's realm (default value is `coaty-app`)
      * @param port the router's port (default value is 80)
-     * @param name the name of the mDNS service (default value is `Coaty WAMP Router`)
+     * @param name the name of the mDNS service (default value is `Coaty WAMP
+     * Router`)
      * @param type the type of the mDNS service (default value is `coaty-wamp`)
-     * @param host the router IP address to be published with the service (default is local hostname)
+     * @param host the router IP address to be published with the service
+     * (default is local hostname)
      */
     public static publishWampRouterService(path?: string, realm?: string, port?: number, name?: string, type?: string, host?: string)
         : Promise<MulticastDnsService> {
@@ -369,17 +389,25 @@ export class MulticastDnsDiscovery {
     }
 
     /**
-     * Gets the network IP address (IPv4) of the local machine.
-     * 
+     * Gets the first IPv4 address of the specified network interface of the
+     * local machine. If no network interface name is specified, the first IPv4
+     * address of the first network interface that provides an IPv4 address is
+     * returned. Returns `undefined` if no IPv4 address could be looked up.
+     *
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
      */
-    public static getLocalIpV4Address() {
+    public static getLocalIpV4Address(networkInterface?: string) {
         const ifs = require("os").networkInterfaces();
-        return Object.keys(ifs)
+        const addresses = Object.keys(ifs)
+            .filter(name => networkInterface ? name === networkInterface : true)
             .map(x => [x, ifs[x].filter(y => y.family === "IPv4" && !y.internal)[0]])
             .filter(x => x[1])
-            .map(x => x[1].address)[0];
+            .map(x => x[1].address);
+        if (addresses.length === 0) {
+            return undefined;
+        }
+        return addresses[0] as string;
     }
 
 }
