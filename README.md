@@ -5,10 +5,12 @@
 [![release](https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg)](https://conventionalcommits.org/)
 [![npm version](https://badge.fury.io/js/coaty.svg)](https://www.npmjs.com/package/coaty)
 
-The Coaty framework enables realization of collaborative IoT applications and scenarios
-in a distributed, decentralized fashion. A *Coaty application* consists of *Coaty agents*
-that act independently and communicate with each other to achieve common goals. Coaty
-agents can run on IoT devices, mobile devices, in microservices, cloud or backend services.
+Using the Coaty [koʊti] framework as a middleware, you can build distributed
+applications out of decentrally organized application components, so called
+*Coaty agents*, which are loosely coupled and communicate with each other in
+(soft) real-time. The main focus is on IoT prosumer scenarios where smart agents
+act in an autonomous, collaborative, and ad-hoc fashion. Coaty agents can run on
+IoT devices, mobile devices, in microservices, cloud or backend services.
 
 The Coaty framework provides a production-ready application and communication layer
 foundation for building collaborative IoT applications in an easy-to-use yet powerful and
@@ -28,8 +30,8 @@ The Coaty JS package provides the cross-platform implementation targeted at
 JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
 services.
 
-Coaty JS comes with complete API documentation, a Developer Guide, a Coding
-Style Guide, and best-practice examples.
+Coaty JS comes with complete API documentation, a developer guide, a coding
+style guide, and best-practice examples.
 
 ## Learn how to use
 
