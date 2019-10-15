@@ -1,5 +1,18 @@
 # Changelog
 
+<a name="1.11.0"></a>
+# [1.11.0](https://github.com/coatyio/coaty-js/compare/v1.10.1...v1.11.0) (2019-10-15)
+
+This release provides a new feature regarding mDNS and a patch for the Postgres database adapter.
+
+### Bug Fixes
+
+* **db:** correct bug in call extension `initDatabase` of PostgresAdapter ([90da87a](https://github.com/coatyio/coaty-js/commit/90da87a))
+
+### Features
+
+* **runtime-node:** extend `MulticastDnsDiscovery.getLocalIpV4Address` to accept a specific network interface ([eb83913](https://github.com/coatyio/coaty-js/commit/eb83913))
+
 <a name="1.10.1"></a>
 ## [1.10.1](https://github.com/coatyio/coaty-js/compare/v1.10.0...v1.10.1) (2019-08-29)
 
