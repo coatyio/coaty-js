@@ -169,7 +169,8 @@ export class DiscoverEventData extends CommunicationEventData {
     }
 
     /**
-     * Determines whether this event data discovers an object based on an external ID.
+     * Determines whether this event data discovers an object based on an external ID
+     * but not an object ID.
      */
     get isDiscoveringExternalId() {
         return this._externalId !== undefined && this._objectId === undefined;

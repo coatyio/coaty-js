@@ -64,7 +64,8 @@ export class IoActorController extends Controller {
     }
 
     /**
-     * Gets the last IO value emittetd to the given IO actor.
+     * Gets the last IO value emitted to the given IO actor.
+     * 
      * @param actor an IO actor object
      */
     getIoValue<T>(actor: IoActor): T {

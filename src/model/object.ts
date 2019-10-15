@@ -47,7 +47,7 @@ export interface CoatyObject {
     parentObjectId?: Uuid;
 
     /**
-     * Unique ID of user/worker whom this object has been assigned to (optional)
+     * Unique ID of user whom this object has been assigned to (optional)
      */
     assigneeUserId?: Uuid;
 
