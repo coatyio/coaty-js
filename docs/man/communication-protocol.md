@@ -245,14 +245,14 @@ Note that external IDs are not guaranteed to be unique across
 the whole universe of system objects. Usually, external IDs are only unique for
 a specific type of objects.
 
-The optional `parentObjectId` property refers to the unique UUID of the parent object.
+The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
 Annotation objects can be modelled as children of target objects they are attached to.
 
-The optional `assigneeUserId` property specifies the unique UUID of the user object
+The optional `assigneeUserId` property specifies the UUID of the user object
 that this object has been assigned to currently.
 
-The optional `locationId` property refers to the unique UUID of the Location
+The optional `locationId` property refers to the UUID of the Location
 object that this object has been associated with.
 
 The optional `isDeactivated` property marks an object that is no longer used. The

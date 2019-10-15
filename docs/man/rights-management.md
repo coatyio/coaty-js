@@ -83,7 +83,7 @@ and/or `roles` properties of the `User` object type.
 * The broker can access ACLs (access control lists) that control (1) access to objects/object types
   (2) access to publish-subscribe communication messages by event types as part of the MQTT topic.
 * ACLs are checked on every communication message received by the broker, i.e. publications and subscriptions.
-* ACLs should be configurable by a tool that is part of the Digital worker core infrastructure.
+* ACLs should be configurable by a tool that is part of your core infrastructure.
 * On any publication received the broker should also check whether the `AssociatedUserId` topic level
   matches the authenticated user's identity. This is to prevent an authenticated user to publish messages
   on behalf of another user.

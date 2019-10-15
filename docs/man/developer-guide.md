@@ -1157,14 +1157,14 @@ Note that external IDs are not guaranteed to be unique across
 the whole universe of system objects. Usually, external IDs are only unique for
 a specific type of objects.
 
-The optional `parentObjectId` property refers to the unique UUID of the parent object.
+The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
 Annotation objects can be modelled as children of target objects they are attached to.
 
-The optional `assigneeUserId` property specifies the unique UUID of the user object
+The optional `assigneeUserId` property specifies the UUID of the user object
 that this object has been assigned to currently.
 
-The optional `locationId` property refers to the unique UUID of the Location
+The optional `locationId` property refers to the UUID of the Location
 object that this object has been associated with.
 
 The optional `isDeactivated` property marks an object that is no longer used. The
@@ -1745,6 +1745,8 @@ const joinCondition: JoinCondition = {
     isOneToOneRelation: true
 };
 
+// On the querying side, an agent publishes a Query event for Log objects
+// with the given filter and join conditions and handles the results.
 this.communicationManager
     .publishQuery(QueryEvent.withCoreTypes(this.identity, ["Log"], filter, joinCondition))
     .pipe(
@@ -1762,6 +1764,9 @@ this.communicationManager
             this.logError(error, "Failed to query log objects");
         });
 
+// On the retrieving side, an agent observes queries for Log objects
+// and responds with a Retrieve event that contains results looked up
+// from a database.
 this.communicationManager
   .observeQuery(this.identity)
   .pipe(filter(event => event.eventData.isCoreTypeCompatible("Log")))
@@ -2201,7 +2206,17 @@ Define IO sources and IO actors and register them as capabilities of the
 associated device:
 
 ```ts
-import { IoSource, IoActor } from "coaty/io";
+import { CoreTypes, Device, DisplayType, IoActor, IoSource, IoSourceBackpressureStrategy, User } from "coaty/model";
+import { Configuration } from "coaty/runtime";
+
+// Common User for IO routing
+const user: User = {
+    objectId: "b61740a6-95d7-4d1a-8be5-53f3aa1e0b79",
+    coreType: "User",
+    objectType: CoreTypes.OBJECT_TYPE_USER,
+    name: "user@coaty.io",
+    names: { formatted: "User for IO routing" },
+};
 
 // IO source definition
 const ioRobotControlSource: IoSource = {
@@ -2214,14 +2229,15 @@ const ioRobotControlSource: IoSource = {
   updateRate: 100  // maximum possible drain rate (in ms)
 };
 
+// Device definition for Robot Control Source
 const watch: Device = {
-    objectId: this.runtime.newUuid(),
+    objectId: "9f407e6a-0fa4-4bb0-90dd-bd740b2cdba9",
     objectType: CoreTypes.OBJECT_TYPE_DEVICE,
     coreType: "Device",
     name: "Robot Control Watch",
-    displayType: DeviceDisplayType.Watch,
+    displayType: DisplayType.Watch,
     ioCapabilities: [ ioRobotControlSource ],
-    assigneeUserId: ...
+    assigneeUserId: user.objectId,
 };
 
 // IO actor definition
@@ -2234,29 +2250,66 @@ const ioRobotControlActor: IoActor = {
     updateRate: 500   // desired rate for incoming values (in ms)
 };
 
+// Device definition for Robot Control Actor
 const robot: Device = {
-    objectId: this.runtime.newUuid(),
+    objectId: "26c7e80e-92df-4181-8294-f2676c5dcf11",
     objectType: CoreTypes.OBJECT_TYPE_DEVICE,
     coreType: "Device",
     name: "Robot",
-    displayType: DeviceDisplayType.None,
+    displayType: DisplayType.None,
     ioCapabilities: [ ioRobotControlActor ],
+    assigneeUserId: user.objectId,
+};
+
+// Configuration of Robot Control Source agent
+const configuration: Configuration = {
+    common: {
+        associatedUser: user,
+        associatedDevice: watch,
+        ...
+    },
+    ...
+};
+
+// Configuration of Robot Control Actor agent
+const configuration: Configuration = {
+    common: {
+        associatedUser: user,
+        associatedDevice: robot,
+        ...
+    },
+    ...
 };
 
 ```
 
-Use the `RuleBasedIoRouter` class to realize rule-based routing of data
-from IO sources to IO actors. By defining application-specific routing rules
-you can associate IO sources with IO actors based on arbitrary user context.
+Use the `BasicIoRouter` controller class to realize a basic routing algorithm
+where all compatible pairs of IO sources and IO actors are associated. An IO
+source and an IO actor are compatible if both define the same value type.
+
+Use the `RuleBasedIoRouter` controller class to realize rule-based routing of
+data from IO sources to IO actors. By defining application-specific routing
+rules you can associate IO sources with IO actors based on arbitrary user
+context.
 
 ```ts
+import { IoAssociationRule, RuleBasedIoRouter } from "coaty/io";
+import { Components, Configuration } from "coaty/runtime";
+
+const components: Components = {
+    controllers: {
+        RuleBasedIoRouter,
+        ...
+    },
+};
+
 // IO routing rule definition
 const configuration: Configuration = {
     ...
     controllers: {
       RuleBasedIoRouter: {
         rules: [
-          { name: "Route values from watches to near robot devices",
+          { name: "Route values from watches to robot devices within reach",
             valueType: ioRobotControlSource.valueType,
             condition:
               (source, sourceDevice, actor, actorDevice, router) =>
@@ -2267,10 +2320,6 @@ const configuration: Configuration = {
         ]
       }, ...
 ```
-
-Use the `BasicIoRouter` class to realize a basic routing algorithm where all
-compatible pairs of IO sources and IO actors are associated. An IO source and
-an IO actor are compatible if both define the same value type.
 
 The Communication Manager supports methods to control IO routing by code in
 your agent project: Use `publishIoValue` to send IO value data for an IO source.
@@ -2931,6 +2980,8 @@ import { PostgresAdapter } from "coaty/db-adapter-postgres";
 
 const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"], PostgresAdapter);
 
+// Set up a Postgres database by creating a database user and a database with
+// two collections named "mycollection1" and "mycollection2".
 adminContext.callExtension("initDatabase", this.runtime.databaseOptions["db"], ["mycollection1", "mycollection2"])
     .catch(error => console.log(error));
 ```
@@ -3463,13 +3514,13 @@ The framework includes a `MulticastDnsDiscovery` class to support multicast DNS 
 be used, for example, to auto-discover the IP address of the Coaty broker/router
 or the URL of a container configuration hosted on a web server.
 
-Use the `publishMulticastDnsService`, `publishMqttBrokerInfo`, and `publishWampRouterInfo`
+Use the `publishMulticastDnsService`, `publishMqttBrokerService`, and `publishWampRouterService`
 methods in a Coaty service to publish corresponding mDNS services (see examples below).
 
 Use the `unpublishMulticastDnsServices` function to stop publishing of mDNS services when the
 Coaty service exits.
 
-Use the `findMulticastDnsService`, `findMqttBrokerInfo`, and `findWampRouterInfo` functions
+Use the `findMulticastDnsService`, `findMqttBrokerService`, and `findWampRouterService` functions
 in a Coaty agent component to discover a published mDNS service (see examples below).
 
 > Note that multicast DNS discovery can only resolve host names within an IP subnet.
@@ -3653,10 +3704,10 @@ computed from the given MQTT port by adding 8000.
 If the broker is launched on standard port 1883, a multicast DNS service for
 broker discovery is published additionally. The broker is then discoverable
 under the mDNS service name "Coaty MQTT Broker" and the service type
-"coaty-mqtt". In this case, you can optionally specifiy a non-default hostname
-for multicast DNS discovery with the command line option `--bonjourHost`. Useful
-for cases, where the normal hostname provided by mDNS cannot be resolved by
-DHCP.
+"coaty-mqtt". In this case, you can optionally specify a non-default
+hostname/IP address for multicast DNS discovery with the command line option
+`--bonjourHost`. Useful for cases, where the normal hostname provided by mDNS
+cannot be resolved by DNS.
 
 If you do not want to start the multicast DNS service for broker discovery,
 specify the `--nobonjour` option.
@@ -3696,9 +3747,11 @@ Options are defined in an object hash including the following properties:
   published (default is false); only works if standard MQTT port 1883 is used.
   The broker is then discoverable under the mDNS service name "Coaty MQTT Broker"
   and the service type "coaty-mqtt".
-* `bonjourHost`: if given, specifies the hostname to be used for publishing the
-   mDNS service (optional). Useful for cases, where the normal hostname provided
-   by mDNS cannot be resolved by DHCP.
+* `bonjourHost`: if given, specifies the hostname/IP address to be used for
+   publishing the mDNS service (optional). Useful for cases, where the normal
+   hostname provided by mDNS cannot be resolved by DNS. To get the IPv4 address
+   of your broker host for a specific network interface, you can use the utility
+   function `MulticastDnsDiscovery.getLocalIpV4Address()`.
 * `onReady`: callback function to be invoked when broker is ready (default none).
 * `brokerSpecificOpts`: options passed to underlying Aedes broker instance
   (optional). For details, see

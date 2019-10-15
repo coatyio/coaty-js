@@ -373,15 +373,20 @@ also has the following type:
 
 ### Observation Type
 
-Observation Type is used by `Sensor.observationType` to describe the type which is used  by the service to encode observations.
+Observation Type is used by `Sensor.observationType` to describe the type which
+is used  by the service to encode observations.
 
-Expected values come from [OGC OM specification](http://www.opengis.net/def/observationType/OGC-OM/2.0/). Refer to their respective documenation for more informations.
+Expected values come from [OGC OM
+specification](http://www.opengis.net/def/observationType/OGC-OM/2.0/). Refer to
+their respective documentation for more information.
 
-* [OM_Category_Observation](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Category_Observation)
-* [OM_CountObservation](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_CountObservation)
-* [OM_Measurement](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement)
-* [OM_Observation](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation)
-* [OM_TruthObservation](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_TruthObservation)
+| ObservationTypes | Content of result |
+|------------------|-------------------|
+| [CATEGORY](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_CategoryObservation) | URI |
+| [COUNT](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_CountObservation) | integer |
+| [MEASUREMENT](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement) | double |
+| [ANY](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation) | any JSON data |
+| [TRUTH](http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_TruthObservation) | boolean |
 
 ## Controllers
 
