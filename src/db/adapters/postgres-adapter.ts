@@ -118,6 +118,7 @@ types.setTypeParser(20, value => parseInt(value, 10));
  * ```
  * createUser
  * deleteUser
+ * initDatabase
  * createDatabase
  * deleteDatabase
  * ```
@@ -142,6 +143,7 @@ export class PostgresAdapter extends DbAdapterBase {
     constructor(connectionInfo: DbConnectionInfo) {
         super(connectionInfo);
 
+        this.registerExtension("initDatabase");
         this.registerExtension("createDatabase");
         this.registerExtension("deleteDatabase");
         this.registerExtension("createUser");
@@ -415,7 +417,7 @@ export class PostgresAdapter extends DbAdapterBase {
      * `postgres` database with superuser admin permissions.
      * 
      * @param dbInfo connection info for database operations
-     * @param collections an arry of database collection names
+     * @param collections an array of database collection names
      * @param clearCollections determines whether collection data should be cleared initially
      */
     initDatabase(dbInfo: DbConnectionInfo, collections?: string[], clearCollections: boolean = false) {
@@ -423,7 +425,7 @@ export class PostgresAdapter extends DbAdapterBase {
         const dbConfig = this._getPoolOptions(dbInfo);
 
         return this.createUser(dbConfig.user, dbConfig.password)
-            .then(() => this.createDatabase("createDatabase", dbConfig.database, dbConfig.user))
+            .then(() => this.createDatabase(dbConfig.database, dbConfig.user))
 
             // Add collections if they do not exist yet
             .then(() => Async.inSeries(collections, coll => dbc.addCollection(coll)))
