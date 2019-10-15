@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for Coaty
+about: Suggest an idea or enhancement for Coaty
 title: ''
 labels: ''
 assignees: ''
