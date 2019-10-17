@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: Coaty JS Documentation
 description: >- # this means to ignore newlines until "baseurl:"
-  Coaty JS Framework documentation including Developer Guide, source code
+  Coaty JS Framework documentation including Developer Guide, API
   documentation, Coding Style Guide, specification of the Communication Protocol,
   guidance notes on Rights Management, and a guide on integration of the OGC
   SensorThings API.

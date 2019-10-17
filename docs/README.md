@@ -10,11 +10,11 @@ Documentation content is hosted in the subfolders `man` and `tsdoc`.
 
 The `man` subfolder contains Coaty JS manuals in markdown format.
 
-The `tsdoc` subfolder contains the Coaty JS framework source documentation
+The `tsdoc` subfolder contains the Coaty JS framework API documentation
 generated automatically whenever a new `coaty-js` framework release is created
 (using `npm run cut-release`).
 
-GitHub Pagses has been configured to host the static website content from
+GitHub Pages has been configured to host the static website content from
 the `/docs` folder on the master branch. This means that each time, changes
 to `man` or `tsdoc` folders are pushed on the master branch, GitHub Pages
 automatically regenerates the documentation website.
