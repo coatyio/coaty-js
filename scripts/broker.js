@@ -54,7 +54,7 @@ function run(brokerOptions) {
                     undefined,
                     undefined,
                     options.bonjourHost)
-                    .then(srv => utils.logInfo(`Published multicast DNS for host ${srv.host} on FQDN "${srv.fqdn}:${srv.port}"`))
+                    .then(srv => utils.logInfo(`Published multicast DNS for host ${srv.host} with FQDN "${srv.fqdn}" on port ${srv.port}`))
                     .catch(error => utils.logError(`Error while publishing multicast DNS: ${error}`));
 
                 node.NodeUtils.handleProcessTermination(undefined, () => {
