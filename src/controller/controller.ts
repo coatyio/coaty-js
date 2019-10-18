@@ -98,7 +98,7 @@ export abstract class Controller implements IController {
 
     get identity() {
         if (!this._identity) {
-            this._identity = this._createDefaultIdentity();
+            this._identity = this._createIdentity();
         }
         return this._identity;
     }
@@ -308,16 +308,16 @@ export abstract class Controller implements IController {
         this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
     }
 
-    private _createDefaultIdentity(): Component {
+    private _createIdentity(): Component {
         const identity: Component = {
             objectType: CoreTypes.OBJECT_TYPE_COMPONENT,
             coreType: "Component",
             objectId: this.runtime.newUuid(),
-            parentObjectId: this.communicationManager.identity.objectId,
             name: this._controllerName,
         };
         this.initializeIdentity(identity);
         Object.assign(identity, this.options.identity || {});
+        identity.parentObjectId = this.communicationManager.identity.objectId;
         return identity;
     }
 
