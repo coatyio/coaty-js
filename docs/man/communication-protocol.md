@@ -39,6 +39,10 @@ A communication message is comprised of a topic name and a payload.
 The format of topic names and payloads conforms to the [MQTT](https://mqtt.org/)
 Specification Version 3.1.1.
 
+For publishing messages and subscribing to topics, Coaty should support any MQTT
+Quality of Service level: QoS 0, QoS 1, and QoS 2. If not specified by a Coaty
+application, the default QoS level should be 0.
+
 ## Message Topics and Payloads
 
 A topic name is structured into topic levels separated by a topic level separator
@@ -145,7 +149,9 @@ not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
 `+ (U+002B)`, and `/ (U+002F)`.
 
 For any request-response event pattern the receiving party must respond with an
-outbound message containing the original message token of the incoming message topic.
+outbound message containing the original message token of the incoming message
+topic. Note that the Event topic level of response events **must never** include
+a filter field.
 
 ### Readable Topics
 
@@ -175,23 +181,41 @@ in production systems.
 
 Each communication client should subscribe to topics according to the defined
 topic structure. These subscriptions should be kept for the lifetime of the
-communication client. Associated User ID, Source Object ID, and Message Token
-levels should be treated as wildcards.
+communication client.
 
-Basically, the Event level is filtered to support event-specific subscriptions:
+Associated User ID, Source Object ID, and Message Token levels should be treated
+as wildcards when observing request events. When publishing response events, the
+Message Token level **must** equal the original message token of the
+corresponding request event.
+
+When receiving a request event, the Source Object ID has to be checked against
+the Source Object ID of the receiving component. If both Object IDs are
+identical, the received event **must not** be dispatched to the application, but
+has to be ignored. The objective behind this is to ensure that a publishing
+component is **not** receiving its own publications.
+
+Basically, the Event level is filtered to support event-specific subscriptions
+for observing request and response events:
 
 ```
+/// subscription for request events
 /coaty/<ProtocolVersion>/Event/+/+/+/
+
+/// subscription for response events
+/coaty/<ProtocolVersion>/Event/+/+/<Message Token of request event>/
 ```
 
-When subscribing to an Advertise event the Event topic level **must** include
+When subscribing to a response event, the Event topic level **must not** include
+an event filter field.
+
+When subscribing to an Advertise event, the Event topic level **must** include
 the Advertise filter field: `Advertise:<filter>` or `Advertise::<filter>`.
 
-When subscribing to a Channel event the Event topic level **must** include
+When subscribing to a Channel event, the Event topic level **must** include
 the channel ID field: `Channel:<channelId>`.
 
-When subscribing to a Call event the Event topic level **must** include
-the operation name field: `Call:<operationname>`.
+When subscribing to a Call event, the Event topic level **must** include the
+operation name field: `Call:<operationname>`.
 
 When subscribing to Associate events which are published by an IO router,
 the Associated User ID level should also be filtered (the readable topic option
