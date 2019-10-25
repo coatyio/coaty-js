@@ -1094,10 +1094,11 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Create a new instance of the specified event object.
-     * Performs a safety type check to ensure that the given event data is valid.
+     * Create a new instance of the specified event object. Performs a safety
+     * type check to ensure that the given event data is valid.
      *
-     * @param event an event object deserialized by JSON (on incoming event) or created by the application (for publishing).
+     * @param event an event object deserialized by JSON (on inbound event) or
+     * created by the application (on outbound event).
      */
     private _createEventInstance(event: any): CommunicationEvent<CommunicationEventData> {
         let instance: CommunicationEvent<CommunicationEventData>;

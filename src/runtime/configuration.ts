@@ -184,7 +184,7 @@ export interface ControllerOptions {
      * will). If not specified or undefined, the identity is
      * advertised/deadvertised by default.
      *
-     * The communication managers's identity is also discoverable (by publishing
+     * The controller's identity is also discoverable (by publishing
      * a Discover event with core type "Component" or with the object id of a
      * component) if and only if the identity has also been advertised.
      */
