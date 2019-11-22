@@ -1428,9 +1428,8 @@ this.communicationManager.publishDiscover(...)
             // Handle response events until destroyed subject emits.
         });
 
-// Cancel processing of response events by either emitting a value or a complete notification.
+// Cancel processing of response events by emitting a value.
 destroyed$.next();
-destroyed$.complete();
 ```
 
 This pattern is especially useful if you want to unsubscribe from multiple
