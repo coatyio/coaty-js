@@ -91,7 +91,7 @@ export class Async {
      * promise. 
      * 
      * @param timeoutMillis  number of milliseconds after which to reject
-     * @param promise as promise
+     * @param promise a promise
      */
     static withTimeout<T>(timeoutMillis: number, promise: Promise<T>): Promise<T> {
 

@@ -295,7 +295,7 @@ export class ObservationTypes {
     static readonly MEASUREMENT: ObservationType = "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement";
 
     /**
-     * Expects results of any type of format.
+     * Expects results of any type of JSON format.
      */
     static readonly ANY: ObservationType = "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation";
 

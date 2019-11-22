@@ -355,7 +355,7 @@ The `definition` property expects a reference to an ontology, e.g. as defined [h
 
 ### Encoding Type
 
-Encoding Type is used by `encodingType` properties to describe the encoding type of another property. Techincally,
+Encoding Type is used by `encodingType` properties to describe the encoding type of another property. Technically,
 one can have any kind of encoding types as it also takes generic strings. However, there are some certain predefined
 encoding types.
 

@@ -182,7 +182,7 @@ export class SensorSourceController extends Controller {
 
     /**
      * Returns the Sensor associated with the given Sensor objectId.
-     * If no such container exists then 'undefined' is returned.
+     * If no such sensor exists then 'undefined' is returned.
      */
     getSensor(sensorId: Uuid): Sensor {
         const container = this._sensors.get(sensorId);
@@ -191,7 +191,7 @@ export class SensorSourceController extends Controller {
 
     /**
      * Returns the sensor IO interface associated with the given Sensor objectId.
-     * If no such container exists then 'undefined' is returned.
+     * If no such sensor IO exists then 'undefined' is returned.
      */
     getSensorIo(sensorId: Uuid): SensorIo {
         const container = this._sensors.get(sensorId);
