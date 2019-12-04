@@ -1886,6 +1886,9 @@ documented code example that demonstrates the use of remote operations
 [here](https://github.com/coatyio/coaty-examples/tree/master/remote-operations/js).
 
 ```ts
+import { CallEvent } from "coaty/com";
+import { ContextFilter, filterOp } from "coaty/model";
+
 // Publish a Call event to switch on all lights with 70% brightness on the
 // 6th, 7th, and 8th floor and observe all Return events received from light control agents.
 const contextFilter: ContextFilter = { conditions: ["floor", filterOp.between(6, 8)] };
@@ -1902,23 +1905,25 @@ this.communicationManager.publishCall(
                 // An error has been returned by a light control agent.
                 console.log(returnEvent.eventData.error.code);           // 10001
                 console.log(returnEvent.eventData.error.message);        // "Failed"
-                console.log(returnEvent.eventData.error.executionInfo);  // { lightId: "<id of light>" }
+                console.log(returnEvent.eventData.executionInfo);        // { lightId: "<id of light>" }
             } else {
                 // A light has been switched on/off successfully by a light control agent.
                 console.log(returnEvent.eventData.result);               // true
-                console.log(returnEvent.eventData.error.executionInfo);  // { lightId: "<id of light>" }
+                console.log(returnEvent.eventData.executionInfo);        // { lightId: "<id of light>" }
             }
         });
 ```
 
 ```ts
+import { RemoteCallErrorCode, RemoteCallErrorMessage, ReturnEvent } from "coaty/com";
+
 // A light control agent observes requests for switching on/off an associated light
 // in its execution context (i.e 7th floor). If the context matches the passed in
 // context filter, the Call event is emitted on the subscription handler which responds
 // with a Return event.
 const context: LightControlContext = {
     coreType: "CoatyObject",
-    objectId: Runtime.newUuid(),
+    objectId: this.runtime.newUuid(),
     objectType: "com.mydomain.lights.LightControlContext",
     name: "LightControlContext for seventh floor",
     floor: 7,
