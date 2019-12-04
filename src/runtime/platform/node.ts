@@ -46,15 +46,17 @@ export class NodeUtils {
     }
 
     /**
-     * Log changes in online/offline communication state (i.e. agent connection to Coaty broker) to the console.
-     * 
+     * Log changes in online/offline communication state (i.e. agent connection
+     * to Coaty broker) to the console.
+     *
      * @param container a Coaty container
      */
     public static logCommunicationState(container: Container) {
         const manager = container.communicationManager;
         manager.observeCommunicationState()
             .subscribe(state => {
-                NodeUtils.logInfo(`MQTT: ${manager.identity.name} ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);
+                // tslint:disable-next-line: max-line-length
+                NodeUtils.logInfo(`[MQTT] ${manager.identity.name} ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);
             });
     }
 
