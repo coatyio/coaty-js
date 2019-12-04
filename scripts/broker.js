@@ -29,7 +29,7 @@ function run(brokerOptions) {
 
     const node = require("../runtime-node");
 
-    const aedes = require("aedes")(brokerOptions.brokerSpecificOpts || {});  
+    const aedes = require("aedes")(brokerOptions.brokerSpecificOpts || {});
     const isTls = typeof brokerOptions.tlsServerOpts === "object";
     const tcpServer = isTls ?
         require('tls').createServer(brokerOptions.tlsServerOpts, aedes.handle) :
@@ -75,7 +75,14 @@ function run(brokerOptions) {
     }
 
     aedes.on("publish", (packet, client) => {
-        utils.logMessage(`PUBLISH by ${client ? client.id : "broker"} on topic ${packet.topic} with payload ${packet.payload.toString()}`);
+        let payload = packet.payload;
+        if (typeof packet.topic === "string" && packet.topic.startsWith("/coaty/")) {
+            payload = payload.toString();   // UTF-8
+        } else {
+            const maxHex = 50;
+            payload = `<Buffer #${payload.toString("hex", 0, maxHex)}${payload.length > maxHex ? "..." : ""}>`;
+        }
+        utils.logMessage(`PUBLISH by ${client ? client.id : "broker"} on topic ${packet.topic} with qos=${packet.qos}, retain=${packet.retain}, payload=${payload}`);
     });
 
     aedes.on("subscribe", (subscriptions, client) => {
