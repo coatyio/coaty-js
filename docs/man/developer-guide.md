@@ -3693,7 +3693,7 @@ application projects, you can also use this broker for development and testing.
 
 > Note: You should **not** use this broker in a production system. Instead, use
 > a high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ,
-> Mosquitto, or Crossbar.io WAMP router).
+> Mosquitto, EMQ X, or Crossbar.io WAMP router).
 
 The broker script provides the following options:
 
