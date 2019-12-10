@@ -21,6 +21,11 @@ Coaty JS also includes a set of fully documented [code
 examples](https://github.com/coatyio/coaty-examples) that demonstrate best
 practices and typical usage patterns.
 
+Coaty JS also includes a ready-to-use
+[template](https://github.com/coatyio/coaty-examples/tree/master/template/js)
+for a Coaty agent running in Node.js and programmed in TypeScript. Copy and use
+it as a blueprint for your own Coaty agent projects.
+
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.
 
