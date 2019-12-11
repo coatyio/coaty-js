@@ -215,16 +215,18 @@ TypeScript file with the following comment rule flags
   `import Foo = require("module");`.
 * Never use TS internal modules (i.e. namespaces). They are not useful
   in combination with external modules.
-* In a Coaty **application project**, always import from a toplevel module, not 
-  from submodules, i.e. not from individual files.
-* In the Coaty framework, always import from individual TS files, not toplevel modules.
-* In the Coaty framework, only export public types in modules. Do not export
+* In a Coaty **application project**, always import from a toplevel module, not
+  from submodules, i.e. not from individual files. For example, use
+  `import { Task } from "coaty/model";` instead of
+  `import { Task } from "coaty/model/task";`.
+* Inside the Coaty **framework**, always import from individual TS files, not toplevel modules.
+* Inside the Coaty **framework**, only export public types in modules. Do not export
   types in modules that are internal or private to the framework.
 * Group import statements in the following order and separate them by an
   empty line:
-1. Imports from npm modules used by the framework.
-2. Imports from framework modules in other toplevel modules.
-3. Imports from framework modules in the same toplevel module.
+  1. Imports from npm modules used by the framework.
+  2. Imports from framework modules in other toplevel modules.
+  3. Imports from framework modules in the same toplevel module.
 * In RxJS, do not use the deprecated coding style of chaining operators, but use the
   pipeable operator syntax and import RxJS operators individually:
   `import { map, take } from "rxjs/operators";`
