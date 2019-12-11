@@ -25,6 +25,7 @@ this guide.
   * [Shut down a Coaty container](#shut-down-a-coaty-container)
   * [Define an agent-specific controller class](#define-an-agent-specific-controller-class)
     * [Register controllers at run time](#register-controllers-at-run-time)
+    * [Controllerless Coaty containers](#controllerless-coaty-containers)
   * [Convenience controllers](#convenience-controllers)
     * [Connection State Controller](#connection-state-controller)
     * [Object Lifecycle Controller](#object-lifecycle-controller)
@@ -736,6 +737,25 @@ configured in the container configuration by using `container.registerController
 
 > Note that the delegation design pattern supports exchanging communication events
 > between your custom controller and its dependent controllers.
+
+#### Controllerless Coaty containers
+
+Although not recommended, you can run a Coaty container without any controllers.
+This is useful if your application is designed in such a way that communication
+functionality must be directly embedded into the business logic.
+
+In this case, access the container's communication manager directly to publish
+and observe communication events. A minimal Coaty container without controllers
+can be set up as follows:
+
+```ts
+const container = Container.resolve({}, { <configuration options> });
+
+// Use CommunicationManager directly.
+container.communicationManager.publishAdvertise(...)
+container.communicationManager.observeAdvertise(...)
+...
+```
 
 ### Convenience controllers
 
