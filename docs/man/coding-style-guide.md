@@ -279,38 +279,47 @@ strictly follow the coding principles listed below:
 
 * Asynchronous date flow between components should be modelled using RxJS
   observables.  An introduction to Reactive Programming can be found
-  [here](http://reactivex.io/). Examples and explanations can be found on
-  the [RxJS](https://rxjs.dev/) and [Learn RxJS](https://www.learnrxjs.io/) websites.
+  [here](http://reactivex.io/). Examples and explanations can be found on the
+  [RxJS](https://rxjs.dev/) and [Learn RxJS](https://www.learnrxjs.io/)
+  websites.
 
-* In RxJS, use pipeable operator syntax. Import only those RxJS operators that you
-  actually use in your code, e.g. `import { map, take } from "rxjs/operators";`.
-  Do not load the whole operator bundle, it consumes a lot of memory.
+* In RxJS, use pipeable operator syntax. Import only those RxJS operators that
+  you actually use in your code, e.g. `import { map, take } from
+  "rxjs/operators";`. Do not load the whole operator bundle, it consumes a lot
+  of memory.
 
 * Whenever you subscribe to an RxJS observable in your code explicitely, you
   should consider to keep the subscription in order to unsubscribe when the
-  observable is no longer used to avoid memory leaks. For example,
-  in an Angular or Ionic view component you should unsubscribe at the
-  latest when the component is destroyed by implementing the `OnDestroy`
-  interface or the Ionic `ionViewWillUnload` method. As an alternative
-  you can use observables in Angular data binding expressions in combination
-  with the `async` pipe which subscribes and unsubscribes automatically. In your
-  application-specific controllers usually you should subscribe in the
+  observable is no longer used to avoid memory leaks. For example, in an Angular
+  or Ionic view component you should unsubscribe at the latest when the
+  component is destroyed by implementing the `OnDestroy` interface or the Ionic
+  `ionViewWillUnload` method. As an alternative you can use observables in
+  Angular data binding expressions in combination with the `async` pipe which
+  subscribes and unsubscribes automatically. In your application-specific
+  controllers usually you should subscribe in the
   `onCommunicationManagerStarting` hook method and unsubcribe in the
   `onCommunicationManagerStopping` hook method.
 
-* Avoid using the RxJS `share` operator in combination with source
-  observables that are realized as *behavior subjects*. Only the first subscriber
-  of the shared observable will be pushed the initial value of the behavior subject
-  immediately when subscribed. Any subsequent subscribers will **not** get
-  the initial value replayed when subscribed but only the next values which the
-  subject emits lateron. That is because the `share` operator returns a hot
-  observable.
+* Prefer implicit, imperative complete notifications over explicitly
+  unsubscribing your RxJS observables. Complete subjects and observables if no
+  longer used so that subscriptions are automatically unsubscribed to avoid
+  memory leaks. Operators that complete implicitely include `take`, `takeUntil`,
+  `first`, etc.
+
+* Avoid using the RxJS `share` operator in combination with source observables
+  that are realized as *behavior subjects*. Only the first subscriber of the
+  shared observable will be pushed the initial value of the behavior subject
+  immediately when subscribed. Any subsequent subscribers will **not** get the
+  initial value replayed when subscribed but only the next values which the
+  subject emits lateron. That is because the `share` operator returns a
+  multicast (hot) observable.
 
 * The unified persistent storage and retrieval API of the framework is based on
-  promises. When using promise-based APIs to invoke multiple asynchronous operations
-  in sequence, it is best practice to use composing promises and promise chaining.
-  Note that after a catch operation the promise chain is restored. Avoid the
-  common bad practice pattern of nesting promises as if they were callbacks.
+  promises. When using promise-based APIs to invoke multiple asynchronous
+  operations in sequence, it is best practice to use composing promises and
+  promise chaining. Note that after a catch operation the promise chain is
+  restored. Avoid the common bad practice pattern of nesting promises as if they
+  were callbacks.
 
 ### Container Components
 
