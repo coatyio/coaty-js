@@ -1693,7 +1693,7 @@ export class CommunicationManager implements IComponent {
                         items[1].push(ioActorId);
                     }
                 } else {
-                    // Disassociate all IO actors due to a topic change.
+                    // Disassociate current IO actors due to a topic change.
                     const oldTopic = items[0];
                     items[0] = associatedTopic;
                     items[1].forEach(actorId =>

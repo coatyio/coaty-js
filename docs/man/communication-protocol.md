@@ -702,7 +702,7 @@ The communication event flow of IO routing comprises the following steps:
    must conform to the protocol specification, i.e. it must be specified as
    UTF-8 encoded strings in JSON format.
 
-   Associations of IO sources with IO actors are constrained as follows:
+Associations of IO sources with IO actors are constrained as follows:
 
 * An IO source can only be associated with an IO actor if their value types
   are compatible, i.e. they produce/consume data in the same underlying data format.

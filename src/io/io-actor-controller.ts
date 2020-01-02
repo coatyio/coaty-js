@@ -46,17 +46,18 @@ export class IoActorController extends Controller {
     }
 
     /**
-     * Listen to IO values for the given IO actor.
-     * The returned observable always emits the last value received for the
-     * given IO actor. When subscribed, the current value (or undefined if none
-     * exists yet) is emitted immediately.
-     * 
-     * Due to this behavior the cached value of the observable 
-     * will also be emitted after reassociation. If this is not desired
-     * use `this.communicationManager.observeIoValue` instead.
-     * This method doesn't cache any previously emitted value.
+     * Listen to IO values for the given IO actor. The returned observable
+     * always emits the last value received for the given IO actor. When
+     * subscribed, the current value (or undefined if none exists yet) is
+     * emitted immediately.
+     *
+     * Due to this behavior the cached value of the observable will also be
+     * emitted after reassociation. If this is not desired use
+     * `this.communicationManager.observeIoValue` instead. This method doesn't
+     * cache any previously emitted value.
      *
      * @param actor an IO actor object
+     * @returns an observable emitting IO values for the given actor
      */
     observeIoValue<T>(actor: IoActor): Observable<T> {
         const [, , , , valueSubject] = this._ensureRegistered<T>(actor);
@@ -64,9 +65,11 @@ export class IoActorController extends Controller {
     }
 
     /**
-     * Gets the last IO value emitted to the given IO actor.
-     * 
+     * Gets the lastest IO value emitted to the given IO actor or `undefined` if
+     * none exists yet.
+     *
      * @param actor an IO actor object
+     * @returns the latest IO value for the given actor if one exists
      */
     getIoValue<T>(actor: IoActor): T {
         const [, , , , valueSubject] = this._ensureRegistered<T>(actor);
