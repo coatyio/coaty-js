@@ -206,7 +206,7 @@ export abstract class IoRouter extends Controller {
             .observeDeadvertise(this.identity)
             .pipe(filter(event => event.eventUserId === this._associatedUser.objectId))
             .subscribe(event => {
-                this._devicesDeadvertised(event.eventData.objectIds, true);
+                this._devicesDeadvertised(event.eventData.objectIds);
             });
     }
 
@@ -214,7 +214,7 @@ export abstract class IoRouter extends Controller {
         const isDeadvertise = device.ioCapabilities === undefined ||
             device.ioCapabilities.length === 0;
 
-        this._devicesDeadvertised([device.objectId], isDeadvertise);
+        this._devicesDeadvertised([device.objectId], isDeadvertise ? undefined : device);
         if (isDeadvertise) {
             return;
         }
@@ -222,7 +222,7 @@ export abstract class IoRouter extends Controller {
         this.onDeviceAdvertised(device);
     }
 
-    private _devicesDeadvertised(objectIds: Uuid[], invokeCallback: boolean) {
+    private _devicesDeadvertised(objectIds: Uuid[], readvertisedDevice?: Device) {
         const deregisteredDevices: Device[] = [];
 
         objectIds.forEach(id => {
@@ -231,10 +231,15 @@ export abstract class IoRouter extends Controller {
                 this._associatedDevices.delete(id);
                 deregisteredDevice.ioCapabilities.forEach(point => {
                     if (point.coreType === "IoSource") {
-                        this._sourceTopics.delete(point.objectId);
+                        // Ensure source topics are preserved for IO sources that
+                        // also exist in a rediscovered or readvertised device.
+                        if (!readvertisedDevice ||
+                            !readvertisedDevice.ioCapabilities.some(p => p.coreType === "IoSource" && p.objectId === point.objectId)) {
+                            this._sourceTopics.delete(point.objectId);
+                        }
                     }
                 });
-                if (invokeCallback) {
+                if (!readvertisedDevice) {
                     deregisteredDevices.push(deregisteredDevice);
                 }
             }
