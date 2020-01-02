@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="1.11.1"></a>
+## [1.11.1](https://github.com/coatyio/coaty-js/compare/v1.11.0...v1.11.1) (2020-01-02)
+
+This patch release fixes some issues regarding IO routing, the Coaty broker, and controller identity definition.
+
+### Bug Fixes
+
+* **controller:** ensure a controller's identity always has a `parentObjectId` referring to the communication manager's identity. It should never be overwritten by an `identity` communication option ([d2bf88c](https://github.com/coatyio/coaty-js/commit/d2bf88c))
+* **io:** preserve IO value topic routes for already existing IO sources of readvertised or rediscovered devices ([37a4759](https://github.com/coatyio/coaty-js/commit/37a4759))
+* **scripts/broker:** print non-Coaty MQTT message payloads in hex format if Coaty broker is run in verbose mode ([68b763d](https://github.com/coatyio/coaty-js/commit/68b763d))
+
 <a name="1.11.0"></a>
 # [1.11.0](https://github.com/coatyio/coaty-js/compare/v1.10.1...v1.11.0) (2019-10-15)
 
