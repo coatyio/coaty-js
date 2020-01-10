@@ -74,6 +74,11 @@ export abstract class Controller implements IController {
     private _isWebPlatform: boolean;
     private _discoverIdentitySubscription: Subscription;
 
+    /**
+     * @internal For internal use in framework only. Never instantiate
+     * Controller objects in your application, they are created by dependency
+     * injection.
+     */
     constructor(
         runtime: Runtime,
         options: ControllerOptions,
@@ -88,14 +93,24 @@ export abstract class Controller implements IController {
         this._isWebPlatform = runtime.isWebPlatform;
     }
 
+    /**
+     * Gets the Runtime object of the Coaty container.
+     */
     get runtime() {
         return this._runtime;
     }
 
+    /**
+     * Gets the controller's options as specified in the container
+     * configuration.
+     */
     get options() {
         return this._options;
     }
 
+    /**
+     * Gets the identity of this controller.
+     */
     get identity() {
         if (!this._identity) {
             this._identity = this._createIdentity();
@@ -103,6 +118,9 @@ export abstract class Controller implements IController {
         return this._identity;
     }
 
+    /**
+     * Gets the communication manager of the Coaty container.
+     */
     get communicationManager() {
         return this._communicationManager;
     }
@@ -208,6 +226,7 @@ export abstract class Controller implements IController {
 
     /**
      * Called when the communication manager is about to start or restart.
+     *
      * Implement side effects here. Ensure that
      * super.onCommunicationManagerStarting is called in your override. The base
      * implementation advertises its identity if requested by the controller
@@ -226,10 +245,11 @@ export abstract class Controller implements IController {
     }
 
     /**
-     * Called when the communication manager is about to stop. Implement side
-     * effects here. Ensure that super.onCommunicationManagerStopping is called
-     * in your override. The base implementation stops observing Discover events
-     * for identity.
+     * Called when the communication manager is about to stop.
+     *
+     * Implement side effects here. Ensure that
+     * super.onCommunicationManagerStopping is called in your override. The base
+     * implementation stops observing Discover events for identity.
      */
     onCommunicationManagerStopping() {
         this._unobserveDiscoverIdentity();
@@ -237,6 +257,7 @@ export abstract class Controller implements IController {
 
     /**
      * Called by the Coaty container when this instance should be disposed.
+     * 
      * Implement cleanup side effects here. The base implementation does nothing.
      */
     onDispose(): void {

@@ -31,25 +31,32 @@ JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.
 services.
 
 Coaty JS comes with complete API documentation, a developer guide, a coding
-style guide, and best-practice examples.
+style guide, best-practice examples, and additional extensions.
 
 ## Learn how to use
 
-If you are new to Coaty and would like to learn more, we
-recommend reviewing the [framework documentation](https://coatyio.github.io/coaty-js/)
-under the [coaty-js](https://github.com/coatyio/coaty-js) project.
-This documentation includes:
+If you are new to Coaty and would like to learn more, we recommend reviewing the
+[framework documentation](https://coatyio.github.io/coaty-js/) of the
+[coaty-js](https://github.com/coatyio/coaty-js) project. This documentation
+includes:
 
 * a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide/)
-  that provides the basics to get started developing an agent project with the Coaty JS framework,
-* a complete [API documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
-  of all public type and member definitions of the Coaty JS framework sources,
-* a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/)
-  for Coaty JS framework and application developers,
-* a specification of the [Coaty communication protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
-* guidance notes on [rights management](https://coatyio.github.io/coaty-js/man/rights-management/)
-  in a Coaty application.
-* a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
+  that provides the basics to get started developing a Coaty project with the
+  Coaty JS framework,
+* a complete [API
+  documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html) of all
+  public type and member definitions of the Coaty JS framework sources,
+* a [Coding Style
+  Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/) for Coaty
+  JS framework and application developers,
+* a specification of the [Coaty communication
+  protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
+* guidance notes on [rights
+  management](https://coatyio.github.io/coaty-js/man/rights-management/) in a
+  Coaty application.
+* a guide on the [OGC SensorThings API
+  integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in
+  Coaty JS.
 
 Coaty JS also includes a set of fully documented [code
 examples](https://github.com/coatyio/coaty-examples) that demonstrate best
@@ -60,8 +67,14 @@ Coaty JS also includes a ready-to-use
 for a Coaty agent running in Node.js and programmed in TypeScript. Copy and use
 it as a blueprint for your own Coaty agent projects.
 
-Finally, the unit tests delivered with the framework itself also provide a valuable
-source of programming examples for experienced developers.
+Coaty JS is also accompanied by a set of additional extensions to the core
+framework supplied in separate projects on
+[github](https://github.com/coatyio/). Extensions, such as connectors, adapters,
+or building blocks, provide reusable functionality for specialized use cases and
+application scenarios build on top of the Coaty core.
+
+Finally, the unit tests delivered with the framework itself also provide a
+valuable source of programming examples for experienced developers.
 
 Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable

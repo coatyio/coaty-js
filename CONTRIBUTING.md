@@ -159,8 +159,8 @@ from remote steps that affect the repository and the npm registry:
 
 1. `npm run cut-release` - prepare a new release, including automatic versioning,
   conventional changelog and tagging.
-2. `npm run push-release` - push the prepared release to the remote git repo and
-  publish it on an npm registry.
+2. `npm run push-release` - push the prepared release to the remote git repo
+3. `npm run publish-release` - publish the package on npm registry.
 
 ### Prepare a release
 

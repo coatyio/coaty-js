@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve Coaty
+about: Create a report to help us improve Coaty JS
 title: ''
 labels: ''
 assignees: ''
@@ -32,10 +32,11 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots or error stack traces to help explain your problem.
 
 **Your Environment (please complete the following information):**
- - Coaty Version: [e.g. 1.5.2]
- - OS: [e.g. Windows 10]
- - Device: [e.g. iPhone6]
- - Browser [e.g. chrome, safari]
+- Coaty Version: [e.g. 1.5.2]
+- Node.js Version: [if applicable, e.g. 12.14.1]
+- OS: [e.g. Windows 10]
+- Device: [if applicable, e.g. iPhone6]
+- Browser [if applicable, e.g. chrome, safari]
 
 **Additional context**
 Add any other relevant context about the problem here.

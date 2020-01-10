@@ -114,14 +114,14 @@ JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.
 services.
 
 Coaty JS comes with complete API documentation, a Developer Guide, a Coding
-Style Guide, and best-practice examples.
+Style Guide, best-practice examples, and additional extensions.
 
 ## Learn how to use
 
-If you are new to Coaty and would like to learn more, we
-recommend reviewing the [framework documentation](https://coatyio.github.io/coaty-js/)
-under the [coaty-js](https://github.com/coatyio/coaty-js) project.
-This documentation includes:
+If you are new to Coaty and would like to learn more, we recommend reviewing the
+[framework documentation](https://coatyio.github.io/coaty-js/) of the
+[coaty-js](https://github.com/coatyio/coaty-js) project. This documentation
+includes:
 
 * a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide/)
   that provides the basics to get started developing an agent project with the Coaty JS framework,
@@ -142,6 +142,12 @@ Coaty JS also includes a ready-to-use
 [template](https://github.com/coatyio/coaty-examples/tree/master/template/js)
 for a Coaty agent running in Node.js and programmed in TypeScript. Copy and use
 it as a blueprint for your own Coaty agent projects.
+
+Coaty JS is also accompanied by a set of additional extensions to the core
+framework supplied in separate projects on
+[github](https://github.com/coatyio/). Extensions, such as connectors, adapters,
+or building blocks, provide reusable functionality for specialized use cases and
+application scenarios build on top of the Coaty core.
 
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.
@@ -2375,6 +2381,9 @@ provides specific controller classes on top of these methods:
   after reassociation. If this is not desired use
   `this.communicationManager.observeIoValue` instead. This method doesn't cache
   any previously emitted value.
+
+Take a look at these controllers in action in the Coaty [OPC UA connector
+example](https://github.com/coatyio/connector.opc-ua.js/tree/master/example).
 
 ## Unified Storage API - Query anywhere - Retrieve anywhere
 

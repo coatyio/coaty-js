@@ -26,6 +26,12 @@ Coaty JS also includes a ready-to-use
 for a Coaty agent running in Node.js and programmed in TypeScript. Copy and use
 it as a blueprint for your own Coaty agent projects.
 
+Coaty JS is also accompanied by a set of additional extensions to the core
+framework supplied in separate projects on
+[github](https://github.com/coatyio/). Extensions, such as connectors, adapters,
+or building blocks, provide reusable functionality for specialized use cases and
+application scenarios build on top of the Coaty core.
+
 Finally, the unit tests delivered with the framework itself also provide a valuable
 source of programming examples for experienced developers.
 
