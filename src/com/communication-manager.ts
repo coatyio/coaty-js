@@ -650,17 +650,17 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Used by an IO router to create a new topic used to associate an
-     * IO source with an IO actor.
+     * Called by an IO router to create a new topic for routing IO values of a
+     * given IO source to IO actors.
      *
-     * The IO source uses this topic to publish IO values; the IO actor
+     * The IO source uses this topic to publish IO values; an IO actor
      * subscribes to this topic to receive the published values.
      *
-     * The topic name created is based on the event type `IoValue`.
-     * It specifies the associated user and the given IO source ID in the
-     * corresponding topic levels. It is guaranteed to not contain wildcard
-     * tokens on any topic level.
-     * 
+     * The topic name created is based on the event type `IoValue`. It specifies
+     * the associated user and the given IO source ID in the corresponding topic
+     * levels. It is guaranteed to not contain wildcard tokens on any topic
+     * level.
+     *
      * @param ioSource the IO source object
      */
     createIoValueTopic(ioSource: IoSource): string {
