@@ -118,21 +118,31 @@ Style Guide, best-practice examples, and additional extensions.
 
 ## Learn how to use
 
-If you are new to Coaty and would like to learn more, we recommend reviewing the
+If you are new to Coaty or would like to learn more, we recommend reviewing the
 [framework documentation](https://coatyio.github.io/coaty-js/) of the
 [coaty-js](https://github.com/coatyio/coaty-js) project. This documentation
 includes:
 
 * a [Developer Guide](https://coatyio.github.io/coaty-js/man/developer-guide/)
-  that provides the basics to get started developing an agent project with the Coaty JS framework,
-* a complete [API documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html)
-  of all public type and member definitions of the Coaty JS framework sources,
-* a [Coding Style Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/)
-  for Coaty framework and application developers,
-* a specification of the [Coaty communication protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
-* guidance notes on [rights management](https://coatyio.github.io/coaty-js/man/rights-management/)
-  in a Coaty application.
-* a guide on the [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in Coaty JS.
+  that provides the basics to get started developing an agent project with the
+  Coaty JS framework,
+* a complete [API
+  documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html) of all
+  public type and member definitions of the Coaty JS framework sources,
+* a [Coding Style
+  Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/) for Coaty
+  framework and application developers,
+* a specification of the [Coaty communication
+  protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
+* guidance notes on [rights
+  management](https://coatyio.github.io/coaty-js/man/rights-management/) in a
+  Coaty application.
+* a guide on the [OGC SensorThings API
+  integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in
+  Coaty JS.
+* [Migration Guide]({{ site.baseurl }}{% link man/migration-guide.md %}) - a
+  guide on migrating an existing Coaty JS application to a newer Coaty JS major
+  release
 
 Coaty JS also includes a set of fully documented [code
 examples](https://github.com/coatyio/coaty-examples) that demonstrate best
@@ -156,16 +166,17 @@ Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
 prerequisite for developing applications with the framework. An introduction to
 Reactive Programming can be found [here](http://reactivex.io/). Examples and
-explanations can be found on the [RxJS](https://rxjs.dev/) and
-[Learn RxJS](https://www.learnrxjs.io/) websites.
+explanations can be found on the [RxJS](https://rxjs.dev/) and [Learn
+RxJS](https://www.learnrxjs.io/) websites.
 
 If you are new to TypeScript programming, we recommend to take a look at the official
 [TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
 to interactively try some TypeScript code in your browser.
 
-To program Coaty applications, we recommend to use [Visual Studio Code](https://code.visualstudio.com/),
-a free, open source IDE that runs everywhere. Install the VS Code extension "TypeScript TSLint Plugin" to
-enable TypeScript linting within the IDE.
+To program Coaty applications, we recommend to use [Visual Studio
+Code](https://code.visualstudio.com/), a free, open source IDE that runs
+everywhere. Install the VS Code extension "TypeScript TSLint Plugin" to enable
+TypeScript linting within the IDE.
 
 ## Getting started
 
