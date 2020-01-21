@@ -8,15 +8,17 @@ import {
     CallEvent,
     ChannelEvent,
     ChannelEventData,
+    CoatyObject,
+    ContextFilter,
+    Controller,
+    CoreTypes,
     DiscoverEvent,
     RemoteCallErrorCode,
     RemoteCallErrorMessage,
     ResolveEvent,
     ReturnEvent,
     ReturnEventData,
-} from "../../com";
-import { Controller } from "../../controller";
-import { CoatyObject, ContextFilter, CoreTypes } from "../../model";
+} from "../..";
 
 import { Spy } from "./utils";
 

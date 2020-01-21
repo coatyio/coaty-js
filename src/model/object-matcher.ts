@@ -1,6 +1,6 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { contains, equals, includes } from "../util/deep";
+import { contains, equals, includes } from "..";
 import { CoatyObject } from "./object";
 import { ContextFilter, ObjectFilterCondition, ObjectFilterOperator, ObjectFilterProperties } from "./object-filter";
 

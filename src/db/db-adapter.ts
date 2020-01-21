@@ -1,7 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Uuid } from "../model/object";
-import { DbConnectionInfo } from "./db-connection-info";
+import { CoatyObject, DbConnectionInfo, Uuid } from "..";
 import { DbContext } from "./db-context";
 import { DbLocalContext } from "./db-local-context";
 import {
@@ -40,7 +39,7 @@ export interface IDbAdapter extends
     IDbLocalStore {
 }
 
-export type IDbAdapterConstructor = new(connectionInfo: DbConnectionInfo) => IDbAdapter & IDbAdapterExtension;
+export type IDbAdapterConstructor = new (connectionInfo: DbConnectionInfo) => IDbAdapter & IDbAdapterExtension;
 
 /**
  * The base class for deriving custom database adapters and managing extensions.

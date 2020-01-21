@@ -2,7 +2,7 @@
 
 import * as newuuidv4 from "uuid/v4";
 
-import { Uuid } from "../model/object";
+import { Uuid } from "..";
 
 import { CommonOptions, DatabaseOptions } from "./configuration";
 
@@ -74,9 +74,9 @@ export class Runtime {
 	 * AUTO GENERATED - DO NOT EDIT THE FOLLOWING DEFINITIONS!
      * PROPER VALUES ARE INJECTED WHEN BUILDING THE FRAMEWORK.
 	 */
-    private static FRAMEWORK_PACKAGE_NAME = "coaty";
-    private static FRAMEWORK_PACKAGE_VERSION = "1.11.1";
-    private static FRAMEWORK_BUILD_DATE = 1577970682338;
+    private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
+    private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
+    private static FRAMEWORK_BUILD_DATE = 1579597853771;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */

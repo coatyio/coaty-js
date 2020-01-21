@@ -1,11 +1,8 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Uuid } from "../model/object";
-import { ObjectJoinCondition } from "../model/object-join";
-import { CoreTypes } from "../model/types";
+import { CoatyObject, CoreTypes, DbConnectionInfo, ObjectJoinCondition, Uuid } from "..";
 import { IDbAdapter, IDbAdapterConstructor, IDbAdapterExtension } from "./db-adapter";
 import { DbAdapterFactory } from "./db-adapter-factory";
-import { DbConnectionInfo } from "./db-connection-info";
 import {
     DbJoinCondition,
     DbObjectFilter,

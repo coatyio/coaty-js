@@ -4,7 +4,7 @@
  * Test suite for framework bootstrapping.
  */
 
-import { Components, Configuration, Container, mergeConfigurations, Runtime } from "../../runtime";
+import { Components, Configuration, Container, mergeConfigurations, Runtime } from "../..";
 import { MulticastDnsDiscovery, provideConfiguration, provideConfigurationAsync } from "../../runtime-node";
 
 import * as mocks from "./bootstrap.mocks";

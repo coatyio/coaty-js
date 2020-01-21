@@ -4,9 +4,7 @@
  * Test suite for Sensors Things API
  */
 
-import { DiscoverEvent } from "../../com";
-import { CoreTypes, DisplayType } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
+import { Components, Configuration, Container, CoreTypes, DiscoverEvent, DisplayType } from "../..";
 import { SensorThingsTypes } from "../../sensor-things";
 
 import * as mocks from "./sensor-things.mock";

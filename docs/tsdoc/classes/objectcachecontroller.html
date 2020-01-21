@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ObjectCacheController | coaty v1.11.1</title>
+	<title>ObjectCacheController | @coaty/core v2.0.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">coaty v1.11.1</a>
+					<a href="../index.html" class="title">@coaty/core v2.0.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -159,9 +159,18 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L75">controller/controller.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L79">controller/controller.ts:79</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>internal</dt>
+									<dd><p>For internal use in framework only. Never instantiate
+											Controller objects in your application, they are created by dependency
+										injection.</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -195,9 +204,14 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#communicationmanager">communicationManager</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L106">controller/controller.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L128">controller/controller.ts:128</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the communication manager of the Coaty container.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="communicationmanager.html" class="tsd-signature-type">CommunicationManager</a></h4>
 						</li>
 					</ul>
@@ -206,14 +220,14 @@
 					<a name="coretype" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> core<wbr>Type</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> coreType<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"Annotation"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"CoatyObject"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"User"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Device"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Task"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"IoSource"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"IoActor"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Component"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Config"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Log"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Location"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Snapshot"</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> coreType<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"CoatyObject"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"User"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Device"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Annotation"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Task"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"IoSource"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"IoActor"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Component"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Config"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Log"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Location"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Snapshot"</span></li>
 						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> coreType<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><a href="../globals.html#coretype" class="tsd-signature-type">CoreType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L103">controller/object-cache-controller.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L101">controller/object-cache-controller.ts:101</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -225,13 +239,13 @@
 									the core type once in the <code>OnInit</code>
 								method of your custom controller.</p>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">"Annotation"</span>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">"CoatyObject"</span>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">"CoatyObject"</span>
 								<span class="tsd-signature-symbol"> | </span>
 								<span class="tsd-signature-type">"User"</span>
 								<span class="tsd-signature-symbol"> | </span>
 								<span class="tsd-signature-type">"Device"</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">"Annotation"</span>
 								<span class="tsd-signature-symbol"> | </span>
 								<span class="tsd-signature-type">"Task"</span>
 								<span class="tsd-signature-symbol"> | </span>
@@ -253,7 +267,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L114">controller/object-cache-controller.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L112">controller/object-cache-controller.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -285,9 +299,14 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#identity">identity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L99">controller/controller.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L118">controller/controller.ts:118</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the identity of this controller.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/component.html" class="tsd-signature-type">Component</a></h4>
 						</li>
 					</ul>
@@ -302,7 +321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L95">controller/object-cache-controller.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L93">controller/object-cache-controller.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -352,9 +371,15 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#options">options</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L95">controller/controller.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L111">controller/controller.ts:111</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the controller&#39;s options as specified in the container
+									configuration.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/controlleroptions.html" class="tsd-signature-type">ControllerOptions</a></h4>
 						</li>
 					</ul>
@@ -370,9 +395,14 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#runtime">runtime</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L91">controller/controller.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L103">controller/controller.ts:103</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the Runtime object of the Coaty container.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="runtime.html" class="tsd-signature-type">Runtime</a></h4>
 						</li>
 					</ul>
@@ -391,7 +421,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#extendlogobject">extendLogObject</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L283">controller/controller.ts:283</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L308">controller/controller.ts:308</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -431,7 +461,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#initializeidentity">initializeIdentity</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L264">controller/controller.ts:264</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L289">controller/controller.ts:289</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -473,7 +503,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#logdebug">logDebug</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L116">controller/controller.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L138">controller/controller.ts:138</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -511,7 +541,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#logerror">logError</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L147">controller/controller.ts:147</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L169">controller/controller.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -555,7 +585,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#logerrorwithstacktrace">logErrorWithStacktrace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L159">controller/controller.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L181">controller/controller.ts:181</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -599,7 +629,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#logfatal">logFatal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L172">controller/controller.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L194">controller/controller.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -643,7 +673,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#loginfo">logInfo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L126">controller/controller.ts:126</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L148">controller/controller.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -681,7 +711,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#logwarning">logWarning</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L136">controller/controller.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L158">controller/controller.ts:158</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -720,7 +750,7 @@
 								<p>Implementation of <a href="../interfaces/icontroller.html">IController</a>.<a href="../interfaces/icontroller.html#oncommunicationmanagerstarting">onCommunicationManagerStarting</a></p>
 								<p>Overrides <a href="controller.html">Controller</a>.<a href="controller.html#oncommunicationmanagerstarting">onCommunicationManagerStarting</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L37">controller/object-cache-controller.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L35">controller/object-cache-controller.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -739,7 +769,7 @@
 								<p>Implementation of <a href="../interfaces/icontroller.html">IController</a>.<a href="../interfaces/icontroller.html#oncommunicationmanagerstopping">onCommunicationManagerStopping</a></p>
 								<p>Overrides <a href="controller.html">Controller</a>.<a href="controller.html#oncommunicationmanagerstopping">onCommunicationManagerStopping</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L45">controller/object-cache-controller.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L43">controller/object-cache-controller.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -758,7 +788,7 @@
 								<p>Implementation of <a href="../interfaces/icontroller.html">IController</a>.<a href="../interfaces/icontroller.html#oncontainerresolved">onContainerResolved</a></p>
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#oncontainerresolved">onContainerResolved</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L204">controller/controller.ts:204</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L226">controller/controller.ts:226</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -793,14 +823,14 @@
 								<p>Implementation of <a href="../interfaces/icontroller.html">IController</a>.<a href="../interfaces/icontroller.html#ondispose">onDispose</a></p>
 								<p>Inherited from <a href="controller.html">Controller</a>.<a href="controller.html#ondispose">onDispose</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/controller.ts#L242">controller/controller.ts:242</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/controller.ts#L267">controller/controller.ts:267</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Called by the Coaty container when this instance should be disposed.
-									Implement cleanup side effects here. The base implementation does nothing.</p>
+									<p>Called by the Coaty container when this instance should be disposed.</p>
 								</div>
+								<p>Implement cleanup side effects here. The base implementation does nothing.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -818,7 +848,7 @@
 								<p>Implementation of <a href="../interfaces/icontroller.html">IController</a>.<a href="../interfaces/icontroller.html#oninit">onInit</a></p>
 								<p>Overrides <a href="controller.html">Controller</a>.<a href="controller.html#oninit">onInit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L28">controller/object-cache-controller.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L26">controller/object-cache-controller.ts:26</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -835,7 +865,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/37a4759/src/controller/object-cache-controller.ts#L57">controller/object-cache-controller.ts:57</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/33f4e22/src/controller/object-cache-controller.ts#L55">controller/object-cache-controller.ts:55</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

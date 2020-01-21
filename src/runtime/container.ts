@@ -2,8 +2,8 @@
 
 import { Subscription } from "rxjs";
 
-import { CommunicationManager, OperatingState } from "../com/communication-manager";
-import { Controller, IController, IControllerStatic } from "../controller/controller";
+import { CommunicationManager, Controller, OperatingState } from "..";
+import { IController, IControllerStatic } from "../controller/controller";
 
 import { Configuration, ControllerConfig } from "./configuration";
 import { Runtime } from "./runtime";

@@ -7,17 +7,15 @@ import {
     AdvertiseEventData,
     ChannelEvent,
     ChannelEventData,
-    DiscoverEvent,
-    ResolveEvent,
-} from "../../com";
-import { Controller } from "../../controller";
-import {
     CoatyObject,
+    Controller,
     CoreType,
     CoreTypes,
+    DiscoverEvent,
     Location,
+    ResolveEvent,
     Uuid,
-} from "../../model";
+} from "../..";
 import {
     EncodingTypes,
     FeatureOfInterest,

@@ -1,7 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component, Uuid } from "../model/object";
-import { CoreType, CoreTypes } from "../model/types";
+import { CoatyObject, Component, CoreType, CoreTypes, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**

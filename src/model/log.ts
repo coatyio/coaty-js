@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { AgentInfo } from "../runtime/agent-info";
+import { AgentInfo } from "..";
 import { CoatyObject } from "./object";
 
 /**

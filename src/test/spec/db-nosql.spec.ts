@@ -7,17 +7,25 @@
 import { take, timeout } from "rxjs/operators";
 
 import {
+    Async,
+    CoatyObject,
+    Components,
+    Configuration,
+    Container,
+    CoreTypes,
+    DbConnectionInfo,
+    filterOp,
+    ObjectFilter,
+    ObjectJoinCondition,
+} from "../..";
+import {
     AggregateOp,
     DbAdapterFactory,
-    DbConnectionInfo,
     DbContext,
     DbJoinCondition,
     DbObjectFilter,
 } from "../../db";
-import { PostgresAdapter } from "../../db-adapter-postgres";
-import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectJoinCondition } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
-import { Async } from "../../util";
+import { PostgresAdapter } from "../../db/adapter-postgres";
 
 import {
     DbTestObject,

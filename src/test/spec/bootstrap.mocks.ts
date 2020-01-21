@@ -4,7 +4,7 @@
  * Mocks and Spies for bootstrapping test suite
  */
 
-import { Controller } from "../../controller";
+import { Controller } from "../..";
 
 import { Spy } from "./utils";
 

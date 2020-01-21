@@ -1,8 +1,7 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { IoStateEvent } from "../../com";
-import { IoActorController } from "../../io";
-import { IoActor } from "../../model";
+import { IoActor, IoStateEvent } from "../..";
+import { IoActorController } from "../../io-routing";
 
 export interface IoActorLogger {
     values: any[];

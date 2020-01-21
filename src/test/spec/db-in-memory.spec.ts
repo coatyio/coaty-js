@@ -7,16 +7,24 @@
 import { take, timeout } from "rxjs/operators";
 
 import {
+    CoatyObject,
+    Components,
+    Configuration,
+    Container,
+    CoreTypes,
+    DbConnectionInfo,
+    filterOp,
+    ObjectFilter,
+    ObjectJoinCondition,
+} from "../..";
+import {
     AggregateOp,
     DbAdapterFactory,
-    DbConnectionInfo,
     DbContext,
     DbJoinCondition,
     DbObjectFilter,
 } from "../../db";
-import { InMemoryAdapter } from "../../db-adapter-in-memory";
-import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectJoinCondition } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
+import { InMemoryAdapter } from "../../db/adapter-in-memory";
 
 import {
     DbTestObject,

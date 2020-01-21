@@ -10,7 +10,7 @@
  * 
  * For example:
  * ```ts
- * import { equals } from "coaty/util";
+ * import { equals } from "@coaty/core";
  * 
  * equals({ a : [ 2, 3 ], b : [ 4 ] }, { a : [ 2, 3 ], b : [ 4 ] })) => true
  * equals({ x : 5, y : [6] }, { x : 5, y : 6 })) => false
@@ -112,7 +112,7 @@ export function equals(a: any, b: any): boolean {
  * 
  * For example:
  * ```ts
- * import { contains } from "coaty/util";
+ * import { contains } from "@coaty/core";
  * 
  * contains("foo" , "foo") => true
  *
@@ -170,7 +170,7 @@ export function contains(a: any, b: any): boolean {
  *
  * For example:
  * ```ts
- * import { includes } from "coaty/util";
+ * import { includes } from "@coaty/core";
  * 
  * includes([1, 46, 47, "foo"], 47) => true
  * includes([1, 46, "47", "foo"], 47) => false

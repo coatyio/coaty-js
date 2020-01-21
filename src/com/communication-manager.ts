@@ -4,14 +4,20 @@ import { Client, connect, IClientPublishOptions } from "mqtt";
 import { BehaviorSubject, Observable, Subscriber, Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import { Device } from "../model/device";
-import { IoActor, IoSource } from "../model/io-point";
-import { CoatyObject, Component, Uuid } from "../model/object";
-import { CoreType, CoreTypes } from "../model/types";
-import { User } from "../model/user";
+import {
+    CoatyObject,
+    CommunicationOptions,
+    Component,
+    CoreType,
+    CoreTypes,
+    Device,
+    IoActor,
+    IoSource,
+    Runtime,
+    User,
+    Uuid,
+} from "..";
 import { IComponent } from "../runtime/component";
-import { CommunicationOptions } from "../runtime/configuration";
-import { Runtime } from "../runtime/runtime";
 
 import { AdvertiseEvent, AdvertiseEventData } from "./advertise";
 import { AssociateEvent, AssociateEventData } from "./associate";

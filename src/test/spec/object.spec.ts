@@ -4,8 +4,7 @@
  * Test suite for framework objects.
  */
 
-import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectFilterConditions, ObjectMatcher } from "../../model";
-import { Runtime } from "../../runtime";
+import { CoatyObject, CoreTypes, filterOp, ObjectFilter, ObjectFilterConditions, ObjectMatcher, Runtime } from "../..";
 
 describe("Objects", () => {
 

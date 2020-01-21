@@ -4,12 +4,10 @@
  * Test suite for framework IO routing.
  */
 
-import { CommunicationManager } from "../../com";
+import { CommunicationManager, Components, Configuration, Container, CoreTypes, DisplayType, IoActor, IoSource, User } from "../..";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
-import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io";
-import { CoreTypes, DisplayType, IoActor, IoSource, User } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
+import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
 
 import * as mocks from "./io-routing.mocks";
 import { delayAction, Spy } from "./utils";

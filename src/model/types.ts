@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { clone } from "../util/deep";
+import { clone } from "..";
 import { AnnotationStatus, AnnotationType } from "./annotation";
 import { DisplayType } from "./device";
 import { IoSourceBackpressureStrategy } from "./io-point";

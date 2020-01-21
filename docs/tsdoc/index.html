@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>coaty v1.11.1</title>
+	<title>@coaty/core v2.0.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">coaty v1.11.1</a>
+					<a href="index.html" class="title">@coaty/core v2.0.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -54,7 +54,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> coaty v1.11.1</h1>
+			<h1> @coaty/core v2.0.0</h1>
 		</div>
 	</div>
 </header>
@@ -66,7 +66,7 @@
 				<p><a href="https://coaty.io"><img src="https://img.shields.io/badge/Powered%20by-Coaty-FF8C00.svg" alt="Powered by Coaty"></a>
 					<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
 					<a href="https://conventionalcommits.org/"><img src="https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg" alt="release"></a>
-				<a href="https://www.npmjs.com/package/coaty"><img src="https://badge.fury.io/js/coaty.svg" alt="npm version"></a></p>
+				<a href="https://www.npmjs.com/package/@coaty/core"><img src="https://badge.fury.io/js/%40coaty%2Fcore.svg" alt="npm version"></a></p>
 				<p>Using the Coaty [koʊti] framework as a middleware, you can build distributed
 					applications out of decentrally organized application components, so called
 					<em>Coaty agents</em>, which are loosely coupled and communicate with each other in
@@ -91,23 +91,33 @@
 					JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
 				services.</p>
 				<p>Coaty JS comes with complete API documentation, a developer guide, a coding
-				style guide, and best-practice examples.</p>
+				style guide, best-practice examples, and additional extensions.</p>
 				<h2 id="learn-how-to-use">Learn how to use</h2>
-				<p>If you are new to Coaty and would like to learn more, we
-					recommend reviewing the <a href="https://coatyio.github.io/coaty-js/">framework documentation</a>
-					under the <a href="https://github.com/coatyio/coaty-js">coaty-js</a> project.
-				This documentation includes:</p>
+				<p>If you are new to Coaty or would like to learn more, we recommend reviewing the
+					<a href="https://coatyio.github.io/coaty-js/">framework documentation</a> of the
+					<a href="https://github.com/coatyio/coaty-js">coaty-js</a> project. This documentation
+				includes:</p>
 				<ul>
 					<li>a <a href="https://coatyio.github.io/coaty-js/man/developer-guide/">Developer Guide</a>
-					that provides the basics to get started developing an agent project with the Coaty JS framework,</li>
-					<li>a complete <a href="https://coatyio.github.io/coaty-js/tsdoc/index.html">API documentation</a>
-					of all public type and member definitions of the Coaty JS framework sources,</li>
-					<li>a <a href="https://coatyio.github.io/coaty-js/man/coding-style-guide/">Coding Style Guide</a>
-					for Coaty JS framework and application developers,</li>
-					<li>a specification of the <a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">Coaty communication protocol</a>,</li>
-					<li>guidance notes on <a href="https://coatyio.github.io/coaty-js/man/rights-management/">rights management</a>
-					in a Coaty application.</li>
-					<li>a guide on the <a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">OGC SensorThings API integration</a> in Coaty JS.</li>
+						that provides the basics to get started developing a Coaty project with the
+					Coaty JS framework,</li>
+					<li>a complete <a href="https://coatyio.github.io/coaty-js/tsdoc/index.html">API
+						documentation</a> of all
+					public type and member definitions of the Coaty JS framework sources,</li>
+					<li>a <a href="https://coatyio.github.io/coaty-js/man/coding-style-guide/">Coding Style
+						Guide</a> for Coaty
+					JS framework and application developers,</li>
+					<li>a specification of the <a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">Coaty communication
+					protocol</a>,</li>
+					<li>guidance notes on <a href="https://coatyio.github.io/coaty-js/man/rights-management/">rights
+						management</a> in a
+					Coaty application.</li>
+					<li>a guide on the <a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">OGC SensorThings API
+						integration</a> in
+					Coaty JS.</li>
+					<li>[Migration Guide]({{ site.baseurl }}{% link man/migration-guide.md %}) - a
+						guide on migrating an existing Coaty JS application to a newer Coaty JS major
+					release</li>
 				</ul>
 				<p>Coaty JS also includes a set of fully documented <a href="https://github.com/coatyio/coaty-examples">code
 					examples</a> that demonstrate best
@@ -116,20 +126,26 @@
 					<a href="https://github.com/coatyio/coaty-examples/tree/master/template/js">template</a>
 					for a Coaty agent running in Node.js and programmed in TypeScript. Copy and use
 				it as a blueprint for your own Coaty agent projects.</p>
-				<p>Finally, the unit tests delivered with the framework itself also provide a valuable
-				source of programming examples for experienced developers.</p>
+				<p>Coaty JS is also accompanied by a set of additional extensions to the core
+					framework supplied in separate projects on
+					<a href="https://github.com/coatyio/">github</a>. Extensions, such as connectors, adapters,
+					or building blocks, provide reusable functionality for specialized use cases and
+				application scenarios build on top of the Coaty core.</p>
+				<p>Finally, the unit tests delivered with the framework itself also provide a
+				valuable source of programming examples for experienced developers.</p>
 				<p>Note that the framework makes heavy use of the Reactive Programming paradigm
 					using RxJS observables. Understanding observables is an indispensable
 					prerequisite for developing applications with the framework. An introduction to
 					Reactive Programming can be found <a href="http://reactivex.io/">here</a>. Examples and
-					explanations can be found on the <a href="https://rxjs.dev/">RxJS</a> and
-				<a href="https://www.learnrxjs.io/">Learn RxJS</a> websites.</p>
+					explanations can be found on the <a href="https://rxjs.dev/">RxJS</a> and <a href="https://www.learnrxjs.io/">Learn
+				RxJS</a> websites.</p>
 				<p>If you are new to TypeScript programming, we recommend to take a look at the official
 					<a href="http://www.typescriptlang.org/">TypeScript website</a>. Its &quot;Playground&quot; is especially useful
 				to interactively try some TypeScript code in your browser.</p>
-				<p>To program Coaty applications, we recommend to use <a href="https://code.visualstudio.com/">Visual Studio Code</a>,
-					a free, open source IDE that runs everywhere. Install the VS Code extension &quot;TSLint&quot; to
-				enable TypeScript linting within the IDE.</p>
+				<p>To program Coaty applications, we recommend to use <a href="https://code.visualstudio.com/">Visual Studio
+					Code</a>, a free, open source IDE that runs
+					everywhere. Install the VS Code extension &quot;TSLint&quot; to enable TypeScript linting
+				within the IDE.</p>
 				<h2 id="getting-started">Getting started</h2>
 				<p>To build and run Coaty agents with the Coaty JS technology stack
 					you need to install the <code>Node.js</code> JavaScript runtime (version 8 or higher) globally on
@@ -320,7 +336,7 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/historiancontroller.html" class="tsd-kind-icon">Historian<wbr>Controller</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/inmemoryadapter.html" class="tsd-kind-icon">In<wbr>Memory<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
@@ -365,7 +381,7 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/outputgpio.html" class="tsd-kind-icon">Output<wbr>Gpio</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/postgresadapter.html" class="tsd-kind-icon">Postgres<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
@@ -416,13 +432,13 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/sensorthingstypes.html" class="tsd-kind-icon">Sensor<wbr>Things<wbr>Types</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/sqlitebaseadapter.html" class="tsd-kind-icon">Sq<wbr>Lite<wbr>Base<wbr>Adapter</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/sqlitecordovaadapter.html" class="tsd-kind-icon">Sq<wbr>Lite<wbr>Cordova<wbr>Adapter</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/sqlitenodeadapter.html" class="tsd-kind-icon">Sq<wbr>Lite<wbr>Node<wbr>Adapter</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">

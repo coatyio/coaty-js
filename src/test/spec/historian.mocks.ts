@@ -2,9 +2,8 @@
 
 import { take, timeout } from "rxjs/operators";
 
-import { AdvertiseEventData } from "../../com";
-import { HistorianController } from "../../controller";
-import { Snapshot, Uuid } from "../../model";
+import { AdvertiseEventData, Snapshot, Uuid } from "../..";
+import { HistorianController } from "../../db";
 
 export interface AdvertiseEventLogger {
     count: number;

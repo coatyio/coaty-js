@@ -1,8 +1,8 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { DbConnectionInfo } from "..";
 import { IDbAdapter, IDbAdapterConstructor, IDbAdapterExtension } from "./db-adapter";
 import { DbAdapterFactory } from "./db-adapter-factory";
-import { DbConnectionInfo } from "./db-connection-info";
 import {
     IDbLocalStore,
     IDbSqlOperations,

@@ -4,9 +4,9 @@
  * Test suite for framework SQL local store access using SqliteNodeAdapter.
  */
 
-import { DbConnectionInfo, DbLocalContext, SQL } from "../../db";
-import { SqLiteNodeAdapter } from "../../db-adapter-sqlite-node";
-import { Components, Configuration, Container } from "../../runtime";
+import { Components, Configuration, Container, DbConnectionInfo } from "../..";
+import { DbLocalContext, SQL } from "../../db";
+import { SqLiteNodeAdapter } from "../../db/adapter-sqlite-node";
 
 import { failTest } from "./utils";
 

@@ -1,8 +1,6 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component } from "../model/object";
-import { ContextFilter, isContextFilterValid } from "../model/object-filter";
-import { ObjectMatcher } from "../model/object-matcher";
+import { CoatyObject, Component, ContextFilter, isContextFilterValid, ObjectMatcher  } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
 

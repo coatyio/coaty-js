@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { SensorIo } from "../sensor-io";
+import { SensorIo } from "..";
 
 /**
  * Handles IO communication for an analog pin. Only allows a read.

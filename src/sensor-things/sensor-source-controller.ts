@@ -3,16 +3,17 @@
 import { Observable, Subject, Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import { AdvertiseEvent } from "../com/advertise";
-import { ChannelEvent } from "../com/channel";
-import { DeadvertiseEvent } from "../com/deadvertise";
-import { ResolveEvent } from "../com/discover-resolve";
-import { RetrieveEvent } from "../com/query-retrieve";
-
-import { Controller } from "../controller/controller";
-import { Uuid } from "../model/object";
-import { ObjectMatcher } from "../model/object-matcher";
-import { TimeInterval } from "../util/date";
+import {
+    AdvertiseEvent,
+    ChannelEvent,
+    Controller,
+    DeadvertiseEvent,
+    ObjectMatcher,
+    ResolveEvent,
+    RetrieveEvent,
+    TimeInterval,
+    Uuid,
+} from "..";
 import { Observation, Sensor } from "./objects";
 import { ISensorIoStatic, SensorIo } from "./sensor-io";
 import { SensorThingsTypes } from "./types";

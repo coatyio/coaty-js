@@ -3,17 +3,21 @@
 import { Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import { AdvertiseEvent } from "../com/advertise";
-import { CommunicationManager } from "../com/communication-manager";
-import { ResolveEvent } from "../com/discover-resolve";
-import { Log, LogHost, LogLevel } from "../model/log";
-import { Component } from "../model/object";
-import { CoreTypes } from "../model/types";
+import {
+    AdvertiseEvent,
+    CommunicationManager,
+    Component,
+    Container,
+    ControllerOptions,
+    CoreTypes,
+    Log,
+    LogHost,
+    LogLevel,
+    ResolveEvent,
+    Runtime,
+    toLocalIsoString,
+} from "..";
 import { IComponent } from "../runtime/component";
-import { ControllerOptions } from "../runtime/configuration";
-import { Container } from "../runtime/container";
-import { Runtime } from "../runtime/runtime";
-import { toLocalIsoString } from "../util/date";
 
 /**
  * Defines common members for all controller types.

@@ -4,7 +4,7 @@
  * Test suite for framework utilities.
  */
 
-import { Async, clone, contains, equals, includes } from "../../util";
+import { Async, clone, contains, equals, includes } from "../..";
 import { failTest } from "./utils";
 
 describe("Utilities", () => {

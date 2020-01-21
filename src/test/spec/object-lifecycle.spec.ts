@@ -4,10 +4,7 @@
  * Test suite for object lifecycle management controller.
  */
 
-import { ObjectLifecycleController } from "../../controller";
-import { ObjectLifecycleInfo } from "../../controller/object-lifecycle-controller";
-import { CoatyObject } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
+import { CoatyObject, Components, Configuration, Container, ObjectLifecycleController, ObjectLifecycleInfo } from "../..";
 
 import { delayAction } from "./utils";
 

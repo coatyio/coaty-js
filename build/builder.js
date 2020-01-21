@@ -24,7 +24,8 @@ const path = require("path");
 const rimraf = require("rimraf");
 const tslint = require("tslint");
 
-const TS_TARGETDIR = "src";
+const SRC_TARGETDIR = "src";
+const DIST_TARGET = "es5-commonjs";
 
 builder(require("yargs")
     .command("clean", "Clean all distribution packages")
@@ -116,19 +117,21 @@ function build(pkgName, pkgVersion) {
             const tsconfigPath = path.resolve(buildDir, file);
             const opts = require(tsconfigPath).compilerOptions;
             const target = opts.target + "-" + opts.module;
-            const targetDir = "./dist/" + target + "/";
+            const distDir = "./dist/" + target + "/";
 
             logInfo("Build distribution package " + target);
 
             // First, bring the desired tsconfig file into place
-            fse.copySync(tsconfigPath, "./" + TS_TARGETDIR + "/tsconfig.json");
+            fse.copySync(tsconfigPath, "./" + SRC_TARGETDIR + "/tsconfig.json");
 
-            // Transpile TS into JS code, using TS compiler in local typescript npm package.
-            // Remove all comments except copy-right header comments, and do not
-            // generate corresponding .d.ts files (see next step below).
+            // Transpile TS core modules into one JS file, using TS compiler in
+            // local typescript npm package. Remove all comments except
+            // copy-right header comments, and do not generate corresponding
+            // .d.ts files (see next step below).
             childProcess.execSync(path.resolve("./node_modules/.bin/tsc") +
-                " --project " + TS_TARGETDIR +
-                " --outDir " + targetDir +
+                " --noEmitOnError " +
+                " --project " + SRC_TARGETDIR +
+                " --outDir " + distDir +
                 " --removeComments true --declaration false",
                 // redirect child output to parent's stdin, stdout and stderr
                 { stdio: "inherit" });
@@ -137,32 +140,33 @@ function build(pkgName, pkgVersion) {
             // The generated declaration files include all comments so that
             // IDEs can provide this information to developers.
             childProcess.execSync(path.resolve("./node_modules/.bin/tsc") +
-            " --project " + TS_TARGETDIR +
-            " --outDir " + targetDir +
+            " --noEmitOnError " +
+            " --project " + SRC_TARGETDIR +
+            " --outDir " + distDir +
             " --removeComments false --declaration true --emitDeclarationOnly true",
             // redirect child output to parent's stdin, stdout and stderr
             { stdio: "inherit" });
 
             // Copy scripts folder into distribution package
-            fse.copySync("./scripts", targetDir + "scripts");
+            fse.copySync("./scripts", distDir + "scripts");
 
             // Copy readme into distribution package
-            fse.copySync("./README.md", targetDir + "README.md");
+            fse.copySync("./README.md", distDir + "README.md");
 
             // Copy license into distribution package
-            fse.copySync("./LICENSE", targetDir + "LICENSE");
+            fse.copySync("./LICENSE", distDir + "LICENSE");
 
             // Copy tslint.json into distribution package (for use by Coaty projects)
-            fse.copySync("./build/tslint.json", targetDir + "tslint-config.json");
+            fse.copySync("./build/tslint.json", distDir + "tslint-config.json");
 
             // Copy .npmignore into distribution package
-            fse.copySync("./.npmignore", targetDir + ".npmignore");
+            fse.copySync("./.npmignore", distDir + ".npmignore");
 
             // Copy package.json into distribution package
-            fse.copySync("./package.json", targetDir + "package.json");
+            fse.copySync("./package.json", distDir + "package.json");
 
             // Update package.json to include distribution as prerelease in version
-            updatePackageInfo(target, targetDir + "package.json", file !== "tsconfig.es5-commonjs.json");
+            updatePackageInfo(target, distDir + "package.json", file !== "tsconfig." + DIST_TARGET + ".json");
         }
     });
 }
@@ -173,8 +177,8 @@ function build(pkgName, pkgVersion) {
 function lint(applyFixes) {
     logInfo("Lint TypeScript source files");
 
-    const tsDir = path.resolve(TS_TARGETDIR);
-    const cwdLength = tsDir.length - TS_TARGETDIR.length;
+    const tsDir = path.resolve(SRC_TARGETDIR);
+    const cwdLength = tsDir.length - SRC_TARGETDIR.length;
     const tsSuffix = ".ts";
     const dtsSuffix = ".d.ts";
     const lintConfigFile = path.resolve("./build/tslint.json");
@@ -215,7 +219,7 @@ function lint(applyFixes) {
  * Run the test suite.
  */
 function test(verbose, debug) {
-    const target = "es5-commonjs";
+    const target = DIST_TARGET;
     const distDir = "./dist/";
 
     logInfo("Run test suites on distribution package " + target);
@@ -223,7 +227,7 @@ function test(verbose, debug) {
     // Copy src/test/config files to <target>/test/config
     const testConfigDir = distDir + target + "/test/config";
     rimraf.sync(path.resolve(testConfigDir));
-    fse.copySync("./" + TS_TARGETDIR + "/test/config", testConfigDir);
+    fse.copySync("./" + SRC_TARGETDIR + "/test/config", testConfigDir);
 
     // Start Jasmine
     const testSpecDir = distDir + target + "/test/spec";
@@ -236,7 +240,7 @@ function test(verbose, debug) {
  */
 function doc(pkgName, pkgVersion) {
     const typedoc = require("typedoc");
-    const typescriptOptions = require(path.resolve("./build/tsconfig.es5-commonjs.json")).compilerOptions;
+    const typescriptOptions = require(path.resolve("./build/tsconfig." + DIST_TARGET + ".json")).compilerOptions;
     const typedocOptions = require(path.resolve("./build/typedoc.js"));
 
     // Add version number to header of generated HTML documentation
@@ -249,7 +253,6 @@ function doc(pkgName, pkgVersion) {
     // Note that the "exclude" option pattern is also not considered in API code.
     const srcFiles = [];
     getTypedocModuleSources(path.resolve(typedocOptions.src), srcFiles);
-    getTypedocModuleSources(path.resolve(typedocOptions.src, "db/adapters/"), srcFiles);
 
     rimraf.sync(path.resolve("./" + typedocOptions.out));
 
@@ -262,8 +265,10 @@ function doc(pkgName, pkgVersion) {
     function getTypedocModuleSources(srcPath, srcFiles) {
         fse.readdirSync(srcPath).forEach((file, index) => {
             let filePath = path.join(srcPath, file);
-            if (!fse.lstatSync(filePath).isDirectory()) {
-                if (path.extname(filePath) === ".ts") {
+            if (fse.lstatSync(filePath).isDirectory()) {
+                getTypedocModuleSources(filePath, srcFiles);
+            } else {
+                if (path.basename(filePath) === "index.ts") {
                     srcFiles.push(filePath);
                 }
             }
@@ -279,7 +284,7 @@ function getPackageObject(folder) {
 }
 
 function updateRuntimeInfo(buildDate, pkgName, pkgVersion) {
-    const runtimeFile = path.resolve("./" + TS_TARGETDIR + "/runtime/runtime.ts");
+    const runtimeFile = path.resolve("./" + SRC_TARGETDIR + "/runtime/runtime.ts");
     const content = fse.readFileSync(runtimeFile, "utf-8").toString();
     let rewrittenContent = "";
     content.split("\n").forEach((line, index, array) => {

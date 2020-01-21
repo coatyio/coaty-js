@@ -1,10 +1,17 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component } from "../model/object";
-import { isObjectFilterValid, ObjectFilter } from "../model/object-filter";
-import { areObjectJoinConditionsValid, ObjectJoinCondition } from "../model/object-join";
-import { ObjectMatcher } from "../model/object-matcher";
-import { CoreType, CoreTypes } from "../model/types";
+import {
+    areObjectJoinConditionsValid,
+    CoatyObject,
+    Component,
+    CoreType,
+    CoreTypes,
+    isObjectFilterValid,
+    ObjectFilter,
+    ObjectJoinCondition,
+    ObjectMatcher,
+} from "..";
+
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**

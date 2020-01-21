@@ -3,12 +3,16 @@
 import { merge, Observable, Subscription } from "rxjs";
 import { filter, map, share } from "rxjs/operators";
 
-import { AdvertiseEvent } from "../com/advertise";
-import { DeadvertiseEvent } from "../com/deadvertise";
-import { DiscoverEvent, ResolveEvent } from "../com/discover-resolve";
-import { CoatyObject, Uuid } from "../model/object";
-import { CoreType } from "../model/types";
-import { equals } from "../util/deep";
+import {
+    AdvertiseEvent,
+    CoatyObject,
+    CoreType,
+    DeadvertiseEvent,
+    DiscoverEvent,
+    equals,
+    ResolveEvent,
+    Uuid,
+} from "..";
 import { Controller } from "./controller";
 
 /**

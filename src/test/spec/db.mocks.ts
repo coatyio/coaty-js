@@ -3,10 +3,8 @@
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 
-import { QueryEvent, RetrieveEvent } from "../../com";
-import { Controller } from "../../controller";
+import { CoatyObject, Controller, ObjectFilter, ObjectJoinCondition, QueryEvent, RetrieveEvent } from "../..";
 import { DbContext } from "../../db";
-import { CoatyObject, ObjectFilter, ObjectJoinCondition } from "../../model";
 
 export const OBJECT_TYPE_NAME_DB_TEST_OBJECT = "coaty.test.DbTestObject";
 

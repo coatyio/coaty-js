@@ -1,7 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoreTypes } from "../model/types";
-import { isTimeInterval } from "../util/date";
+import { CoreTypes, isTimeInterval } from "..";
 import {
     FeatureOfInterestObjectTypeLiteral,
     ObservationObjectTypeLiteral,

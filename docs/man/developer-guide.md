@@ -140,7 +140,7 @@ includes:
 * a guide on the [OGC SensorThings API
   integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in
   Coaty JS.
-* [Migration Guide]({{ site.baseurl }}{% link man/migration-guide.md %}) - a
+* [Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/) - a
   guide on migrating an existing Coaty JS application to a newer Coaty JS major
   release
 
@@ -199,15 +199,16 @@ section "Installing the framework".
 
 ## Framework technology stack
 
-The Coaty JavaScript technology stack makes use of the following base technologies:
+The Coaty JavaScript technology stack makes use of the following core
+technologies:
 
 * **TypeScript** - the framework's main programming language
-* **MQTT.JS** - an MQTT client used to implement event based communication on top
-  of MQTT messaging
+* **MQTT.JS** - an MQTT client used to implement event based communication on
+  top of MQTT messaging
 * **RxJS** - the ReactiveX JavaScript library for asynchronous programming with
   observable streams
 
-The framework also includes some optional packages that can be used in
+The framework can also make use of database driver packages to be required in
 combination with the Unified Storage API:
 
 * **pg** - JavaScript driver for PostgreSQL databases
@@ -216,51 +217,59 @@ combination with the Unified Storage API:
 
 ## Framework structure
 
-The Coaty framework consists of several *modules*, public APIs that can be consumed
-independently from each other by a browser or a Node.js runtime. You can choose from
-a set of core modules:
+The Coaty framework consists of core and specialized *modules*, public APIs that
+can be independently consumed. The core module includes:
 
-```
-|-- com           - event based communication
-|-- controller    - base controller classes
-|-- io            - IO routing
-|-- model         - core object types
-|-- runtime       - runtime components
-|-- util          - useful utility functions
-```
+* core object types
+* event based communication
+* essential controller classes
+* runtime components
+* utility functions
 
-and optional specialized modules that are only needed/available for specific types of
-Coaty agents running on specific platforms:
-
-```
-|-- scripts           - Build-supporting scripts for use by Coaty agent projects
-|-- db                - Unified Storage API
-    |-- db-adapter-postgres
-    |-- db-adapter-sqlite-cordova
-    |-- db-adapter-sqlite-node
-|-- runtime-angular   - bootstrapping with Dependency Injection for Angular / Ionic
-|-- runtime-node      - Node.js specific utilities for Coaty applications
-```
-
-The framework distribution package deploys these modules as ES5 sources in
-CommonJS module format.
-
-These JavaScript sources are meant to be used by a bundler such as Webpack,
-SystemJS Builder, Rollup, or Browserify or to be directly consumed by a Node.js runtime.
-The type definitions provide support to TypeScript tooling for things like
-type checking and code completion (e.g. Visual Studio Code Intellisense).
-
-A module is consumed by importing the associated JavaScript module file:
+Functionality of the core module is consumed in your application by importing
+from the scoped npm package `@coaty/core`, e.g.:
 
 ```ts
-import { User, Device } from "coaty/model";
-import { Controller } from "coaty/controller";
+import { AdvertiseEvent, Async, Container, Controller, Task } from "@coaty/core";
 ```
 
-> Note: Never try to import definitions from "coaty" package directly, i.e.
-> `import { User, Controller } from "coaty"`. Such an import statement
-> will cause an error on transpilation. Always import your definitions from
-> the specific framework modules they are contained in.
+Moreover, specialized modules can be used independently by Coaty agents
+requiring functionality beyond the core. These modules may also be specific to a
+platform, like Node.js or browsers:
+
+* `db` - Unified Storage API module with generic functionality
+* `db-adapter-<name>` - modules for platform-specific DB adapters:
+  * `db-adapter-postgres` - PostgreSQL adapter for Node.js
+  * `db-adapter-sqlite-cordova` - SQLite adapter for Cordova apps
+  * `db-adapter-sqlite-node` - SQLite adapter for Node.js
+  * `db-adapter-in-memory` - In-memory NoSQL database adapter for Node.js and
+    browsers
+* `io-routing` - module for IO Routing
+* `runtime-angular` - Coaty integration into Angular / Ionic
+* `runtime-node` - Node.js specific utilities for Coaty applications
+* `sensor-things` - module for SensorThings API
+* `sensor-things-io` - hardware interfaces for SensorThings API
+
+Functionality of a specialized module is consumed in your application by
+importing from `@coaty/core/<module>` or `@coaty/core/<module>/<submodule>`,
+e.g.:
+
+```ts
+import { DbContext } from "@coaty/core/db";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
+import { Sensor, Thing } from "@coaty/core/sensor-things";
+import { Aio, InputGpio, OutputGpio } from "@coaty/core/sensor-things/io";
+```
+
+The framework distribution package `@coaty/core` deploys all modules as ES5
+sources in CommonJS module format, so they can be used by both Node.js and a
+browser.
+
+The deployed JavaScript sources are meant to be used by a bundler such as
+Webpack, SystemJS Builder, Rollup, or Browserify or to be directly consumed by a
+Node.js runtime. The sources also include TypeScript type definitions providing
+support to TypeScript tooling for things like type checking and code completion
+(e.g. Intellisense in Visual Studio Code).
 
 ## Framework design
 
@@ -304,7 +313,7 @@ a Configuration object. Application-specific controllers are classes derived fro
 by the `Components` interface object.
 
 ```ts
-import { Components } from "coaty/runtime";
+import { Components } from "@coaty/core";
 
 import { ProductionOrderController, SupportTaskController, WorkflowController } from "./controllers";
 
@@ -321,7 +330,7 @@ The configuration options for the container components are specified by a separa
 Configuration interface object:
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
@@ -393,7 +402,7 @@ In a Node.js environment you can bootstrap a Coaty container synchronously
 on startup by registering and resolving the declared container components:
 
 ```ts
-import { Container } from "coaty/runtime";
+import { Container } from "@coaty/core";
 
 const container = Container.resolve(components, configuration);
 ```
@@ -401,7 +410,7 @@ const container = Container.resolve(components, configuration);
 You can also retrieve the configuration object from a local JSON or JS file:
 
 ```ts
-import { provideConfiguration } from "coaty/runtime-node";
+import { provideConfiguration } from "@coaty/core/runtime-node";
 
 const configuration = provideConfiguration("app.config.json");
 ```
@@ -410,8 +419,8 @@ Alternatively, you can bootstrap a container asynchronously by retrieving
 the Configuration object from a Url:
 
 ```ts
-import { Container } from "coaty/runtime";
-import { provideConfigurationAsync } from "coaty/runtime-node";
+import { Container } from "@coaty/core";
+import { provideConfigurationAsync } from "@coaty/core/runtime-node";
 
 // Returns a promise on a container for the given components and config options
 Container
@@ -440,8 +449,8 @@ be passed as `extraProviders` argument to the Angular bootstrap function:
 ```ts
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
-import { Container } from "coaty/runtime";
-import { provideComponents } from "coaty/runtime-angular";
+import { Container } from "@coaty/core";
+import { provideComponents } from "@coaty/core/runtime-angular";
 
 import { components, configuration } from "./app.config";
 import { AppModule } from "./app.module";
@@ -653,8 +662,7 @@ controller class:
 import { Subscription } from "rxjs";
 import { map } from "rxjs/operators";
 
-import { Controller } from "coaty/controller";
-import { Task, CoreTypes } from "coaty/model";
+import { Controller, CoreTypes, Task } from "@coaty/core";
 
 export class SupportTaskController extends Controller {
 
@@ -816,9 +824,8 @@ This approach assumes the lifecycle container has been added to the container
 components under the name `ObjectLifecycleController`:
 
 ```ts
-import { Controller, ObjectLifecycleController } from "coaty/controller";
-import { Container } from "coaty/runtime";
 import { Subscription } from "rxjs";
+import { Container, Controller, ObjectLifecycleController } from "@coaty/core";
 
 class MyController extends Controller {
 
@@ -854,8 +861,8 @@ class MyController extends Controller {
 This approach assumes your custom controller class inherits from the lifecycle container class:
 
 ```ts
-import { ObjectLifecycleController } from "coaty/controller";
 import { Subscription } from "rxjs";
+import { ObjectLifecycleController } from "@coaty/core";
 
 class MyController extends ObjectLifecycleController {
 
@@ -904,8 +911,8 @@ making it discoverable. Note that when the communication manager is stopped the
 custom object is automatically deadvertised.
 
 ```ts
-import { ObjectLifecycleController } from "coaty/controller";
 import { Subscription } from "rxjs";
+import { ObjectLifecycleController } from "@coaty/core";
 
 class CustomObjectAdvertisingController extends ObjectLifecycleController {
 
@@ -981,7 +988,7 @@ objects, define a custom controller class that extends the abstract
 of objects to be cached in the `OnInit` method.
 
 ```ts
-import { ObjectCacheController } from "coaty/controller";
+import { ObjectCacheController } from "@coaty/core";
 import { FactoryUser } from "../models/factory-user";
 
 export class UserCacheController extends ObjectCacheController<FactoryUser> {
@@ -1045,8 +1052,8 @@ You can set up a `HistorianController` in the Coaty container components and con
 as follows:
 
 ```ts
-import { HistorianController } from "coaty/controller";
-import { Components, Configuration } from "coaty/runtime";
+import { Components, Configuration } from "@coaty/core";
+import { HistorianController } from "@coaty/core/db";
 
 export const components: Components = {
     controllers: {
@@ -1225,7 +1232,7 @@ Simply extend one of the predefined object types of the framework and specify
 a canonical object type name for the new object:
 
 ```ts
-import { Task } from "coaty/model";
+import { Task } from "@coaty/core";
 
 export const modelTypes = {
     OBJECT_TYPE_HELLO_WORLD_TASK: "com.helloworld.Task",
@@ -1594,7 +1601,7 @@ Things API.
 The sensor device advertises the associated Thing object:
 
 ```ts
-import { SensorThingsTypes, Thing } from "coaty/sensor-things";
+import { SensorThingsTypes, Thing } from "@coaty/core/sensor-things";
 
 // This Thing object represents a sensor device
 const thing: Thing = {
@@ -1616,7 +1623,7 @@ An agent can observe the sensor device connection state as follows:
 
 ```ts
 import { map } from "rxjs/operators";
-import { SensorThingsTypes, Thing } from "coaty/sensor-things";
+import { SensorThingsTypes, Thing } from "@coaty/core/sensor-things";
 
 // Observe Advertise events on Thing objects
 this.communicationManager
@@ -1928,8 +1935,7 @@ documented code example that demonstrates the use of remote operations
 [here](https://github.com/coatyio/coaty-examples/tree/master/remote-operations/js).
 
 ```ts
-import { CallEvent } from "coaty/com";
-import { ContextFilter, filterOp } from "coaty/model";
+import { CallEvent, ContextFilter, filterOp } from "@coaty/core";
 
 // Publish a Call event to switch on all lights with 70% brightness on the
 // 6th, 7th, and 8th floor and observe all Return events received from light control agents.
@@ -1957,7 +1963,7 @@ this.communicationManager.publishCall(
 ```
 
 ```ts
-import { RemoteCallErrorCode, RemoteCallErrorMessage, ReturnEvent } from "coaty/com";
+import { RemoteCallErrorCode, RemoteCallErrorMessage, ReturnEvent } from "@coaty/core";
 
 // A light control agent observes requests for switching on/off an associated light
 // in its execution context (i.e 7th floor). If the context matches the passed in
@@ -2254,8 +2260,7 @@ Define IO sources and IO actors and register them as capabilities of the
 associated device:
 
 ```ts
-import { CoreTypes, Device, DisplayType, IoActor, IoSource, IoSourceBackpressureStrategy, User } from "coaty/model";
-import { Configuration } from "coaty/runtime";
+import { Configuration, CoreTypes, Device, DisplayType, IoActor, IoSource, IoSourceBackpressureStrategy, User } from "@coaty/core";
 
 // Common User for IO routing
 const user: User = {
@@ -2341,8 +2346,8 @@ rules you can associate IO sources with IO actors based on arbitrary user
 context.
 
 ```ts
-import { IoAssociationRule, RuleBasedIoRouter } from "coaty/io";
-import { Components, Configuration } from "coaty/runtime";
+import { Components, Configuration } from "@coaty/core";
+import { IoAssociationRule, RuleBasedIoRouter } from "@coaty/core/io-routing";
 
 const components: Components = {
     controllers: {
@@ -2452,7 +2457,7 @@ In general, you specify the name of the adapter to use, a connection string, and
 other database-specific connection options (optional).
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
@@ -2484,8 +2489,8 @@ to the value of the `adapter` property specified in the connection info
 of the database configuration.
 
 ```ts
-import { DbAdapterFactory } from "coaty/db";
-import { PostgresAdapter } from "coaty/db-adapter-postgres";
+import { DbAdapterFactory } from "@coaty/core/db";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
 DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 
@@ -2510,8 +2515,8 @@ function for the connection info's adapter as a second argument. In this case,
 you don't need to register the adapter explicitely as explained above:
 
 ```ts
-import { DbContext } from "coaty/db";
-import { PostgresAdapter } from "coaty/db-adapter-postgres";
+import { DbContext } from "@coaty/core/db";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
 const dbContext1 = new DbContext(this.runtime.databaseOptions["mydb1"]);
 
@@ -2939,7 +2944,7 @@ Now, you are ready to connect to your Postgres database. Connection information
 is supplied with the container configuration object in the `databases` property.
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
@@ -2971,8 +2976,8 @@ class.
 Finally, the Postgres adapter must be registered before use:
 
 ```ts
-import { DbAdapterFactory } from "coaty/db";
-import { PostgresAdapter } from "coaty/db-adapter-postgres";
+import { DbAdapterFactory } from "@coaty/core/db";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
 DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 ```
@@ -2999,7 +3004,7 @@ The following example shows how to initialize a database (i.e. create a database
 database user, and add collections) at program startup with the PostgreSQL adapter:
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
@@ -3026,8 +3031,8 @@ const configuration: Configuration = {
     }
 };
 
-import { DbContext } from "coaty/db";
-import { PostgresAdapter } from "coaty/db-adapter-postgres";
+import { DbContext } from "@coaty/core/db";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
 const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"], PostgresAdapter);
 
@@ -3070,7 +3075,9 @@ automatically created in-memory the first time you are creating a `DbContext` on
 The following example shows how to create and use a database with the `InMemoryAdapter`:
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
+import { DbContext } from "@coaty/core/db";
+import { InMemoryAdapter } from "@coaty/core/db/adapter-in-memory";
 
 const configuration: Configuration = {
     ...
@@ -3081,9 +3088,6 @@ const configuration: Configuration = {
         }
     }
 };
-
-import { DbContext } from "coaty/db";
-import { InMemoryAdapter } from "coaty/db-adapter-in-memory";
 
 const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"], InMemoryAdapter);
 
@@ -3125,9 +3129,9 @@ To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { DbAdapterFactory, DbLocalContext } from "coaty/db";
-import { SqLiteNodeAdapter } from "coaty/db-adapter-sqlite-node";
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
+import { DbAdapterFactory, DbLocalContext } from "@coaty/core/db";
+import { SqLiteNodeAdapter } from "@coaty/core/db/adapter-sqlite-node";
 
 // Specify adapter in configuration
 const configuration: Configuration = {
@@ -3199,9 +3203,9 @@ To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { DbAdapterFactory, DbLocalContext } from "coaty/db";
-import { SqLiteCordovaAdapter } from "coaty/db-adapter-sqlite-cordova";
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
+import { DbAdapterFactory, DbLocalContext } from "@coaty/core/db";
+import { SqLiteCordovaAdapter } from "@coaty/core/db/adapter-sqlite-cordova";
 
 // Specify adapter in configuration
 const configuration: Configuration = {
@@ -3249,7 +3253,7 @@ You can specify the custom adapter in the database configuration options.
 Note that the custom adapter class must be registered before use.
 
 ```ts
-import { Configuration } from "coaty/runtime";
+import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
@@ -3272,7 +3276,7 @@ const configuration: Configuration = {
     }
 };
 
-import { DbAdapterFactory } from "coaty/db";
+import { DbAdapterFactory } from "@coaty/core/db";
 import { MyCustomDatabaseAdapter } from "myapp/my-custom-adapter";
 
 DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdapter);
@@ -3320,7 +3324,7 @@ property-value pairs to the `Log` object. For example, a Node.js agent
 could add the hostname to the `Log` object:
 
 ```ts
-import { Log } from "coaty/model";
+import { Log } from "@coaty/core";
 
 protected extendLogObject(log: Log) {
     log.logHost.hostname = require("os").hostname();
@@ -3349,7 +3353,7 @@ value of an array of items in series (from left-to-right). You can break out
 of the iteration prematurely by resolving a `false` value from an operation:
 
 ```ts
-import { Async } from "coaty/util";
+import { Async } from "@coaty/core";
 
 Async.inSeries(
     [1, 2, 3, 4, 5],
@@ -3370,7 +3374,7 @@ accumulator and each value of an array of items in series (from left-to-right)
 to reduce it to a single value:
 
 ```ts
-import { Async } from "coaty/util";
+import { Async } from "@coaty/core";
 
 const items = [100, 300, 150, 50];
 
@@ -3398,7 +3402,7 @@ with a timeout. It returns a promise that rejects after the given number of
 milliseconds if the passed in promise doesn't resolve or reject in the meantime:
 
 ```ts
-import { Async } from "coaty/util";
+import { Async } from "@coaty/core";
 
 const myPromise = new Promise((resolve, reject) => {
     setTimeout(() => resolve(true), 2000);
@@ -3417,7 +3421,7 @@ Binary search and insert functions to efficiently search/insert an item into a
 sorted `Array<T>` using a specific compare function on the item:
 
 ```ts
-import { binarySearch, binaryInsert } from "coaty/util";
+import { binarySearch, binaryInsert } from "@coaty/core";
 
 binarySearch<T>(
     source: Array<T>,
@@ -3438,7 +3442,7 @@ A function to return a date string in ISO 8601 format including timezone offset
 information and optional milliseconds:
 
 ```ts
-import { toLocalIsoString } from "coaty/util";
+import { toLocalIsoString } from "@coaty/core";
 
 // outputs 2016-09-21T15:46:41+02:00
 console.log(toLocalIsoString(new Date()));
@@ -3462,7 +3466,7 @@ Compares JavaScript values, typically objects or arrays, and determines whether
 they are deep equal according to a recursive equality algorithm.
 
 ```ts
-import { equals } from "coaty/util";
+import { equals } from "@coaty/core";
 
 expect(equals(null, null)).toBe(true);
         /* tslint:disable-next-line:no-null-keyword */
@@ -3503,7 +3507,7 @@ defined on the object directly (not inherited) are considered.
 For example:
 
 ```ts
-import { contains } from "coaty/util";
+import { contains } from "@coaty/core";
 
 contains("foo" , "foo") => true
 
@@ -3532,7 +3536,7 @@ or object types compared using the deep equality operator.
 For example:
 
 ```ts
-import { includes } from "coaty/util";
+import { includes } from "@coaty/core";
 
 includes([1, 46, 47, "foo"], 47) => true
 includes([1, 46, "47", "foo"], 47) => false
@@ -3586,7 +3590,7 @@ Publish an mDNS service for a Coaty configuration URL with a given name, type, p
 and TXT record as follows:
 
 ```ts
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.publishMulticastDnsService("My Config URL", "coaty-config", 4711, { "path": "/config/my-config.json" })
     .then(srv => console.log("Service published successfully", srv.name))
@@ -3599,7 +3603,7 @@ them to form a URL, etc.
 Find the first mDNS service for the published Coaty configuration URL:
 
 ```ts
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.findMulticastDnsService("My Config URL", "coaty-config", 10000)
     .then(srv => console.log("Config URL:", `https://${srv.host}:${srv.port}${srv.txt.path}`))
@@ -3611,7 +3615,7 @@ MulticastDnsDiscovery.findMulticastDnsService("My Config URL", "coaty-config", 1
 Publish Coaty broker/router discovery information (with default connection parameters) as follows:
 
 ```ts
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery } from "@coaty/core/runtime-node";
 
 // Publish MQTT broker info in a Coaty service
 MulticastDnsDiscovery.publishMqttBrokerService()
@@ -3629,13 +3633,13 @@ configure the communication manager at run time. For this to work correctly, ens
 communication manager is *not* started automatically.
 
 ```ts
-import { Container } from "coaty/runtime";
+import { Container } from "@coaty/core";
 
 const container = Container.resolve(...);
 
 // On startup discover MQTT broker URL and start communication manager.
 
-import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
+import { MulticastDnsDiscovery, NodeUtils } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.findMqttBrokerService()
     .then(srv => {
@@ -3649,7 +3653,7 @@ MulticastDnsDiscovery.findMqttBrokerService()
 
 // On startup discover WAMP router URL and realm and start communication manager.
 
-import { MulticastDnsDiscovery, NodeUtils } from "coaty/runtime-node";
+import { MulticastDnsDiscovery, NodeUtils } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.findWampRouterService()
     .then(srv => {
@@ -3675,7 +3679,7 @@ MulticastDnsDiscovery.findWampRouterService()
 Published mDNS services should be stopped before a Coaty service exits:
 
 ```ts
-import { MulticastDnsDiscovery } from "coaty/runtime-node";
+import { MulticastDnsDiscovery } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.unpublishMulticastDnsServices().then(() => process.exit(0));
 ```

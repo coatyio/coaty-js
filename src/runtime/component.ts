@@ -1,9 +1,9 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { Component } from "..";
+
 import { IDisposable } from "./disposable";
 import { Runtime } from "./runtime";
-
-import { Component } from "../model/object";
 
 /**
  * Defines common members for all framework container components.

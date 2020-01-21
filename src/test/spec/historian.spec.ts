@@ -4,11 +4,15 @@
  * Test suite for historian.
  */
 
-import { HistorianController } from "../../controller";
-import { DbAdapterFactory } from "../../db";
-import { InMemoryAdapter } from "../../db-adapter-in-memory";
-import { CoatyObject, Snapshot } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
+import {
+    CoatyObject,
+    Components,
+    Configuration,
+    Container,
+    Snapshot,
+} from "../..";
+import { DbAdapterFactory, HistorianController } from "../../db";
+import { InMemoryAdapter } from "../../db/adapter-in-memory";
 
 import * as mocks from "./historian.mocks";
 import { delayAction, failTest } from "./utils";

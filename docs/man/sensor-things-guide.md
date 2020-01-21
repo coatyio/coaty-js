@@ -414,7 +414,7 @@ to be installed on the board the sensor data is processed. To use any of these c
 application (see below), import the definitions as follows:
 
 ```ts
-import { Aio, InputGpio, OutputGpio } from "coaty/sensor-things-io";
+import { Aio, InputGpio, OutputGpio } from "@coaty/core/sensor-things/io";
 ```
 
 Users can also easily define their own SensorIo classes:
@@ -568,7 +568,7 @@ The following example shows how to use this controller to observe sensors and se
 measurements:
 
 ```ts
-import { Thing, ThingSensorObservationObserverController } from "coaty/sensor-things";
+import { Thing, ThingSensorObservationObserverController } from "@coaty/core/sensor-things";
 import { Subscription } from "rxjs";
 
 export class SensorDataObserverController extends ThingSensorObservationObserverController {

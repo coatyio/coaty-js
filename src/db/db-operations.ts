@@ -1,8 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Uuid } from "../model/object";
-import { ObjectFilter } from "../model/object-filter";
-import { ObjectJoinCondition } from "../model/object-join";
+import { CoatyObject, ObjectFilter, ObjectJoinCondition, Uuid } from "..";
 import { DbContext } from "./db-context";
 import { DbLocalContext } from "./db-local-context";
 import { AggregateOp } from "./db-operators";

@@ -3,8 +3,7 @@
 import { BehaviorSubject, merge, Observable, Subject, Subscription } from "rxjs";
 import { concatMap, filter } from "rxjs/operators";
 
-import { Uuid } from "../model/object";
-import { Container } from "../runtime/container";
+import { Container, Uuid } from "..";
 import { Observation, Sensor, Thing } from "./objects";
 import { SensorObserverController } from "./sensor-observer-controller";
 import { ThingObserverController } from "./thing-observer-controller";

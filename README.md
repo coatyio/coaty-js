@@ -3,7 +3,7 @@
 [![Powered by Coaty](https://img.shields.io/badge/Powered%20by-Coaty-FF8C00.svg)](https://coaty.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![release](https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg)](https://conventionalcommits.org/)
-[![npm version](https://badge.fury.io/js/coaty.svg)](https://www.npmjs.com/package/coaty)
+[![npm version](https://badge.fury.io/js/%40coaty%2Fcore.svg)](https://www.npmjs.com/package/@coaty/core)
 
 Using the Coaty [koʊti] framework as a middleware, you can build distributed
 applications out of decentrally organized application components, so called
@@ -57,7 +57,7 @@ includes:
 * a guide on the [OGC SensorThings API
   integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in
   Coaty JS.
-* [Migration Guide]({{ site.baseurl }}{% link man/migration-guide.md %}) - a
+* [Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/) - a
   guide on migrating an existing Coaty JS application to a newer Coaty JS major
   release
 

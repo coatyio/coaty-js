@@ -4,9 +4,9 @@
  * Test suite for framework SQL database access using PostgresAdapter.
  */
 
-import { DbAdapterFactory, DbConnectionInfo, DbContext, RAW, SQL, SqlQueryBuilder } from "../../db";
-import { PostgresAdapter } from "../../db-adapter-postgres";
-import { Components, Configuration, Container } from "../../runtime";
+import { Components, Configuration, Container, DbConnectionInfo } from "../..";
+import { DbAdapterFactory, DbContext, RAW, SQL, SqlQueryBuilder } from "../../db";
+import { PostgresAdapter } from "../../db/adapter-postgres";
 
 import { failTest, skipTestIf } from "./utils";
 

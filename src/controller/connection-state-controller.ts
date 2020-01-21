@@ -3,8 +3,7 @@
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
-import { CommunicationState } from "../com/communication-manager";
-import { Controller } from "./controller";
+import { CommunicationState, Controller } from "..";
 
 /**
  * A convenience controller that monitors the connection state (online or offline)

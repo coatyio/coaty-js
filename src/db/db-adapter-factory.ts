@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { DbConnectionInfo } from "..";
 import { IDbAdapter, IDbAdapterConstructor, IDbAdapterExtension } from "./db-adapter";
-import { DbConnectionInfo } from "./db-connection-info";
 
 /**
  * Factory for registering and creating database adapters.

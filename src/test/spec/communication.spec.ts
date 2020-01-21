@@ -8,17 +8,25 @@ import {
     ChannelEvent,
     CommunicationManager,
     CommunicationState,
+    Component,
+    Components,
+    Configuration,
+    Container,
+    ContextFilter,
+    CoreTypes,
     DiscoverEvent,
     DiscoverEventData,
+    DisplayType,
+    filterOp,
+    ObjectLifecycleController,
+    ObjectLifecycleInfo,
     RemoteCallErrorCode,
     RemoteCallErrorMessage,
     UpdateEvent,
-} from "../../com";
+    User,
+} from "../..";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
-import { ObjectLifecycleController, ObjectLifecycleInfo } from "../../controller/object-lifecycle-controller";
-import { Component, ContextFilter, CoreTypes, DisplayType, filterOp, User } from "../../model";
-import { Components, Configuration, Container } from "../../runtime";
 
 import * as mocks from "./communication.mocks";
 import { delayAction, Spy, UUID_REGEX } from "./utils";

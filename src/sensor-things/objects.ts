@@ -2,8 +2,7 @@
 
 import { Polygon } from "geojson";
 
-import { CoatyObject, Uuid } from "../model/object";
-import { TimeInterval } from "../util/date";
+import { CoatyObject, TimeInterval, Uuid } from "..";
 import {
     FeatureOfInterestObjectTypeLiteral,
     ObservationObjectTypeLiteral,

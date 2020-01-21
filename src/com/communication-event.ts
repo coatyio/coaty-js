@@ -1,7 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component, Uuid } from "../model/object";
-import { CoreTypes } from "../model/types";
+import { Component, CoreTypes, Uuid } from "..";
 
 /**
  * Predefined event types used by Coaty communication event patterns.
