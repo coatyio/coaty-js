@@ -3720,7 +3720,7 @@ npm run broker
 /// Build project including generation of agent info
 npm run build
 
-// Prepare release
+// Prepare release on current local branch
 npm run prepare-release recommended "This is a release note..."
 
 // Push release on remote git repo
