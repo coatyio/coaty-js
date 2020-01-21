@@ -410,9 +410,9 @@ const container = Container.resolve(components, configuration);
 You can also retrieve the configuration object from a local JSON or JS file:
 
 ```ts
-import { provideConfiguration } from "@coaty/core/runtime-node";
+import { NodeUtils } from "@coaty/core/runtime-node";
 
-const configuration = provideConfiguration("app.config.json");
+const configuration = NodeUtils.provideConfiguration("app.config.json");
 ```
 
 Alternatively, you can bootstrap a container asynchronously by retrieving
@@ -420,13 +420,13 @@ the Configuration object from a Url:
 
 ```ts
 import { Container } from "@coaty/core";
-import { provideConfigurationAsync } from "@coaty/core/runtime-node";
+import { NodeUtils } from "@coaty/core/runtime-node";
 
 // Returns a promise on a container for the given components and config options
 Container
     .resolveAsync(
         components,
-        provideConfigurationAsync("http://myconfighost/app.config.json"))
+        NodeUtils.provideConfigurationAsync("http://myconfighost/app.config.json"))
     .then(container => ...);
 ```
 

@@ -13,6 +13,57 @@ import { CommunicationState, Configuration, Container, toLocalIsoString } from "
  */
 export class NodeUtils {
 
+    /* Configuration Providers */
+
+    /**
+     * Provide a Configuration from the specified local JSON or JS file.
+     *
+     * The value of this option must be the relative or absolute filename of a
+     * JSON config file or a CommonJS module file that exports a Configuration
+     * object.
+     *
+     * If unspecified the default file looked up is app.config.js, then
+     * app.config.json in the current working directory of the server process.
+     *
+     * This option can only be used in a server-side environment (Node.js), not
+     * in a browser runtime.
+     *
+     * @param localConfigFile a local configuration file
+     */
+    public static provideConfiguration(localConfigFile: string = "app.config"): Configuration {
+        try {
+            const path = require("path");
+            if (!path.isAbsolute(localConfigFile)) {
+                localConfigFile = path.resolve("./" + localConfigFile);
+            }
+            return require(localConfigFile);
+        } catch (e) {
+            const msg = `Couldn't resolve configuration file '${localConfigFile}': ${e}`;
+            throw new Error(msg);
+        }
+    }
+
+    /**
+     * Asynchrounously provides a Configuration from the given Url expecting a
+     * Configuration object in JSON format.
+     *
+     * This option can only be used in a server-side environment (Node.js), not
+     * in a browser runtime.
+     *
+     * @param configurationUrl a Url to load the configuration from
+     */
+    public static provideConfigurationAsync(configurationUrl: string): Promise<Configuration> {
+        return new Promise<Configuration>((resolve, reject) => {
+            const fetch = require("node-fetch");
+            fetch(configurationUrl)
+                .then(response => resolve(response.json()))
+                // node-fetch doesn't seem to serve reject or catch callbacks
+                .catch(error => {
+                    reject(new Error(`Couldn't fetch configuration from '${configurationUrl}': ${error}`));
+                });
+        });
+    }
+
     /**
      * Perform synchronous and asynchronous cleanup of allocated resources
      * (e.g. file descriptors, handles, DB connections, etc.) before shutting down the Node.js process.
@@ -94,56 +145,6 @@ export class NodeUtils {
         console.log(output);
     }
 
-}
-
-/* Configuration Providers */
-
-/**
- * Provide a Configuration from the specified local JSON or JS file.
- * This option can only be used in a server-side environment (Node.js),
- * not in a browser runtime.
- *
- * The value of this option must be the relative or absolute
- * filename of a JSON config file or a CommonJS module file
- * that exports a Configuration object.
- *
- * If unspecified the default file looked up is app.config.js, then app.config.json
- * in the current working directory of the server process.
- *
- * @param localConfigFile a local configuration file
- */
-export function provideConfiguration(localConfigFile: string = "app.config"): Configuration {
-    try {
-        const path = require("path");
-        if (!path.isAbsolute(localConfigFile)) {
-            localConfigFile = path.resolve("./" + localConfigFile);
-        }
-        return require(localConfigFile);
-    } catch (e) {
-        const msg = `Couldn't resolve configuration file '${localConfigFile}': ${e}`;
-        throw new Error(msg);
-    }
-}
-
-/**
- * Asynchrounously provides a Configuration from the given Url expecting a
- * Configuration object in JSON format.
- *
- * This option can only be used in a server-side environment (Node.js),
- * not in a browser runtime.
- *
- * @param configurationUrl a Url to load the configuration from
- */
-export function provideConfigurationAsync(configurationUrl: string): Promise<Configuration> {
-    return new Promise<Configuration>((resolve, reject) => {
-        const fetch = require("node-fetch");
-        fetch(configurationUrl)
-            .then(response => resolve(response.json()))
-            // node-fetch doesn't seem to serve reject or catch callbacks
-            .catch(error => {
-                reject(new Error(`Couldn't fetch configuration from '${configurationUrl}': ${error}`));
-            });
-    });
 }
 
 /* Bonjour/Multicast DNS support for discovery of Coaty broker/router addresses, Configuration URLs, etc. */

@@ -5,7 +5,7 @@
  */
 
 import { Components, Configuration, Container, mergeConfigurations, Runtime } from "../..";
-import { MulticastDnsDiscovery, provideConfiguration, provideConfigurationAsync } from "../../runtime-node";
+import { MulticastDnsDiscovery, NodeUtils } from "../../runtime-node";
 
 import * as mocks from "./bootstrap.mocks";
 import { delayAction, failTest, getConfigFile, getConfigUrl, Spy, UUID_REGEX } from "./utils";
@@ -44,27 +44,27 @@ describe("Bootstrapping", () => {
 
     it("throws on non-existing configuration", () => {
         expect(() => Container
-            .resolve(components, provideConfiguration("unknown.config.json")))
+            .resolve(components, NodeUtils.provideConfiguration("unknown.config.json")))
             .toThrow();
     });
 
     it("loads existing JSON configuration", () => {
         expect(() => Container.resolve(
             components,
-            provideConfiguration(getConfigFile("bootstrap.config.json"))))
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.json"))))
             .not.toThrow();
     });
 
     it("loads existing JS configuration", () => {
         expect(() => Container.resolve(
             components,
-            provideConfiguration(getConfigFile("bootstrap.config.js"))))
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))))
             .not.toThrow();
     });
 
     it("loads existing HTTP JSON configuration", (done) => {
         Container
-            .resolveAsync(components, provideConfigurationAsync(
+            .resolveAsync(components, NodeUtils.provideConfigurationAsync(
                 getConfigUrl("bootstrap.config.json")))
             .then(
                 container => {
@@ -79,7 +79,7 @@ describe("Bootstrapping", () => {
     });
 
     it("merges two configurations", () => {
-        const primary = provideConfiguration(getConfigFile("bootstrap.config.js"));
+        const primary = NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"));
         const secondary: Configuration = {
             common: {
                 testProp: 4712,
@@ -117,7 +117,7 @@ describe("Bootstrapping", () => {
     it("registers a controller at runtime", (done) => {
         const container = Container.resolve(
             components,
-            provideConfiguration(getConfigFile("bootstrap.config.js")));
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
         const regFunc = () => container.registerController("MockObjectController1", mocks.MockObjectController1, {});
         expect(regFunc).not.toThrow();
 
@@ -131,7 +131,7 @@ describe("Bootstrapping", () => {
     it("shuts down container", () => {
         expect(() => Container.resolve(
             components,
-            provideConfiguration(getConfigFile("bootstrap.config.js")))
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")))
             .shutdown())
             .not.toThrow();
     });
@@ -176,7 +176,7 @@ describe("Bootstrapping", () => {
         it("resolves all configured controllers", () => {
             Container.resolve(
                 components,
-                provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
 
             expect(Spy.get("MockObjectController1Spy").value1)
                 .toHaveBeenCalledWith(1);
@@ -204,7 +204,7 @@ describe("Bootstrapping", () => {
         it("gets controllers that are registered", () => {
             const container = Container.resolve(
                 components,
-                provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
 
             expect(container.getController("FooController"))
                 .toBeUndefined();
@@ -221,7 +221,7 @@ describe("Bootstrapping", () => {
         it("has proper package version info in runtime", () => {
             Container.resolve(
                 components,
-                provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
 
             expect(Spy.get("MockObjectController1Spy").value3)
                 .toHaveBeenCalledWith(process.env.npm_package_name + "@" + process.env.npm_package_version);
@@ -230,7 +230,7 @@ describe("Bootstrapping", () => {
         it("generates v4 UUIDs at runtime", () => {
             const container = Container.resolve(
                 components,
-                provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
 
             expect(container.runtime.newUuid()).toMatch(UUID_REGEX);
             expect(Runtime.newUuid()).toMatch(UUID_REGEX);

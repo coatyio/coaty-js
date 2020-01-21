@@ -25,6 +25,18 @@ communication event patterns didn't change.
 To update to Coaty 2, follow the migration steps described in the following
 sections.
 
+### Before migrating
+
+To update the build infrastructure of your application, follow these steps:
+
+* Remove `package-lock.json` and `node_modules` folder from your project.
+* Update your project dependencies and devDependencies)in `package.json` to
+  comply with `@coaty/core@^2.0.0` and its sub-dependencies. Use the dependency
+  definitions of the [template
+  project](https://github.com/coatyio/coaty-examples/tree/master/template/js) in
+  the coaty-examples repository as a boilerplate.
+* Reinstall updated dependencies with `npm install`.
+
 ### Changes to package naming and import declarations
 
 Coaty 2 provides a scoped npm package named `@coaty/core` instead of `coaty`.
@@ -48,6 +60,13 @@ Refactor import declarations of the following type references:
 
 * `DbConnectionInfo` - import from `@coaty/core`
 * `HistorianController` - import from `@coaty/core/db`
+
+### Changes in `runtime-node` module
+
+Refactor the following definitions:
+
+* `provideConfiguration` -> `NodeUtils.provideConfiguration`
+* `provideConfigurationAsync` -> `NodeUtils.provideConfigurationAsync`
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

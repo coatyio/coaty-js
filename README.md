@@ -1,6 +1,6 @@
 # Coaty Framework - JavaScript
 
-[![Powered by Coaty](https://img.shields.io/badge/Powered%20by-Coaty-FF8C00.svg)](https://coaty.io)
+[![Powered by Coaty 2](https://img.shields.io/badge/Powered%20by-Coaty%202-FF8C00.svg)](https://coaty.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![release](https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg)](https://conventionalcommits.org/)
 [![npm version](https://badge.fury.io/js/%40coaty%2Fcore.svg)](https://www.npmjs.com/package/@coaty/core)
