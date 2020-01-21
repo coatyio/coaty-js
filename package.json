@@ -56,8 +56,8 @@
         "url": "https://github.com/coatyio/coaty-js/issues"
     },
     "peerDependencies": {
-        "conventional-changelog": "3.1.8",
-        "conventional-recommended-bump": "5.0.0",
+        "conventional-changelog": "^3.1.18",
+        "conventional-recommended-bump": "^6.0.5",
         "cordova-sqlite-storage": "3.2.0",
         "pg": "^7.9.0",
         "rxjs": "^6.4.0",
@@ -82,8 +82,8 @@
         "@types/pg": "7.4.14",
         "@types/sqlite3": "3.1.5",
         "@types/uuid": "3.4.4",
-        "conventional-changelog": "3.1.8",
-        "conventional-recommended-bump": "5.0.0",
+        "conventional-changelog": "^3.1.18",
+        "conventional-recommended-bump": "^6.0.5",
         "cordova-sqlite-storage": "3.2.0",
         "fs-extra": "7.0.1",
         "jasmine": "3.4.0",
