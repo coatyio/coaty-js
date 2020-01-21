@@ -6,7 +6,7 @@ framework documentation:
 
 * [Developer Guide]({{ site.baseurl }}{% link man/developer-guide.md %}) - how
   to build a Coaty application with the Coaty JS framework
-* [API Documentation]({{ site.baseurl }}{% link tsdoc/index.html %}) - complete
+* [API Documentation]({{ site.baseurl }}{% link api/index.html %}) - complete
   code documentation of all public types and members of the Coaty JS sources
 * [Coding Style Guide]({{ site.baseurl }}{% link man/coding-style-guide.md %}) -
   guidelines for coding with the Coaty JS framework

@@ -95,7 +95,7 @@
         "rxjs": "6.4.0",
         "sqlite3": "4.0.6",
         "tslint": "5.15.0",
-        "typedoc": "0.14.2",
+        "typedoc": "^0.16.7",
         "typescript": "3.4.1",
         "yargs": "13.2.2"
     },

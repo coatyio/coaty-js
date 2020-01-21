@@ -1,23 +1,22 @@
 # Coaty JS Documentation Website
 
-This folder contains a Jekyll based website which hosts the Coaty JS
-framework documentation on GitHub Pages at
+This folder contains a Jekyll based website which hosts the Coaty JS framework
+documentation on GitHub Pages at
 [https://coatyio.github.io/coaty-js/](https://coatyio.github.io/coaty-js/).
 
 ## Website Content
 
-Documentation content is hosted in the subfolders `man` and `tsdoc`.
+Documentation content is hosted in the subfolders
 
-The `man` subfolder contains Coaty JS manuals in markdown format.
+* `man` - contains Coaty JS manuals in markdown format,
+* `api` - contains the Coaty JS framework API documentation generated
+  automatically whenever a new Coaty JS framework release is created (using `npm
+  run cut-release`).
 
-The `tsdoc` subfolder contains the Coaty JS framework API documentation
-generated automatically whenever a new `coaty-js` framework release is created
-(using `npm run cut-release`).
-
-GitHub Pages has been configured to host the static website content from
-the `/docs` folder on the master branch. This means that each time, changes
-to `man` or `tsdoc` folders are pushed on the master branch, GitHub Pages
-automatically regenerates the documentation website.
+GitHub Pages has been configured to host the static website content from the
+`/docs` folder on the master branch. This means that each time, changes to `man`
+or `api` folders are pushed on the master branch, GitHub Pages automatically
+regenerates the documentation website.
 
 ## Previewing the website locally
 

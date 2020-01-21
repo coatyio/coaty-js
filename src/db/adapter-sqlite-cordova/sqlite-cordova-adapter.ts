@@ -5,8 +5,6 @@ import { SqLiteBaseAdapter } from "../adapter-sqlite-base/sqlite-base-adapter";
 import { DbLocalContext } from "../db-local-context";
 import { SqlQueryBuilder, SqlQueryResultSet } from "../db-operations";
 
-const win: any = window;
-
 interface DbOptions {
     name: string;
     location?: "default";
@@ -148,7 +146,7 @@ export class SqLiteCordovaAdapter extends SqLiteBaseAdapter {
      */
     deleteDatabase(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            win.sqlitePlugin.deleteDatabase(this._dbOptions,
+            (window as any).sqlitePlugin.deleteDatabase(this._dbOptions,
                 () => resolve(),
                 err => reject(err));
         });
@@ -182,7 +180,7 @@ export class SqLiteCordovaAdapter extends SqLiteBaseAdapter {
                 resolve(this._db);
                 return;
             }
-            win.sqlitePlugin.openDatabase(this._dbOptions,
+            (window as any).sqlitePlugin.openDatabase(this._dbOptions,
                 db => {
                     this._db = db;
                     // Create table for default key-value store

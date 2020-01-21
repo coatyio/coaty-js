@@ -44,7 +44,7 @@ includes:
   that provides the basics to get started developing a Coaty project with the
   Coaty JS framework,
 * a complete [API
-  documentation](https://coatyio.github.io/coaty-js/tsdoc/index.html) of all
+  documentation](https://coatyio.github.io/coaty-js/api/index.html) of all
   public type and member definitions of the Coaty JS framework sources,
 * a [Coding Style
   Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/) for Coaty

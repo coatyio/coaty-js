@@ -140,12 +140,12 @@ function build(pkgName, pkgVersion) {
             // The generated declaration files include all comments so that
             // IDEs can provide this information to developers.
             childProcess.execSync(path.resolve("./node_modules/.bin/tsc") +
-            " --noEmitOnError " +
-            " --project " + SRC_TARGETDIR +
-            " --outDir " + distDir +
-            " --removeComments false --declaration true --emitDeclarationOnly true",
-            // redirect child output to parent's stdin, stdout and stderr
-            { stdio: "inherit" });
+                " --noEmitOnError " +
+                " --project " + SRC_TARGETDIR +
+                " --outDir " + distDir +
+                " --removeComments false --declaration true --emitDeclarationOnly true",
+                // redirect child output to parent's stdin, stdout and stderr
+                { stdio: "inherit" });
 
             // Copy scripts folder into distribution package
             fse.copySync("./scripts", distDir + "scripts");
@@ -239,34 +239,32 @@ function test(verbose, debug) {
  * Generate API documentation from source code (using typedoc generator)
  */
 function doc(pkgName, pkgVersion) {
-    const typedoc = require("typedoc");
+    const TYPEDOC = require("typedoc");
     const typescriptOptions = require(path.resolve("./build/tsconfig." + DIST_TARGET + ".json")).compilerOptions;
     const typedocOptions = require(path.resolve("./build/typedoc.js"));
+    const app = new TYPEDOC.Application();
+    const inputFiles = [];
 
-    // Add version number to header of generated HTML documentation
-    typedocOptions.name = pkgName + " v" + pkgVersion;
+    app.bootstrap(Object.assign({}, typedocOptions, typescriptOptions));
 
-    const app = new typedoc.Application(Object.assign(typedocOptions, typescriptOptions));
+    getTypedocModuleEntryPoints(path.resolve(SRC_TARGETDIR), inputFiles);
 
-    // A path to source files can only be specified on the command line, 
-    // in the API we have to specify individual source files.
-    // Note that the "exclude" option pattern is also not considered in API code.
-    const srcFiles = [];
-    getTypedocModuleSources(path.resolve(typedocOptions.src), srcFiles);
+    const project = app.convert(app.expandInputFiles(inputFiles));
 
-    rimraf.sync(path.resolve("./" + typedocOptions.out));
+    if (project) {
+        rimraf.sync(path.resolve("./" + typedocOptions.out));
+        logInfo("Generating API documentation at " + typedocOptions.out);
+        app.generateDocs(project, typedocOptions.out);
 
-    logInfo("Generate HTML documentation from source code...");
-    const success = app.generateDocs(srcFiles, typedocOptions.out);
-    if (!success) {
-        logError("Failed to generate HTML documentation");
+    } else {
+        logError("API documentation could not be projected due to errors. For details, turn on logger option.");
     }
 
-    function getTypedocModuleSources(srcPath, srcFiles) {
+    function getTypedocModuleEntryPoints(srcPath, srcFiles) {
         fse.readdirSync(srcPath).forEach((file, index) => {
             let filePath = path.join(srcPath, file);
             if (fse.lstatSync(filePath).isDirectory()) {
-                getTypedocModuleSources(filePath, srcFiles);
+                getTypedocModuleEntryPoints(filePath, srcFiles);
             } else {
                 if (path.basename(filePath) === "index.ts") {
                     srcFiles.push(filePath);
