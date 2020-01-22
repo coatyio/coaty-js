@@ -129,28 +129,10 @@ export class Container {
     }
 
     /**
-     * @deprecated since 1.6.0. Use getter `runtime`.
-     * 
-     * Gets the runtime object of this container.
-     */
-    getRuntime() {
-        return this._runtime;
-    }
-
-    /**
      * Gets the runtime object of this container.
      */
     get runtime() {
         return this._runtime;
-    }
-
-    /**
-     * @deprecated since 1.6.0. Use getter `communicationManager`.
-     *
-     * Gets the communication manager of this container.
-     */
-    getCommunicationManager() {
-        return this._comManager;
     }
 
     /**

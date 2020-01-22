@@ -30,12 +30,16 @@ sections.
 To update the build infrastructure of your application, follow these steps:
 
 * Remove `package-lock.json` and `node_modules` folder from your project.
-* Update your project dependencies and devDependencies)in `package.json` to
-  comply with `@coaty/core@^2.0.0` and its sub-dependencies. Use the dependency
-  definitions of the [template
-  project](https://github.com/coatyio/coaty-examples/tree/master/template/js) in
-  the coaty-examples repository as a boilerplate.
-* Reinstall updated dependencies with `npm install`.
+* Update your project dependencies and devDependencies in `package.json` to
+  comply with Coaty 2:
+  * Replace "coaty@1.x.y" by "@coaty/core@^2.0.0".
+  * Update the versions of other dependencies such as "rxjs", "typescript", etc.
+  
+  The easiest way to achieve this is to take over the dependency versions
+  defined in the [template
+  project](https://github.com/coatyio/coaty-examples/blob/master/template/js/package.json)
+  located in the "coaty-examples" repository.
+* Reinstall project dependencies with `npm install`.
 
 ### Changes to package naming and import declarations
 
@@ -61,12 +65,23 @@ Refactor import declarations of the following type references:
 * `DbConnectionInfo` - import from `@coaty/core`
 * `HistorianController` - import from `@coaty/core/db`
 
+### Deprecated functionality
+
+All features marked as deprecated in Coaty 1 have been removed:
+
+* `CommunicationManager.observeAdvertise()` - use either
+  `observeAdvertiseWithCoreType()` or `observeAdvertiseWithObjectType()`
+* `CommunicationOptions.brokerOptions` - use
+  `CommunicationOptions.mqttClientOptions`
+* `Container.getRuntime()` - use `Container.runtime`
+* `Container.getCommunicationManager()` - use `Container.communicationManager`
+
 ### Changes in `runtime-node` module
 
 Refactor the following definitions:
 
-* `provideConfiguration` -> `NodeUtils.provideConfiguration`
-* `provideConfigurationAsync` -> `NodeUtils.provideConfigurationAsync`
+* `provideConfiguration()` -> `NodeUtils.provideConfiguration()`
+* `provideConfigurationAsync()` -> `NodeUtils.provideConfigurationAsync()`
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

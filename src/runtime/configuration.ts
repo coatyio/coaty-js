@@ -83,13 +83,6 @@ export interface CommunicationOptions {
     mqttClientOptions?: any;
 
     /**
-     * @deprecated use `mqttClientOptions`.
-     * 
-     * Options to connect to MQTT broker (see MQTT.js connect options).
-     */
-    brokerOptions?: any;
-
-    /**
      * Property-value pairs to be initialized on the identity object of the
      * communication manager (optional). For example, the `name` of the
      * identity object can be configured here.

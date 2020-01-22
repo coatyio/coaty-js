@@ -291,58 +291,6 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * @deprecated Please use either `observeAdvertiseWithCoreType`
-     * or `observeAdvertiseWithObjectType` instead.
-     * 
-     * Observe Advertise events for the given target and the given
-     * core or object type emitted by the hot observable returned.
-     * 
-     * Specify either a core type or an object type to restrict events 
-     * accordingly. The method throws an error if both types or none
-     * are specified.
-     *
-     * Advertise events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Advertise events should be emitted
-     * @param coreType core type of objects to be observed, or `undefined` (optional)
-     * @param objectType object type of objects to be observed, or `undefined` (optional)
-     * @returns a hot observable emitting incoming Advertise events
-     */
-    observeAdvertise(eventTarget: CoatyObject, coreType?: CoreType, objectType?: string): Observable<AdvertiseEvent> {
-        if (coreType && objectType) {
-            throw new TypeError(`Either coreType or objectType must be specified, but not both`);
-        }
-        if (!coreType && !objectType) {
-            throw new TypeError(`Either coreType or objectType must be specified`);
-        }
-        if (coreType && !CoreTypes.isCoreType(coreType)) {
-            throw new TypeError(`${coreType} is not a CoreType`);
-        }
-
-        // Optimization: in case core objects should be observed by core object type (an exotic case)
-        // we do not subscribe on the object type filter but on the core type filter instead,
-        // filtering out objects that do not satisfy the core object type.
-        // (see `publishAdvertise`).
-        if (objectType) {
-            const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
-            if (objectCoreType) {
-                return (this._observeRequest(
-                    eventTarget.objectId,
-                    CommunicationEventType.Advertise,
-                    objectCoreType) as Observable<AdvertiseEvent>)
-                    .pipe(filter(event => event.eventData.object.objectType === objectType));
-            }
-        }
-
-        return this._observeRequest(
-            eventTarget.objectId,
-            CommunicationEventType.Advertise,
-            coreType || CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType) as Observable<AdvertiseEvent>;
-    }
-
-    /**
      * Observe Advertise events for the given target and the given
      * core type emitted by the hot observable returned.
      *
@@ -355,7 +303,7 @@ export class CommunicationManager implements IComponent {
      * @returns a hot observable emitting incoming Advertise events
      */
     observeAdvertiseWithCoreType(eventTarget: CoatyObject, coreType: CoreType): Observable<AdvertiseEvent> {
-        return this.observeAdvertise(eventTarget, coreType);
+        return this._observeAdvertise(eventTarget, coreType);
     }
 
     /**
@@ -371,7 +319,7 @@ export class CommunicationManager implements IComponent {
      * @returns a hot observable emitting incoming Advertise events
      */
     observeAdvertiseWithObjectType(eventTarget: CoatyObject, objectType: string): Observable<AdvertiseEvent> {
-        return this.observeAdvertise(eventTarget, undefined, objectType);
+        return this._observeAdvertise(eventTarget, undefined, objectType);
     }
 
     /**
@@ -692,6 +640,8 @@ export class CommunicationManager implements IComponent {
         this._endClient();
     }
 
+    /* Private stuff */
+
     private _initOptions(options?: CommunicationOptions) {
         options && (this._options = options);
 
@@ -749,7 +699,7 @@ export class CommunicationManager implements IComponent {
         const lastWill = this._advertiseIdentityOrDevice();
 
         // Determine connection info and options for MQTT client
-        const mqttClientOptions = this.options.mqttClientOptions || this.options.brokerOptions;
+        const mqttClientOptions = this.options.mqttClientOptions;
         const brokerUrl = this._getBrokerUrl(this.options.brokerUrl, mqttClientOptions);
         const mqttClientOpts: any = {};
 
@@ -773,7 +723,8 @@ export class CommunicationManager implements IComponent {
         //
         // If connection is broken, do not queue outgoing QoS zero messages.
         mqttClientOpts.queueQoSZero = false;
-        // If connection is broken and reconnects, subscribed topics are not automatically subscribed again.
+        // If connection is broken and reconnects, subscribed topics are not automatically subscribed again,
+        // because this is handled by separate logic inside CommunicationManager.
         mqttClientOpts.resubscribe = false;
 
         const client = connect(brokerUrl, mqttClientOpts);
@@ -1541,6 +1492,32 @@ export class CommunicationManager implements IComponent {
 
             return true;
         }
+    }
+
+    private _observeAdvertise(eventTarget: CoatyObject, coreType?: CoreType, objectType?: string): Observable<AdvertiseEvent> {
+        if (coreType && !CoreTypes.isCoreType(coreType)) {
+            throw new TypeError(`${coreType} is not a CoreType`);
+        }
+
+        // Optimization: in case core objects should be observed by core object type (an exotic case)
+        // we do not subscribe on the object type filter but on the core type filter instead,
+        // filtering out objects that do not satisfy the core object type.
+        // (see `publishAdvertise`).
+        if (objectType) {
+            const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
+            if (objectCoreType) {
+                return (this._observeRequest(
+                    eventTarget.objectId,
+                    CommunicationEventType.Advertise,
+                    objectCoreType) as Observable<AdvertiseEvent>)
+                    .pipe(filter(event => event.eventData.object.objectType === objectType));
+            }
+        }
+
+        return this._observeRequest(
+            eventTarget.objectId,
+            CommunicationEventType.Advertise,
+            coreType || CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType) as Observable<AdvertiseEvent>;
     }
 
     private _observeAssociate() {
