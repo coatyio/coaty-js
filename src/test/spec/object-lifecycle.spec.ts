@@ -19,7 +19,6 @@ describe("Object Lifecycle Management", () => {
     };
 
     const configuration: Configuration = {
-        common: {},
         communication: {
             brokerUrl: "mqtt://localhost:1898",
             shouldAutoStart: true,

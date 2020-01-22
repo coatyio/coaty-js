@@ -7,21 +7,20 @@ import { Uuid } from "..";
 import { CommonOptions, DatabaseOptions } from "./configuration";
 
 /**
- * Provides access to runtime data of a Coaty container, including
- * shared configuration options, as well as platform and framework meta
- * information.
+ * Provides access to runtime data of a Coaty container, including common
+ * configuration options, as well as platform and framework meta information.
  */
 export class Runtime {
 
     /**
-     * Gets common options specified in container configuration.
+     * Gets common options specified in container configuration (optional).
      */
-    get options() {
+    get commonOptions() {
         return this._commonOptions;
     }
 
     /**
-     * Gets database options specified in container configuration.
+     * Gets database options specified in container configuration (optional).
      */
     get databaseOptions() {
         return this._databaseOptions;
@@ -76,7 +75,7 @@ export class Runtime {
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
     private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
-    private static FRAMEWORK_BUILD_DATE = 1579630635853;
+    private static FRAMEWORK_BUILD_DATE = 1579709899908;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */
@@ -84,6 +83,7 @@ export class Runtime {
     private _commonOptions: CommonOptions;
     private _databaseOptions: DatabaseOptions;
 
+    /** @internal - For internal use in framework only. */
     constructor(commonOptions: CommonOptions, databaseOptions: DatabaseOptions) {
         this._commonOptions = commonOptions;
         this._databaseOptions = databaseOptions;

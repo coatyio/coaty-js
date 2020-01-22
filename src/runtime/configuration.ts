@@ -13,54 +13,54 @@ import { AgentInfo } from "./agent-info";
 export interface Configuration {
 
     /**
-     *  Common options shared by container components
+     * Common options shared by container components (optional).
      */
-    common: CommonOptions;
+    common?: CommonOptions;
 
     /**
-     * Options used for communication
+     * Options used for communication.
      */
     communication: CommunicationOptions;
 
     /**
-     * Controller configuration options (optional)
+     * Controller configuration options (optional).
      */
     controllers?: ControllerConfig;
 
     /**
-     * Options used to connect to databases (optional)
+     * Options used to connect to databases (optional).
      */
     databases?: DatabaseOptions;
 
 }
 
 /**
- * Common options shared by all container components
+ * Common options shared by all container components.
  */
 export interface CommonOptions {
 
     /**
      * User object that is associated with this runtime configuration
-     * (optional).
-     * Used for a Coaty container that runs on a user device.
+     * (optional). Used for a Coaty container that runs on a user device.
      */
     associatedUser?: User;
 
     /**
      * Device object that is associated with this runtime configuration
-     * (optional).
-     * Used for a Coaty container that runs on a user device.
+     * (optional). Used for a Coaty container that runs on a user device.
      */
     associatedDevice?: Device;
 
     /**
-     * Agent information generated and injected into the configuration
-     * when the agent project is build (optional).
+     * Agent information generated and injected into the configuration when the
+     * agent project is build (optional). To be used locally by an agent to
+     * access build and release information of the application for displaying,
+     * logging, etc.
      */
     agentInfo?: AgentInfo;
 
     /**
-     * Any other custom properties accessible by indexer
+     * Any other custom properties accessible by indexer.
      */
     [extra: string]: any;
 }
@@ -110,7 +110,7 @@ export interface CommunicationOptions {
 
     /**
      * Determines whether the communication manager should advertise the
-     * associated device (defined in Runtime.options.associatedDevice)
+     * associated device (defined in Runtime.commonOptions.associatedDevice)
      * automatically when started and deadvertise the device when stopped or
      * terminated abnormally (via last will). If not specified or undefined,
      * de/advertisements will be done by default.
@@ -150,7 +150,7 @@ export interface CommunicationOptions {
 }
 
 /**
- * Controller options mapped by controller name (as specified in `Components`)
+ * Controller options mapped by controller name (as specified in `Components`).
  */
 export interface ControllerConfig {
     [controllerName: string]: ControllerOptions;
@@ -182,7 +182,7 @@ export interface ControllerOptions {
     shouldAdvertiseIdentity?: boolean;
 
     /**
-     * Any other application-specific properties accessible by indexer
+     * Any other application-specific properties accessible by indexer.
      */
     [extra: string]: any;
 }

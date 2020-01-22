@@ -130,11 +130,7 @@ one of the values `accepted` or `rejected`.
 ```ts
 const configuration: Configuration =
     {
-        common: {
-           associatedUser: {
-               ...
-           }
-        },
+        ...
         communication: {
             mqttClientOptions: {
                 servers: [

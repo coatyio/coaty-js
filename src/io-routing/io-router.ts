@@ -38,7 +38,7 @@ export abstract class IoRouter extends Controller {
         // Advertise/Deadvertise events and issues an initial Discover event
         // for user associated devices. After starting the `onStarted` method
         // is invoked.
-        this._init(this.runtime.options.associatedUser);
+        this._init(this.runtime.commonOptions?.associatedUser);
         this.onStarted();
     }
 

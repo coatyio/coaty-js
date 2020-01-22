@@ -348,7 +348,7 @@ export abstract class Controller implements IController {
     }
 
     private _log(logLevel: LogLevel, message: string, tags: string[]) {
-        const agentInfo = this.runtime.options.agentInfo;
+        const agentInfo = this.runtime.commonOptions?.agentInfo;
         if (agentInfo) {
             tags.splice(0, 0, agentInfo.packageInfo.name);
         }

@@ -778,7 +778,7 @@ const container = Container.resolve({}, { <configuration options> });
 
 // Use CommunicationManager directly.
 container.communicationManager.publishAdvertise(...)
-container.communicationManager.observeAdvertise(...)
+container.communicationManager.observeAdvertiseWithObjectType(...)
 ...
 ```
 
@@ -1063,8 +1063,7 @@ export const components: Components = {
 };
 
 export const configuration: Configuration = {
-        common: { ... },
-        communication: { ... },
+        ...
         controllers: {
             ...,
             HistorianController: {
@@ -1268,7 +1267,7 @@ const task: HelloWorldTask = {
     objectType: modelTypes.OBJECT_TYPE_HELLO_WORLD_TASK,
     coreType: "Task",
     name: `Hello World Task`,
-    creatorId: this.runtime.options.associatedUser.objectId,
+    creatorId: this.runtime.commonOptions.associatedUser.objectId,
     creationTimestamp: Date.now(),
     status: TaskStatus.Request,
     urgency: HelloWorldTaskUrgency.Critical,
@@ -2460,15 +2459,7 @@ other database-specific connection options (optional).
 import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
-    common: {
-        // Common options shared by all components
-    },
-    communication: {
-         // Options used for communication
-    },
-    controllers: {
-        // Controller configuration options
-    },
+    ...
     databases: {
         mydb1: {
             adapter: "PostgresAdapter",
@@ -2947,15 +2938,7 @@ is supplied with the container configuration object in the `databases` property.
 import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
-    common: {
-        // Common options shared by all components
-    },
-    communication: {
-         // Options used for communication
-    },
-    controllers: {
-        // Controller configuration options
-    },
+    ...
     databases: {
         mydb1: {
             adapter: "PostgresAdapter",
@@ -3007,15 +2990,7 @@ database user, and add collections) at program startup with the PostgreSQL adapt
 import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
-    common: {
-        // Common options shared by all components
-    },
-    communication: {
-        // Options used for communication
-    },
-    controllers: {
-        // Controller configuration options
-    },
+    ...
     databases: {
         db: {
             adapter: "PostgresAdapter",
@@ -3135,7 +3110,6 @@ import { SqLiteNodeAdapter } from "@coaty/core/db/adapter-sqlite-node";
 
 // Specify adapter in configuration
 const configuration: Configuration = {
-    common: {},
     communication: {
         ...
     },
@@ -3209,13 +3183,7 @@ import { SqLiteCordovaAdapter } from "@coaty/core/db/adapter-sqlite-cordova";
 
 // Specify adapter in configuration
 const configuration: Configuration = {
-    common: {},
-    communication: {
-        ...
-    },
-    controllers: {
-        ...
-    },
+    ...
     databases: {
         localdb: {
             adapter: "SqLiteCordovaAdapter",
@@ -3256,15 +3224,7 @@ Note that the custom adapter class must be registered before use.
 import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
-    common: {
-        // Common options shared by all components
-    },
-    communication: {
-        // Options used for communication
-    },
-    controllers: {
-        // Controller configuration options
-    },
+    ...
     databases: {
         myCustomDb: {
             adapter: "MyCustomDatabaseAdapter",

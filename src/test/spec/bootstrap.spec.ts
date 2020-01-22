@@ -68,7 +68,7 @@ describe("Bootstrapping", () => {
                 getConfigUrl("bootstrap.config.json")))
             .then(
                 container => {
-                    expect(container.runtime.options.associatedUser.name).toBe("Barney");
+                    expect(container.runtime.commonOptions.associatedUser.name).toBe("Barney");
                     done();
                 },
                 reason => {

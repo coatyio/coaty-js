@@ -18,7 +18,6 @@ describe("Local Store Access", () => {
     };
 
     const configuration: Configuration = {
-        common: {},
         communication: {
             shouldAutoStart: false,
             brokerUrl: "mqtt://localhost:1898",

@@ -647,8 +647,8 @@ export class CommunicationManager implements IComponent {
 
         // Capture state of associated user and device in case it might change 
         // while the communication manager is being online.
-        this._associatedUser = CoreTypes.clone<User>(this.runtime.options.associatedUser);
-        this._associatedDevice = CoreTypes.clone<Device>(this.runtime.options.associatedDevice);
+        this._associatedUser = CoreTypes.clone<User>(this.runtime.commonOptions?.associatedUser);
+        this._associatedDevice = CoreTypes.clone<Device>(this.runtime.commonOptions?.associatedDevice);
 
         this._useReadableTopics = !!this.options.useReadableTopics;
     }

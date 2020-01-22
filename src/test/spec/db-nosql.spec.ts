@@ -51,7 +51,6 @@ describe("Postgres NoSQL Database Access", () => {
     };
 
     const configuration: Configuration = {
-        common: {},
         communication: {
             shouldAutoStart: true,
             brokerUrl: "mqtt://localhost:1898",

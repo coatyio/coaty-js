@@ -71,8 +71,6 @@ describe("Sensor things", () => {
         const responseDelay = 1000;
 
         const configuration2: Configuration = {
-            common: {
-            },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
@@ -94,8 +92,6 @@ describe("Sensor things", () => {
         };
 
         const configuration3: Configuration = {
-            common: {
-            },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
