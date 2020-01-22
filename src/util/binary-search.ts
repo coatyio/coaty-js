@@ -1,30 +1,33 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 /**
- * Searches the entire sorted `Array<T>` for an element using the specified compare
- * function and returns the zero-based index of the element.
+ * Searches the entire sorted `Array<T>` for an element using the specified
+ * compare function and returns the zero-based index of the element.
  *
- * Returns the zero-based index of item in the sorted `Array<T>`, if item is found;
- * otherwise, a negative number that is the bitwise complement of the index of the
- * next element that is larger than item or, if there is no larger element,
- * the bitwise complement of the array length.
+ * Returns the zero-based index of item in the sorted `Array<T>`, if item is
+ * found; otherwise, a negative number that is the bitwise complement of the
+ * index of the next element that is larger than item or, if there is no larger
+ * element, the bitwise complement of the array length.
  *
  * The `Array<T>` must already be sorted according to the compare function
  * implementation; otherwise, the result is incorrect.
  *
  * The compare function returns a value indicating whether the first argument is
- * less than (return value < 0), equal to  (return value === 0), or greater than
- * the second argument (return value > 0).
+ * less than (return value < 0), equal to (return value === 0), or greater than
+ * (return value > 0) the second argument. The first argument is an item from
+ * the source array, the second argument is always the given value.
  *
- * If the `Array<T>` contains more than one element with the same value, the function
- * returns only one of the occurrences, and it might return any one of the
- * occurrences, not necessarily the first one.
+ * If the `Array<T>` contains more than one element with the same value, the
+ * function returns only one of the occurrences, and it might return any one of
+ * the occurrences, not necessarily the first one.
  *
  * @param source The sorted source array
  * @param value The value to locate.
  * @param compareFn The function to use when comparing elements.
- * @param startIndex The zero-based starting index of the range to search (optional).
- * @param endIndex The zero-based ending index (inclusive) of the range to search (optional).
+ * @param startIndex The zero-based starting index of the range to search
+ * (optional).
+ * @param endIndex The zero-based ending index (inclusive) of the range to
+ * search (optional).
  */
 export function binarySearch<T>(
     source: T[],
@@ -67,8 +70,9 @@ export function binarySearch<T>(
  * implementation; otherwise, the result is incorrect.
  *
  * The compare function returns a value indicating whether the first argument is
- * less than (return value < 0), equal to  (return value === 0), or greater than
- * the second argument (return value > 0).
+ * less than (return value < 0), equal to (return value === 0), or greater than
+ * (return value > 0) the second argument. The first argument is an item from
+ * the source array, the second argument is always the given item.
  *
  * @param source The sorted source array
  * @param item The value to insert.
