@@ -455,6 +455,9 @@ export class CoreTypes {
             LogLevel[obj.logLevel] !== undefined &&
             typeof obj.logMessage === "string" &&
             typeof obj.logDate === "string" &&
+            (obj.logTags === undefined || CoreTypes.isStringArray(obj.logTags)) &&
+            (obj.logLabels === undefined ||
+                (obj.logLabels && typeof obj.logLabels === "object")) &&
             (obj.logHost === undefined || CoreTypes._isLogHost(obj.logHost));
     }
 

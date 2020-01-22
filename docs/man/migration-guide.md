@@ -91,7 +91,9 @@ Refactor the following definitions:
 
 ### Changes in Coaty object types
 
-* `Config` type has been removed. In case you use it, define an equivalent
+* Optional property `logLabels` has been added to `Log` object type. Useful in
+  providing multi-dimensional context-specific data along with a log.
+* `Config` type has been removed. In case you need it, define an equivalent
   object type in your application code.
 
 ---

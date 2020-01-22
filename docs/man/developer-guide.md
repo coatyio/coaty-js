@@ -3257,12 +3257,18 @@ fatal), the message to log, its creation timestamp, and other optional informati
 about the host environment in which this log object is created. You can also
 extend the `Log` object with custom property-value pairs.
 
-You can also specify log tags as an array of string values in the
-`Log.logTags` property. Tags are used to categorize or filter log output.
-Agents may introduce specific tags, such as "service" or "app".
-Note that log objects published by the framework itself always use the reserved
-tag named "coaty" as part of the `logTags` property. This tag name
-should never be used by your custom agents.
+You can also specify log tags as an array of string values in the `Log.logTags`
+property. Tags are used to categorize or filter log output. Agents may introduce
+specific tags, such as "service" or "app", usually defined at design time. Note
+that log objects published by the framework itself always use the reserved tag
+named "coaty" as part of the `logTags` property. This tag name should never be
+used by your custom agents.
+
+You can also specify log labels as a set of key-value label pairs in the
+`logLabels` property. It can be used to add context-specific information to a
+log object. For example, labels are useful in providing multi-dimensional data
+along a log entry to be exploited by external logging services, such as
+Prometheus.
 
 For convenience, the base `Controller` class provides methods for
 publishing/advertising log objects:

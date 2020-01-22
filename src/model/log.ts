@@ -66,15 +66,29 @@ export interface Log extends CoatyObject {
     logDate: string;
 
     /**
-     * Represents a series of tags assigned to this Log object (optional).
-     * Tags are used to categorize or filter log output.
-     * Agents may introduce specific tags, such as "service" or "app".
+     * Represents a series of (non-empty) tags assigned to this Log object
+     * (optional).
      *
-     * Log objects published by the framework itself always use the reserved
-     * tag named "coaty" as part of the `logTags` property. This tag should 
-     * never be used by agent projects.
+     * Tags are used to categorize or filter log output. Agents may introduce
+     * specific tags, such as "service" or "app", usually defined at design
+     * time.
+     *
+     * Log objects published by the framework itself always use the reserved tag
+     * named "coaty" as part of the `logTags` property. This tag should never be
+     * used by agent projects.
      */
     logTags?: string[];
+
+    /**
+     * Represents a set of key-value label pairs, used to add context-specific
+     * information to this log object (optional).
+     *
+     * Labels are useful in providing multi-dimensional data along a log entry
+     * to be exploited by external logging services, such as Prometheus.
+     *
+     * Any label value must be JSON compatible.
+     */
+    logLabels?: { [label: string]: any };
 
     /**
      * Information about the host environment in which this log object is
