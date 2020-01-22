@@ -95,6 +95,8 @@ Refactor the following definitions:
   providing multi-dimensional context-specific data along with a log.
 * `Config` type has been removed. In case you need it, define an equivalent
   object type in your application code.
+* `CoatyObject.assigneeUserId` property has been removed. If you need this
+  property, add it to your custom object type.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

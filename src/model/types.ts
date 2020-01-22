@@ -278,9 +278,6 @@ export class CoreTypes {
             (obj.parentObjectId === undefined ||
                 (typeof obj.parentObjectId === "string" &&
                     obj.parentObjectId.length > 0)) &&
-            (obj.assigneeUserId === undefined ||
-                (typeof obj.assigneeUserId === "string" &&
-                    obj.assigneeUserId.length > 0)) &&
             (obj.externalId === undefined ||
                 (typeof obj.externalId === "string" &&
                     obj.externalId.length > 0)) &&

@@ -1176,7 +1176,6 @@ interface CoatyObject {
   objectId: Uuid;
   externalId?: string;
   parentObjectId?: Uuid;
-  assigneeUserId?: Uuid;
   locationId?: Uuid;
   isDeactivated?: boolean;
 }
@@ -1209,9 +1208,6 @@ a specific type of objects.
 The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
 Annotation objects can be modelled as children of target objects they are attached to.
-
-The optional `assigneeUserId` property specifies the UUID of the user object
-that this object has been assigned to currently.
 
 The optional `locationId` property refers to the UUID of the Location
 object that this object has been associated with.
@@ -2288,7 +2284,6 @@ const watch: Device = {
     name: "Robot Control Watch",
     displayType: DisplayType.Watch,
     ioCapabilities: [ ioRobotControlSource ],
-    assigneeUserId: user.objectId,
 };
 
 // IO actor definition
@@ -2309,7 +2304,6 @@ const robot: Device = {
     name: "Robot",
     displayType: DisplayType.None,
     ioCapabilities: [ ioRobotControlActor ],
-    assigneeUserId: user.objectId,
 };
 
 // Configuration of Robot Control Source agent
