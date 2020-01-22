@@ -94,6 +94,7 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
 
     /**
      * @internal For internal use in framework only.
+     * 
      * Throws an error if the given Resolve event data does not correspond to 
      * the event data of this Discover event.
      * @param eventData event data for Resolve response event

@@ -35,11 +35,9 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
     private _operation: string;
 
     /**
-     * Create a Call event instance.
+     * @internal For internal use in framework only. Do not use in application code.
      * 
-     * The operation name must be a non-empty string that does not contain
-     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
-     * `/ (U+002F)`.
+     * Create a Call event instance.
      * 
      * @param eventSource source component associated with this Call event
      * @param operation the operation name of this Call event
@@ -59,18 +57,26 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
     }
 
     /**
-     * Create a CallEvent instance for invoking a remote operation call with the given 
-     * operation name, parameters (optional), and a context filter (optional).
-     * 
-     * Parameters must be either by-position through a JSON array or by-name 
-     * through a JSON object. If a context filter is specified, the given
-     * remote call is only executed if the filter conditions match a context object provided
-     * by the remote end.
-     * 
+     * Create a CallEvent instance for invoking a remote operation call with the
+     * given operation name, parameters (optional), and a context filter
+     * (optional).
+     *
+     * The operation name must be a non-empty string that does not contain the
+     * following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
+     * (U+002F)`.
+     *
+     * Parameters must be either by-position through a JSON array or by-name
+     * through a JSON object. If a context filter is specified, the given remote
+     * call is only executed if the filter conditions match a context object
+     * provided by the remote end.
+     *
      * @param eventSource the event source component
-     * @param operation a non-empty string containing the name of the operation to be invoked
-     * @param parameters holds the parameter values to be used during the invocation of the operation (optional)
-     * @param filter a context filter that must match a given context object at the remote end (optional)
+     * @param operation a non-empty string containing the name of the operation
+     * to be invoked
+     * @param parameters holds the parameter values to be used during the
+     * invocation of the operation (optional)
+     * @param filter a context filter that must match a given context object at
+     * the remote end (optional)
      */
     static with(eventSource: Component, operation: string, parameters?: any[] | { [key: string]: any; }, filter?: ContextFilter) {
         return new CallEvent(eventSource, operation, new CallEventData(parameters, filter));
@@ -78,9 +84,10 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
 
     /**
      * @internal For internal use in framework only.
-     * Throws an error if the given Return event data does not correspond to 
-     * the event data of this Call event.
-     * 
+     *
+     * Throws an error if the given Return event data does not correspond to the
+     * event data of this Call event.
+     *
      * @param eventData event data for Return response event
      */
     ensureValidResponseParameters(eventData: ReturnEventData) {
@@ -167,7 +174,7 @@ export class CallEventData extends CommunicationEventData {
     }
 
     /**
-     * @internal For internal use in framework.
+     * @internal For internal use in framework only.
      * 
      * Determines whether the given context object matches the context filter of this event data,
      * returning false if it does not match, true otherwise.

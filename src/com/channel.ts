@@ -24,6 +24,8 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
     private _channelId: string;
 
     /**
+     * @internal For internal use in framework only. Do not use in application code.
+     * 
      * Create a Channel event instance.
      * 
      * The channel identifier must be a non-empty string that does not contain

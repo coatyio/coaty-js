@@ -60,10 +60,10 @@ export class ObjectMatcher {
     }
 
     /**
+     * @internal For internal use in framework only.
+     * 
      * Gets an array of property names for the given nested properties specified either
      * in dot notation or array notation.
-     * 
-     * @internal For internal use in framework only.
      * 
      * @param propNames property names as string in dot notation or as array of property names
      * @returns an array of nested property names
@@ -76,10 +76,10 @@ export class ObjectMatcher {
     }
 
     /**
+     * @internal For internal use in framework only.
+     * 
      * Gets the value of a given property for the given object. Property names may be
      * specified to retrieve the value of a nested property of a subordinate object.
-     * 
-     * @internal For internal use in framework only.
      * 
      * @param propNames property names as string in dot notation or as array of property names
      * @param obj a Coaty object

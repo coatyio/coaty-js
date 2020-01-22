@@ -48,8 +48,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     private _eventUserId: Uuid | string;
 
     /**
-     * @deprecated Please use static constructors
-     * of the matching CommunicationEvent.
+     * @internal For internal use in framework only. Do not use in application code.
      * 
      * Create an event instance for the given event type.
      *
@@ -127,6 +126,7 @@ export abstract class CommunicationEventData {
 
     /**
      * @internal For internal use in framework only.
+     * 
      * Returns an object with event data properties to be serialized by JSON.
      */
     abstract toJsonObject(): { [key: string]: any };

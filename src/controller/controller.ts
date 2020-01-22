@@ -79,9 +79,10 @@ export abstract class Controller implements IController {
     private _discoverIdentitySubscription: Subscription;
 
     /**
-     * @internal For internal use in framework only. Never instantiate
-     * Controller objects in your application, they are created by dependency
-     * injection.
+     * @internal For internal use in framework only.
+     *
+     * Never instantiate Controller objects in your application, they are
+     * created automatically by dependency injection.
      */
     constructor(
         runtime: Runtime,

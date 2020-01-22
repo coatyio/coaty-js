@@ -66,6 +66,7 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
 
     /**
      * @internal For internal use in framework only.
+     * 
      * Throws an error if the given Retrieve event data does not correspond to 
      * the event data of this Query event.
      * @param eventData event data for Retrieve response event
