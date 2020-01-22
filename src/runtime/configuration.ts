@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Device, User } from "..";
+import { Component, Device, User } from "..";
 import { AgentInfo } from "./agent-info";
 
 /**
@@ -87,7 +87,7 @@ export interface CommunicationOptions {
      * communication manager (optional). For example, the `name` of the
      * identity object can be configured here.
      */
-    identity?: { [prop: string]: any };
+    identity?: Partial<Component>;
 
     /**
      * Determines whether the communication manager should start initially
