@@ -89,6 +89,11 @@ Refactor the following definitions:
 * `Runtime.options` has been renamed to `Runtime.commonOptions`. Its value is
   `undefined` if the `Configuration.common` property is not specified.
 
+### Changes in Coaty object types
+
+* `Config` type has been removed. In case you use it, define an equivalent
+  object type in your application code.
+
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a
 [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).

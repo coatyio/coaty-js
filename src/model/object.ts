@@ -1,7 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoreType } from "./types";
-import { User } from "./user";
 
 /**
  * Type alias for RFC4122 V4 UUIDs represented as strings.
@@ -77,30 +76,4 @@ export interface CoatyObject {
 export interface Component extends CoatyObject {
 
     coreType: "Component";
-}
-
-/**
- * Used to advertise configuration changes to interested Coaty
- * container components.
- */
-export interface Config extends CoatyObject {
-
-    coreType: "Config";
-
-    /**
-     * The object ID of the target object of this configuration
-     */
-    targetId: Uuid;
-
-    /**
-     * Whether to associate a user with the runtime (optional)
-     */
-    shouldAssociateUser?: boolean;
-
-    /**
-     * The user that should be associated with the runtime (optional).
-     * The value is only interpreted if the value of `shouldAssociateUser`
-     * property is true.
-     */
-    associatedUser?: User;
 }

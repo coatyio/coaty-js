@@ -1112,7 +1112,6 @@ CoatyObject
   |-- User
   |-- Device
   |-- Component
-  |-- Config
   |-- Annotation
   |-- Task
   |-- Location

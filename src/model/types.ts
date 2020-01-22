@@ -21,7 +21,6 @@ export type CoreType =
     "IoSource" |
     "IoActor" |
     "Component" |
-    "Config" |
     "Log" |
     "Location" |
     "Snapshot";
@@ -41,7 +40,6 @@ export class CoreTypes {
     static readonly OBJECT_TYPE_IO_SOURCE = CoreTypes.OBJECT_TYPE_PREFIX + "IoSource";
     static readonly OBJECT_TYPE_IO_ACTOR = CoreTypes.OBJECT_TYPE_PREFIX + "IoActor";
     static readonly OBJECT_TYPE_COMPONENT = CoreTypes.OBJECT_TYPE_PREFIX + "Component";
-    static readonly OBJECT_TYPE_CONFIG = CoreTypes.OBJECT_TYPE_PREFIX + "Config";
     static readonly OBJECT_TYPE_LOG = CoreTypes.OBJECT_TYPE_PREFIX + "Log";
     static readonly OBJECT_TYPE_LOCATION = CoreTypes.OBJECT_TYPE_PREFIX + "Location";
     static readonly OBJECT_TYPE_SNAPSHOT = CoreTypes.OBJECT_TYPE_PREFIX + "Snapshot";
@@ -56,7 +54,6 @@ export class CoreTypes {
         IoSource: CoreTypes.OBJECT_TYPE_IO_SOURCE,
         IoActor: CoreTypes.OBJECT_TYPE_IO_ACTOR,
         Component: CoreTypes.OBJECT_TYPE_COMPONENT,
-        Config: CoreTypes.OBJECT_TYPE_CONFIG,
         Log: CoreTypes.OBJECT_TYPE_LOG,
         Location: CoreTypes.OBJECT_TYPE_LOCATION,
         Snapshot: CoreTypes.OBJECT_TYPE_SNAPSHOT,
@@ -241,8 +238,6 @@ export class CoreTypes {
                 return CoreTypes._isIoActor(obj);
             case "Component":
                 return CoreTypes._isComponent(obj);
-            case "Config":
-                return CoreTypes._isConfig(obj);
             case "Log":
                 return CoreTypes._isLog(obj);
             case "Location":
@@ -451,18 +446,6 @@ export class CoreTypes {
     private static _isComponent(obj: any) {
         return CoreTypes._isObject(obj) &&
             obj.coreType === "Component";
-    }
-
-    private static _isConfig(obj: any) {
-        return CoreTypes._isObject(obj) &&
-            obj.coreType === "Config" &&
-            typeof obj.targetId === "string" &&
-            obj.targetId.length > 0 &&
-            (obj.shouldAssociateUser === undefined ||
-                (obj.shouldAssociateUser === true &&
-                    CoreTypes._isUser(obj.associatedUser)) ||
-                (obj.shouldAssociateUser === false &&
-                    obj.associatedUser === undefined));
     }
 
     private static _isLog(obj: any) {
