@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component, CoreTypes } from "..";
+import { CoatyObject, CoreTypes, Identity } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
 
@@ -32,12 +32,12 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
      * `/ (U+002F)`.
      * 
-     * @param eventSource source component associated with this Channel event
+     * @param eventSource source identity associated with this Channel event
      * @param channelId the channel identifier of this Channel event
      * @param eventData data associated with this Channel event
      */
     constructor(
-        eventSource: Component,
+        eventSource: Identity,
         channelId: string,
         eventData: ChannelEventData) {
         super(eventSource, eventData);
@@ -52,22 +52,22 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
     /**
      * Create a ChannelEvent instance for delivering the given object.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param object the object to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: Component, channelId: string, object: CoatyObject, privateData?: any) {
+    static withObject(eventSource: Identity, channelId: string, object: CoatyObject, privateData?: any) {
         return new ChannelEvent(eventSource, channelId, new ChannelEventData(object, undefined, privateData));
     }
 
     /**
      * Create a ChannelEvent instance for delivering the given objects.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objects the objects to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObjects(eventSource: Component, channelId: string, objects: CoatyObject[], privateData?: any) {
+    static withObjects(eventSource: Identity, channelId: string, objects: CoatyObject[], privateData?: any) {
         return new ChannelEvent(eventSource, channelId, new ChannelEventData(undefined, objects, privateData));
     }
 }

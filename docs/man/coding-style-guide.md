@@ -201,7 +201,7 @@ TypeScript file with the following comment rule flags
 
 * Use `T` for the type variable if only one is needed.
 * When possible, allow the compiler to infer type of variables:
-  Use `identity("myString");` instead of `identify<string>("myString");`.
+  Use `identify("myString");` instead of `identify<string>("myString");`.
 * When creating factories using generics, be sure to include the constructor
   function in the type:
   `function create<T>(thing: {new(): T;}): T { return new thing(); }`.

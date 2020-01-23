@@ -20,7 +20,7 @@ export type CoreType =
     "Task" |
     "IoSource" |
     "IoActor" |
-    "Component" |
+    "Identity" |
     "Log" |
     "Location" |
     "Snapshot";
@@ -39,7 +39,7 @@ export class CoreTypes {
     static readonly OBJECT_TYPE_TASK = CoreTypes.OBJECT_TYPE_PREFIX + "Task";
     static readonly OBJECT_TYPE_IO_SOURCE = CoreTypes.OBJECT_TYPE_PREFIX + "IoSource";
     static readonly OBJECT_TYPE_IO_ACTOR = CoreTypes.OBJECT_TYPE_PREFIX + "IoActor";
-    static readonly OBJECT_TYPE_COMPONENT = CoreTypes.OBJECT_TYPE_PREFIX + "Component";
+    static readonly OBJECT_TYPE_IDENTITY = CoreTypes.OBJECT_TYPE_PREFIX + "Identity";
     static readonly OBJECT_TYPE_LOG = CoreTypes.OBJECT_TYPE_PREFIX + "Log";
     static readonly OBJECT_TYPE_LOCATION = CoreTypes.OBJECT_TYPE_PREFIX + "Location";
     static readonly OBJECT_TYPE_SNAPSHOT = CoreTypes.OBJECT_TYPE_PREFIX + "Snapshot";
@@ -53,7 +53,7 @@ export class CoreTypes {
         Task: CoreTypes.OBJECT_TYPE_TASK,
         IoSource: CoreTypes.OBJECT_TYPE_IO_SOURCE,
         IoActor: CoreTypes.OBJECT_TYPE_IO_ACTOR,
-        Component: CoreTypes.OBJECT_TYPE_COMPONENT,
+        Identity: CoreTypes.OBJECT_TYPE_IDENTITY,
         Log: CoreTypes.OBJECT_TYPE_LOG,
         Location: CoreTypes.OBJECT_TYPE_LOCATION,
         Snapshot: CoreTypes.OBJECT_TYPE_SNAPSHOT,
@@ -236,8 +236,8 @@ export class CoreTypes {
                 return CoreTypes._isIoSource(obj);
             case "IoActor":
                 return CoreTypes._isIoActor(obj);
-            case "Component":
-                return CoreTypes._isComponent(obj);
+            case "Identity":
+                return CoreTypes._isIdentity(obj);
             case "Log":
                 return CoreTypes._isLog(obj);
             case "Location":
@@ -440,9 +440,9 @@ export class CoreTypes {
                 typeof obj.useRawIoValues === "boolean");
     }
 
-    private static _isComponent(obj: any) {
+    private static _isIdentity(obj: any) {
         return CoreTypes._isObject(obj) &&
-            obj.coreType === "Component";
+            obj.coreType === "Identity";
     }
 
     private static _isLog(obj: any) {

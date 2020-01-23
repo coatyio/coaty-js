@@ -43,9 +43,9 @@ To update the build infrastructure of your application, follow these steps:
 
 ### Changes to package naming and import declarations
 
-Coaty 2 provides a scoped npm package named `@coaty/core` instead of `coaty`.
-Rewrite all import declarations `coaty/<modulename>` to use `@coaty/core` as
-follows:
+Coaty 2 publishes a scoped npm package named `@coaty/core` instead of `coaty`.
+Rewrite all import declarations `coaty/<modulename>` to use the scoped package
+as follows:
 
 * `coaty/com`, `coaty/controller`, `coaty/model`, `coaty/runtime`, `coaty/util`
   -> `@coaty/core`
@@ -64,6 +64,9 @@ Refactor import declarations of the following type references:
 
 * `DbConnectionInfo` - import from `@coaty/core`
 * `HistorianController` - import from `@coaty/core/db`
+
+> **Note**: All Coaty JS extensions are also publishing scoped packages within
+> the `@coaty/` scope.
 
 ### Deprecated functionality
 
@@ -86,17 +89,19 @@ Refactor the following definitions:
 ### Changes in `Configuration` options
 
 * The `Configuration.common` property is now optional.
-* `Runtime.options` has been renamed to `Runtime.commonOptions`. Its value is
-  `undefined` if the `Configuration.common` property is not specified.
+* Rename `Runtime.options` to `Runtime.commonOptions`. Its value is `undefined`
+  if the `Configuration.common` property is not specified.
 
 ### Changes in Coaty object types
 
 * Optional property `logLabels` has been added to `Log` object type. Useful in
   providing multi-dimensional context-specific data along with a log.
-* `Config` type has been removed. In case you need it, define an equivalent
-  object type in your application code.
-* `CoatyObject.assigneeUserId` property has been removed. If you need this
-  property, add it to your custom object type.
+* Stop using `Config` as this core type has been removed. In case you need it,
+  define an equivalent object type in your application code.
+* Stop using `CoatyObject.assigneeUserId` as this property has been removed. If
+  you need this property, add it to your custom object type.
+* Rename core object type `Component` to `Identity`. This name better reflects
+  its intent to provide the unique identity of a Coaty agent.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

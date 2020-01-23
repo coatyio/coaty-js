@@ -87,7 +87,7 @@ export class CommunicationTopic {
     /**
      * Create a new topic for the given topic levels.
      * @param associatedUser user or user ID associated with the topic, or undefined
-     * @param sourceObject event source component or object ID
+     * @param sourceObject event source identity or object ID
      * @param eventType an event type
      * @param eventTypeFilter an optional filter for an event type
      * @param messageToken a token to identify the message

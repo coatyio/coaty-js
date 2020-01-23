@@ -65,10 +65,10 @@ export interface CoatyObject {
 }
 
 /**
- * Represents a Coaty container component, i.e. a controller or the communication
- * manager.
+ * Represents the unique identity of a Coaty container, as represented by its
+ * communication manager.
  */
-export interface Component extends CoatyObject {
+export interface Identity extends CoatyObject {
 
-    coreType: "Component";
+    coreType: "Identity";
 }

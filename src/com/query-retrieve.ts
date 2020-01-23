@@ -3,9 +3,9 @@
 import {
     areObjectJoinConditionsValid,
     CoatyObject,
-    Component,
     CoreType,
     CoreTypes,
+    Identity,
     isObjectFilterValid,
     ObjectFilter,
     ObjectJoinCondition,
@@ -34,13 +34,13 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
      * Create a QueryEvent instance for querying the given object types, filter, and join conditions.
      * The object filter and join conditions are optional.
      *
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objectTypes restrict results by object types (logical OR).
      * @param objectFilter restrict results by object filter (optional).
      * @param objectJoinConditions join related objects into results (optional).
      */
     static withObjectTypes(
-        eventSource: Component,
+        eventSource: Identity,
         objectTypes: string[],
         objectFilter?: ObjectFilter,
         objectJoinConditions?: ObjectJoinCondition | ObjectJoinCondition[]) {
@@ -51,13 +51,13 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
      * Create a QueryEvent instance for querying the given core types, filter, and join conditions.
      * The object filter and join conditions are optional.
      *
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param coreTypes restrict results by core types (logical OR).
      * @param objectFilter restrict results by object filter (optional).
      * @param objectJoinConditions join related objects into results (optional).
      */
     static withCoreTypes(
-        eventSource: Component,
+        eventSource: Identity,
         coreTypes: CoreType[],
         objectFilter?: ObjectFilter,
         objectJoinConditions?: ObjectJoinCondition | ObjectJoinCondition[]) {
@@ -236,11 +236,11 @@ export class RetrieveEvent extends CommunicationEvent<RetrieveEventData> {
     /**
      * Create a RetrieveEvent instance for the given objects.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objects the objects to be retrieved
      * @param privateData  private data object (optional)
      */
-    static withObjects(eventSource: Component, objects: CoatyObject[], privateData?: any) {
+    static withObjects(eventSource: Identity, objects: CoatyObject[], privateData?: any) {
         return new RetrieveEvent(eventSource, new RetrieveEventData(objects, privateData));
     }
 }

@@ -6,10 +6,10 @@ import { filter } from "rxjs/operators";
 import {
     AdvertiseEvent,
     CommunicationManager,
-    Component,
     Container,
     ControllerOptions,
     CoreTypes,
+    Identity,
     Log,
     LogHost,
     LogLevel,
@@ -72,7 +72,7 @@ export abstract class Controller implements IController {
     private _runtime: Runtime;
     private _options: ControllerOptions;
     private _controllerName: string;
-    private _identity: Component;
+    private _identity: Identity;
     private _communicationManager: CommunicationManager;
     private _isCommonJsPlatform: boolean;
     private _isWebPlatform: boolean;
@@ -237,7 +237,7 @@ export abstract class Controller implements IController {
      * implementation advertises its identity if requested by the controller
      * option property `shouldAdvertiseIdentity` (if this property is not
      * specified, the identity is advertised by default). The base
-     * implementation also observes Discover events for core type "Component" or
+     * implementation also observes Discover events for core type "Identity" or
      * the identity's object ID and resolves them with the controller's
      * identity.
      */
@@ -287,7 +287,7 @@ export abstract class Controller implements IController {
      *
      * @param identity the default identity object for a controller instance
      */
-    protected initializeIdentity(identity: Component) {
+    protected initializeIdentity(identity: Identity) {
         /* tslint:disable:empty-block */
         /* tslint:enable:empty-block */
     }
@@ -316,7 +316,7 @@ export abstract class Controller implements IController {
             this.communicationManager.observeDiscover(this.identity)
                 .pipe(filter(event =>
                     (event.eventData.isDiscoveringTypes &&
-                        event.eventData.isCoreTypeCompatible("Component")) ||
+                        event.eventData.isCoreTypeCompatible("Identity")) ||
                     (event.eventData.isDiscoveringObjectId &&
                         event.eventData.objectId === this.identity.objectId)))
                 .subscribe(event =>
@@ -334,10 +334,10 @@ export abstract class Controller implements IController {
         this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
     }
 
-    private _createIdentity(): Component {
-        const identity: Component = {
-            objectType: CoreTypes.OBJECT_TYPE_COMPONENT,
-            coreType: "Component",
+    private _createIdentity(): Identity {
+        const identity: Identity = {
+            objectType: CoreTypes.OBJECT_TYPE_IDENTITY,
+            coreType: "Identity",
             objectId: this.runtime.newUuid(),
             name: this._controllerName,
         };

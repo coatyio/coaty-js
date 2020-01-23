@@ -3,7 +3,7 @@
 /**
  * @module
  * @description
- * Module to export all public APIs for event based communication.
+ * Export all public APIs of Coaty core.
  */
 
 export * from "./com/advertise";
@@ -17,22 +17,10 @@ export * from "./com/io-state";
 export * from "./com/query-retrieve";
 export * from "./com/update-complete";
 
-/**
- * @module
- * @description
- * Module to export all public APIs of base controller classes.
- */
-
 export { Controller } from "./controller/controller";
 export * from "./controller/connection-state-controller";
 export * from "./controller/object-cache-controller";
 export * from "./controller/object-lifecycle-controller";
-
-/**
- * @module
- * @description
- * Module to export all public APIs for core object types.
- */
 
 export * from "./model/annotation";
 export * from "./model/device";
@@ -48,22 +36,10 @@ export * from "./model/snapshot";
 export * from "./model/task";
 export * from "./model/types";
 
-/**
- * @module
- * @description
- * Module to export all public APIs for runtime components.
- */
-
 export * from "./runtime/agent-info";
 export * from "./runtime/configuration";
 export * from "./runtime/container";
 export * from "./runtime/runtime";
-
-/**
- * @module
- * @description
- * Module to export all public APIs of utility functions.
- */
 
 export * from "./util/binary-search";
 export * from "./util/date";

@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component, CoreTypes, Uuid } from "..";
+import { CoatyObject, CoreTypes, Identity, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -22,22 +22,22 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     /**
      * Create an UpdateEvent instance for the given partial update.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objectId the UUID of the object to be updated (partial update)
      * @param changedValues Object hash for properties that have changed or should be changed (partial update)
      * @param object the object to be updated (for full updates)
      */
-    static withPartial(eventSource: Component, objectId: Uuid, changedValues: { [property: string]: any; }) {
+    static withPartial(eventSource: Identity, objectId: Uuid, changedValues: { [property: string]: any; }) {
         return new UpdateEvent(eventSource, new UpdateEventData(objectId, changedValues));
     }
 
     /**
      * Create an UpdateEvent instance for the given full update.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param object the full object to be updated
      */
-    static withFull(eventSource: Component, object: CoatyObject) {
+    static withFull(eventSource: Identity, object: CoatyObject) {
         return new UpdateEvent(eventSource, new UpdateEventData(undefined, undefined, object));
     }
 
@@ -173,11 +173,11 @@ export class CompleteEvent extends CommunicationEvent<CompleteEventData> {
     /**
      * Create a CompleteEvent instance for updating the given object.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param object the updated object
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: Component, object: CoatyObject, privateData?: any) {
+    static withObject(eventSource: Identity, object: CoatyObject, privateData?: any) {
         return new CompleteEvent(eventSource, new CompleteEventData(object, privateData));
     }
 }

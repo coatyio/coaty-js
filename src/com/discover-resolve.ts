@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, Component, CoreType, CoreTypes, Uuid } from "..";
+import { CoatyObject, CoreType, CoreTypes, Identity, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -22,73 +22,73 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param externalId the external ID to discover
      */
-    static withExternalId(eventSource: Component, externalId: string) {
+    static withExternalId(eventSource: Identity, externalId: string) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and core types.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param externalId the external ID to discover
      * @param coreTypes an array of core types to discover
      */
-    static withExternalIdAndCoreTypes(eventSource: Component, externalId: string, coreTypes: CoreType[]) {
+    static withExternalIdAndCoreTypes(eventSource: Identity, externalId: string, coreTypes: CoreType[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, undefined, undefined, coreTypes));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and object types.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param externalId the external ID to discover
      * @param objectTypes an array of object types to discover
      */
-    static withExternalIdAndObjectTypes(eventSource: Component, externalId: string, objectTypes: string[]) {
+    static withExternalIdAndObjectTypes(eventSource: Identity, externalId: string, objectTypes: string[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, undefined, objectTypes, undefined));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given object Id.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objectId the object ID to discover
      */
-    static withObjectId(eventSource: Component, objectId: Uuid) {
+    static withObjectId(eventSource: Identity, objectId: Uuid) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, objectId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given external Id and object Id.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param externalId the external ID to discover
      * @param objectId the object ID to discover
      */
-    static withExternalAndObjectId(eventSource: Component, externalId: string, objectId: Uuid) {
+    static withExternalAndObjectId(eventSource: Identity, externalId: string, objectId: Uuid) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(externalId, objectId));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given core types.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param coreTypes the core types to discover
      */
-    static withCoreTypes(eventSource: Component, coreTypes: CoreType[]) {
+    static withCoreTypes(eventSource: Identity, coreTypes: CoreType[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, undefined, undefined, coreTypes));
     }
 
     /**
      * Create a DiscoverEvent instance for discovering objects with the given object types.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objectTypes the object types to discover
      */
-    static withObjectTypes(eventSource: Component, objectTypes: string[]) {
+    static withObjectTypes(eventSource: Identity, objectTypes: string[]) {
         return new DiscoverEvent(eventSource, new DiscoverEventData(undefined, undefined, objectTypes, undefined));
     }
 
@@ -336,12 +336,12 @@ export class ResolveEvent extends CommunicationEvent<ResolveEventData> {
     /**
      * Create a ResolveEvent instance for resolving the given object.
      *
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param object the object to be resolved
      * @param relatedObjects related objects to be resolved (optional)
      * @param privateData private data object (optional)
      */
-    static withObject(eventSource: Component, object: CoatyObject, relatedObjects?: CoatyObject[], privateData?: any) {
+    static withObject(eventSource: Identity, object: CoatyObject, relatedObjects?: CoatyObject[], privateData?: any) {
         return new ResolveEvent(eventSource, new ResolveEventData(object, relatedObjects, privateData));
     }
 
@@ -349,11 +349,11 @@ export class ResolveEvent extends CommunicationEvent<ResolveEventData> {
      * Create a ResolveEvent instance for resolving the given related objects.
      * 
      * @static
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param relatedObjects related objects to be resolved
      * @param privateData private data object (optional)
      */
-    static withRelatedObjects(eventSource: Component, relatedObjects: CoatyObject[], privateData?: any) {
+    static withRelatedObjects(eventSource: Identity, relatedObjects: CoatyObject[], privateData?: any) {
         return new ResolveEvent(eventSource, new ResolveEventData(undefined, relatedObjects, privateData));
     }
 }

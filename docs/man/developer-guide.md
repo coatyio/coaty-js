@@ -6,8 +6,8 @@ title: Coaty JS Documentation
 # Coaty Developer Guide
 
 This document covers everything a developer needs to know about using the Coaty
-framework to implement collaborative IoT applications targeting Node.js,
-as well as mobile and web apps. We assume you know nothing about Coaty JS before reading
+framework to implement collaborative IoT applications targeting Node.js, as well
+as mobile and web apps. We assume you know nothing about Coaty JS before reading
 this guide.
 
 ## Table of Contents
@@ -273,8 +273,8 @@ support to TypeScript tooling for things like type checking and code completion
 
 ## Framework design
 
-Coaty JS is realized as an inversion of control (IOC) framework with a
-component design that supports dependency injection (DI) and lifecycle management (LM):
+Coaty JS is realized as an inversion of control (IOC) framework with a component
+design that supports dependency injection (DI) and lifecycle management (LM):
 
 * **Container**: An IoC container that defines the entry and exit
   points for any Coaty agent project. It provides lifecycle
@@ -282,10 +282,11 @@ component design that supports dependency injection (DI) and lifecycle managemen
   The container is responsible for composing the graph of components
   using constructor dependency injection.
 
-* **Controller**: A container component that encapsulates business logic.
-  A controller publishes and observes communication events, provides observable state
-  to the agent project (e.g. views), supports lifecycle management, etc. A Coaty
-  container can contain any number of controllers which are specified declaratively.
+* **Controller**: A container component that encapsulates business communication
+  logic. A controller publishes and observes communication events, provides
+  observable state to the agent project (e.g. views), supports lifecycle
+  management, etc. A Coaty container can contain any number of controllers which
+  are specified declaratively.
 
 * **Communication Manager**: Each container contains exactly one instance
   of the `CommunicationManager` class that provides publish-subscribe for communication event
@@ -385,11 +386,11 @@ const configuration: Configuration = {
 ```
 
 Note that both controllers and the Communication Manager maintain an `identity`
-object of type `Component` that provides metadata of the component, including
-its `name`, a unique object ID, etc. By default, these identity objects are
+object of type `Identity` that provides metadata of the component, including its
+`name`, a unique object ID, etc. By default, these identity objects are
 advertised when the components are set up and deadvertised on normal or abnormal
 termination of a Coaty agent. The communication managers's identity is also
-discoverable (by publishing a Discover event with core type "Component") if and
+discoverable (by publishing a Discover event with core type "Identity") if and
 only if the identity has been advertised.
 
 Using the controller and/or communication options, you can opt out
@@ -623,10 +624,10 @@ allocated system resources:
 container.shutdown();
 ```
 
-The shutdown method first shuts down all container controller and IO routing components
-by invoking the component's `onDispose` method (in arbitrary order). Finally,
-the Communication Manager's `onDispose` method is called which unsubscribes
-all subscriptions and disconnects the messaging client from the MQTT message broker.
+The shutdown method first shuts down all container controllers by invoking the
+component's `onDispose` method (in arbitrary order). Finally, the Communication
+Manager's `onDispose` method is called which unsubscribes all subscriptions and
+disconnects the messaging client from the MQTT message broker.
 
 After invoking shutdown, the container and its components are no longer usable.
 
@@ -642,7 +643,7 @@ terminates abnormally or when the `shutdown` method is not used by your app.
 Agent-specific controller classes realize custom business logic of a
 Coaty agent. A controller
 
-* exchanges object data with other agent components by publishing
+* exchanges object data with other agent controllers by publishing
   and observing communication events.
 * provides observable state to other parts of the project, such as views.
 * provides methods for lifecycle management.
@@ -802,7 +803,7 @@ emitted immediately.
 
 The `ObjectLifecycleController` class supports [distributed lifecycle
 management](#distributed-lifecycle-management). It keeps track of specific
-agents/objects in a Coaty network by monitoring identity components of
+agents/objects in a Coaty network by monitoring the identity of
 communication managers, controllers or custom object types. The controller
 observes advertisements and deadvertisements of such objects and initially
 discovers them. Changes are emitted on an observable that applications can
@@ -811,21 +812,28 @@ subscribe to.
 You can use this controller standalone by adding it to the container components
 or make your custom controller class extend this controller class.
 
-Basically, to keep track of identity components, the `shouldAdvertiseIdentity`
+Basically, to keep track of an agent's identity, the `shouldAdvertiseIdentity`
 option in `CommunicationOptions` and/or `ControllerOptions` must be set to
 `true`. Note that this controller also supports tracking the identities of the
 communication manager and the *other* controllers inside its *own* agent
 container.
 
-The following example shows how to keep track of identity components of specific
-agents whose communication manager has an identity named `"LightAgent"`.
+The following example shows how to keep track of agents whose identity is
+named `"LightAgent"`.
 
-This approach assumes the lifecycle container has been added to the container
+This approach requires the lifecycle controller to be added to the container
 components under the name `ObjectLifecycleController`:
 
 ```ts
 import { Subscription } from "rxjs";
-import { Container, Controller, ObjectLifecycleController } from "@coaty/core";
+import { Components, Container, Controller, ObjectLifecycleController } from "@coaty/core";
+
+const components: Components = {
+    controllers: {
+        ObjectLifecycleController,
+        ...
+    }
+};
 
 class MyController extends Controller {
 
@@ -839,26 +847,27 @@ class MyController extends Controller {
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
         this._lifecycleSubscription = this._lifecycleController
-            .observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+            .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
-                // Called whenever identity components for light agents have changed.
-                console.log(info.added);     // newly advertised or discovered identity components
-                console.log(info.changed);   // readvertised or rediscovered identity components
-                console.log(info.removed);   // deadvertised identity components
+                // Called whenever light agents have been observed.
+                console.log(info.added);     // newly advertised or discovered identities
+                console.log(info.changed);   // readvertised or rediscovered identities
+                console.log(info.removed);   // deadvertised identities
             });
     }
 
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
         if (this._lifecycleSubscription) {
-            // Stop observing lifecycle info of identity components for light agents.
+            // Stop observing lifecycle info of light agents.
             this._lifecycleSubscription.unsubscribe();
         }
     }
 }
 ```
 
-This approach assumes your custom controller class inherits from the lifecycle container class:
+This approach assumes your custom controller class inherits from the lifecycle
+controller class:
 
 ```ts
 import { Subscription } from "rxjs";
@@ -870,35 +879,35 @@ class MyController extends ObjectLifecycleController {
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "LightAgent")
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
-                // Called whenever identity components for light agents have changed.
-                console.log(info.added);     // newly advertised or discovered identity components
-                console.log(info.changed);   // readvertised or rediscovered identity components
-                console.log(info.removed);   // deadvertised identity components
+                // Called whenever light agents have been observed.
+                console.log(info.added);     // newly advertised or discovered identities
+                console.log(info.changed);   // readvertised or rediscovered identities
+                console.log(info.removed);   // deadvertised identities
             });
     }
 
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
         if (this._lifecycleSubscription) {
-            // Stop observing lifecycle info of identity components for light agents.
+            // Stop observing lifecycle info of light agents.
             this._lifecycleSubscription.unsubscribe();
         }
     }
 }
 ```
 
-To keep track of identity components, the code shown above is sufficient.
-However, if you want to keep track of *custom object types* (not commmunication
-manager or controller identities), you have to implement the remote side of the
-distributed object lifecycle management, i.e. advertise/readvertise/deadvertise
-your custom objects and observe/resolve corresponding Discover events
-explicitely. To facilitate this, the `ObjectLifecycleController` provides these
-convenience methods: `advertiseDiscoverableObject`,
-`readvertiseDiscoverableObject`, and `deadvertiseDiscoverableObject`.
+To keep track of agent identities, the code shown above is sufficient. However,
+if you want to additionally keep track of *custom Coaty object types*, you have
+to implement the remote side of the distributed object lifecycle management,
+i.e. advertise/readvertise/deadvertise your custom objects and observe/resolve
+corresponding Discover events explicitely. To facilitate this, the
+`ObjectLifecycleController` provides these convenience methods:
+`advertiseDiscoverableObject`, `readvertiseDiscoverableObject`, and
+`deadvertiseDiscoverableObject`.
 
-Usually, a custom object should have the identity UUID of its associated
+Usually, a custom object should have the identity UUID of its agent's
 communication manager set as its `parentObjectId` to be automatically
 deadvertised when the agent terminates abnormally. You can automate this by
 passing `true` to the optional parameter `shouldSetParentObjectId` of method
@@ -1111,7 +1120,7 @@ CoatyObject
   |
   |-- User
   |-- Device
-  |-- Component
+  |-- Identity
   |-- Annotation
   |-- Task
   |-- Location
@@ -1351,8 +1360,8 @@ Afterwards, events are no longer dispatched and emitted. You can start the
 Communication Manager again later using the `start` method.
 
 Whenever the operating state of the Communication Manager changes by invoking
-one of the above method calls all the controller components of the container
-are notified by the following lifecycle methods:
+one of the above method calls all the controllers of the container are notified
+by the following lifecycle methods:
 
 ```ts
 Controller.onCommunicationManagerStarting()
@@ -2134,38 +2143,40 @@ methods to implement this subscription pattern.
 
 Whenever a Coaty container is resolved by creating its communication manager and
 controller components, the identities of these components are advertised as
-`Component` objects automatically. You can prevent publishing Advertise events
-for identity components by setting the controller and/or communication
-configuration option `shouldAdvertiseIdentity` to `false`. Additionally, a
-communication manager's or controller's identity is also discoverable (by
-publishing a Discover event with core type "Component" or with the object ID of
-a component) if and only if the identity has also been advertised.
+`Identity` objects automatically. You can prevent publishing Advertise events
+for identities by setting the controller and/or communication configuration
+option `shouldAdvertiseIdentity` to `false`. Additionally, a communication
+manager's or controller's identity is also discoverable (by publishing a
+Discover event with core type "Identity" or with the object ID of an Identity
+object) if and only if the identity has also been advertised.
 
-Each identity component is initialized with default property values. For example,
+Each Identity object is initialized with default property values. For example,
 the `name` of a controller identity refers to the controller's type; the `name`
 of a communication manager identity is always "CommunicationManager". You can
-customize and configure specific properties of identity component objects as follows:
+customize and configure specific properties of identity objects as follows:
 
-* For controllers, either specify identity properties in the controller's configuration
-  options (`ControllerOptions.identity`), or overwrite the `initializeIdentity`
-  method in your controller class definition. If you specify identity properties in
-  both ways, the ones specified in the configuration options take precedence.
+* For controllers, either specify identity properties in the controller's
+  configuration options (`ControllerOptions.identity`), or overwrite the
+  `initializeIdentity` method in your controller class definition. If you
+  specify identity properties in both ways, the ones specified in the
+  configuration options take precedence.
 * For communication managers, specify identity properties in the communication
   configuration options (`CommunicationOptions.identity`).
 
-Note that the `parentObjectId` property of a controller's identity component is set to the
-`objectId` of the communication manager's identity component for reasons described next.
+Note that the `parentObjectId` property of a controller's identity is set to the
+`objectId` of the communication manager's identity for reasons described next.
 
-Advertisement of identities is especially useful in combination with abnormal termination of an
-agent and the MQTT last will concept. On connection to the broker, the communication
-manager of a Coaty container sends a last will message consisting of a Deadvertise
-event with the object ID of its identity component and its associated device (if defined).
-Whenever the agent disconnects normally or abnormally, the broker publishes its last will
-message to all subscribers which observe Deadvertise events.
+Advertisement of identities is especially useful in combination with abnormal
+termination of an agent and the MQTT last will concept. On connection to the
+broker, the communication manager of a Coaty container sends a last will message
+consisting of a Deadvertise event with the object ID of its identity and its
+associated device (if defined). Whenever the agent disconnects normally or
+abnormally, the broker publishes its last will message to all subscribers which
+observe Deadvertise events.
 
 Note that to get the identities of components advertised *before* your Coaty
 agent has started can be accomplished by publishing a Discover event with core
-type "Component" initially (see example in this
+type `Identity` initially (see example in this
 [section](#discover---resolve-event-pattern---an-example)).
 
 Using this pattern, agents can detect the online/offline state of other Coaty
@@ -2218,11 +2229,10 @@ an Associate event. Since the associated topic is used for both
 publication and subscription, it must never contain wildcard tokens (i.e.
 `#` or `+`) on topic levels.
 
-Associated topics for framework components are generated by the
-IO router using the topic structure with an `IoValue` event type as described
-above. Associated topics published by external IO sources or subscribed to by
-external IO actors need not conform to this topic structure but can be of any
-valid MQTT topic shape.
+Associated topics are generated by the IO router using the topic structure with
+an `IoValue` event type as described above. Associated topics published by
+external IO sources or subscribed to by external IO actors need not conform to
+this topic structure but can be of any valid MQTT topic shape.
 
 The payload data published by both external and internal IO sources
 must conform to the protocol specification, i.e. it must be specified as
@@ -2401,12 +2411,12 @@ Storage API is database-agnostic. It unifies common CRUD constructs of relationa
 databases and NoSQL document databases in a simple but powerful API based on promises
 for asynchronous operations.
 
-The Unified Storage API is especially suited to interact with
-Query - Retrieve communication event patterns. It enables declarative, seamless
-and transparent retrieval of objects across Coaty components independent
-of database implementations. The query event's object filter
-which specifies selection and ordering criteria can be directly passed to the
-database agnostic API for schemaless object retrieval.
+The Unified Storage API is especially suited to interact with Query - Retrieve
+communication event patterns. It enables declarative, seamless and transparent
+retrieval of objects across Coaty agents independent of database
+implementations. The query event's object filter which specifies selection and
+ordering criteria can be directly passed to the database agnostic API for
+schemaless object retrieval.
 
 The Unified Storage API uses the notion of *database adapters* to connect to specific
 databases. The framework provides ready-to-use built-in adapters. You can also
@@ -2719,15 +2729,15 @@ const joinConditions: DbJoinCondition[] = [
         isOneToOneRelation: true,
     },
     {
-        fromCollection: "component",
+        fromCollection: "annotation",
         fromProperty: "objectId",
-        localProperty: "componentIds",
-        asProperty: "resolvedComponents",
+        localProperty: "annotationIds",
+        asProperty: "resolvedAnnotations",
         isLocalPropertyArray: true,
     },
 ];
 
-dbContext.findObjects<ComponentTask>("task", filter, joinConditions)
+dbContext.findObjects<Task>("task", filter, joinConditions)
     .then(iterator => iterator.forEach(compTask => console.log(compTask)))
     .catch(error => console.error(error));
 ```
@@ -2737,12 +2747,12 @@ given object filter. If the filter is empty or not specified all objects in the
 collection are retrieved. For details on how to specify object filters, take a
 look at the API documentation of class `ObjectFilter`.
 
-Optional join conditions can be specified to augment result objects by
-resolving object references to related objects and by storing them as extra
-properties (for details, see online documentation of `DbJoinCondition`).
-Typically, augmented result objects are transfered to other agent
-components as part of the Query - Retrieve communication event pattern, saving
-time for roundtrip events to look up related objects.
+Optional join conditions can be specified to augment result objects by resolving
+object references to related objects and by storing them as extra properties
+(for details, see online documentation of `DbJoinCondition`). Typically,
+augmented result objects are transfered to other agents as part of the Query -
+Retrieve communication event pattern, saving time for roundtrip events to look
+up related objects.
 
 However, you should take care that the extra properties of augmented objects are
 **not** stored in the database to avoid inconsistencies and to keep the
@@ -3245,11 +3255,11 @@ to interested parties using an Advertise event. These log objects can then
 be collected and ingested into external processing pipelines such as the
 [ELK Stack](https://www.elastic.co/elk-stack).
 
-Any container component can publish a log object by creating and advertising a
-`Log` object. You can specify the level of logging (debug, info, warning, error,
-fatal), the message to log, its creation timestamp, and other optional information
-about the host environment in which this log object is created. You can also
-extend the `Log` object with custom property-value pairs.
+A controller can publish a log object by creating and advertising a `Log`
+object. You can specify the level of logging (debug, info, warning, error,
+fatal), the message to log, its creation timestamp, and other optional
+information about the host environment in which this log object is created. You
+can also extend the `Log` object with custom property-value pairs.
 
 You can also specify log tags as an array of string values in the `Log.logTags`
 property. Tags are used to categorize or filter log output. Agents may introduce
@@ -3274,31 +3284,32 @@ publishing/advertising log objects:
 * `logFatal`
 
 The base `Controller` class also defines a protected method
-`extendLogObject(log: Log)` which is invoked by the controller whenever
-one of the above log methods is called. The controller first creates a
-`Log` object with appropriate property values and passes it to this method
-before advertising it. You can overwrite this method to additionally set
-certain properties (such as `LogHost.hostname`) or to add custom
-property-value pairs to the `Log` object. For example, a Node.js agent
-could add the hostname to the `Log` object:
+`extendLogObject(log: Log)` which is invoked by the controller whenever one of
+the above log methods is called. The controller first creates a `Log` object
+with appropriate property values and passes it to this method before advertising
+it. You can overwrite this method to additionally set certain properties (such
+as `Log.hostname` or `Log.logLabels`) or to add extra property-value pairs to
+the `Log` object. For example, a Node.js agent could add the hostname to the
+`Log` object like this:
 
 ```ts
+import { hostname } from "os";
 import { Log } from "@coaty/core";
 
 protected extendLogObject(log: Log) {
-    log.logHost.hostname = require("os").hostname();
+    log.logHost.hostname = hostname;
 }
 ```
 
-To collect log objects advertised by your agent components, implement
-a logging controller that observes Advertise events on the core type `Log`.
-Take a look at the Hello World example of the Coaty framework to see
-how this is implemented in detail.
+To collect all log objects advertised by agent controllers, implement a logging
+controller that observes Advertise events on the core type `Log`. Take a look at
+the Hello World example of the Coaty framework to see how this is implemented in
+detail.
 
 Future versions of the framework could include predefined logging controllers
-that collect `Log` entries, store them persistently; output them to
-file or console, and provide a query interface for analyzing and visualizing
-log entries by external tools.
+that collect `Log` entries, store them persistently; output them to file or
+console, and provide a query interface for analyzing and visualizing log entries
+by external tools.
 
 ## Utilities
 
@@ -3534,8 +3545,9 @@ methods in a Coaty service to publish corresponding mDNS services (see examples 
 Use the `unpublishMulticastDnsServices` function to stop publishing of mDNS services when the
 Coaty service exits.
 
-Use the `findMulticastDnsService`, `findMqttBrokerService`, and `findWampRouterService` functions
-in a Coaty agent component to discover a published mDNS service (see examples below).
+Use the `findMulticastDnsService`, `findMqttBrokerService`, and
+`findWampRouterService` functions in a Coaty agent to discover a published mDNS
+service (see examples below).
 
 > Note that multicast DNS discovery can only resolve host names within an IP subnet.
 > If you need discovery of broker connection information across subnets, host the

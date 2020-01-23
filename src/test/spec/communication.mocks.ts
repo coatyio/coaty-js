@@ -184,7 +184,7 @@ export class MockObjectController extends Controller {
 
     private _handleAdvertiseEvents() {
         this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "Component")
+            .observeAdvertiseWithCoreType(this.identity, "Identity")
             // Multiple Advertise events arrive: one identity advertisement
             // from the MockDeviceController and one from the other 
             // MockObjectController

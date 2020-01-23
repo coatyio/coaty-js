@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component, CoreTypes, Uuid } from "..";
+import { CoreTypes, Identity, Uuid } from "..";
 
 /**
  * Predefined event types used by Coaty communication event patterns.
@@ -42,7 +42,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     /** @internal For internal use in framework only. Do not use in application code. */
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;
 
-    private _eventSource: Component;
+    private _eventSource: Identity;
     private _eventSourceId: Uuid;
     private _eventData: T;
     private _eventUserId: Uuid | string;
@@ -52,10 +52,10 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      * 
      * Create an event instance for the given event type.
      *
-     * @param eventSource source component associated with this event
+     * @param eventSource source identity associated with this event
      * @param eventData data associated with this event
      */
-    constructor(eventSource: Component, eventData: T) {
+    constructor(eventSource: Identity, eventData: T) {
         const source: any = eventSource;
 
         // This is to support passing a UUID as event source 
@@ -63,19 +63,19 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
         if ((typeof source === "string") && source.length > 0) {
             this._eventSource = undefined;
             this._eventSourceId = source;
-        } else if (CoreTypes.isObject(source, "Component")) {
+        } else if (CoreTypes.isObject(source, "Identity")) {
             this._eventSource = eventSource;
             this._eventSourceId = eventSource.objectId;
         } else {
-            throw new TypeError("in CommunicationEvent<T>: argument 'eventSource' is not a Component");
+            throw new TypeError("in CommunicationEvent<T>: argument 'eventSource' is not an Identity");
         }
 
         this._eventData = eventData;
     }
 
     /**
-     * Gets the event source component associated with this event.
-     * Returns undefined if the source component is not available
+     * Gets the event source identity associated with this event.
+     * Returns undefined if the source identity is not available
      * but only its ID (via `eventSourceId`). This is always the
      * case on the receiving, i.e. observing side, since the
      * message topic only transmits the source ID but not the source

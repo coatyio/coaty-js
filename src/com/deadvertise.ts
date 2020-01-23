@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component, CoreTypes, Uuid } from "..";
+import { CoreTypes, Identity, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -11,10 +11,10 @@ export class DeadvertiseEvent extends CommunicationEvent<DeadvertiseEventData> {
     /**
      * Create a DeadvertiseEvent instance for deadvertising the given object IDs.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param objectIds object IDs to be deadvertised
      */
-    static withObjectIds(eventSource: Component, ...objectIds: string[]) {
+    static withObjectIds(eventSource: Identity, ...objectIds: string[]) {
         return new DeadvertiseEvent(eventSource, new DeadvertiseEventData(...objectIds));
     }
 
@@ -46,7 +46,7 @@ export class DeadvertiseEventData extends CommunicationEventData {
     }
 
     /**
-     * The objectIds of the objects/components to be deadvertised.
+     * The objectIds of the objects to be deadvertised.
      */
     get objectIds() {
         return this._objectIds;

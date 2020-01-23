@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component, Device, User } from "..";
+import { Device, Identity, User } from "..";
 import { AgentInfo } from "./agent-info";
 
 /**
@@ -35,7 +35,7 @@ export interface Configuration {
 }
 
 /**
- * Common options shared by all container components.
+ * Common options shared by container components.
  */
 export interface CommonOptions {
 
@@ -87,7 +87,7 @@ export interface CommunicationOptions {
      * communication manager (optional). For example, the `name` of the
      * identity object can be configured here.
      */
-    identity?: Partial<Component>;
+    identity?: Partial<Identity>;
 
     /**
      * Determines whether the communication manager should start initially
@@ -103,8 +103,8 @@ export interface CommunicationOptions {
      * undefined, de/advertisements will be done by default.
      *
      * The communication managers's identity is also discoverable (by publishing
-     * a Discover event with core type "Component" or with the object id of a
-     * component) if and only if the identity has also been advertised.
+     * a Discover event with core type "Identity" or with the object id of an
+     * Identity) if and only if the identity has also been advertised.
      */
     shouldAdvertiseIdentity?: boolean;
 
@@ -134,17 +134,20 @@ export interface CommunicationOptions {
     /**
      * Determines whether the communication manager should provide a protocol
      * compliant client ID when connecting to the broker/router.
-     * 
+     *
      * If not specified, the value of this option defaults to false.
-     * 
+     *
      * For example, MQTT Spec 3.1 states that the broker MUST allow Client IDs
-     * which are between 1 and 23 UTF-8 encoded bytes in length, and that contain only
-     * the characters "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
-     * However, broker implementations are free to allow non-compliant Client IDs.
-     * 
-     * By default, non-compliant Client IDs of the form "COATYuuid" are used where
-     * uuid specifies the `objectId` of the communication manager's `identity` object.
-     * If you experience issues with a specific broker, specify this option as `true`.
+     * which are between 1 and 23 UTF-8 encoded bytes in length, and that
+     * contain only the characters
+     * "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".
+     * However, broker implementations are free to allow non-compliant Client
+     * IDs.
+     *
+     * By default, non-compliant Client IDs of the form "COATY<uuid>" are used
+     * where `<uuid>` specifies the `objectId` of the communication manager's
+     * `Identity` object. If you experience issues with a specific broker,
+     * specify this option as `true`.
      */
     useProtocolCompliantClientId?: boolean;
 }
@@ -164,7 +167,7 @@ export interface ControllerOptions {
     /**
      * Property-value pairs to be initialized on the identity object of the
      * controller (optional). For example, the `name` of the
-     * identity object can be configured here.
+     * Identity object can be configured here.
      */
     identity?: { [prop: string]: any };
 
@@ -175,9 +178,9 @@ export interface ControllerOptions {
      * will). If not specified or undefined, the identity is
      * advertised/deadvertised by default.
      *
-     * The controller's identity is also discoverable (by publishing
-     * a Discover event with core type "Component" or with the object id of a
-     * component) if and only if the identity has also been advertised.
+     * The controller's identity is also discoverable (by publishing a Discover
+     * event with core type "Identity" or with the object id of an Identity) if
+     * and only if the identity has also been advertised.
      */
     shouldAdvertiseIdentity?: boolean;
 

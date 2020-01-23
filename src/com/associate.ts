@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component, CoreTypes, IoActor, IoSource } from "..";
+import { CoreTypes, Identity, IoActor, IoSource } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -11,14 +11,14 @@ export class AssociateEvent extends CommunicationEvent<AssociateEventData> {
     /**
      * Create an AssociateEvent instance for associating the given IO source/actor.
      * 
-     * @param eventSource the event source component
+     * @param eventSource the event source identity
      * @param ioSource the IO source object to associate/disassociate
      * @param ioActor the IO actor object to associate/disassociate
      * @param associatedTopic the topic used by IO source and IO actor, or undefined for disassocation
      * @param updateRate the recommended update rate (in millis) for publishing IO source values (optional)
      */
     static with(
-        eventSource: Component,
+        eventSource: Identity,
         ioSource: IoSource,
         ioActor: IoActor,
         associatedTopic: string,

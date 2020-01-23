@@ -45,7 +45,7 @@ export interface ObjectLifecycleInfo {
 
 /**
  * Keeps track of specific agents/objects in a Coaty network by monitoring
- * identity components of communication managers, controllers or custom object
+ * identity objects of communication managers, controllers or custom object
  * types. The controller observes advertisements and deadvertisements of such
  * objects and initially discovers them. Changes are emitted on an observable
  * that applications can subscribe to.
@@ -53,11 +53,11 @@ export interface ObjectLifecycleInfo {
  * You can use this controller either standalone by adding it to the container
  * components or make your custom controller class extend this controller class.
  *
- * Basically, to keep track of identity components, the
- * `shouldAdvertiseIdentity` option in `CommunicationOptions` and/or
- * `ControllerOptions` must be set to `true`. Note that this controller also
- * supports tracking the identities of the communication manager and the *other*
- * controllers inside its *own* agent container.
+ * Basically, to keep track of identities, the `shouldAdvertiseIdentity` option
+ * in `CommunicationOptions` and/or `ControllerOptions` must be set to `true`.
+ * Note that this controller also supports tracking the identities of the
+ * communication manager and the *other* controllers inside its *own* agent
+ * container.
  *
  * If you want to keep track of custom object types (not commmunication manager
  * or controller identities), you have to implement the remote side of the
@@ -77,8 +77,8 @@ export class ObjectLifecycleController extends Controller {
 
     /**
      * Observes advertisements, deadvertisments and initial discoveries of
-     * objects of the given core type. To track identity components of
-     * communication managers or controllers, use core type `Component`.
+     * objects of the given core type. To track identity objects of
+     * communication managers or controllers, use core type `Identity`.
      *
      * Specify an optional filter predicate to be applied to trackable objects.
      * If the predicate function returns `true`, the object is being tracked;
@@ -201,7 +201,7 @@ export class ObjectLifecycleController extends Controller {
         objectFilter?: (obj: CoatyObject) => boolean,
     ): Observable<ObjectLifecycleInfo> {
         if (!coreType && !objectType) {
-            coreType = "Component";
+            coreType = "Identity";
         }
         if (coreType && objectType) {
             throw new TypeError("Must not specify both coreType and objectType");

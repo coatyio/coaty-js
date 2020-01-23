@@ -8,7 +8,6 @@ import {
     ChannelEvent,
     CommunicationManager,
     CommunicationState,
-    Component,
     Components,
     Configuration,
     Container,
@@ -18,6 +17,7 @@ import {
     DiscoverEventData,
     DisplayType,
     filterOp,
+    Identity,
     ObjectLifecycleController,
     ObjectLifecycleInfo,
     RemoteCallErrorCode,
@@ -418,10 +418,10 @@ describe("Communication", () => {
                     .toBe(CommunicationEventType.Advertise);
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.coreType)
-                    .toBe("Component");
+                    .toBe("Identity");
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.objectType)
-                    .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
+                    .toBe(CoreTypes.OBJECT_TYPE_IDENTITY);
                 expect(Spy.get("MockObjectController1").value2
                     .calls.argsFor(0)[0].eventData.object.parentObjectId)
                     .toBe(container1.communicationManager.identity.objectId);
@@ -442,10 +442,10 @@ describe("Communication", () => {
                     .toBe(CommunicationEventType.Advertise);
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.coreType)
-                    .toBe("Component");
+                    .toBe("Identity");
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.objectType)
-                    .toBe(CoreTypes.OBJECT_TYPE_COMPONENT);
+                    .toBe(CoreTypes.OBJECT_TYPE_IDENTITY);
                 expect(Spy.get("MockObjectController2").value2
                     .calls.argsFor(0)[0].eventData.object.parentObjectId)
                     .toBe(container1.communicationManager.identity.objectId);
@@ -740,17 +740,17 @@ describe("Communication", () => {
                     ["controller", []],
                 ]);
 
-            lifecycleController.observeObjectLifecycleInfoByCoreType("Component")
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Identity")
                 .subscribe(info => {
                     lifecycleInfos.get("all").push(info);
                 });
 
-            lifecycleController.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "IntraCommunicationTestContainer")
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "IntraCommunicationTestContainer")
                 .subscribe(info => {
                     lifecycleInfos.get("container").push(info);
                 });
 
-            lifecycleController.observeObjectLifecycleInfoByCoreType("Component", obj => obj.name === "MockObjectController")
+            lifecycleController.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "MockObjectController")
                 .subscribe(info => {
                     lifecycleInfos.get("controller").push(info);
                 });
@@ -761,10 +761,10 @@ describe("Communication", () => {
                 expect(lifecycleInfos.get("all")[0].added).toContain(container.communicationManager.identity);
                 expect(lifecycleInfos.get("all")[1].added.length).toBe(1);
                 expect([deviceController.identity, objectController.identity])
-                    .toContain(lifecycleInfos.get("all")[1].added[0] as Component);
+                    .toContain(lifecycleInfos.get("all")[1].added[0] as Identity);
                 expect(lifecycleInfos.get("all")[2].added.length).toBe(1);
                 expect([deviceController.identity, objectController.identity])
-                    .toContain(lifecycleInfos.get("all")[2].added[0] as Component);
+                    .toContain(lifecycleInfos.get("all")[2].added[0] as Identity);
 
                 expect(lifecycleInfos.get("container").length).toBe(1);
                 expect(lifecycleInfos.get("container")[0].added.length).toBe(1);

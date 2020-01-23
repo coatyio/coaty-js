@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Component } from "..";
+import { Identity } from "..";
 
 import { IDisposable } from "./disposable";
 import { Runtime } from "./runtime";
@@ -21,5 +21,5 @@ export interface IComponent extends IDisposable {
      * When publishing a message, the identity object ID is used
      * as the source object ID in the communication topic.
      */
-    identity: Component;
+    identity: Identity;
 }

@@ -7,10 +7,10 @@ import { filter } from "rxjs/operators";
 import {
     CoatyObject,
     CommunicationOptions,
-    Component,
     CoreType,
     CoreTypes,
     Device,
+    Identity,
     IoActor,
     IoSource,
     Runtime,
@@ -51,9 +51,9 @@ export enum OperatingState {
 }
 
 /**
- * Manages a set of predefined communication events and event patterns to
- * query, distribute, and share Coaty objects across decantralized 
- * application components using publish-subscribe on top of MQTT messaging.
+ * Manages a set of predefined communication events and event patterns to query,
+ * distribute, and share Coaty objects across distributed Coaty agents using
+ * publish-subscribe on top of MQTT messaging.
  */
 export class CommunicationManager implements IComponent {
 
@@ -66,7 +66,7 @@ export class CommunicationManager implements IComponent {
 
     private _runtime: Runtime;
     private _options: CommunicationOptions;
-    private _identity: Component;
+    private _identity: Identity;
     private _client: Client;
     private _isClientConnected: boolean;
     private _associatedUser: User;
@@ -151,7 +151,7 @@ export class CommunicationManager implements IComponent {
     /**
      * Gets the identity meta object for this communication manager.
      */
-    get identity(): Component {
+    get identity(): Identity {
         if (!this._identity) {
             this._identity = this._createIdentity();
         }
@@ -536,8 +536,8 @@ export class CommunicationManager implements IComponent {
             this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType);
         }
 
-        // Ensure a Deadvertise event/last will is emitted for an advertised Component or Device.
-        if (coreType === "Component" || coreType === "Device") {
+        // Ensure a Deadvertise event/last will is emitted for an advertised Identity or Device.
+        if (coreType === "Identity" || coreType === "Device") {
             this._deadvertiseIds.find(id => id === event.eventData.object.objectId) ||
                 this._deadvertiseIds.push(event.eventData.object.objectId);
         }
@@ -653,10 +653,10 @@ export class CommunicationManager implements IComponent {
         this._useReadableTopics = !!this.options.useReadableTopics;
     }
 
-    private _createIdentity(): Component {
-        const defaultIdentity: Component = {
-            objectType: CoreTypes.OBJECT_TYPE_COMPONENT,
-            coreType: "Component",
+    private _createIdentity(): Identity {
+        const defaultIdentity: Identity = {
+            objectType: CoreTypes.OBJECT_TYPE_IDENTITY,
+            coreType: "Identity",
             objectId: this.runtime.newUuid(),
             name: "CommunicationManager",
         };
@@ -1179,7 +1179,7 @@ export class CommunicationManager implements IComponent {
         let isAdvertiseDevice = false;
         if (eventType === CommunicationEventType.Advertise) {
             const object = (eventData as AdvertiseEventData).object;
-            if (object.coreType === "Component") {
+            if (object.coreType === "Identity") {
                 shouldPublishDeferredFirst = true;
                 if (object.objectId === this.identity.objectId) {
                     isAdvertiseIdentity = true;
@@ -1574,7 +1574,7 @@ export class CommunicationManager implements IComponent {
             this._observeRequest(this.identity.objectId, CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
                     (event.eventData.isDiscoveringTypes &&
-                        event.eventData.isCoreTypeCompatible("Component")) ||
+                        event.eventData.isCoreTypeCompatible("Identity")) ||
                     (event.eventData.isDiscoveringObjectId &&
                         event.eventData.objectId === this.identity.objectId)))
                 .subscribe((event: DiscoverEvent) =>
