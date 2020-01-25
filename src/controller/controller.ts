@@ -1,11 +1,7 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Subscription } from "rxjs";
-import { filter } from "rxjs/operators";
-
 import {
     AdvertiseEvent,
-    CommunicationManager,
     Container,
     ControllerOptions,
     CoreTypes,
@@ -13,36 +9,20 @@ import {
     Log,
     LogHost,
     LogLevel,
-    ResolveEvent,
-    Runtime,
     toLocalIsoString,
 } from "..";
-import { IComponent } from "../runtime/component";
+import { IDisposable } from "../runtime/disposable";
 
 /**
- * Defines common members for all controller types.
+ * Defines lifecycle methods for controllers.
  */
-export interface IController extends IComponent {
-
-    /**
-     * Controller options
-     */
-    options: ControllerOptions;
-
-    /**
-     * The communication manager associated with this component.
-     */
-    communicationManager: CommunicationManager;
+export interface IController extends IDisposable {
 
     /** 
-     * Called when the controller instance is being instantiated.
+     * Called when the container has completely set up and injected all
+     * dependency components, including all its controllers.
      */
     onInit();
-
-    /**
-     * Called after all container components have been resolved.
-     */
-    onContainerResolved(container: Container);
 
     /**
      * Called when the Communication Manager is about to start.
@@ -62,21 +42,12 @@ export interface IController extends IComponent {
  * in the Coaty container.
  */
 export type IControllerStatic<T extends IController> =
-    new (runtime: Runtime, options: ControllerOptions, communicationManager: CommunicationManager, controllerName: string) => T;
+    new (container: Container, options: ControllerOptions, controllerName: string) => T;
 
 /**
  * The base controller class for object controllers and IO controllers. 
  */
 export abstract class Controller implements IController {
-
-    private _runtime: Runtime;
-    private _options: ControllerOptions;
-    private _controllerName: string;
-    private _identity: Identity;
-    private _communicationManager: CommunicationManager;
-    private _isCommonJsPlatform: boolean;
-    private _isWebPlatform: boolean;
-    private _discoverIdentitySubscription: Subscription;
 
     /**
      * @internal For internal use in framework only.
@@ -85,56 +56,55 @@ export abstract class Controller implements IController {
      * created automatically by dependency injection.
      */
     constructor(
-        runtime: Runtime,
-        options: ControllerOptions,
-        communicationManager: CommunicationManager,
-        controllerName: string) {
-
-        this._runtime = runtime;
-        this._options = options;
-        this._communicationManager = communicationManager;
-        this._controllerName = controllerName;
-        this._isCommonJsPlatform = runtime.isCommonJsPlatform;
-        this._isWebPlatform = runtime.isWebPlatform;
+        private _container: Container,
+        private _options: ControllerOptions,
+        private _controllerName: string) {
     }
 
     /**
-     * Gets the Runtime object of the Coaty container.
+     * Gets the container object of this controller.
+     */
+    get container() {
+        return this._container;
+    }
+
+    /**
+     * Gets the container's Runtime object.
      */
     get runtime() {
-        return this._runtime;
+        return this._container.runtime;
     }
 
     /**
-     * Gets the controller's options as specified in the container
-     * configuration.
+     * Gets the controller's options as specified in the configuration options.
      */
     get options() {
         return this._options;
     }
 
     /**
-     * Gets the identity of this controller.
+     * Gets the container's communication manager.
      */
-    get identity() {
-        if (!this._identity) {
-            this._identity = this._createIdentity();
-        }
-        return this._identity;
+    get communicationManager() {
+        return this.container.communicationManager;
     }
 
     /**
-     * Gets the communication manager of the Coaty container.
+     * Gets the registered name of this controller. 
+     *
+     * The registered name is either defined by the corresponding key in the
+     * `Components.controllers` object in the container configuration, or by
+     * invoking `Container.registerController` method with this name.
      */
-    get communicationManager() {
-        return this._communicationManager;
+    get registeredName() {
+        return this._controllerName;
     }
 
     /**
      * Advertise a Log object for debugging purposes.
      * 
      * @param message a debug message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logDebug(message: string, ...tags: string[]) {
         this._log(LogLevel.Debug, message, tags);
@@ -144,7 +114,7 @@ export abstract class Controller implements IController {
      * Advertise an informational Log object.
      * 
      * @param message an informational message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logInfo(message: string, ...tags: string[]) {
         this._log(LogLevel.Info, message, tags);
@@ -154,7 +124,7 @@ export abstract class Controller implements IController {
      * Advertise a Log object for a warning.
      * 
      * @param message a warning message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logWarning(message: string, ...tags: string[]) {
         this._log(LogLevel.Warning, message, tags);
@@ -165,7 +135,7 @@ export abstract class Controller implements IController {
      * 
      * @param error an error (object)
      * @param message additional error message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logError(error: any, message: string, ...tags: string[]) {
         const msg = `${message}: ${error}`;
@@ -177,7 +147,7 @@ export abstract class Controller implements IController {
      * 
      * @param error an error (object)
      * @param message additional error message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logErrorWithStacktrace(error: any, message: string, ...tags: string[]) {
         /* tslint:disable-next-line:max-line-length */
@@ -190,7 +160,7 @@ export abstract class Controller implements IController {
      * 
      * @param error an error (object)
      * @param message additional error message
-     * @param tags an array of log tags
+     * @param tags any number of log tags
      */
     logFatal(error: any, message: string, ...tags: string[]) {
         let msg = `${message}: ${error}`;
@@ -201,17 +171,14 @@ export abstract class Controller implements IController {
     }
 
     /** 
-     * Called when the controller instance has been instantiated.
-     * This method is called immediately after the base controller 
-     * constructor. The base implementation does nothing.
-     * 
-     * Use this method to perform initializations in your custom 
-     * controller class instead of defining a constructor.
-     * The method is called immediately after the controller instance
-     * has been created. Although the base implementation does nothing it is good
-     * practice to call super.onInit() in your override method; especially if your
-     * custom controller class extends from another custom controller class 
-     * and not from the base `Controller` class directly.
+     * Called when the container has completely set up and injected all
+     * dependency components, including all its controllers.
+     *
+     * Override this method to perform initializations in your custom controller
+     * class instead of defining a constructor. Although the base implementation
+     * does nothing it is good practice to call `super.onInit()` in your
+     * override method; especially if your custom controller class does not
+     * extend from the base `Controller` class directly.
      */
     onInit() {
         /* tslint:disable:no-empty */
@@ -219,51 +186,34 @@ export abstract class Controller implements IController {
     }
 
     /**
-     * Called by the Coaty container after it has resolved and created all
-     * controller instances within the container. Implement initialization side
-     * effects here. The base implementation does nothing.
-     * @param container the Coaty container of this controller
+     * Called when the communication manager is about to start or restart.
+     *
+     * Override this method to implement side effects here. Ensure that
+     * `super.onCommunicationManagerStarting` is called in your override. The
+     * base implementation does nothing.
      */
-    onContainerResolved(container: Container) {
+    onCommunicationManagerStarting() {
         /* tslint:disable:no-empty */
         /* tslint:enable:no-empty */
     }
 
     /**
-     * Called when the communication manager is about to start or restart.
-     *
-     * Implement side effects here. Ensure that
-     * super.onCommunicationManagerStarting is called in your override. The base
-     * implementation advertises its identity if requested by the controller
-     * option property `shouldAdvertiseIdentity` (if this property is not
-     * specified, the identity is advertised by default). The base
-     * implementation also observes Discover events for core type "Identity" or
-     * the identity's object ID and resolves them with the controller's
-     * identity.
-     */
-    onCommunicationManagerStarting() {
-        if (this.options.shouldAdvertiseIdentity === undefined ||
-            this.options.shouldAdvertiseIdentity === true) {
-            this._observeDiscoverIdentity();
-            this._advertiseIdentity();
-        }
-    }
-
-    /**
      * Called when the communication manager is about to stop.
      *
-     * Implement side effects here. Ensure that
-     * super.onCommunicationManagerStopping is called in your override. The base
-     * implementation stops observing Discover events for identity.
+     * Override this method to implement side effects here. Ensure that
+     * `super.onCommunicationManagerStopping` is called in your override. The
+     * base implementation does nothing.
      */
     onCommunicationManagerStopping() {
-        this._unobserveDiscoverIdentity();
+        /* tslint:disable:no-empty */
+        /* tslint:enable:no-empty */
     }
 
     /**
-     * Called by the Coaty container when this instance should be disposed.
-     * 
-     * Implement cleanup side effects here. The base implementation does nothing.
+     * Called by the container when this instance should be disposed.
+     *
+     * Implement cleanup side effects here. Ensure that `super.onDispose` is
+     * called in your override. The base implementation does nothing.
      */
     onDispose(): void {
         /* tslint:disable:no-empty */
@@ -294,57 +244,19 @@ export abstract class Controller implements IController {
 
     /**
      * Whenever one of the controller's log methods (e.g. `logDebug`, `logInfo`,
-     * `logWarning`, `logError`, `logFatal`) is called by application code,
-     * the controller creates a Log object with appropriate property values and 
-     * passes it to this method before advertising it. You can overwrite this method to 
-     * additionally set certain properties (such as LogHost.hostname) or to
-     * add custom property-value pairs to the Log object.
-     * 
-     * Do not call this method in your application code, it is called by the framework.
-     * You do not need to invoke `super` in the overwritten method; the base methods
-     * does nothing.
-     * 
+     * `logWarning`, `logError`, `logFatal`) is called by application code, the
+     * controller creates a Log object with appropriate property values and
+     * passes it to this method before advertising it.
+     *
+     * You can override this method to additionally set certain properties (such
+     * as `LogHost.hostname`). Ensure that `super.extendLogObject` is called in
+     * your override. The base method does nothing.
+     *
      * @param log log object to be extended before being advertised
      */
     protected extendLogObject(log: Log) {
         /* tslint:disable:empty-block */
         /* tslint:enable:empty-block */
-    }
-
-    private _observeDiscoverIdentity() {
-        this._discoverIdentitySubscription =
-            this.communicationManager.observeDiscover(this.identity)
-                .pipe(filter(event =>
-                    (event.eventData.isDiscoveringTypes &&
-                        event.eventData.isCoreTypeCompatible("Identity")) ||
-                    (event.eventData.isDiscoveringObjectId &&
-                        event.eventData.objectId === this.identity.objectId)))
-                .subscribe(event =>
-                    event.resolve(ResolveEvent.withObject(this.identity, this.identity)));
-    }
-
-    private _unobserveDiscoverIdentity() {
-        if (this._discoverIdentitySubscription) {
-            this._discoverIdentitySubscription.unsubscribe();
-            this._discoverIdentitySubscription = undefined;
-        }
-    }
-
-    private _advertiseIdentity() {
-        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
-    }
-
-    private _createIdentity(): Identity {
-        const identity: Identity = {
-            objectType: CoreTypes.OBJECT_TYPE_IDENTITY,
-            coreType: "Identity",
-            objectId: this.runtime.newUuid(),
-            name: this._controllerName,
-        };
-        this.initializeIdentity(identity);
-        Object.assign(identity, this.options.identity || {});
-        identity.parentObjectId = this.communicationManager.identity.objectId;
-        return identity;
     }
 
     private _log(logLevel: LogLevel, message: string, tags: string[]) {
@@ -356,17 +268,16 @@ export abstract class Controller implements IController {
         let hostInfo: LogHost;
         let pid;
         let userAgent;
-        if (this._isCommonJsPlatform) {
+        if (this.runtime.isCommonJsPlatform) {
             pid = process ? process.pid : undefined;
         }
-        if (this._isWebPlatform) {
+        if (this.runtime.isWebPlatform) {
             userAgent = navigator ? navigator.userAgent : undefined;
         }
         hostInfo = { agentInfo, pid, userAgent };
 
         const log: Log = {
             objectId: this.runtime.newUuid(),
-            parentObjectId: this.identity.objectId,
             objectType: CoreTypes.OBJECT_TYPE_LOG,
             coreType: "Log",
             name: `${this._controllerName}`,
@@ -379,7 +290,7 @@ export abstract class Controller implements IController {
 
         this.extendLogObject(log);
 
-        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, log));
+        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(log));
     }
 
 }

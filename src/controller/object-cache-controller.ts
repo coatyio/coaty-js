@@ -42,7 +42,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
 
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
-        this._advertiseSubscription && this._advertiseSubscription.unsubscribe();
+        this._advertiseSubscription?.unsubscribe();
     }
 
     /**
@@ -63,7 +63,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
         if (!resolve || shouldResolvePending) {
             // Create pending request for the given object ID.
             resolve = this.communicationManager
-                .publishDiscover(DiscoverEvent.withObjectId(this.identity, objectId))
+                .publishDiscover(DiscoverEvent.withObjectId(objectId))
                 .pipe(
                     map(event => event.eventData.object as T),
                     first(obj => obj &&
@@ -115,7 +115,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
 
     private _observeObjectAdvertisements() {
         return this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, this.coreType)
+            .observeAdvertiseWithCoreType(this.coreType)
             .pipe(filter(event => this._objectCache.has(event.eventData.object.objectId)))
             .subscribe(event => {
                 const obj = event.eventData.object as T;

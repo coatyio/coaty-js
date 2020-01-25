@@ -3,7 +3,7 @@
 import { BehaviorSubject, merge, Observable, Subject, Subscription } from "rxjs";
 import { concatMap, filter } from "rxjs/operators";
 
-import { Container, Uuid } from "..";
+import { Uuid } from "..";
 import { Observation, Sensor, Thing } from "./objects";
 import { SensorObserverController } from "./sensor-observer-controller";
 import { ThingObserverController } from "./thing-observer-controller";
@@ -35,10 +35,12 @@ export interface RegisteredSensorsChangeInfo {
 }
 
 /**
- * A convenience controller that observes things and associated sensor and observation objects, combining 
- * the functionality of `ThingObserverController` and `SensorObserverController`.
- * This controller is designed to be used by a client that wants to easily handle sensor-related events
- * as well as sensor  observations.
+ * A convenience controller that observes things and associated sensor and
+ * observation objects, combining the functionality of `ThingObserverController`
+ * and `SensorObserverController`.
+ *
+ * This controller is designed to be used by a client that wants to easily
+ * handle sensor-related events as well as sensor observations.
  */
 export class ThingSensorObservationObserverController extends ThingObserverController {
 
@@ -62,12 +64,8 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
             changed: [],
             total: [],
         });
-    }
-
-    onContainerResolved(container: Container) {
-        super.onContainerResolved(container);
-        this._sensorObserverController = container
-            .registerController("SensorObserverController_" + this.runtime.newUuid(), SensorObserverController, {});
+        this._sensorObserverController = this.container
+            .registerController("SensorObserverController_" + this.runtime.newUuid(), SensorObserverController);
         if (!this._sensorObserverController) {
             throw new Error(`SensorObserverController could not be registered.`);
         }
@@ -84,8 +82,8 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
         this._sensorSubscriptions.clear();
         this._observationSubscriptions.forEach(sub => sub.unsubscribe());
         this._observationSubscriptions.clear();
-        this._thingOnlineSubscription.unsubscribe();
-        this._thingOfflineSubscription.unsubscribe();
+        this._thingOnlineSubscription?.unsubscribe();
+        this._thingOfflineSubscription?.unsubscribe();
         this._registeredSensorsChangeInfo$.next({
             added: [],
             removed: Array.from(this._registeredSensors.values()),
@@ -96,7 +94,9 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
     }
 
     /**
-     * Gets an Observable emitting information about changes in the currently registered sensors.
+     * Gets an Observable emitting information about changes in the currently
+     * registered sensors.
+     *
      * Registered sensor objects are augmented by a property `thing` which
      * references the associated `Thing` object.
      */
@@ -112,12 +112,14 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
     }
 
     /**
-     * Sets a filter predicate that determines whether an observed thing is relevant 
-     * and should be registered with the controller. The filter predicate should 
-     * return `true` if the passed-in thing is relevant; `false` otherwise.
-     * 
+     * Sets a filter predicate that determines whether an observed thing is
+     * relevant and should be registered with the controller.
+     *
+     * The filter predicate should return `true` if the passed-in thing is
+     * relevant; `false` otherwise.
+     *
      * By default, all observed things are considered relevant.
-     * 
+     *
      * @param thingFilter a filter predicate for things
      */
     set thingFilter(thingFilter: (thing: Thing) => boolean) {
@@ -125,12 +127,15 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
     }
 
     /**
-     * Sets a filter predicate that determines whether an observed sensor is relevant 
-     * and should be registered with the controller. The filter predicate should 
-     * return `true` if the passed-in sensor is relevant; `false` otherwise.
-     * 
-     * By default, all observed sensors of all relevant things are considered relevant.
-     * 
+     * Sets a filter predicate that determines whether an observed sensor is
+     * relevant and should be registered with the controller.
+     *
+     * The filter predicate should return `true` if the passed-in sensor is
+     * relevant; `false` otherwise.
+     *
+     * By default, all observed sensors of all relevant things are considered
+     * relevant.
+     *
      * @param sensorFilter a filter predicate for sensors
      */
     set sensorFilter(sensorFilter: (sensor: Sensor, thing: Thing) => boolean) {
@@ -141,7 +146,7 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
         this._thingOnlineSubscription = merge(this.discoverThings(), this.observeAdvertisedThings())
             .subscribe(thing => this._onThingReceived(thing));
 
-        this._thingOfflineSubscription = this.communicationManager.observeDeadvertise(this.identity)
+        this._thingOfflineSubscription = this.communicationManager.observeDeadvertise()
             .subscribe(event => event.eventData.objectIds.forEach(id => this._onDeadvertised(id)));
     }
 

@@ -19,24 +19,20 @@ this guide.
 * [Framework structure](#framework-structure)
 * [Framework design](#framework-design)
   * [Define and configure container components](#define-and-configure-container-components)
-  * [Bootstrap a Coaty container in NodeJs](#bootstrap-a-coaty-container-in-nodejs)
+  * [Bootstrap a Coaty container in Node.js](#bootstrap-a-coaty-container-in-nodejs)
   * [Bootstrap a Coaty container in Angular or Ionic](#bootstrap-a-coaty-container-in-angular-or-ionic)
   * [Access Coaty container components](#access-coaty-container-components)
   * [Shut down a Coaty container](#shut-down-a-coaty-container)
   * [Define an agent-specific controller class](#define-an-agent-specific-controller-class)
     * [Register controllers at run time](#register-controllers-at-run-time)
     * [Controllerless Coaty containers](#controllerless-coaty-containers)
-  * [Convenience controllers](#convenience-controllers)
-    * [Connection State Controller](#connection-state-controller)
-    * [Object Lifecycle Controller](#object-lifecycle-controller)
-    * [Object Cache Controller](#object-cache-controller)
-    * [Historian Controller](#historian-controller)
 * [Object model](#object-model)
-  * [Define application-specific object types](#define-application-specific-object-types)
+  * [Define domain-specific object types](#define-domain-specific-object-types)
 * [Communication event patterns](#communication-event-patterns)
   * [Starting and stopping communication](#starting-and-stopping-communication)
   * [Publishing events](#publishing-events)
   * [Observing events](#observing-events)
+  * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
   * [Advertise event pattern - an example](#advertise-event-pattern---an-example)
   * [Deadvertise event pattern - an example](#deadvertise-event-pattern---an-example)
   * [Channel event pattern - an example](#channel-event-pattern---an-example)
@@ -45,7 +41,6 @@ this guide.
   * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
   * [Call - Return event pattern - an example](#call---return-event-pattern---an-example)
   * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
-  * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
   * [Distributed lifecycle management](#distributed-lifecycle-management)
 * [IO Routing](#io-routing)
   * [IO Routing communication event flow](#io-routing-communication-event-flow)
@@ -60,16 +55,21 @@ this guide.
   * [Use of database adapters](#use-of-database-adapters)
   * [Postgres adapter](#postgres-adapter)
   * [In-memory adapter](#in-memory-adapter)
-  * [SQLite NodeJs adapter](#sqlite-nodejs-adapter)
+  * [SQLite Node.js adapter](#sqlite-nodejs-adapter)
   * [SQLite Cordova adapter](#sqlite-cordova-adapter)
   * [Implement a custom database adapter](#implement-a-custom-database-adapter)
+* [Convenience controllers](#convenience-controllers)
+  * [Connection State Controller](#connection-state-controller)
+  * [Object Lifecycle Controller](#object-lifecycle-controller)
+  * [Object Cache Controller](#object-cache-controller)
+  * [Historian Controller](#historian-controller)
 * [Decentralized logging](#decentralized-logging)
 * [Utilities](#utilities)
   * [Asynchronous promise operations](#asynchronous-promise-operations)
   * [Binary search and insert](#binary-search-and-insert)
   * [Localized ISO date-time formatting](#localized-iso-date-time-formatting)
   * [Deep comparison checks](#deep-comparison-checks)
-* [NodeJS utilities](#nodejs-utilities)
+* [Node.js utilities](#nodejs-utilities)
 * [Multicast DNS discovery](#multicast-dns-discovery)
   * [Discover configuration URLs](#discover-configuration-urls)
   * [Discover broker or router](#discover-broker-or-router)
@@ -276,28 +276,29 @@ support to TypeScript tooling for things like type checking and code completion
 Coaty JS is realized as an inversion of control (IOC) framework with a component
 design that supports dependency injection (DI) and lifecycle management (LM):
 
-* **Container**: An IoC container that defines the entry and exit
-  points for any Coaty agent project. It provides lifecycle
-  management for container components by realizing a register-resolve-release pattern.
-  The container is responsible for composing the graph of components
-  using constructor dependency injection.
+* **Container**: An IoC container that defines the entry and exit points for any
+  Coaty agent. It provides lifecycle management for container components by
+  realizing a register-resolve-release pattern. The container is responsible for
+  composing the graph of components using constructor dependency injection.
 
 * **Controller**: A container component that encapsulates business communication
   logic. A controller publishes and observes communication events, provides
   observable state to the agent project (e.g. views), supports lifecycle
   management, etc. A Coaty container can contain any number of controllers which
-  are specified declaratively.
+  can be specified either declaratively or programmatically.
 
-* **Communication Manager**: Each container contains exactly one instance
-  of the `CommunicationManager` class that provides publish-subscribe for communication event
-  patterns to exchange typed object data by an underlying messaging protocol.
+* **Communication Manager**: Each container contains exactly one instance of the
+  `CommunicationManager` class that provides publish-subscribe for communication
+  event patterns to exchange typed object data by an underlying messaging
+  protocol.
 
-* **Configuration**: A `Configuration` object that defines configuration options for the
-  defined controllers as well as common, communication, and database related options.
+* **Configuration**: A `Configuration` object that defines configuration options
+  for the declared controllers as well as common, communication, and database
+  related options.
 
-* **Runtime**: Each container contains exactly one instance
-  of the `Runtime` class that provides access to container’s runtime data,
-  including configuration options, as well as platform and framework meta information.
+* **Runtime**: Each container contains exactly one instance of the `Runtime`
+  class that provides access to container’s runtime data, including
+  configuration options, as well as platform and framework meta information.
 
 A Coaty agent project should interact with its Coaty container as follows:
 
@@ -308,10 +309,10 @@ A Coaty agent project should interact with its Coaty container as follows:
 
 ### Define and configure container components
 
-By default, each Coaty container contains a Communication Manager, a Runtime, and
-a Configuration object. Application-specific controllers are classes derived from the base
-`Controller` class provided by the framework. They are declared as part of a container
-by the `Components` interface object.
+By default, each Coaty container contains a Communication Manager, a Runtime,
+and a Configuration object. Application-specific controllers are classes derived
+from the base `Controller` class provided by the framework. They are declared as
+part of a container by the `Components` interface object.
 
 ```ts
 import { Components } from "@coaty/core";
@@ -335,37 +336,30 @@ import { Configuration } from "@coaty/core";
 
 const configuration: Configuration = {
     common: {
-         // Common options shared by all container components
+         // Common options shared among all container components
+         agentIdentity: ... ,
+         agentInfo: ... ,
          associatedUser: ... ,
          associatedDevice: ... ,
-         agentInfo: ... ,
-         ...
+         extra: { ... },
     },
     communication: {
           // Options used for communication
-          identity: ... ,
           brokerUrl: ... ,
           mqttClientOptions: ... ,
           shouldAutoStart: ... ,
-          shouldAdvertiseIdentity: ... ,
           shouldAdvertiseDevice: ... ,
           useReadableTopics: ... ,
     },
     controllers: {
         // Controller-specific configuration options
         ProductionOrderController: {
-            identity: ... ,
-            shouldAdvertiseIdentity: false,
             ...
         },
         SupportTaskController: {
-            identity: ... ,
-            shouldAdvertiseIdentity: true,
             ...
         },
         WorkflowController: {
-            identity: ... ,
-            shouldAdvertiseIdentity: true,
             ...
         },
     },
@@ -385,19 +379,16 @@ const configuration: Configuration = {
 };
 ```
 
-Note that both controllers and the Communication Manager maintain an `identity`
-object of type `Identity` that provides metadata of the component, including its
-`name`, a unique object ID, etc. By default, these identity objects are
-advertised when the components are set up and deadvertised on normal or abnormal
-termination of a Coaty agent. The communication managers's identity is also
-discoverable (by publishing a Discover event with core type "Identity") if and
-only if the identity has been advertised.
+A container maintains an object of type `Identity` that provides metadata of the
+agent, including its `name`, a unique object ID, etc. This object can be
+initialized in common options by the `agentInfo` property. A Coaty agent keeps
+track of other agents in a Coaty network by monitoring agent identities. For
+details, see this [section](#distributed-lifecycle-management).
 
-Using the controller and/or communication options, you can opt out
-of de/advertisement by setting `shouldAdvertiseIdentity` to `false`.
-For details, see this [section](#distributed-lifecycle-management).
+> **Tip**: The `common.extra` property can be used to inject arbitrary service
+> instances to be shared among controllers.
 
-### Bootstrap a Coaty container in NodeJs
+### Bootstrap a Coaty container in Node.js
 
 In a Node.js environment you can bootstrap a Coaty container synchronously
 on startup by registering and resolving the declared container components:
@@ -433,9 +424,9 @@ Container
 
 Note that the Communication Manager can be started automatically after all
 container components have been resolved. To do this, set the configuration
-setting `shouldAutoStart` to `true` in the communication options.
-Otherwise, you have to start the Communication Manager
-explicitely by invoking its `start` method.
+setting `shouldAutoStart` to `true` in the communication options (opt-in).
+Otherwise, you have to start the Communication Manager explicitely by invoking
+its `start` method.
 
 ### Bootstrap a Coaty container in Angular or Ionic
 
@@ -604,10 +595,11 @@ npm install @angular-builders/dev-server --save-dev
 
 ### Access Coaty container components
 
-You can access the components within a container directly using one of
-these container accessors/methods:
+You can access the components or identity of a container directly using one of
+these accessors/methods:
 
 ```ts
+container.identity
 container.runtime
 container.communicationManager
 container.getController(controllerName)
@@ -640,8 +632,8 @@ terminates abnormally or when the `shutdown` method is not used by your app.
 
 ### Define an agent-specific controller class
 
-Agent-specific controller classes realize custom business logic of a
-Coaty agent. A controller
+Agent-specific controller classes realize custom business communication logic of
+a Coaty agent. A controller
 
 * exchanges object data with other agent controllers by publishing
   and observing communication events.
@@ -655,6 +647,10 @@ To combine or aggregate the functionalities of multiple controllers, use
 a separate service class in your agent project (e.g. an injectable service
 in Angular) or define a superordinate controller that references the
 other controllers (see use of delegation design pattern in the next section).
+
+> Note that the Coaty framework provides some ready-to-use convenience
+> controller classes that you can reuse in your agent project. For details, see
+> this [section](#convenience-controllers).
 
 The following template shows how to set up the basic structure of a custom
 controller class:
@@ -687,11 +683,11 @@ export class SupportTaskController extends Controller {
         super.onCommunicationManagerStopping();
 
         // Clean up subscriptions for incoming events here
-        this._advertiseTaskSubscription && this._advertiseTaskSubscription.unsubscribe();
+        this._advertiseTaskSubscription?.unsubscribe();
     }
 
     private _observeAdvertiseTask() {
-        return this.communicationManager.observeAdvertiseWithObjectType(this.identity, "com.helloworld.SupportTask")
+        return this.communicationManager.observeAdvertiseWithObjectType("com.helloworld.SupportTask")
             .pipe(map(event => event.eventData.object as SupportTask))
             .subscribe(task => {
                 // Do something whenever a support task object is advertised
@@ -700,27 +696,22 @@ export class SupportTaskController extends Controller {
 }
 ```
 
-Note that it is not safe to query a controller in the constructor of your
-custom controller because the requested controller might not have been created
-yet. Instead, you should access and cache other controllers in your custom
-controller class by defining a `onContainerResolved` lifecycle method:
+You can define the `onInit` lifecycle method in your custom controller class to
+perform side effects when the container's components have been set up
+completely. Although the base implementation does nothing you should ensure
+calling `super.onInit()` in your override method; especially if your custom
+controller class extends from another custom controller class and not from the
+base `Controller` class directly.
+
+In your `onInit` override, you can also access other container components. For
+example, access another controller like this:
 
 ```ts
-onContainerResolved(container: Container) {
-    // Access and cache another controller
-    this._tasksController = container.getController("TasksController");
+onInit() {
+    // Cache another controller to be used later.
+    this._tasksController = this.container.getController<TasksController>("TasksController");
 }
 ```
-
-You can define the `onInit` lifecycle method in your custom controller class to
-perform side effects when the controller instance has been instantiated
-(instead of defining a constructor):
-
-The `onInit` method is called immediately after the controller instance
-has been created. Although the base implementation does nothing it is good
-practice to call super.onInit() in your override method; especially if your
-custom controller class extends from another custom controller class
-and not from the base `Controller` class directly.
 
 You can override the following lifecycle methods in your custom controller class
 to perform side effects when the operating state of the Communication Manager
@@ -744,31 +735,30 @@ A controller can also be dynamically registered and resolved at run time:
 const myCustomCtrl = container.registerController(
     "MyCustomController",
     MyCustomController,
-    {
-        "MyCustomController": { <controller configuration options> }
-    });
+    { <controller configuration options> });
 ```
 
 If your custom controller needs to access functionality of other controllers, two
 different design patterns can be used:
 
-1. Inheritance: Extend your controller class from a base controller class.
+1. Inheritance: Extend your controller class from another controller class.
 2. Delegation: provide instance member(s) that refer to the dependent controller(s).
 
 By using the delegation pattern, your custom controller instance should set up
-the references to dependent controllers in the `onContainerResolved` lifecycle
-method as explained in the previous section. In this method, you can also
-dynamically create and register a dependent controller that has not been
-configured in the container configuration by using `container.registerController`.
+the references to dependent controllers in the `onInit` lifecycle method as
+explained in the previous section. Here, you can also dynamically create and
+register a dependent controller that has not been configured in the container
+configuration by using `Container.registerController`.
 
-> Note that the delegation design pattern supports exchanging communication events
-> between your custom controller and its dependent controllers.
+> Note that the delegation design pattern supports exchanging communication
+> events between your custom controller and its dependent controllers. This is
+> not possible with the inheritance pattern.
 
 #### Controllerless Coaty containers
 
 Although not recommended, you can run a Coaty container without any controllers.
 This is useful if your application is designed in such a way that communication
-functionality must be directly embedded into the business logic.
+functionality must be directly embedded into your existing business logic.
 
 In this case, access the container's communication manager directly to publish
 and observe communication events. A minimal Coaty container without controllers
@@ -783,384 +773,60 @@ container.communicationManager.observeAdvertiseWithObjectType(...)
 ...
 ```
 
-### Convenience controllers
-
-Besides the base `Controller` class, the framework also provides
-some convenience controller classes that you can reuse in your
-agent project.
-
-#### Connection State Controller
-
-The `ConnectionStateController` class monitors the connection state (online or offline)
-of the associated communication manager.
-
-Use its  `isOffline` getter to get a boolean observable that emits `true` if the
-connection state of the associated communication manager transitions to offline, and
-`false` if it transitions to online. When subscribed, the current connection state is
-emitted immediately.
-
-#### Object Lifecycle Controller
-
-The `ObjectLifecycleController` class supports [distributed lifecycle
-management](#distributed-lifecycle-management). It keeps track of specific
-agents/objects in a Coaty network by monitoring the identity of
-communication managers, controllers or custom object types. The controller
-observes advertisements and deadvertisements of such objects and initially
-discovers them. Changes are emitted on an observable that applications can
-subscribe to.
-
-You can use this controller standalone by adding it to the container components
-or make your custom controller class extend this controller class.
-
-Basically, to keep track of an agent's identity, the `shouldAdvertiseIdentity`
-option in `CommunicationOptions` and/or `ControllerOptions` must be set to
-`true`. Note that this controller also supports tracking the identities of the
-communication manager and the *other* controllers inside its *own* agent
-container.
-
-The following example shows how to keep track of agents whose identity is
-named `"LightAgent"`.
-
-This approach requires the lifecycle controller to be added to the container
-components under the name `ObjectLifecycleController`:
-
-```ts
-import { Subscription } from "rxjs";
-import { Components, Container, Controller, ObjectLifecycleController } from "@coaty/core";
-
-const components: Components = {
-    controllers: {
-        ObjectLifecycleController,
-        ...
-    }
-};
-
-class MyController extends Controller {
-
-    private _lifecycleController: ObjectLifecycleController;
-    private _lifecycleSubscription: Subscription;
-
-    onContainerResolved(container: Container) {
-        this._lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
-    }
-
-    onCommunicationManagerStarting() {
-        super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this._lifecycleController
-            .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
-            .subscribe(info => {
-                // Called whenever light agents have been observed.
-                console.log(info.added);     // newly advertised or discovered identities
-                console.log(info.changed);   // readvertised or rediscovered identities
-                console.log(info.removed);   // deadvertised identities
-            });
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        if (this._lifecycleSubscription) {
-            // Stop observing lifecycle info of light agents.
-            this._lifecycleSubscription.unsubscribe();
-        }
-    }
-}
-```
-
-This approach assumes your custom controller class inherits from the lifecycle
-controller class:
-
-```ts
-import { Subscription } from "rxjs";
-import { ObjectLifecycleController } from "@coaty/core";
-
-class MyController extends ObjectLifecycleController {
-
-    private _lifecycleSubscription: Subscription;
-
-    onCommunicationManagerStarting() {
-        super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
-            .subscribe(info => {
-                // Called whenever light agents have been observed.
-                console.log(info.added);     // newly advertised or discovered identities
-                console.log(info.changed);   // readvertised or rediscovered identities
-                console.log(info.removed);   // deadvertised identities
-            });
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        if (this._lifecycleSubscription) {
-            // Stop observing lifecycle info of light agents.
-            this._lifecycleSubscription.unsubscribe();
-        }
-    }
-}
-```
-
-To keep track of agent identities, the code shown above is sufficient. However,
-if you want to additionally keep track of *custom Coaty object types*, you have
-to implement the remote side of the distributed object lifecycle management,
-i.e. advertise/readvertise/deadvertise your custom objects and observe/resolve
-corresponding Discover events explicitely. To facilitate this, the
-`ObjectLifecycleController` provides these convenience methods:
-`advertiseDiscoverableObject`, `readvertiseDiscoverableObject`, and
-`deadvertiseDiscoverableObject`.
-
-Usually, a custom object should have the identity UUID of its agent's
-communication manager set as its `parentObjectId` to be automatically
-deadvertised when the agent terminates abnormally. You can automate this by
-passing `true` to the optional parameter `shouldSetParentObjectId` of method
-`advertiseDiscoverableObject` (`true` is also the default parameter value).
-
-The following example shows how to keep track of a custom Coaty object.
-
-The first controller is responsible for advertising the custom object, and for
-making it discoverable. Note that when the communication manager is stopped the
-custom object is automatically deadvertised.
-
-```ts
-import { Subscription } from "rxjs";
-import { ObjectLifecycleController } from "@coaty/core";
-
-class CustomObjectAdvertisingController extends ObjectLifecycleController {
-
-    myCustomObject: CoatyObject;
-
-    private _myCustomObjectLifecycleSubscription: Subscription;
-
-    onInit() {
-        this.myCustomObject = {
-            objectType: "com.example.MyCustomObject",
-            coreType: "CoatyObject",
-            name: "MyCustomObject",
-            objectId: this.runtime.newUuid()
-        };
-    }
-
-    onCommunicationManagerStarting() {
-        super.onCommunicationManagerStarting();
-        this._myCustomObjectLifecycleSubscription = this.advertiseDiscoverableObject(this.myCustomObject);
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        if (_myCustomObjectLifecycleSubscription) {
-            // Stop observing/resolving Discover events for the custom object that has
-            // been set up in advertiseDiscoverableObject.
-            _myCustomObjectLifecycleSubscription.unsubscribe();
-        }
-    }
-}
-```
-
-The second controller keeps track of custom objects as advertised/discoverable
-by the first controller:
-
-```ts
-
-class CustomObjectTrackingController extends ObjectLifecycleController {
-
-    private _lifecycleSubscription: Subscription;
-
-    onCommunicationManagerStarting() {
-        super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
-            .subscribe(info => {
-                // Called whenever custom lifecycle objects of type "com.example.MyCustomObject" have changed.
-                console.log(info.added);     // newly advertised or discovered objects
-                console.log(info.changed);   // readvertised or rediscovered objects
-                console.log(info.removed);   // deadvertised objects
-            });
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        if (this._lifecycleSubscription) {
-            // Stop observing lifecycle info for custom objects of type "com.example.MyCustomObject".
-            this._lifecycleSubscription.unsubscribe();
-        }
-    }
-}
-```
-
-#### Object Cache Controller
-
-The `ObjectCacheController` class discovers objects by given object Ids
-and maintains a local cache of resolved objects. The controller will also
-update existing objects in its cache whenever such objects are advertised
-by other parties.
-
-To realize an object cache controller for a specific core types or for specific
-objects, define a custom controller class that extends the abstract
-`ObjectCacheController` class and set the core type and/or the filter predicate
-of objects to be cached in the `OnInit` method.
-
-```ts
-import { ObjectCacheController } from "@coaty/core";
-import { FactoryUser } from "../models/factory-user";
-
-export class UserCacheController extends ObjectCacheController<FactoryUser> {
-
-    onInit() {
-        super.onInit();
-
-        // Specify the object's core type that should be cached.
-        this.coreType = "User";
-
-        // Only resolve factory users that are present
-        this.objectFilter = (obj: FactoryUser) => obj.isPresent;
-    }
-}
-```
-
-Resolve an object with a given objectId by your custom cache controller
-as follows:
-
-```ts
-this.userCacheController.resolveObject(objectId)
-    .subscribe(
-        obj => {
-            // Emits the first object of the observable, then completes
-        },
-        error => { ... });
-```
-
-#### Historian Controller
-
-The `HistorianController` class is a generic controller which can be used
-on each Coaty agent to create and/or persist snapshots in time of arbitrary Coaty
-objects.
-
-A snapshot represents a deep copy of the object and its state, a timestamp, a creator ID,
-and an optional array of associated tags. The tags can be used on retrieval of snapshots
-to identify different purposes.
-
-A snapshot is created by the `generateSnapshot(object, ...tags)` or
-`generateSnapshot(object, timestamp, ...tags)` method.
-Driven by specific controller options, you can decide to
-
-* advertise each generated snapshot (`shouldAdvertiseSnapshots`)
-* persist each generated snapshot in a database collection (`shouldPersistLocalSnapshots`)
-* persist each observed snapshot advertised by another Historian controller (`shouldPersistObservedSnapshots`)
-* execute matching Query events for snapshot objects on the database and retrieve results (`shouldReplyToQueries`)
-
-The `HistorianController` provides a convenience method to query snapshots using the
-Query event pattern:
-
-* `querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]>`
-
-The `HistorianController` also provides convenience methods to retrieve snapshots
-from a database collection:
-
-* `findSnapshotsByParentId(parentObjectId: Uuid, startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
-* `findSnapshotsByTimeFrame(startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
-* `findSnapshotsByFilter(filter: ObjectFilter): Promise<Snapshot[]>`
-
-You can set up a `HistorianController` in the Coaty container components and configuration
-as follows:
-
-```ts
-import { Components, Configuration } from "@coaty/core";
-import { HistorianController } from "@coaty/core/db";
-
-export const components: Components = {
-    controllers: {
-        ...,
-        HistorianController,
-    }
-};
-
-export const configuration: Configuration = {
-        ...
-        controllers: {
-            ...,
-            HistorianController: {
-                shouldAdvertiseSnapshots: false,
-                shouldPersistLocalSnapshots: true,
-                shouldPersistObservedSnapshots: false,
-                shouldReplyToQueries: true,
-                database: {
-                    key: "db",
-                    collection: "historian"
-                }
-            }
-        },
-        databases: {
-            db: {
-                adapter: "PostgresAdapter",
-                connectionString: "..."
-            },
-            admindb: {
-                adapter: "PostgresAdapter",
-                connectionString: "..."
-            }
-        }
-    };
-```
-
-The `database` controller option has two properties `key` and `collection`; `key` references the
-database key as defined in the `databases` option of your configuration; `collection` is the name
-of the collection to be used. If the collection doesn't exist, it will be created in the given
-database.
-
-To see an example of the `HistorianController` in action, take a look at the
-[Hello World
-example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js).
-
 ## Object model
 
-The Coaty framework provides a predefined hierarchy of core object types
-that are used by Coaty agents to exchange typed data with communication
-patterns. The core object type hierarchy is defined in the `coaty/model` module
-and looks as follows:
+The Coaty framework provides an opinionated set of core object types to be used
+or extended by Coaty applications. These Coaty objects are the subject of
+communication between Coaty agents. The core object type hierarchy is defined in
+the `@coaty/core` module and looks as follows:
 
 ```
 CoatyObject
   |
-  |-- User
-  |-- Device
-  |-- Identity
   |-- Annotation
-  |-- Task
+  |-- Identity
+  |-- IoSource
+  |-- IoActor
   |-- Location
   |-- Log
   |-- Snapshot
-  |
-  |-- IoSource
-  |-- IoActor
+  |-- Task
+  |-- User
 ```
 
-> Note: Besides these core types, the framework also provides some object types to manage sensor data.
-> These object types are defined in the `coaty/sensor-things` module and explained in detail in the
-> guide on [OGC SensorThings API integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
+> Note: Besides these core types, the framework also provides dedicated object
+> types to manage sensor data. These object types are defined in the
+> `@coaty/sensor-things` module and explained in detail in the guide on [OGC
+> SensorThings API
+> integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/).
 
 Coaty objects are characterized as follows:
 
 * Object types are represented as statically typed TypeScript interfaces of
-  property - value-type definitions. Coaty applications can define custom object types
-  that derive from one of the predefined object types supplied by the framework.
+  property - value-type definitions. Coaty applications can define custom object
+  types that derive from one of the core types supplied by the framework.
 
-* Objects solely represent attribute - value pairs that model state but no behavior.
+* Objects solely represent attribute - value pairs that model state but no
+  behavior.
 
-* Objects are JSON compatible (JavaScript Object Notation) to support cross-component and
-  cross-platform serialization.
+* Objects are JSON compatible (JavaScript Object Notation) to support
+  cross-component and cross-platform serialization.
 
-* Objects can be persisted schemalessly in NoSQL and
-  SQL data stores using the Unified Storage API of the framework.
+* Objects can be persisted schemalessly in NoSQL and SQL data stores using the
+  Unified Storage API of the framework.
 
-* Objects can be used by and transfered across all system components, including devices,
-  frontend apps, services, and even databases. There is no need to define
-  separate DTOs (Data Transfer Objects) for communication.
+* Objects can be used by and transfered across all Coaty system components,
+  including devices, frontend apps, services, and even databases. There is no
+  need to define separate DTOs (Data Transfer Objects) for communication.
 
 * Objects are schema-validated by the framework according to their TypeScript
-  interface definitions. Schema validation ensures that all specified
-  property - value pairs of an object that is distributed across system components
-  conform to the object type's shape. Schema validation comprises all properties
-  of the core types defined by the framework. It is allowed to dynamically
-  add additional properties to a core object at runtime. However, these
-  properties are **not** validated. Likewise, additional properties of object types
-  derived from a core type are **not** validated.
+  interface definitions. Schema validation ensures that all specified property -
+  value pairs of an object that is distributed across system components conform
+  to the object type's shape. Schema validation comprises all properties of the
+  core types defined by the framework. It is allowed to dynamically add
+  additional properties to a core object at runtime. However, these properties
+  are **not** validated. Likewise, additional properties of object types derived
+  from a core type are **not** validated.
 
 To enable the distributed system architecture to uniquely identify an object
 without central coordination, each object has an object ID as a Version 4 UUID.
@@ -1229,7 +895,7 @@ Application specific object types can be defined based on the predefined core ob
 types by adding additional property-value pairs. Allowed value types must conform to
 JSON data types.
 
-### Define application-specific object types
+### Define domain-specific object types
 
 Simply extend one of the predefined object types of the framework and specify
 a canonical object type name for the new object:
@@ -1281,8 +947,9 @@ const task: HelloWorldTask = {
 ## Communication event patterns
 
 By default, each Coaty container has a *Communication Manager* component that is
-registered implicitely with the container. It provides a complete set of predefined
-communication event patterns to exchange object data in a decentralized Coaty application:
+registered implicitely with the container. It provides a complete set of
+predefined communication event patterns to exchange object data in a
+decentralized Coaty application:
 
 * **Advertise** an object: broadcast an object to parties interested in objects of a
   specific core or object type.
@@ -1353,7 +1020,7 @@ periodically whenever the broker connection is lost.
 
 Use the `CommunicationManager.restart` method to reconnect to a (maybe different)
 broker. This is useful if you want to switch connection from one broker to another
-or after the runtime user/device association has changed.
+or after the container configuration has changed.
 
 Use the `CommunicationManager.stop` method to disconnect from the broker.
 Afterwards, events are no longer dispatched and emitted. You can start the
@@ -1418,13 +1085,9 @@ emit all the Retrieve events which are direct responses to the published request
 Use `publishCall` to send Call events. The observable returned will
 emit all the Return events which are direct responses to the published request.
 
-Note that when publishing an event, an event source object (of type
-`CoatyObject`) must be specfied that uniquely identifies the source component,
-i.e. the Coaty controller. Likewise, when observing events, an event target
-object (of type `CoatyObject`) must be specified that uniquely identifies the
-target component. To suppress echo events, a component that acts both as an
-event source and as an event target for the same event type will *never* receive
-the published event on its associated observable.
+> Note that by design, there is no echo suppression of communication events. The
+> communication manager dispatches any incoming event to every controller that
+> *observes* it, even if the controller published this event itself.
 
 > Note that all publish methods for request-response event patterns, i.e.
 > `publishDiscover`, `publishUpdate`, `publishQuery`, and `publishCall` publish
@@ -1505,7 +1168,28 @@ event object to send a response event.
 > design and context such a communication pattern might return no responses at all
 > or not within a certain time interval. In your agent project, you should handle these
 > cases by chaining a timeout handler to the observable returned by the observe
-> method (see code examples below in the next sections).
+> method (see code examples in the next sections).
+
+### Deferred publication and subscription of events
+
+Execution of the above publish and observe methods will be automatically
+deferred, if the Communication Manager is either stopped or started but offline,
+i.e. not connected currently.
+
+All your *subscriptions* issued while the Communication Manager is stopped or
+offline will be (re)applied when it (re)connects again. *Publications* issued
+while the Communication Manager is stopped or offline will be applied only after
+the next (re)connect. Publications issued in online state will *not* be
+deferred, i.e. not reapplied after a reconnect.
+
+If you stop the Communication Manager by executing its `stop` method, all
+deferred publications and subscriptions will be discarded.
+
+> In your controller classes we recommend to subscribe to observe methods when
+> the Communication Manager is (re)starting and unsubscribe from observe methods
+> when the Communication Manager is stopping. Use the controller lifecycle
+> methods `onCommunicationManagerStarted` and `onCommunicationManagerStopped` to
+> implement this subscription pattern.
 
 ### Advertise event pattern - an example
 
@@ -1518,12 +1202,12 @@ import { filter, map } from "rxjs/operators";
 
 // Publish an Advertise event for a Task object
 this.communicationManager
-    .publishAdvertise(AdvertiseEvent.withObject(this.identity, task)));
+    .publishAdvertise(AdvertiseEvent.withObject(task)));
 
 
 // Observe Advertise events on all objects of core type "Task"
 this.communicationManager
-    .observeAdvertiseWithCoreType(this.identity, "Task")
+    .observeAdvertiseWithCoreType("Task")
     .pipe(
         map(event => event.eventData.object as Task),
         filter(task => task.status === TaskStatus.Request)
@@ -1534,7 +1218,7 @@ this.communicationManager
 
 // Observe Advertise events on objects of object type "com.helloworld.Task"
 this.communicationManager
-    .observeAdvertiseWithObjectType(this.identity, "com.helloworld.Task")
+    .observeAdvertiseWithObjectType("com.helloworld.Task")
     .pipe(
         map(event => event.eventData.object as HelloWorldTask),
         filter(task => task.status === TaskStatus.Request)
@@ -1561,11 +1245,11 @@ const object: CoatyObject = {
 
 // Publish a Deadvertise event
 this.communicationManager
-    .publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, object.objectId));
+    .publishDeadvertise(DeadvertiseEvent.withObjectIds(object.objectId));
 
 // Observe Deadvertise events
 this.communicationManager
-    .observeDeadvertise(this.identity)
+    .observeDeadvertise()
     .pipe(map(event => event.eventData.objectIds))
     .subscribe(objectIds => {
         // Handle object IDs of deadvertised objects which have been advertised previously
@@ -1619,7 +1303,7 @@ const thing: Thing = {
 thing.parentObjectId = this.communicationManager.identity.objectId;
 // Publish an Advertise event for Thing object
 this.communicationManager
-    .publishAdvertise(AdvertiseEvent.withObject(this.identity, thing)));
+    .publishAdvertise(AdvertiseEvent.withObject(thing)));
 ```
 
 An agent can observe the sensor device connection state as follows:
@@ -1630,7 +1314,7 @@ import { SensorThingsTypes, Thing } from "@coaty/core/sensor-things";
 
 // Observe Advertise events on Thing objects
 this.communicationManager
-    .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING)
+    .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_THING)
     .pipe(map(event => event.eventData.object as Thing))
     .subscribe(thing => {
          // Store thing for later use
@@ -1639,7 +1323,7 @@ this.communicationManager
 
 // Observe Deadvertise events
 this.communicationManager
-    .observeDeadvertise(this.identity)
+    .observeDeadvertise()
     .pipe(map(event => event.eventData.objectIds))
     .subscribe(objectIds => {
         const offlineThings = this.onlineThings.filter(t => objectIds.some(id => id === t.parentObjectId));
@@ -1663,12 +1347,12 @@ const myObject = <any coaty object>;
 
 // Publish a Channel event
 this.communicationManager
-    .publishChannel(ChannelEvent.withObject(this.identity, channelId, myObject));
+    .publishChannel(ChannelEvent.withObject(channelId, myObject));
 
 
 // Observe Channel events for the given channel ID
 this.communicationManager
-    .observeChannel(this.identity, channelId)
+    .observeChannel(channelId)
     .pipe(filter(event => event.eventData.object))
     .subscribe(obj => {
          // Handle object emitted by channel event
@@ -1691,7 +1375,7 @@ const externalId = "42424242";
 
 // Publish a Discover event and observe first Resolve event response
 this.communicationManager
-    .publishDiscover(DiscoverEvent.withExternalId(this.identity, externalId))
+    .publishDiscover(DiscoverEvent.withExternalId(externalId))
     .pipe(
         first(),
         map(event => event.eventData.object),
@@ -1707,7 +1391,7 @@ this.communicationManager
         });
 
 // Observe Discover events and respond with a Resolve event
-this.communicationManager.observeDiscover(this.identity)
+this.communicationManager.observeDiscover()
     .pipe(filter(event => event.eventData.isDiscoveringExternalId))
     .subscribe(event => {
          // Agent-specific lookup of an object with given external ID.
@@ -1715,7 +1399,7 @@ this.communicationManager.observeDiscover(this.identity)
          // match in a collection of objects.
          const object = findObjectWithExternalId(event.eventData.externalId);
          // Respond with found object in Resolve event
-         event.resolve(ResolveEvent.withObject(this.identity, object));
+         event.resolve(ResolveEvent.withObject(object));
     });
 ```
 
@@ -1737,23 +1421,23 @@ state. The agent that advertises object state should observe these Discover
 events and resolve the current object state.
 
 The `ObjectCacheController` class applies this principle to look up and cache
-objects with certain object IDs. In your own code, you can easily implement
-this principle by *merging* the two observables returned by publishing a
-Discover event and by observing an Advertise event as follows:
+objects with certain object IDs. In your own code, you can easily implement this
+principle by *merging* the two observables emitting Resolve events and Advertise
+events as follows:
 
 ```ts
 import { merge } from "rxjs";
 import { filter, map } from "rxjs/operators";
 
 const discoveredTasks = this.communicationManager
-    .publishDiscover(DiscoverEvent.withObjectTypes(this.identity, ["com.helloworld.Task"]))
+    .publishDiscover(DiscoverEvent.withObjectTypes(["com.helloworld.Task"]))
     .pipe(
         filter(event => event.eventData.object !== undefined),
         map(event => event.eventData.object as HelloWorldTask)
     );
 
 const advertisedTasks = this.communicationManager
-    .observeAdvertiseWithObjectType(this.identity, "com.helloworld.Task")
+    .observeAdvertiseWithObjectType("com.helloworld.Task")
     .pipe(
         map(event => event.eventData.object as HelloWorldTask),
         filter(task => task !== undefined)
@@ -1801,7 +1485,7 @@ const joinCondition: JoinCondition = {
 // On the querying side, an agent publishes a Query event for Log objects
 // with the given filter and join conditions and handles the results.
 this.communicationManager
-    .publishQuery(QueryEvent.withCoreTypes(this.identity, ["Log"], filter, joinCondition))
+    .publishQuery(QueryEvent.withCoreTypes(["Log"], filter, joinCondition))
     .pipe(
         take(1),
         // Issue an error if queryTimeoutMillis elapses without any event received
@@ -1821,7 +1505,7 @@ this.communicationManager
 // and responds with a Retrieve event that contains results looked up
 // from a database.
 this.communicationManager
-  .observeQuery(this.identity)
+  .observeQuery()
   .pipe(filter(event => event.eventData.isCoreTypeCompatible("Log")))
   .subscribe(event => {
     const dbJoinCond = DbContext.getDbJoinConditionsFrom(
@@ -1834,7 +1518,7 @@ this.communicationManager
     this.databaseContext
       .findObjects<Log>("log", event.eventData.objectFilter, dbJoinCond)
       .then(iterator => iterator.forBatch(logs => {
-         event.retrieve(RetrieveEvent.withObjects(this.identity, logs));
+         event.retrieve(RetrieveEvent.withObjects(logs));
       }))
       .catch(error => {
          // In case of retrieval error, do not respond with a
@@ -1876,7 +1560,7 @@ import { filter, take, map } from "rxjs/operators";
 // Publish a partial Update event on a finished task object and observe first
 // Complete event response from the persistent storage agent.
 this.communicationManager.publishUpdate(
-        UpdateEvent.withPartial(this.identity, taskObjectId,
+        UpdateEvent.withPartial(taskObjectId,
         {
             status: TaskStatus.Done,
             doneTimestamp: Date.now(),
@@ -1894,13 +1578,13 @@ this.communicationManager.publishUpdate(
 // The persistent storage agent observes task updates and stores
 // the changed property values in a database. Afterwards, it responds
 // with a Complete event which contains the fully updated object.
-this.communicationManager.observeUpdate(this.identity)
+this.communicationManager.observeUpdate()
     .pipe(filter(event => event.eventData.isPartialUpdate))
     .subscribe(event => {
         const task = this.getTaskWithIdFromDb(event.eventData.objectId);
         if (task !== undefined) {
             this.updateTaskWithIdinDb(task.objectId, event.eventData.changedValues);
-            event.complete(CompleteEvent.withObject(this.identity, task));
+            event.complete(CompleteEvent.withObject(task));
         }
     });
 ```
@@ -1946,7 +1630,6 @@ const contextFilter: ContextFilter = { conditions: ["floor", filterOp.between(6,
 
 this.communicationManager.publishCall(
         CallEvent.with(
-            this.identity,
             "com.mydomain.lights.switchLight",
             { status: "on", brightness: 0.7 },
             contextFilter))
@@ -1980,10 +1663,7 @@ const context: LightControlContext = {
     floor: 7,
 };
 
-this.communicationManager.observeCall(
-        this.identity,
-        "com.mydomain.lights.switchLight",
-        context)
+this.communicationManager.observeCall("com.mydomain.lights.switchLight", context)
     .subscribe(event => {
         // For each remote call that matches the given context, a Call event is emitted.
         const status = event.eventData.getParameterByName("status");
@@ -1995,18 +1675,18 @@ this.communicationManager.observeCall(
             case "on":
                 // Try to switch light on with requested brightness, then return result or error.
                 switchLightOn(this.lightId, brightness)
-                    .then(() => event.returnEvent(ReturnEvent.withResult(this.identity, true, executionInfo)))
-                    .catch(error => event.returnEvent(ReturnEvent.withError(this.identity, 10001, "Failed", executionInfo)));
+                    .then(() => event.returnEvent(ReturnEvent.withResult(true, executionInfo)))
+                    .catch(error => event.returnEvent(ReturnEvent.withError(10001, "Failed", executionInfo)));
                 break;
             case "off":
                 // Try to switch light off, then return result or error.
                 switchLightOff(this.lightId)
-                    .then(() => event.returnEvent(ReturnEvent.withResult(this.identity, true, executionInfo)))
-                    .catch(error => event.returnEvent(ReturnEvent.withError(this.identity, 10002, "Failed", executionInfo)));
+                    .then(() => event.returnEvent(ReturnEvent.withResult(true, executionInfo)))
+                    .catch(error => event.returnEvent(ReturnEvent.withError(10002, "Failed", executionInfo)));
                 break;
             default:
                 // Invalid parameter, return an error immediately.
-                event.returnEvent(ReturnEvent.withError(this.identity,
+                event.returnEvent(ReturnEvent.withError(
                             RemoteCallErrorCode.InvalidParameters,
                             RemoteCallErrorMessage.InvalidParameters,
                             executionInfo));
@@ -2055,9 +1735,7 @@ specified and they do not match (checked by using
 > ```js
 > import { filter } from "rxjs/operators";
 >
-> this.communicationManager.observeCall(
->         this.identity,
->         "com.mydomain.lights.switchLight")
+> this.communicationManager.observeCall("com.mydomain.lights.switchLight")
 >     .pipe(filter(event => isMatchingFilter(event.eventData.filter))
 >     .subscribe(event => ...);
 > ```
@@ -2108,95 +1786,47 @@ filter out the messages associated with the given subscription topic:
 import { filter } from "rxjs/operators";
 
 this.communicationManager
-    .observeRaw(this.identity, "$SYS/#")
+    .observeRaw("$SYS/#")
     .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
     .subscribe(([topic, payload]) => {
         console.log(`Received topic ${topic} with payload ${payload.toString()}`);
     });
 ```
 
-> Observing raw subscription topics does *not* suppress observation of non-raw communication
-> event types by the communication manager: If at least one raw topic is observed, the
-> communication manager first dispatches *any* incoming message to *all* raw message observers.
-> Then, event dispatching continues as usual by handling all non-raw communication event
-> types which are observed.
-
-### Deferred publication and subscription of events
-
-You can invoke any of the above observe or publish methods while
-the Communication Manager is running, i.e. is in started operating state.
-Invocation is also possible when the communication manager is offline, i.e.
-not connected. The Communication Manager supports deferred publications and
-subscriptions when the agent connects or reconnects. All your
-*subscriptions* issued while the agent is offline will be
-(re)applied when the agent (re)connects again. *Publications* issued while the
-agent is offline will be applied only after the next (re)connect.
-Publications issued while the agent is online will *not* be deferred, i.e.
-not reapplied after a reconnect.
-
-In your controller classes we recommend to subscribe to observe methods when the
-Communication Manager is starting and unsubscribe from observe methods when the
-Communication Manager is stopping. Use the aforementioned controller lifecycle
-methods to implement this subscription pattern.
+> Observing raw subscription topics does *not* suppress observation of non-raw
+> communication event types by the communication manager: If at least one raw
+> topic is observed, the communication manager first dispatches *any* incoming
+> message to *all* raw message observers. Then, event dispatching continues as
+> usual by handling all non-raw communication event types which are observed.
 
 ### Distributed lifecycle management
 
-Whenever a Coaty container is resolved by creating its communication manager and
-controller components, the identities of these components are advertised as
-`Identity` objects automatically. You can prevent publishing Advertise events
-for identities by setting the controller and/or communication configuration
-option `shouldAdvertiseIdentity` to `false`. Additionally, a communication
-manager's or controller's identity is also discoverable (by publishing a
-Discover event with core type "Identity" or with the object ID of an Identity
-object) if and only if the identity has also been advertised.
+A Coaty agent keeps track of other agents or specific Coaty objects in a Coaty
+network by monitoring agent identities or custom object types.
 
-Each Identity object is initialized with default property values. For example,
-the `name` of a controller identity refers to the controller's type; the `name`
-of a communication manager identity is always "CommunicationManager". You can
-customize and configure specific properties of identity objects as follows:
+An agent's identity is a Coaty object of core type `Identity`. It is initialized
+by the agent container with default property values. You can customize and
+configure specific properties of this object, usually its `name`, by specifying
+them in the common configuration options (`CommonOptions.agentIdentity`).
 
-* For controllers, either specify identity properties in the controller's
-  configuration options (`ControllerOptions.identity`), or overwrite the
-  `initializeIdentity` method in your controller class definition. If you
-  specify identity properties in both ways, the ones specified in the
-  configuration options take precedence.
-* For communication managers, specify identity properties in the communication
-  configuration options (`CommunicationOptions.identity`).
+Whenever the Communication Manager is started, it *advertises* the agent's
+identity automatically. Additionally, the Communication Manager *resolves* its
+agent's identity to other Coaty agents by observing Discover events with core
+type `Identity` or with the object ID of its own agent identity.
 
-Note that the `parentObjectId` property of a controller's identity is set to the
-`objectId` of the communication manager's identity for reasons described next.
+Whenever the Communication Manager is stopped, it *deadvertises* the agent's
+identity automatically and stops resolving its own identity to other agents.
 
-Advertisement of identities is especially useful in combination with abnormal
-termination of an agent and the MQTT last will concept. On connection to the
-broker, the communication manager of a Coaty container sends a last will message
-consisting of a Deadvertise event with the object ID of its identity and its
-associated device (if defined). Whenever the agent disconnects normally or
-abnormally, the broker publishes its last will message to all subscribers which
-observe Deadvertise events.
-
-Note that to get the identities of components advertised *before* your Coaty
-agent has started can be accomplished by publishing a Discover event with core
-type `Identity` initially (see example in this
-[section](#discover---resolve-event-pattern---an-example)).
-
-Using this pattern, agents can detect the online/offline state of other Coaty
-agents and act accordingly. One typical use case is to set the parent object ID
-(or a custom property) of advertised application root objects originating from a
-specific Coaty agent to the identity ID (or associated device ID) of the agent's
-communication manager. In case this agent is disconnected, other agents can
-observe Deadvertise events and check whether one of the deadvertised object IDs
-correlates with the parent object ID (or custom property) of any application
-root object the agent is managing and invoke specific actions. An example of
-this pattern can be found in this
-[section](#deadvertise-event-pattern---an-example).
+Tracking agent identities also supports abnormal termination of an agent, e.g.
+when its process crashed or is killed. Coaty realizes a "last will" concept for
+distributed Coaty applications. It ensures that even when the Communication
+Manager disconnects abnormally, all other Coaty agents receive a Deadvertise
+event with the object ID of the terminating agent's identity.
 
 To ease programming this pattern, Coaty provides a convenience controller class
-named [`ObjectLifecycleController`](#object-lifecycle-controller). It keeps
-track of specific agents/objects in a Coaty network by monitoring identity
-components of communication managers, controllers or custom object types. The
-controller observes advertisements and deadvertisements of such objects and
-initially discovers them. Changes are emitted on an observable that applications
-can subscribe to.
+named [`ObjectLifecycleController`](#object-lifecycle-controller). Using this
+class, you can not only keep track of agent identities but also of any other
+application-specific Coaty object types.
 
 ## IO Routing
 
@@ -3079,7 +2709,7 @@ Detailed descriptions of the supported NoSQL operations are documented in the co
 of class `DbContext`. Further code examples can be found in the framework's unit tests
 in the file `ts/test/spec/db-in-memory.spec.ts`.
 
-### SQLite NodeJs adapter
+### SQLite Node.js adapter
 
 The Coaty framework provides a built-in database adapter for persistent SQL-based
 local storage and retrieval in Node.js processes. The `SqLiteNodeAdapter`
@@ -3246,6 +2876,314 @@ DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdap
 
 ```
 
+### Convenience controllers
+
+Besides the base `Controller` class, the framework also provides
+some convenience controller classes that you can reuse in your
+agent project.
+
+#### Connection State Controller
+
+The `ConnectionStateController` class monitors the connection state (online or offline)
+of the associated communication manager.
+
+Use its  `isOffline` getter to get a boolean observable that emits `true` if the
+connection state of the associated communication manager transitions to offline, and
+`false` if it transitions to online. When subscribed, the current connection state is
+emitted immediately.
+
+#### Object Lifecycle Controller
+
+The `ObjectLifecycleController` class supports [distributed lifecycle
+management](#distributed-lifecycle-management). It keeps track of agents or
+application-specific Coaty objects in a Coaty network by monitoring agent
+identities or custom object types. The controller observes advertisements and
+deadvertisements of such objects and discovers them. Changes are emitted on
+corresponding observables that applications can subscribe to.
+
+You can use this controller either standalone by adding it to the container
+components or extend your custom controller class from this controller class.
+
+The following example shows how to keep track of agents whose identity is named
+`"LightAgent"`.
+
+This approach requires the lifecycle controller to be added to the container
+components under the name `ObjectLifecycleController`:
+
+```ts
+import { Subscription } from "rxjs";
+import { Components, Container, Controller, ObjectLifecycleController } from "@coaty/core";
+
+const components: Components = {
+    controllers: {
+        ObjectLifecycleController,
+        ...
+    }
+};
+
+class MyController extends Controller {
+
+    private _lifecycleSubscription: Subscription;
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+
+        const ctrl = this.container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+        this._lifecycleSubscription = ctrl.
+            .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
+            .subscribe(info => {
+                // Called whenever light agents have been observed.
+                console.log(info.added);     // newly advertised or discovered identities
+                console.log(info.changed);   // readvertised or rediscovered identities
+                console.log(info.removed);   // deadvertised identities
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+        // Stop observing lifecycle info of light agents.
+        this._lifecycleSubscription?.unsubscribe();
+    }
+}
+```
+
+This approach assumes your custom controller class inherits from the lifecycle
+controller class:
+
+```ts
+import { Subscription } from "rxjs";
+import { ObjectLifecycleController } from "@coaty/core";
+
+class MyController extends ObjectLifecycleController {
+
+    private _lifecycleSubscription: Subscription;
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
+            .subscribe(info => {
+                // Called whenever light agents have been observed.
+                // Note that if the agent containing this controller is also a light agent,
+                // this controller also receives its own agent identity.
+                // You can easily filter it out by checking the object ID of a received identity.
+                console.log(info.added);     // newly advertised or discovered identities
+                console.log(info.changed);   // readvertised or rediscovered identities
+                console.log(info.removed);   // deadvertised identities
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+        // Stop observing lifecycle info of light agents.
+        this._lifecycleSubscription?.unsubscribe();
+    }
+}
+```
+
+To keep track of agent identities, the code shown above is sufficient. However,
+if you want to keep track of custom object types (not agent identities), you
+have to implement the remote side of the distributed object lifecycle management
+explicitely, i.e. advertise/readvertise/deadvertise your custom objects and
+observe/resolve corresponding Discover events. To facilitate this, this
+controller provides convenience methods: `advertiseDiscoverableObject`,
+`readvertiseDiscoverableObject`, and `deadvertiseDiscoverableObject`.
+
+Usually, a custom object should have the object ID of its agent identity, i.e.
+`Container.identity`, set as its `parentObjectId` in order to be automatically
+deadvertised when the agent terminates abnormally. You can automate this by
+passing `true` to the optional parameter `shouldSetParentObjectId` of method
+`advertiseDiscoverableObject` (`true` is also the default parameter value).
+
+The following example shows how to keep track of a custom Coaty object.
+
+The first controller is responsible for advertising the custom object, and for
+making it discoverable. Note that when the communication manager is stopped the
+custom object is automatically deadvertised by the framework.
+
+```ts
+import { Subscription } from "rxjs";
+import { ObjectLifecycleController } from "@coaty/core";
+
+class CustomObjectAdvertisingController extends ObjectLifecycleController {
+
+    myCustomObject: CoatyObject;
+
+    private _myCustomObjectLifecycleSubscription: Subscription;
+
+    onInit() {
+        this.myCustomObject = {
+            objectType: "com.example.MyCustomObject",
+            coreType: "CoatyObject",
+            name: "MyCustomObject",
+            objectId: this.runtime.newUuid()
+        };
+    }
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+        this._myCustomObjectLifecycleSubscription = this.advertiseDiscoverableObject(this.myCustomObject);
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+        // Stop observing/resolving Discover events for the custom object that has
+        // been set up in advertiseDiscoverableObject.
+        this._myCustomObjectLifecycleSubscription?.unsubscribe();
+    }
+}
+```
+
+The second controller keeps track of custom objects as advertised/discoverable
+by the first controller:
+
+```ts
+
+class CustomObjectTrackingController extends ObjectLifecycleController {
+
+    private _lifecycleSubscription: Subscription;
+
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
+            .subscribe(info => {
+                // Called whenever custom lifecycle objects of type "com.example.MyCustomObject" have changed.
+                console.log(info.added);     // newly advertised or discovered objects
+                console.log(info.changed);   // readvertised or rediscovered objects
+                console.log(info.removed);   // deadvertised objects
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+        // Stop observing lifecycle info for custom objects of type "com.example.MyCustomObject".
+        this._lifecycleSubscription?.unsubscribe();
+    }
+}
+```
+
+#### Object Cache Controller
+
+The `ObjectCacheController` class discovers objects by given object Ids
+and maintains a local cache of resolved objects. The controller will also
+update existing objects in its cache whenever such objects are advertised
+by other parties.
+
+To realize an object cache controller for a specific core types or for specific
+objects, define a custom controller class that extends the abstract
+`ObjectCacheController` class and set the core type and/or the filter predicate
+of objects to be cached in the `OnInit` method.
+
+```ts
+import { ObjectCacheController } from "@coaty/core";
+import { FactoryUser } from "../models/factory-user";
+
+export class UserCacheController extends ObjectCacheController<FactoryUser> {
+
+    onInit() {
+        super.onInit();
+
+        // Specify the object's core type that should be cached.
+        this.coreType = "User";
+
+        // Only resolve factory users that are present
+        this.objectFilter = (obj: FactoryUser) => obj.isPresent;
+    }
+}
+```
+
+Resolve an object with a given objectId by your custom cache controller
+as follows:
+
+```ts
+this.userCacheController.resolveObject(objectId)
+    .subscribe(
+        obj => {
+            // Emits the first object of the observable, then completes
+        },
+        error => { ... });
+```
+
+#### Historian Controller
+
+The `HistorianController` class can be used on each Coaty agent to create and/or
+persist snapshots in time of arbitrary Coaty objects.
+
+A snapshot represents a deep copy of the object and its state, a timestamp, a creator ID,
+and an optional array of associated tags. The tags can be used on retrieval of snapshots
+to identify different purposes.
+
+A snapshot is created by the `generateSnapshot(object, ...tags)` or
+`generateSnapshot(object, timestamp, ...tags)` method.
+Driven by specific controller options, you can decide to
+
+* advertise each generated snapshot (`shouldAdvertiseSnapshots`)
+* persist each generated snapshot in a database collection (`shouldPersistLocalSnapshots`)
+* persist each observed snapshot advertised by another Historian controller (`shouldPersistObservedSnapshots`)
+* execute matching Query events for snapshot objects on the database and retrieve results (`shouldReplyToQueries`)
+
+The `HistorianController` provides a convenience method to query snapshots using the
+Query event pattern:
+
+* `querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]>`
+
+The `HistorianController` also provides convenience methods to retrieve snapshots
+from a database collection:
+
+* `findSnapshotsByParentId(parentObjectId: Uuid, startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
+* `findSnapshotsByTimeFrame(startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
+* `findSnapshotsByFilter(filter: ObjectFilter): Promise<Snapshot[]>`
+
+You can set up a `HistorianController` in the Coaty container components and configuration
+as follows:
+
+```ts
+import { Components, Configuration } from "@coaty/core";
+import { HistorianController } from "@coaty/core/db";
+
+export const components: Components = {
+    controllers: {
+        ...,
+        HistorianController,
+    }
+};
+
+export const configuration: Configuration = {
+        ...
+        controllers: {
+            ...,
+            HistorianController: {
+                shouldAdvertiseSnapshots: false,
+                shouldPersistLocalSnapshots: true,
+                shouldPersistObservedSnapshots: false,
+                shouldReplyToQueries: true,
+                database: {
+                    key: "db",
+                    collection: "historian"
+                }
+            }
+        },
+        databases: {
+            db: {
+                adapter: "PostgresAdapter",
+                connectionString: "..."
+            },
+            admindb: {
+                adapter: "PostgresAdapter",
+                connectionString: "..."
+            }
+        }
+    };
+```
+
+The `database` controller option has two properties `key` and `collection`; `key` references the
+database key as defined in the `databases` option of your configuration; `collection` is the name
+of the collection to be used. If the collection doesn't exist, it will be created in the given
+database.
+
+To see an example of the `HistorianController` in action, take a look at the
+[Hello World
+example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js).
+
 ## Decentralized logging
 
 The Coaty framework provides the object type `Log` for decentralized
@@ -3288,9 +3226,8 @@ The base `Controller` class also defines a protected method
 the above log methods is called. The controller first creates a `Log` object
 with appropriate property values and passes it to this method before advertising
 it. You can overwrite this method to additionally set certain properties (such
-as `Log.hostname` or `Log.logLabels`) or to add extra property-value pairs to
-the `Log` object. For example, a Node.js agent could add the hostname to the
-`Log` object like this:
+as `Log.hostname` or `Log.logLabels`). For example, a Node.js agent could add
+the hostname to the `Log` object like this:
 
 ```ts
 import { hostname } from "os";
@@ -3514,7 +3451,7 @@ includes([1, 46, { "foo": 47 }, "foo"], { "foo": 47 }) => true
 includes([1, 46, { "foo": 47, "bar": 42 }, "foo"], { "foo": 47 }) => false
 ```
 
-## NodeJS utilities
+## Node.js utilities
 
 The framework includes a `NodeUtils` class in the `runtime-node` module which provides
 some static utility methods to be used by Coaty agent services.

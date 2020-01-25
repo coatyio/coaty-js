@@ -110,9 +110,9 @@ export class IoActorController extends Controller {
 
     private _deregisterAll() {
         this._actorItems.forEach(item => {
-            item[1] && item[1].unsubscribe();
+            item[1]?.unsubscribe();
             item[1] = undefined;
-            item[2] && item[2].unsubscribe();
+            item[2]?.unsubscribe();
             item[2] = undefined;
         });
     }

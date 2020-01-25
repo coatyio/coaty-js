@@ -52,6 +52,16 @@ export interface CommonOptions {
     associatedDevice?: Device;
 
     /**
+     * Property-value pairs to be configured on the identity object of the agent
+     * container (optional). Usually, an expressive `name` of the identity is
+     * configured here.
+     *
+     * @remarks Note that the `objectType` and `coreType` properties cannot be
+     * overridden.
+     */
+    agentIdentity?: Partial<Identity>;
+
+    /**
      * Agent information generated and injected into the configuration when the
      * agent project is build (optional). To be used locally by an agent to
      * access build and release information of the application for displaying,
@@ -60,9 +70,11 @@ export interface CommonOptions {
     agentInfo?: AgentInfo;
 
     /**
-     * Any other custom properties accessible by indexer.
+     * Additional application-specific properties (optional).
+     *
+     * Useful to inject service instances to be shared among controllers.
      */
-    [extra: string]: any;
+    extra?: { [key: string]: any };
 }
 
 /**
@@ -95,18 +107,6 @@ export interface CommunicationOptions {
      * to false.
      */
     shouldAutoStart?: boolean;
-
-    /**
-     * Determines whether the communication manager should advertise its
-     * identity automatically when started and deadvertise its identity when
-     * stopped or terminated abnormally (via last will). If not specified or
-     * undefined, de/advertisements will be done by default.
-     *
-     * The communication managers's identity is also discoverable (by publishing
-     * a Discover event with core type "Identity" or with the object id of an
-     * Identity) if and only if the identity has also been advertised.
-     */
-    shouldAdvertiseIdentity?: boolean;
 
     /**
      * Determines whether the communication manager should advertise the
@@ -165,27 +165,7 @@ export interface ControllerConfig {
 export interface ControllerOptions {
 
     /**
-     * Property-value pairs to be initialized on the identity object of the
-     * controller (optional). For example, the `name` of the
-     * Identity object can be configured here.
-     */
-    identity?: { [prop: string]: any };
-
-    /**
-     * Determines whether the controller should advertise its identity
-     * automatically when it is instantiated and deadvertise its identity when
-     * the communication manager is stopped or terminated abnormally (via last
-     * will). If not specified or undefined, the identity is
-     * advertised/deadvertised by default.
-     *
-     * The controller's identity is also discoverable (by publishing a Discover
-     * event with core type "Identity" or with the object id of an Identity) if
-     * and only if the identity has also been advertised.
-     */
-    shouldAdvertiseIdentity?: boolean;
-
-    /**
-     * Any other application-specific properties accessible by indexer.
+     * Any application-specific properties accessible by indexer.
      */
     [extra: string]: any;
 }

@@ -87,7 +87,7 @@ export interface Sensor extends CoatyObject {
      * Sensor. (optional)
      * 
      * The ISO 8601 standard string can be created using the function `toLocalTimeIntervalIsoString`
-     * in the `coaty/util` module.
+     * in the `@coaty/core` module.
      */
     phenomenonTime?: TimeInterval;
 
@@ -96,7 +96,7 @@ export interface Sensor extends CoatyObject {
      * Sensor. (optional)
      * 
      * The ISO 8601 standard string can be created using the function `toLocalTimeIntervalIsoString`
-     * in the `coaty/util` module.
+     * in the `@coaty/core` module.
      */
     resultTime?: TimeInterval;
 

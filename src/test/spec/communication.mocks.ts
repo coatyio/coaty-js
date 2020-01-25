@@ -45,7 +45,7 @@ export class MockDeviceController extends Controller {
     onInit() {
         super.onInit();
         this.communicationManager
-            .publishDiscover(DiscoverEvent.withObjectTypes(this.identity, ["coaty.test.MockObject"]))
+            .publishDiscover(DiscoverEvent.withObjectTypes(["coaty.test.MockObject"]))
             .subscribe(event => {
                 Spy.set("MockDeviceController", event);
             });
@@ -59,21 +59,21 @@ export class MockDeviceController extends Controller {
 
     watchForAdvertiseEvents(logger: AdvertiseEventLogger) {
         this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "CoatyObject")
+            .observeAdvertiseWithCoreType("CoatyObject")
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
             });
 
         this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, CoreTypes.OBJECT_TYPE_OBJECT)
+            .observeAdvertiseWithObjectType(CoreTypes.OBJECT_TYPE_OBJECT)
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
             });
 
         this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, "com.mydomain.mypackage.MyCustomObjectType")
+            .observeAdvertiseWithObjectType("com.mydomain.mypackage.MyCustomObjectType")
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -82,7 +82,7 @@ export class MockDeviceController extends Controller {
 
     watchForChannelEvents(logger: ChannelEventLogger, channelId: string) {
         this.communicationManager
-            .observeChannel(this.identity, channelId)
+            .observeChannel(channelId)
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -91,7 +91,7 @@ export class MockDeviceController extends Controller {
 
     watchForRawEvents(logger: RawEventLogger, topicFilter: string, topicPrefix: string) {
         this.communicationManager
-            .observeRaw(this.identity, topicFilter)
+            .observeRaw(topicFilter)
             // Note that all published raw messages are dispatched on all raw observables!
             .pipe(filter(([topic]) => topic.startsWith(topicPrefix)))
             .subscribe(([topic, payload]) => {
@@ -109,14 +109,12 @@ export class MockObjectController extends Controller {
         super.onInit();
 
         this._handleDiscoverEvents();
-        this._handleAdvertiseEvents();
     }
 
     publishAdvertiseEvents(count: number) {
         for (let i = 1; i <= count; i++) {
             this.communicationManager.publishAdvertise(
                 AdvertiseEvent.withObject(
-                    this.identity,
                     {
                         objectId: this.runtime.newUuid(),
                         objectType: (i % 2) !== 0 ? CoreTypes.OBJECT_TYPE_OBJECT : "com.mydomain.mypackage.MyCustomObjectType",
@@ -130,7 +128,6 @@ export class MockObjectController extends Controller {
         for (let i = 1; i <= count; i++) {
             this.communicationManager.publishChannel(
                 ChannelEvent.withObject(
-                    this.identity,
                     channelId,
                     {
                         objectId: this.runtime.newUuid(),
@@ -149,7 +146,7 @@ export class MockObjectController extends Controller {
 
     watchForAdvertiseEvents(logger: AdvertiseEventLogger) {
         this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "CoatyObject")
+            .observeAdvertiseWithCoreType("CoatyObject")
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -158,39 +155,27 @@ export class MockObjectController extends Controller {
 
     private _handleDiscoverEvents() {
         this.communicationManager
-            .observeDiscover(this.identity)
+            .observeDiscover()
             .pipe(
                 filter(event => event.eventData.isObjectTypeCompatible("coaty.test.MockObject")),
                 // Take first event only and unsubscribe automatically afterwards
                 take(1),
             )
             .subscribe(event => {
-                Spy.set(this.identity.name, event);
+                Spy.set(this.registeredName, event);
 
                 setTimeout(
                     () => {
                         event.resolve(ResolveEvent.withObject(
-                            this.identity,
                             {
                                 objectId: this.runtime.newUuid(),
                                 objectType: "coaty.test.MockObject",
                                 coreType: "CoatyObject",
-                                name: `MockObject_${this.identity.name}`,
+                                name: `MockObject_${this.registeredName}`,
                             }));
                     },
-                    this.options["responseDelay"]);
+                    this.options.responseDelay);
             });
-    }
-
-    private _handleAdvertiseEvents() {
-        this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "Identity")
-            // Multiple Advertise events arrive: one identity advertisement
-            // from the MockDeviceController and one from the other 
-            // MockObjectController
-            .pipe(filter(event => event.eventUserId &&
-                event.eventData.object.name === "MockDeviceController1"))
-            .subscribe(event => Spy.set(this.identity.name, Spy.NO_VALUE, event));
     }
 
 }
@@ -205,7 +190,6 @@ export class MockOperationsCallController extends Controller {
         loggerKey: string) {
         this.communicationManager.publishCall(
             CallEvent.with(
-                this.identity,
                 op,
                 params,
                 contextFilter,
@@ -262,19 +246,17 @@ export class MockOperationsExecutionController extends Controller {
 
     private _handleCallEvents(operation: string, resultFunc: (event: CallEvent) => any, duration: number) {
         this.communicationManager
-            .observeCall(this.identity, operation, this.context)
+            .observeCall(operation, this.context)
             .subscribe(event => {
                 const result = resultFunc(event);
                 if (result instanceof Error) {
                     event.returnEvent(ReturnEvent.withError(
-                        this.identity,
                         RemoteCallErrorCode.InvalidParameters,
                         RemoteCallErrorMessage.InvalidParameters,
                         { duration },
                     ));
                 } else {
                     event.returnEvent(ReturnEvent.withResult(
-                        this.identity,
                         result,
                         { duration },
                     ));

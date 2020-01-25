@@ -55,11 +55,6 @@ describe("Sensor things", () => {
                 shouldAutoStart: true,
                 useReadableTopics: USE_READABLE_TOPICS,
             },
-            controllers: {
-                MockReceiverController: {
-                    shouldAdvertiseIdentity: true,
-                },
-            },
         };
 
         const components2: Components = {
@@ -78,7 +73,6 @@ describe("Sensor things", () => {
             },
             controllers: {
                 MockEmitterController: {
-                    shouldAdvertiseIdentity: true,
                     name: "MockEmitterController1",
                     responseDelay: responseDelay,
                 },
@@ -99,7 +93,6 @@ describe("Sensor things", () => {
             },
             controllers: {
                 MockEmitterController: {
-                    shouldAdvertiseIdentity: true,
                     name: "MockEmitterController2",
                     responseDelay: responseDelay,
                 },
@@ -146,8 +139,7 @@ describe("Sensor things", () => {
                 expect(() => container2.communicationManager
                     // Note: this Discover request event will never be published because there is 
                     // no subscription on the response observable
-                    .publishDiscover(DiscoverEvent.withObjectTypes(
-                        container2.getController<mocks.MockEmitterController>("MockEmitterController").identity, [element])))
+                    .publishDiscover(DiscoverEvent.withObjectTypes([element])))
                     .not.toThrow();
                 testFunction(elementArray);
             };

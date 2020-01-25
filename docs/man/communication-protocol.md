@@ -33,8 +33,8 @@ title: Coaty JS Documentation
 
 ## Introduction
 
-Communication between Coaty containers, i.e. agents, in the Coaty framework is
-based on distributed publish-subscribe messaging using an MQTT message broker. A
+Communication between Coaty agents in the Coaty framework is based on
+distributed publish-subscribe messaging using an MQTT message broker. A
 communication message is comprised of a topic name and a payload. The format of
 topic names and payloads conforms to the [MQTT](https://mqtt.org/) Specification
 Version 3.1.1.
@@ -110,7 +110,7 @@ Any topic used in the framework consists of the following topic levels:
 * **Associated User ID** - globally unique ID (UUID) of a user associated with the
   source component; specify a dash (`-`) if component is not associated with a user.
 * **Source Object ID** - globally unique ID (UUID) of the event source that is
-  publishing a topic. Each Coaty container's identity acts as an event source.
+  publishing a topic. Each agent container's identity represents an event source.
 * **Event** - one of the predefined events listed above.
 * **Message Token** - UUID that uniquely identifies a messages. Used to
   correlate a response message to the request message in Discover-Resolve,
@@ -188,14 +188,8 @@ as wildcards when observing request events. When publishing response events, the
 Message Token level **must** equal the original message token of the
 corresponding request event.
 
-When receiving a request event, the Source Object ID has to be checked against
-the identity of the receiving Coaty container. If both Object IDs are identical,
-the received event **must not** be dispatched to the application, but has to be
-ignored. The objective behind this is to ensure that a publishing container is
-**not** receiving its own publications.
-
-Basically, the Event level is filtered to support event-specific subscriptions
-for observing request and response events:
+The Event level is always added to the topic filter to support event-specific
+subscriptions for observing request and response events:
 
 ```
 /// subscription for request events
@@ -235,7 +229,7 @@ A Coaty object is defined by the following generic properties:
 
 ```
 {
-  coreType: "CoatyObject" | "User" | "Device" | ...,
+  coreType: "CoatyObject" | ...,
   objectType: string,
   name: string,
   objectId: Uuid,

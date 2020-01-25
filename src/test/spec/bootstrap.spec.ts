@@ -82,8 +82,10 @@ describe("Bootstrapping", () => {
         const primary = NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"));
         const secondary: Configuration = {
             common: {
-                testProp: 4712,
-                testProp1: 4713,
+                extra: {
+                    testProp: 4712,
+                    testProp1: 4713,
+                },
             },
             communication: {
                 shouldAutoStart: false,
@@ -99,8 +101,8 @@ describe("Bootstrapping", () => {
         const config = mergeConfigurations(primary, secondary);
 
         expect(config.common.associatedUser).toBe(primary.common.associatedUser);
-        expect(config.common["testProp"]).toBe(primary.common["testProp"]);
-        expect(config.common["testProp1"]).toBe(secondary.common["testProp1"]);
+        expect(config.common.extra.testProp).toBe(primary.common.extra.testProp);
+        expect(config.common.extra.testProp1).toBe(undefined);
         expect(config.communication.shouldAutoStart).toBe(primary.communication.shouldAutoStart);
         expect(config.communication.brokerUrl).toBe(primary.communication.brokerUrl);
         expect(config.communication.useReadableTopics).toBe(secondary.communication.useReadableTopics);
@@ -118,7 +120,7 @@ describe("Bootstrapping", () => {
         const container = Container.resolve(
             components,
             NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
-        const regFunc = () => container.registerController("MockObjectController1", mocks.MockObjectController1, {});
+        const regFunc = () => container.registerController("MockObjectController1", mocks.MockObjectController1);
         expect(regFunc).not.toThrow();
 
         delayAction(200, done, () => {

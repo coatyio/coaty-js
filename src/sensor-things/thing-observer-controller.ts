@@ -8,24 +8,25 @@ import { Thing } from "./objects";
 import { SensorThingsTypes } from "./types";
 
 /**
- * Observes Things and Thing-related objects. This controller is designed
- * to be used by a client with a corresponding controller (e.g. ThingSourceController)
- * that answers to its events.
+ * Observes Things and Thing-related objects.
+ *
+ * This controller is designed to be used by a client with a corresponding
+ * controller (e.g. ThingSourceController) that answers to its events.
  */
 export class ThingObserverController extends Controller {
 
     /**
-     * Returns an observable of the Things in the system. This is performed
-     * by sending a Discovery event with the object type of Thing.
-     * 
-     * This method does not perform any kind of caching and it should
-     * be performed on the application-side.
+     * Returns an observable of the Things in the system.
+     *
+     * This is performed by sending a Discovery event with the object type of
+     * Thing.
+     *
+     * This method does not perform any kind of caching and it should be
+     * performed on the application-side.
      */
     public discoverThings(): Observable<Thing> {
         return this.communicationManager
-            .publishDiscover(DiscoverEvent.withObjectTypes(
-                this.identity,
-                [SensorThingsTypes.OBJECT_TYPE_THING]))
+            .publishDiscover(DiscoverEvent.withObjectTypes([SensorThingsTypes.OBJECT_TYPE_THING]))
             .pipe(
                 filter(event => !!event.eventData.object),
                 map(event => event.eventData.object as Thing),
@@ -33,14 +34,14 @@ export class ThingObserverController extends Controller {
     }
 
     /**
-     * Returns a hot observable emitting advertised Things.
-     * 
-     * This method does not perform any kind of caching and it should
-     * be performed on the application-side.
+     * Returns an observable emitting advertised Things.
+     *
+     * This method does not perform any kind of caching and it should be
+     * performed on the application-side.
      */
     public observeAdvertisedThings(): Observable<Thing> {
         return this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, SensorThingsTypes.OBJECT_TYPE_THING)
+            .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_THING)
             .pipe(
                 map(event => event.eventData.object as Thing),
                 filter(thing => !!thing),
@@ -48,13 +49,14 @@ export class ThingObserverController extends Controller {
     }
 
     /**
-     * Returns an observable of the Things that are located at the
-     * given Location. This is performed by sending a Query
-     * event for Thing objects with the locationId matching the
-     * objectId of the Location.
-     * 
-     * This method does not perform any kind of caching and it should
-     * be performed on the application-side.
+     * Returns an observable of the Things that are located at the given
+     * Location.
+     *
+     * This is performed by sending a Query event for Thing objects with the
+     * locationId matching the objectId of the Location.
+     *
+     * This method does not perform any kind of caching and it should be
+     * performed on the application-side.
      */
     public queryThingsAtLocation(locationId: Uuid): Observable<Thing[]> {
         const objectFilter: ObjectFilter = {
@@ -63,7 +65,6 @@ export class ThingObserverController extends Controller {
 
         return this.communicationManager
             .publishQuery(QueryEvent.withObjectTypes(
-                this.identity,
                 [SensorThingsTypes.OBJECT_TYPE_THING],
                 objectFilter))
             .pipe(map(event => event.eventData.objects as Thing[]));

@@ -17,7 +17,6 @@ import {
     DiscoverEventData,
     DisplayType,
     filterOp,
-    Identity,
     ObjectLifecycleController,
     ObjectLifecycleInfo,
     RemoteCallErrorCode,
@@ -157,13 +156,14 @@ describe("Communication", () => {
 
         const components1: Components = {
             controllers: {
-                MockDeviceController: mocks.MockDeviceController,
-                MockOperationsCallController: mocks.MockOperationsCallController,
+                MockDeviceController1: mocks.MockDeviceController,
+                MockOperationsCallController1: mocks.MockOperationsCallController,
             },
         };
 
         const configuration1: Configuration = {
             common: {
+                agentIdentity: { name: "Agent1" },
                 associatedUser: {
                     name: "Fred",
                     objectType: CoreTypes.OBJECT_TYPE_USER,
@@ -184,25 +184,15 @@ describe("Communication", () => {
             },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
-                identity: { name: "Agent1" },
                 shouldAutoStart: true,
                 useReadableTopics: USE_READABLE_TOPICS,
-            },
-            controllers: {
-                MockDeviceController: {
-                    identity: { name: "MockDeviceController1" },
-                    shouldAdvertiseIdentity: true,
-                },
-                MockOperationsCallController: {
-                    identity: { name: "MockOperationsCallController1" },
-                },
             },
         };
 
         const components2: Components = {
             controllers: {
-                MockObjectController: mocks.MockObjectController,
-                MockOperationsExecutionController: mocks.MockOperationsExecutionController,
+                MockObjectController1: mocks.MockObjectController,
+                MockOperationsExecutionController1: mocks.MockOperationsExecutionController,
             },
         };
 
@@ -216,24 +206,18 @@ describe("Communication", () => {
             },
             controllers: {
                 MockObjectController: {
-                    identity: { name: "MockObjectController1" },
-                    shouldAdvertiseIdentity: true,
                     responseDelay: responseDelay,
-                },
-                MockOperationsExecutionController: {
-                    identity: { name: "MockOperationsExecutionController1" },
                 },
             },
         };
 
         const components3: Components = {
             controllers: {
-                MockObjectController: mocks.MockObjectController,
+                MockObjectController2: mocks.MockObjectController,
             },
         };
 
         const configuration3: Configuration = {
-
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
@@ -241,8 +225,6 @@ describe("Communication", () => {
             },
             controllers: {
                 MockObjectController: {
-                    identity: { name: "MockObjectController2" },
-                    shouldAdvertiseIdentity: true,
                     responseDelay: responseDelay,
                 },
             },
@@ -282,12 +264,11 @@ describe("Communication", () => {
             let isResubOkay = false;
             let isResubError = false;
             const obs = container2.communicationManager
-                .publishUpdate(UpdateEvent.withPartial(
-                    container2.getController("MockObjectController").identity,
-                    "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d", { foo: 1 }));
+                .publishUpdate(UpdateEvent.withPartial("7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d", { foo: 1 }));
             const subscription = obs.subscribe(event => event);
             subscription.unsubscribe();
-            obs.subscribe(event => { isResubOkay = true; },
+            obs.subscribe(
+                event => { isResubOkay = true; },
                 error => { isResubError = true; });
 
             delayAction(responseDelay, done, () => {
@@ -300,16 +281,13 @@ describe("Communication", () => {
             expect(() => container2.communicationManager
                 // Note: this Discover request event will never be published because there is 
                 // no subscription on the response observable
-                .publishDiscover(DiscoverEvent.withObjectTypes(
-                    container2.getController("MockObjectController").identity,
-                    ["coaty.test.MockObject"])))
+                .publishDiscover(DiscoverEvent.withObjectTypes(["coaty.test.MockObject"])))
                 .not.toThrow();
         });
 
         it("throws on invalid Discover event data", () => {
             expect(() => container2.communicationManager
                 .publishDiscover(new DiscoverEvent(
-                    container2.getController("MockObjectController").identity,
                     new DiscoverEventData(
                         undefined,
                         "f608cdb1-3350-4c62-8feb-4589f26f2efe",
@@ -404,64 +382,15 @@ describe("Communication", () => {
                     .calls.argsFor(1)[0])
                     .toBe(CommunicationState.Online);
 
-                // Check identity advertisements of MockDeviceController
-                expect(Spy.get("MockObjectController1").value2)
-                    .toHaveBeenCalledTimes(1);
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventUserId)
-                    .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventSourceId)
-                    .toMatch(mockDeviceControllerMatch);
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventType)
-                    .toBe(CommunicationEventType.Advertise);
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventData.object.coreType)
-                    .toBe("Identity");
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventData.object.objectType)
-                    .toBe(CoreTypes.OBJECT_TYPE_IDENTITY);
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventData.object.parentObjectId)
-                    .toBe(container1.communicationManager.identity.objectId);
-                expect(Spy.get("MockObjectController1").value2
-                    .calls.argsFor(0)[0].eventData.object.name)
-                    .toBe("MockDeviceController1");
-
-                expect(Spy.get("MockObjectController2").value2)
-                    .toHaveBeenCalledTimes(1);
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventUserId)
-                    .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventSourceId)
-                    .toMatch(mockDeviceControllerMatch);
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventType)
-                    .toBe(CommunicationEventType.Advertise);
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventData.object.coreType)
-                    .toBe("Identity");
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventData.object.objectType)
-                    .toBe(CoreTypes.OBJECT_TYPE_IDENTITY);
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventData.object.parentObjectId)
-                    .toBe(container1.communicationManager.identity.objectId);
-                expect(Spy.get("MockObjectController2").value2
-                    .calls.argsFor(0)[0].eventData.object.name)
-                    .toBe("MockDeviceController1");
-
                 // Check custom identity properties of communication manager in container1
-                expect(container1.communicationManager.identity.name)
+                expect(container1.identity.name)
                     .toBe("Agent1");
             });
         }, TEST_TIMEOUT);
 
         it("all Advertise events are received", (done) => {
 
-            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController1");
             const logger: mocks.AdvertiseEventLogger = {
                 count: 0,
                 eventData: [],
@@ -472,7 +401,7 @@ describe("Communication", () => {
 
             delayAction(500, undefined, () => {
                 container2
-                    .getController<mocks.MockObjectController>("MockObjectController")
+                    .getController<mocks.MockObjectController>("MockObjectController1")
                     .publishAdvertiseEvents(eventCount);
 
                 delayAction(1000, done, () => {
@@ -488,7 +417,6 @@ describe("Communication", () => {
 
         it("throws on invalid Channel event identifier", () => {
             expect(() => ChannelEvent.withObject(
-                container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "/foo/+/",
                 {
                     objectId: container2.runtime.newUuid(),
@@ -501,7 +429,6 @@ describe("Communication", () => {
 
         it("not throws on valid Channel event identifier", () => {
             expect(() => ChannelEvent.withObject(
-                container2.getController<mocks.MockObjectController>("MockObjectController").identity,
                 "foo_bar-baz",
                 {
                     objectId: container2.runtime.newUuid(),
@@ -514,7 +441,7 @@ describe("Communication", () => {
 
         it("all Channel events are received", (done) => {
 
-            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController1");
             const logger: mocks.ChannelEventLogger = {
                 count: 0,
                 eventData: [],
@@ -526,7 +453,7 @@ describe("Communication", () => {
 
             delayAction(500, undefined, () => {
                 container2
-                    .getController<mocks.MockObjectController>("MockObjectController")
+                    .getController<mocks.MockObjectController>("MockObjectController1")
                     .publishChannelEvents(eventCount, channelId);
 
                 delayAction(1000, done, () => {
@@ -541,7 +468,7 @@ describe("Communication", () => {
 
         it("all Call - Return events are handled", (done) => {
 
-            const callController = container1.getController<mocks.MockOperationsCallController>("MockOperationsCallController");
+            const callController = container1.getController<mocks.MockOperationsCallController>("MockOperationsCallController1");
             const contextFilter1: ContextFilter = { conditions: ["floor", filterOp.between(6, 8)] };
             const contextFilter2: ContextFilter = { conditions: ["floor", filterOp.equals(10)] };
             const logger: mocks.ReturnEventLogger = { eventData: {} };
@@ -620,7 +547,7 @@ describe("Communication", () => {
 
         it("all Raw topics are received", (done) => {
 
-            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController1");
             const logger1: mocks.RawEventLogger = {
                 count: 0,
                 eventData: [],
@@ -638,10 +565,10 @@ describe("Communication", () => {
             deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
 
             delayAction(500, undefined, () => {
-                container2.getController<mocks.MockObjectController>("MockObjectController")
+                container2.getController<mocks.MockObjectController>("MockObjectController1")
                     .publishRawEvents(eventCount, topicFilter1);
                 container2
-                    .getController<mocks.MockObjectController>("MockObjectController")
+                    .getController<mocks.MockObjectController>("MockObjectController1")
                     .publishRawEvents(eventCount, topic2);
 
                 delayAction(1000, done, () => {
@@ -676,6 +603,7 @@ describe("Communication", () => {
 
         const configuration: Configuration = {
             common: {
+                agentIdentity: { name: "IntraCommunicationTestContainer" },
                 associatedUser: {
                     name: "Fred",
                     objectType: CoreTypes.OBJECT_TYPE_USER,
@@ -689,10 +617,6 @@ describe("Communication", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                shouldAdvertiseIdentity: true,
-                identity: {
-                    name: "IntraCommunicationTestContainer",
-                },
                 shouldAdvertiseDevice: false,
                 brokerUrl: "mqtt://localhost:1898",
             },
@@ -700,7 +624,6 @@ describe("Communication", () => {
                 MockDeviceController: {
                 },
                 MockObjectController: {
-                    name: "MockObjectController",
                     responseDelay: 0,
                 },
             },
@@ -730,8 +653,6 @@ describe("Communication", () => {
 
         it("All objects are tracked by ObjectLifecycleController", (done) => {
 
-            const deviceController = container.getController<mocks.MockDeviceController>("MockDeviceController");
-            const objectController = container.getController<mocks.MockObjectController>("MockObjectController");
             const lifecycleController = container.getController<ObjectLifecycleController>("ObjectLifecycleController");
             const lifecycleInfos = new Map<string, ObjectLifecycleInfo[]>(
                 [
@@ -756,27 +677,20 @@ describe("Communication", () => {
                 });
 
             delayAction(1000, done, () => {
-                expect(lifecycleInfos.get("all").length).toBe(3);
+                expect(lifecycleInfos.get("all").length).toBe(1);
                 expect(lifecycleInfos.get("all")[0].added.length).toBe(1);
-                expect(lifecycleInfos.get("all")[0].added).toContain(container.communicationManager.identity);
-                expect(lifecycleInfos.get("all")[1].added.length).toBe(1);
-                expect([deviceController.identity, objectController.identity])
-                    .toContain(lifecycleInfos.get("all")[1].added[0] as Identity);
-                expect(lifecycleInfos.get("all")[2].added.length).toBe(1);
-                expect([deviceController.identity, objectController.identity])
-                    .toContain(lifecycleInfos.get("all")[2].added[0] as Identity);
+                expect(lifecycleInfos.get("all")[0].added).toContain(container.identity);
 
                 expect(lifecycleInfos.get("container").length).toBe(1);
                 expect(lifecycleInfos.get("container")[0].added.length).toBe(1);
-                expect(lifecycleInfos.get("container")[0].added).toContain(container.communicationManager.identity);
+                expect(lifecycleInfos.get("container")[0].added).toContain(container.identity);
 
-                expect(lifecycleInfos.get("controller").length).toBe(1);
-                expect(lifecycleInfos.get("controller")[0].added.length).toBe(1);
-                expect(lifecycleInfos.get("controller")[0].added).toContain(objectController.identity);
+                // Controllers do not have an identity.
+                expect(lifecycleInfos.get("controller").length).toBe(0);
             });
         }, TEST_TIMEOUT);
 
-        it("All Advertise non-echo events are received", (done) => {
+        it("All Advertise events are received, including echo events", (done) => {
 
             const deviceController = container.getController<mocks.MockDeviceController>("MockDeviceController");
             const objectController = container.getController<mocks.MockObjectController>("MockObjectController");
@@ -784,23 +698,22 @@ describe("Communication", () => {
                 count: 0,
                 eventData: [],
             };
-            const eventCount = 4;
 
             deviceController.watchForAdvertiseEvents(logger);
 
-            // To validate that echo events are properly suppressed
+            // To validate that echo events are properly delivered
             objectController.watchForAdvertiseEvents(logger);
 
             delayAction(1000, undefined, () => {
-                objectController.publishAdvertiseEvents(eventCount);
+                objectController.publishAdvertiseEvents(4);
 
                 delayAction(1000, done, () => {
-                    expect(logger.count).toBe(eventCount * 2);
-                    expect(logger.eventData.length).toBe(eventCount * 2);
-                    for (let n = 1, i = 0; n <= eventCount; n++) {
-                        expect(logger.eventData[i++].object.name).toBe("Advertised_" + n);
-                        expect(logger.eventData[i++].object.name).toBe("Advertised_" + n);
-                    }
+                    expect(logger.count).toBe(4 + 4 + 2 + 2);
+                    expect(logger.eventData.length).toBe(logger.count);
+                    expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(3);
+                    expect(logger.eventData.filter(e => e.object.name === "Advertised_2").length).toBe(3);
+                    expect(logger.eventData.filter(e => e.object.name === "Advertised_3").length).toBe(3);
+                    expect(logger.eventData.filter(e => e.object.name === "Advertised_4").length).toBe(3);
                 });
             });
         }, TEST_TIMEOUT);

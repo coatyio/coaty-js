@@ -6,21 +6,23 @@ title: Coaty JS Documentation
 # Coaty JS Migration Guide
 
 The jump to a new major release of Coaty involves breaking changes to the Coaty
-JS framework API. This guide describes what they are and how to update your
-Coaty JS application to comply with the new release.
+JS framework API. This guide describes what they are and how to upgrade your
+Coaty JS application to a new release.
 
 ## Coaty 1 -> Coaty 2
 
-The primary goal of Coaty 2 is to streamline the framework API, as well as to
-get rid of unused and deprecated functionality. Coaty 2 also prepares for
-so-called "communication bindings", a mechanism to make the publish-subscribe
-messaging protocol that Coaty uses internally interchangeable.
+Coaty 2 incorporates experience and feedback gathered with Coaty 1. It pursues
+the main goal to streamline the framework API, to get rid of unused and
+deprecated functionality, and to prepare for future extensions.
+
+Coaty 2 introduces "communication bindings", a mechanism to make Coaty's
+underlying publish-subscribe messaging protocol interchangeable, while keeping
+the set of communication event patterns.
 
 Among other refactorings, Coaty 2 carries breaking changes regarding package
-naming and import declarations, IO routing, and the communication protocol.
-Therefore, Coaty 2 applications are no longer backward-compatible and
-interoperable with Coaty 1 applications. However, the essential set of
-communication event patterns didn't change.
+naming and import declarations, object types, distributed lifecycle management,
+IO routing, and the communication protocol. Therefore, Coaty 2 applications are
+no longer backward-compatible and interoperable with Coaty 1 applications.
 
 To update to Coaty 2, follow the migration steps described in the following
 sections.
@@ -89,19 +91,97 @@ Refactor the following definitions:
 ### Changes in `Configuration` options
 
 * The `Configuration.common` property is now optional.
+* Move extra properties on `Configuration.common` into its new `extra` property.
 * Rename `Runtime.options` to `Runtime.commonOptions`. Its value is `undefined`
   if the `Configuration.common` property is not specified.
 
+### Changes in `Container`
+
+* If you call `Container.registerController()` replace the third argument
+  `ControllerConfig` by `ControllerOptions`.
+
 ### Changes in Coaty object types
 
-* Optional property `logLabels` has been added to `Log` object type. Useful in
-  providing multi-dimensional context-specific data along with a log.
-* Stop using `Config` as this core type has been removed. In case you need it,
-  define an equivalent object type in your application code.
 * Stop using `CoatyObject.assigneeUserId` as this property has been removed. If
-  you need this property, add it to your custom object type.
+  needed, add it to your custom object type.
+* Stop using `Config` as this core type has been removed. If needed, define an
+  equivalent object type in your application code.
 * Rename core object type `Component` to `Identity`. This name better reflects
   its intent to provide the unique identity of a Coaty agent.
+* Optional property `logLabels` has been added to `Log` object type. Useful in
+  providing multi-dimensional context-specific data along with a log.
+* Stop adding extra properties to `Log` object type directly. Add them to the
+  new `Log.logLabels` property.
+* Stop adding extra properties to `LogHost` objects directly. Extend the
+  `LogHost` interface to provide them.
+
+### Changes in distributed lifecycle management
+
+To realize distributed lifecycle management for Coaty agents in Coaty 1,
+individual identity objects were assigned to the communication manager as well
+as to each controller, in order to be advertised and to be discoverable by other
+agents. The identity objects were also used to provide event source IDs for
+communication events to realize echo suppression on the controller level so that
+events published by a controller could never be observed by itself.
+
+In Coaty 2, distributed lifecycle management has been simplified and made more
+efficient:
+
+* The agent container is assigned a unique identity object to be shared by all
+  controllers and the communication manager. Controllers and the communication
+  manager no longer own separate identities.
+* The container's identity is *always* advertised and discoverable. You can no
+  longer disable this behavior.
+* When publishing or observing communication events, an identity object no
+  longer needs to be specified as event source or event target, respectively.
+* By design, echo suppression of communication events has been revoked. The
+  communication manager dispatches any incoming event to every controller that
+  *observes* it, even if the controller published the event itself.
+
+Upgrade to the new approach as follows:
+
+* Stop using `CommunicationManager.identity` as this getter have been removed.
+  Instead, use `Container.identity` to access the container's identity object.
+* Stop configuring identity properties in `CommunicationOptions.identity` as
+  this property has been removed. Instead, customize properties of the
+  container's identity object, usually its name, in the new
+  `CommonOptions.agentIdentity` property.
+* Stop using `CommunicationOptions.shouldAdvertiseIdentity` as this property has
+  been removed.
+* Stop expecting `ObjectLifecycleController` or your custom controllers to track
+  identity of controllers. Only identity of containers can be observed or
+  discovered.
+* Stop using `Controller.identity` as this getter have been removed.
+* Stop defining `Controller.initializeIdentity()` as this method has been
+  removed.
+* Stop using `ControllerOptions.shouldAdvertiseIdentity` as this property has
+  been removed.
+* Stop defining `Controller.onContainerResolved()` as this method has been
+  removed. Perform these side effects in `Controller.onInit`, accessing the
+  container by `Controller.container` getter.
+* If you call static creation methods of a communication event type, e.g.
+  `AdvertiseEvent.withObject()`, remove the first argument `eventSource`.
+* If you call communication event observation methods
+  `CommunicationManager.observeXXX()` remove the first argument `eventTarget`.
+
+If echo suppression of communication events is required for your custom
+controller, place it into its *own* container and *filter out* observed events
+whose event source ID equals the object ID of the container's identity, like
+this:
+
+```ts
+this.communicationManager.observeDiscover()
+    .pipe(filter(event => event.sourceId !== this.container.identity.objectId))
+    .subscribe(event => {
+        // Handle non-echo events only.
+    });
+```
+
+### Changes in `CommunicationManager` and `CommunicationEvent`
+
+* Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
+  enum members have been removed. Use `OperatingState.Started` and
+  `OperatingState.Stopped` instead.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

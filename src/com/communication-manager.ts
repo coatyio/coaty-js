@@ -7,17 +7,16 @@ import { filter } from "rxjs/operators";
 import {
     CoatyObject,
     CommunicationOptions,
+    Container,
     CoreType,
     CoreTypes,
     Device,
-    Identity,
     IoActor,
     IoSource,
-    Runtime,
     User,
     Uuid,
 } from "..";
-import { IComponent } from "../runtime/component";
+import { IDisposable } from "../runtime/disposable";
 
 import { AdvertiseEvent, AdvertiseEventData } from "./advertise";
 import { AssociateEvent, AssociateEventData } from "./associate";
@@ -44,18 +43,15 @@ export enum CommunicationState {
  */
 export enum OperatingState {
     Initial,
-    Starting,
     Started,
-    Stopping,
     Stopped,
 }
 
 /**
- * Manages a set of predefined communication events and event patterns to query,
- * distribute, and share Coaty objects across distributed Coaty agents using
- * publish-subscribe on top of MQTT messaging.
+ * Provides a set of predefined communication events to transfer Coaty objects
+ * between distributed Coaty agents based on publish-subscribe messaging.
  */
-export class CommunicationManager implements IComponent {
+export class CommunicationManager implements IDisposable {
 
     /**
      * Defines the communication protocol version number, an integral number.
@@ -64,9 +60,7 @@ export class CommunicationManager implements IComponent {
      */
     static readonly PROTOCOL_VERSION: number = 2;
 
-    private _runtime: Runtime;
     private _options: CommunicationOptions;
-    private _identity: Identity;
     private _client: Client;
     private _isClientConnected: boolean;
     private _associatedUser: User;
@@ -84,9 +78,8 @@ export class CommunicationManager implements IComponent {
     // Represents the current operating state in an observable
     private _operatingState: BehaviorSubject<OperatingState>;
 
-    // Subscriptions on incoming request events
-    // (hashed by event type string and event target object ID)
-    private _observedRequests: Map<string, Map<Uuid, ObservedRequestItem>>;
+    // Subscriptions on incoming request events (hashed by event type string)
+    private _observedRequests: Map<string, ObservedRequestItem>;
 
     // Subscriptions on incoming response events (hashed by message token)
     private _observedResponses: Map<Uuid, ObservedResponseItem>;
@@ -116,46 +109,31 @@ export class CommunicationManager implements IComponent {
     }>;
     private _deferredSubscriptions: string[];
 
-    constructor(runtime: Runtime, options: CommunicationOptions) {
-        if (!runtime) {
-            throw new TypeError("Argument 'runtime' not defined");
-        }
-        if (!options) {
-            throw new TypeError("Argument 'options' not defined");
-        }
-
+    /**
+     * @internal - For use in framework only.
+     */
+    constructor(private _container: Container, options: CommunicationOptions) {
         this._isClientConnected = false;
-        this._runtime = runtime;
         this._initOptions(options);
         this._isDisposed = false;
         this._state = new BehaviorSubject(CommunicationState.Offline);
         this._operatingState = new BehaviorSubject(OperatingState.Initial);
-
         this._initClient();
     }
 
     /**
-     * Gets the Runtime object associated with this communication manager.
+     * Gets the container's Runtime object.
      */
     get runtime() {
-        return this._runtime;
+        return this._container.runtime;
     }
 
     /**
-     * Gets the CommunicationOptions associated with this communication manager.
+     * Gets the the communication manager's options as specified in the
+     * configuration options.
      */
     get options() {
         return this._options;
-    }
-
-    /**
-     * Gets the identity meta object for this communication manager.
-     */
-    get identity(): Identity {
-        if (!this._identity) {
-            this._identity = this._createIdentity();
-        }
-        return this._identity;
     }
 
     /**
@@ -196,320 +174,282 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Observe communication state changes by the hot observable returned.
+     * Observe communication state changes.
+     *
      * When subscribed the observable immediately emits the current
      * communication state.
+     *
+     * @returns an observable emitting communication states
      */
     observeCommunicationState(): Observable<CommunicationState> {
         return this._state.asObservable();
     }
 
     /**
-     * Observe operating state changes by the hot observable returned.
-     * When subscribed the observable immediately emits the current
-     * operating state.
+     * Observe operating state changes.
+     *
+     * When subscribed the observable immediately emits the current operating
+     * state.
+     * 
+     * @returns an observable emitting operating states
      */
     observeOperatingState(): Observable<OperatingState> {
         return this._operatingState.asObservable();
     }
 
     /**
-     * Observe Discover events for the given target emitted by the hot
-     * observable returned.
+     * Observe Discover events.
      *
-     * Discover events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Discover events should be emitted
-     * @returns a hot observable emitting incoming Discover events
+     * @returns an observable emitting incoming Discover events
      */
-    observeDiscover(eventTarget: CoatyObject): Observable<DiscoverEvent> {
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Discover) as Observable<DiscoverEvent>;
+    observeDiscover(): Observable<DiscoverEvent> {
+        return this._observeRequest(CommunicationEventType.Discover) as Observable<DiscoverEvent>;
     }
 
     /**
-     * Observe Query events for the given target emitted by the hot
-     * observable returned.
+     * Observe Query events.
      *
-     * Query events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Query events should be emitted
-     * @returns a hot observable emitting incoming Query events
+     * @returns an observable emitting incoming Query events
      */
-    observeQuery(eventTarget: CoatyObject): Observable<QueryEvent> {
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Query) as Observable<QueryEvent>;
+    observeQuery(): Observable<QueryEvent> {
+        return this._observeRequest(CommunicationEventType.Query) as Observable<QueryEvent>;
     }
 
     /**
-     * Observe Update events for the given target emitted by the hot
-     * observable returned.
+     * Observe Update events.
      *
-     * Update events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Update events should be emitted
-     * @returns a hot observable emitting incoming Update events
+     * @returns an observable emitting incoming Update events
      */
-    observeUpdate(eventTarget: CoatyObject): Observable<UpdateEvent> {
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Update) as Observable<UpdateEvent>;
+    observeUpdate(): Observable<UpdateEvent> {
+        return this._observeRequest(CommunicationEventType.Update) as Observable<UpdateEvent>;
     }
 
     /**
-     * Observe Call events for the given target and the given
-     * operation name and context object, emitted by the hot observable returned.
-     * 
-     * The operation name must be a non-empty string that does not contain
-     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, 
-     * `/ (U+002F)`.
-     * 
+     * Observe Call events for the given operation and context object.
+     *
+     * The operation must be a non-empty string that does not contain the
+     * following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
+     * (U+002F)`.
+     *
      * The given context object is matched against the context filter specified
      * in incoming Call event data to determine whether the Call event should be
-     * emitted or skipped by the observable. A Call event is skipped if and only 
-     * if a context filter and a context object are *both* specified and they do not
-     * match (checked by using `ObjectMatcher.matchesFilter`). In all other cases,
-     * the Call event is emitted.
+     * emitted or skipped by the observable. A Call event is skipped if and only
+     * if a context filter and a context object are *both* specified and they do
+     * not match (checked by using `ObjectMatcher.matchesFilter`). In all other
+     * cases, the Call event is emitted.
      *
-     * Call events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Call events should be emitted
      * @param operation the name of the operation to be invoked
-     * @param context a context object to be matched against the Call event data's context filter (optional)
-     * @returns a hot observable emitting incoming Call events whose context filter matches the given context
+     * @param context a context object to be matched against the Call event
+     * data's context filter (optional)
+     * @returns an observable emitting incoming Call events whose context filter
+     * matches the given context
      */
-    observeCall(eventTarget: CoatyObject, operation: string, context?: CoatyObject): Observable<CallEvent> {
+    observeCall(operation: string, context?: CoatyObject): Observable<CallEvent> {
         if (!CommunicationTopic.isValidEventTypeFilter(operation)) {
             throw new TypeError(`${operation} is not a valid operation name`);
         }
-        return (this._observeRequest(eventTarget.objectId, CommunicationEventType.Call, operation) as Observable<CallEvent>)
+        return (this._observeRequest(CommunicationEventType.Call, operation) as Observable<CallEvent>)
             .pipe(filter(event => event.eventData.matchesFilter(context)));
     }
 
     /**
-     * Observe Advertise events for the given target and the given
-     * core type emitted by the hot observable returned.
+     * Observe Advertise events for the given core type.
      *
-     * Advertise events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Advertise events should be emitted
      * @param coreType core type of objects to be observed.
-     * @returns a hot observable emitting incoming Advertise events
+     * @returns an observable emitting incoming Advertise events
      */
-    observeAdvertiseWithCoreType(eventTarget: CoatyObject, coreType: CoreType): Observable<AdvertiseEvent> {
-        return this._observeAdvertise(eventTarget, coreType);
+    observeAdvertiseWithCoreType(coreType: CoreType): Observable<AdvertiseEvent> {
+        return this._observeAdvertise(coreType);
     }
 
     /**
-     * Observe Advertise events for the given target and the given
-     * object type emitted by the hot observable returned.
+     * Observe Advertise events for the given object type.
      *
-     * Advertise events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Advertise events should be emitted
      * @param objectType object type of objects to be observed.
-     * @returns a hot observable emitting incoming Advertise events
+     * @returns an observable emitting incoming Advertise events
      */
-    observeAdvertiseWithObjectType(eventTarget: CoatyObject, objectType: string): Observable<AdvertiseEvent> {
-        return this._observeAdvertise(eventTarget, undefined, objectType);
+    observeAdvertiseWithObjectType(objectType: string): Observable<AdvertiseEvent> {
+        return this._observeAdvertise(undefined, objectType);
     }
 
     /**
-     * Observe Deadvertise events for the given target emitted by the hot
-     * observable returned.
-     *
-     * Deadvertise events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
+     * Observe Deadvertise events.
      *
      * @param eventTarget target for which Deadvertise events should be emitted
-     * @returns a hot observable emitting incoming Deadvertise events
+     * @returns an observable emitting incoming Deadvertise events
      */
-    observeDeadvertise(eventTarget: CoatyObject): Observable<DeadvertiseEvent> {
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Deadvertise) as Observable<DeadvertiseEvent>;
+    observeDeadvertise(): Observable<DeadvertiseEvent> {
+        return this._observeRequest(CommunicationEventType.Deadvertise) as Observable<DeadvertiseEvent>;
     }
 
     /**
-     * Observe Channel events for the given target and the given
-     * channel identifier emitted by the hot observable returned.
-     * 
+     * Observe Channel events for the given channel identifier.
+     *
      * The channel identifier must be a non-empty string that does not contain
-     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, 
-     * `/ (U+002F)`.
+     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
+     * (U+002F)`.
      *
-     * Channel events that originate from the given event target, i.e.
-     * that have been published by specifying the given event target as
-     * event source, will not be emitted by the observable returned.
-     *
-     * @param eventTarget target for which Channel events should be emitted
      * @param channelId a channel identifier
-     * @returns a hot observable emitting incoming Channel events
+     * @returns an observable emitting incoming Channel events
      */
-    observeChannel(eventTarget: CoatyObject, channelId: string): Observable<ChannelEvent> {
+    observeChannel(channelId: string): Observable<ChannelEvent> {
         if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
             throw new TypeError(`${channelId} is not a valid channel identifier`);
         }
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Channel, channelId) as Observable<ChannelEvent>;
+        return this._observeRequest(CommunicationEventType.Channel, channelId) as Observable<ChannelEvent>;
     }
 
     /**
-     * Observe incoming messages on raw MQTT subscription topics. The observable returned by
-     * calling `observeRaw` emits messages as tuples including the actual published topic and
-     * the payload. Payload is represented as `Uint8Array` (`Buffer` in Node.js) and needs to
-     * be parsed by the application. Use the `toString` method on a payload to convert the raw
-     * data to an UTF8 encoded string.
-     * 
-     * Used to interoperate with external MQTT clients that publish messages on raw
-     * (usually non-Coaty) topics.
+     * Observe incoming messages on raw MQTT subscription topics.
      *
-     * Note that the returned observable is *shared* among all raw topic observers. This
-     * basically means that the observable will emit messages for *all* observed
-     * raw subscription topics, not only for the one specified in a single method call.
-     * Thus, you should always pipe the observable through an RxJS `filter` operator to
-     * filter out the messages associated with the given subscription topic.
-     * 
+     * The observable returned by calling `observeRaw` emits messages as tuples
+     * including the actual published topic and the payload. Payload is
+     * represented as `Uint8Array` (`Buffer` in Node.js) and needs to be parsed
+     * by the application. Use the `toString` method on a payload to convert the
+     * raw data to an UTF8 encoded string.
+     *
+     * Used to interoperate with external MQTT clients that publish messages on
+     * raw (usually non-Coaty) topics.
+     *
+     * Note that the returned observable is *shared* among all raw topic
+     * observers. This basically means that the observable will emit messages
+     * for *all* observed raw subscription topics, not only for the one
+     * specified in a single method call. Thus, you should always pipe the
+     * observable through an RxJS `filter` operator to filter out the messages
+     * associated with the given subscription topic.
+     *
      * ```ts
      * import { filter } from "rxjs/operators";
      *
      * this.communicationManager
-     *    .observeRaw(this.identity, "$SYS/#")
+     *    .observeRaw("$SYS/#")
      *    .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
      *    .subscribe(([topic, payload]) => {
      *        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
      *    });
      * ```
-     * 
-     * @remarks
-     * Observing raw subscription topics does *not* suppress observation of non-raw communication
-     * event types by the communication manager: If at least one raw topic is observed, the
-     * communication manager first dispatches *any* incoming message to *all* raw message observers.
-     * Then, event dispatching continues as usual by handling all non-raw communication event
-     * types which are observed.
-     * 
-     * The specified subscription topic must be a valid MQTT subscription topic. It must not contain the 
-     * character `NULL (U+0000)`.
      *
-     * @param eventTarget target for which values should be emitted
+     * @remarks
+     * Observing raw subscription topics does *not* suppress observation of
+     * non-raw communication event types by the communication manager: If at
+     * least one raw topic is observed, the communication manager first
+     * dispatches *any* incoming message to *all* raw message observers. Then,
+     * event dispatching continues as usual by handling all non-raw
+     * communication event types which are observed.
+     *
+     * The specified subscription topic must be a valid MQTT subscription topic.
+     * It must not contain the character `NULL (U+0000)`.
+     *
      * @param topicFilter the subscription topic
-     * @returns a hot observable emitting any incoming messages as tuples containing the actual topic
-     * and the payload as Uint8Array (Buffer in Node.js)
+     * @returns an observable emitting any incoming messages as tuples
+     * containing the actual topic and the payload as Uint8Array (Buffer in
+     * Node.js)
      */
-    observeRaw(eventTarget: CoatyObject, topicFilter: string): Observable<[string, Uint8Array]> {
+    observeRaw(topicFilter: string): Observable<[string, Uint8Array]> {
         if (typeof topicFilter !== "string" ||
             topicFilter.length === 0 ||
             topicFilter.indexOf("\u0000") !== -1) {
             throw new TypeError(`${topicFilter} is not a valid subscription topic`);
         }
 
-        return this._observeRequest(eventTarget.objectId, CommunicationEventType.Raw, topicFilter) as Observable<any>;
+        return this._observeRequest(CommunicationEventType.Raw, topicFilter) as Observable<any>;
     }
 
     /**
-     * Observe IO state events for the given IO source or IO actor
-     * emitted by the behavior subject returned. When subscribed the
-     * subject immediately emits the current association state.
+     * Observe IO state events for the given IO source or actor. 
      *
-     * @param eventTarget target for which IO values should be emitted
-     * @returns a subject emitting IO state events for the given target
+     * When subscribed the subject immediately emits the current association
+     * state.
+     *
+     * @returns a subject emitting IO state events for the given IO source or
+     * actor
      */
-    observeIoState(eventTarget: IoSource | IoActor): BehaviorSubject<IoStateEvent> {
-        return this._observeIoState(eventTarget.objectId);
+    observeIoState(ioPoint: IoSource | IoActor): BehaviorSubject<IoStateEvent> {
+        return this._observeIoState(ioPoint.objectId);
     }
 
     /**
-     * Observe IO values for the given IO actor emitted by the hot observable
-     * returned.
+     * Observe IO values for the given IO actor.
      *
-     * @param eventTarget IO actor for which IO values should be emitted
-     * @returns a hot observable emitting incoming values for an IO actor
+     * @returns an observable emitting incoming values for the IO actor
      */
-    observeIoValue(eventTarget: IoActor): Observable<any> {
-        return this._observeIoValue(eventTarget.objectId);
+    observeIoValue(ioActor: IoActor): Observable<any> {
+        return this._observeIoValue(ioActor.objectId);
     }
 
     /**
-     * Find discoverable objects and receive Resolve events for them
-     * emitted by the hot observable returned.
+     * Find discoverable objects and receive Resolve events for them.
      *
-     * Note that the Discover event is lazily published when the
-     * first observer subscribes to the observable.
+     * Note that the Discover event is lazily published when the first observer
+     * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event,
-     * a subscriber should unsubscribe when the observable is no longer needed
-     * to release system resources and to avoid memory leaks. After all initial 
-     * subscribers have unsubscribed no more response events will be emitted 
-     * on the observable and an error will be thrown on resubscription.
+     * Since the observable never emits a completed or error event, a subscriber
+     * should unsubscribe when the observable is no longer needed to release
+     * system resources and to avoid memory leaks. After all initial subscribers
+     * have unsubscribed no more response events will be emitted on the
+     * observable and an error will be thrown on resubscription.
      *
      * @param event the Discover event to be published
-     * @returns a hot observable on which associated Resolve events are emitted
+     * @returns an observable on which associated Resolve events are emitted
      */
     publishDiscover(event: DiscoverEvent): Observable<ResolveEvent> {
         return this._publishClient(event) as Observable<ResolveEvent>;
     }
 
     /**
-     * Find queryable objects and receive Retrieve events for them
-     * emitted by the hot observable returned.
+     * Find queryable objects and receive Retrieve events for them.
      *
-     * Note that the Query event is lazily published when the
-     * first observer subscribes to the observable.
+     * Note that the Query event is lazily published when the first observer
+     * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event,
-     * a subscriber should unsubscribe when the observable is no longer needed
-     * to release system resources and to avoid memory leaks. After all initial 
-     * subscribers have unsubscribed no more response events will be emitted 
-     * on the observable and an error will be thrown on resubscription.
+     * Since the observable never emits a completed or error event, a subscriber
+     * should unsubscribe when the observable is no longer needed to release
+     * system resources and to avoid memory leaks. After all initial subscribers
+     * have unsubscribed no more response events will be emitted on the
+     * observable and an error will be thrown on resubscription.
      *
      * @param event the Query event to be published
-     * @returns a hot observable on which associated Retrieve events are emitted
+     * @returns an observable on which associated Retrieve events are emitted
      */
     publishQuery(event: QueryEvent): Observable<RetrieveEvent> {
         return this._publishClient(event) as Observable<RetrieveEvent>;
     }
 
     /**
-     * Request or propose partial or full update of the specified object 
-     * and receive accomplishments emitted by the hot observable returned.
+     * Request or propose partial or full update of the specified object and
+     * receive accomplishments.
      *
-     * Note that the Update event is lazily published when the
-     * first observer subscribes to the observable.
+     * Note that the Update event is lazily published when the first observer
+     * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event,
-     * a subscriber should unsubscribe when the observable is no longer needed
-     * to release system resources and to avoid memory leaks. After all initial 
-     * subscribers have unsubscribed no more response events will be emitted 
-     * on the observable and an error will be thrown on resubscription.
+     * Since the observable never emits a completed or error event, a subscriber
+     * should unsubscribe when the observable is no longer needed to release
+     * system resources and to avoid memory leaks. After all initial subscribers
+     * have unsubscribed no more response events will be emitted on the
+     * observable and an error will be thrown on resubscription.
      *
      * @param event the Update event to be published
-     * @returns a hot observable of associated Complete events
+     * @returns an observable of associated Complete events
      */
     publishUpdate(event: UpdateEvent): Observable<CompleteEvent> {
         return this._publishClient(event) as Observable<CompleteEvent>;
     }
 
     /**
-     * Publish a Call event to request execution of a remote operation and receive
-     * results emitted by the hot observable returned.
-     * 
-     * Note that the Call event is lazily published when the
-     * first observer subscribes to the observable.
+     * Publish a Call event to request execution of a remote operation and
+     * receive results.
      *
-     * Since the observable never emits a completed or error event,
-     * a subscriber should unsubscribe when the observable is no longer needed
-     * to release system resources and to avoid memory leaks. After all initial
-     * subscribers have unsubscribed no more response events will be emitted
-     * on the observable and an error will be thrown on resubscription.
+     * Note that the Call event is lazily published when the first observer
+     * subscribes to the observable.
+     *
+     * Since the observable never emits a completed or error event, a subscriber
+     * should unsubscribe when the observable is no longer needed to release
+     * system resources and to avoid memory leaks. After all initial subscribers
+     * have unsubscribed no more response events will be emitted on the
+     * observable and an error will be thrown on resubscription.
      *
      * @param event the Call event to be published
-     * @returns a hot observable of associated Return events
+     * @returns an observable of associated Return events
      */
     publishCall(event: CallEvent): Observable<ReturnEvent> {
         return this._publishClient(event, event.operation) as Observable<ReturnEvent>;
@@ -527,11 +467,11 @@ export class CommunicationManager implements IComponent {
         // Publish event with core type filter to satisfy core type observers.
         this._publishClient(event, coreType);
 
-        // Optimization: Publish event with object type filter to satisfy object type observers
-        // unless the advertised object is a core object with a core object type.
-        // In this (exotic) case, core object type observers subscribe on the core type
-        // followed by a local filter operation to filter out unwanted objects
-        // (see `observeAdvertise`).
+        // Publish event with object type filter to satisfy object type
+        // observers unless the advertised object is a core object with a core
+        // object type. In this case, core object type observers subscribe on
+        // the core type followed by a local filter operation to filter out
+        // unwanted objects (see `observeAdvertise`).
         if (CoreTypes.getObjectTypeFor(coreType) !== objectType) {
             this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType);
         }
@@ -596,8 +536,9 @@ export class CommunicationManager implements IComponent {
 
     /**
      * Send the given IO value sourced from the specified IO source.
-     * The value is silently discarded if the IO source is currently
-     * not associated with any IO actor.
+     *
+     * The value is silently discarded if the IO source is currently not
+     * associated with any IO actor.
      */
     publishIoValue(ioSource: IoSource, value: any) {
         this._publishIoValue(ioSource.objectId, value);
@@ -620,7 +561,7 @@ export class CommunicationManager implements IComponent {
     createIoValueTopic(ioSource: IoSource): string {
         return CommunicationTopic.createByLevels(
             this._associatedUser,
-            ioSource,
+            ioSource.objectId,
             CommunicationEventType.IoValue,
             undefined,
             this.runtime.newUuid(),
@@ -629,7 +570,8 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Unsubscribe and disconnect from the messaging broker.
+     * Perform clean-up side effects, such as unsubscribing, and disconnect from
+     * the messaging transport.
      */
     onDispose() {
         if (this._isDisposed) {
@@ -653,17 +595,6 @@ export class CommunicationManager implements IComponent {
         this._useReadableTopics = !!this.options.useReadableTopics;
     }
 
-    private _createIdentity(): Identity {
-        const defaultIdentity: Identity = {
-            objectType: CoreTypes.OBJECT_TYPE_IDENTITY,
-            coreType: "Identity",
-            objectId: this.runtime.newUuid(),
-            name: "CommunicationManager",
-        };
-
-        return Object.assign(defaultIdentity, this.options.identity || {});
-    }
-
     private _updateCommunicationState(newState: CommunicationState) {
         if (this._state.getValue() !== newState) {
             this._state.next(newState);
@@ -677,7 +608,7 @@ export class CommunicationManager implements IComponent {
     }
 
     private _initClient() {
-        this._observedRequests = new Map<string, Map<Uuid, ObservedRequestItem>>();
+        this._observedRequests = new Map<string, ObservedRequestItem>();
         this._observedResponses = new Map<Uuid, ObservedResponseItem>();
         this._ioStateItems = new Map<Uuid, IoStateItem>();
         this._ioValueItems = new Map<Uuid, AnyValueItem>();
@@ -690,7 +621,6 @@ export class CommunicationManager implements IComponent {
 
     private _startClient() {
         this._deadvertiseIds = [];
-        this._updateOperatingState(OperatingState.Starting);
 
         this._observeAssociate();
         this._observeDiscoverDevice();
@@ -768,7 +698,7 @@ export class CommunicationManager implements IComponent {
     }
 
     private _getBrokerUrl(url: string, options: any) {
-        if (options && options.servers && options.servers.length > 0) {
+        if (options?.servers && options.servers.length > 0) {
             /* tslint:disable-next-line:no-null-keyword */
             return null;
         }
@@ -786,8 +716,6 @@ export class CommunicationManager implements IComponent {
         }
 
         this._cleanupIoState();
-
-        this._updateOperatingState(OperatingState.Stopping);
 
         this._unobserveObservedItems();
         this._unobserveAssociate();
@@ -824,7 +752,7 @@ export class CommunicationManager implements IComponent {
          * The Server MAY allow ClientId’s that contain more than 23 encoded bytes.
          * The Server MAY allow ClientId’s that contain characters not included in the list given above. 
          */
-        const id = this.identity.objectId;
+        const id = this._container.identity.objectId;
         if (this.options.useProtocolCompliantClientId === undefined ||
             this.options.useProtocolCompliantClientId === false) {
             return `COATY${id}`;
@@ -928,7 +856,7 @@ export class CommunicationManager implements IComponent {
                 // Dispatch incoming response message to associated observable.
                 const item = this._observedResponses.get(topic.messageToken);
                 if (item === undefined) {
-                    // There are no more subscribers for this response event, skip it.
+                    // There are no subscribers for this response event, skip it.
                     return;
                 }
                 if (item.request.eventType === CommunicationEventType.Update &&
@@ -954,11 +882,9 @@ export class CommunicationManager implements IComponent {
 
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    eventSource: CommunicationTopic.uuidFromLevel(
-                        topic.sourceObjectId),
+                    eventSourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
+                    eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
                     eventData: JSON.parse(msgPayload),
-                    eventUserId: CommunicationTopic.uuidFromLevel(
-                        topic.associatedUserId),
                     eventRequest: item.request,
                 });
 
@@ -983,59 +909,50 @@ export class CommunicationManager implements IComponent {
                 item.dispatchNext(message);
                 isDispatching = false;
             } else {
-                // Dispatch incoming request message to associated observables
-                // using individual deep copies of the event data.
-                // Ensure that echo messages are not dispatched.
-                const targetItems = this._observedRequests.get(topic.eventTypeName);
-                if (targetItems) {
-                    targetItems.forEach((item, targetId) => {
-                        const sourceId = CommunicationTopic.uuidFromLevel(topic.sourceObjectId);
-
-                        // To suppress echo messages dispatch event to all associated 
-                        // observables except to those that published the 
-                        // incoming message originally.
-                        if (sourceId === targetId) {
-                            return;
-                        }
-
-                        const message = this._createEventInstance({
-                            eventType: topic.eventType,
-                            eventSource: sourceId,
-                            eventData: JSON.parse(msgPayload),
-                            eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
-                            eventTypeFilter: topic.eventTypeFilter,
-                        });
-
-                        if (message instanceof DiscoverEvent) {
-                            message.resolve = (event: ResolveEvent) => {
-                                message.ensureValidResponseParameters(event.eventData);
-                                this._publishClient(event, undefined, topic.messageToken);
-                            };
-                        }
-                        if (message instanceof QueryEvent) {
-                            message.retrieve = (event: RetrieveEvent) => {
-                                message.ensureValidResponseParameters(event.eventData);
-                                this._publishClient(event, undefined, topic.messageToken);
-                            };
-                        }
-                        if (message instanceof UpdateEvent) {
-                            message.complete = (event: CompleteEvent) => {
-                                message.ensureValidResponseParameters(event.eventData);
-                                this._publishClient(event, undefined, topic.messageToken);
-                            };
-                        }
-                        if (message instanceof CallEvent) {
-                            message.returnEvent = (event: ReturnEvent) => {
-                                message.ensureValidResponseParameters(event.eventData);
-                                this._publishClient(event, undefined, topic.messageToken);
-                            };
-                        }
-
-                        isDispatching = true;
-                        item.dispatchNext(message);
-                        isDispatching = false;
-                    });
+                // Dispatch incoming request message to associated observable
+                // using individual deep copies of the event data. Note that
+                // echo messages are also dispatched.
+                const item = this._observedRequests.get(topic.eventTypeName);
+                if (item === undefined) {
+                    // There are no subscribers for this request event, skip it.
+                    return;
                 }
+                const message = this._createEventInstance({
+                    eventType: topic.eventType,
+                    eventSourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
+                    eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
+                    eventData: JSON.parse(msgPayload),
+                    eventTypeFilter: topic.eventTypeFilter,
+                });
+
+                if (message instanceof DiscoverEvent) {
+                    message.resolve = (event: ResolveEvent) => {
+                        message.ensureValidResponseParameters(event.eventData);
+                        this._publishClient(event, undefined, topic.messageToken);
+                    };
+                }
+                if (message instanceof QueryEvent) {
+                    message.retrieve = (event: RetrieveEvent) => {
+                        message.ensureValidResponseParameters(event.eventData);
+                        this._publishClient(event, undefined, topic.messageToken);
+                    };
+                }
+                if (message instanceof UpdateEvent) {
+                    message.complete = (event: CompleteEvent) => {
+                        message.ensureValidResponseParameters(event.eventData);
+                        this._publishClient(event, undefined, topic.messageToken);
+                    };
+                }
+                if (message instanceof CallEvent) {
+                    message.returnEvent = (event: ReturnEvent) => {
+                        message.ensureValidResponseParameters(event.eventData);
+                        this._publishClient(event, undefined, topic.messageToken);
+                    };
+                }
+
+                isDispatching = true;
+                item.dispatchNext(message);
+                isDispatching = false;
             }
         } catch (error) {
             if (isDispatching) {
@@ -1051,8 +968,8 @@ export class CommunicationManager implements IComponent {
     }
 
     /**
-     * Create a new instance of the specified event object. Performs a safety
-     * type check to ensure that the given event data is valid.
+     * Create a new instance of the specified event object. Performs a
+     * validation type check to ensure that the given event data is valid.
      *
      * @param event an event object deserialized by JSON (on inbound event) or
      * created by the application (on outbound event).
@@ -1061,70 +978,50 @@ export class CommunicationManager implements IComponent {
         let instance: CommunicationEvent<CommunicationEventData>;
         switch (event.eventType) {
             case CommunicationEventType.Advertise:
-                instance = new AdvertiseEvent(
-                    event.eventSource,
-                    AdvertiseEventData.createFrom(event.eventData));
+                instance = new AdvertiseEvent(AdvertiseEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Associate:
-                instance = new AssociateEvent(
-                    event.eventSource,
-                    AssociateEventData.createFrom(event.eventData));
+                instance = new AssociateEvent(AssociateEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Deadvertise:
-                instance = new DeadvertiseEvent(
-                    event.eventSource,
-                    DeadvertiseEventData.createFrom(event.eventData));
+                instance = new DeadvertiseEvent(DeadvertiseEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Channel:
                 instance = new ChannelEvent(
-                    event.eventSource,
                     event.eventTypeFilter,
                     ChannelEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Discover:
-                instance = new DiscoverEvent(
-                    event.eventSource,
-                    DiscoverEventData.createFrom(event.eventData));
+                instance = new DiscoverEvent(DiscoverEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Resolve:
-                instance = new ResolveEvent(
-                    event.eventSource,
-                    ResolveEventData.createFrom(event.eventData));
+                instance = new ResolveEvent(ResolveEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Query:
-                instance = new QueryEvent(
-                    event.eventSource,
-                    QueryEventData.createFrom(event.eventData));
+                instance = new QueryEvent(QueryEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Retrieve:
-                instance = new RetrieveEvent(
-                    event.eventSource,
-                    RetrieveEventData.createFrom(event.eventData));
+                instance = new RetrieveEvent(RetrieveEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Update:
-                instance = new UpdateEvent(
-                    event.eventSource,
-                    UpdateEventData.createFrom(event.eventData));
+                instance = new UpdateEvent(UpdateEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Complete:
-                instance = new CompleteEvent(
-                    event.eventSource,
-                    CompleteEventData.createFrom(event.eventData));
+                instance = new CompleteEvent(CompleteEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Call:
                 instance = new CallEvent(
-                    event.eventSource,
                     event.eventTypeFilter,
                     CallEventData.createFrom(event.eventData));
                 break;
             case CommunicationEventType.Return:
-                instance = new ReturnEvent(
-                    event.eventSource,
-                    ReturnEventData.createFrom(event.eventData));
+                instance = new ReturnEvent(ReturnEventData.createFrom(event.eventData));
                 break;
             default:
                 throw new TypeError(`Couldn't create event instance for event type ${event.eventType}`);
         }
+        // For inbound event, sourceId is given; for outbound event sourceId is the agent identity.
+        instance.eventSourceId = event.eventSourceId || this._container.identity.objectId;
         instance.eventUserId = event.eventUserId;
         if (event.eventRequest) {
             instance.eventRequest = event.eventRequest;
@@ -1140,13 +1037,13 @@ export class CommunicationManager implements IComponent {
         // Safety check for valid event structure
         event = this._createEventInstance(event);
 
-        const { eventType, eventSource, eventSourceId, eventData } = event;
+        const { eventType, eventSourceId, eventData } = event;
 
         // Publish a response message for a request
         if (forMessageToken) {
             const responseTopic = CommunicationTopic.createByLevels(
                 this._associatedUser,
-                eventSource || eventSourceId,
+                eventSourceId,
                 eventType,
                 eventTypeFilter,
                 forMessageToken,
@@ -1161,7 +1058,7 @@ export class CommunicationManager implements IComponent {
         // Publish a request message
         const topic = CommunicationTopic.createByLevels(
             this._associatedUser,
-            eventSource || eventSourceId,
+            eventSourceId,
             eventType,
             eventTypeFilter,
             this.runtime.newUuid(),
@@ -1181,7 +1078,7 @@ export class CommunicationManager implements IComponent {
             const object = (eventData as AdvertiseEventData).object;
             if (object.coreType === "Identity") {
                 shouldPublishDeferredFirst = true;
-                if (object.objectId === this.identity.objectId) {
+                if (object.objectId === this._container.identity.objectId) {
                     isAdvertiseIdentity = true;
                 }
             } else if (object.coreType === "Device") {
@@ -1223,7 +1120,6 @@ export class CommunicationManager implements IComponent {
             // Create subscriptions for response event and postpone publishing 
             // request event until the first observer subscribes.
             return this._observeResponse(
-                eventSourceId,
                 responseType,
                 topic.messageToken,
                 event,
@@ -1280,20 +1176,10 @@ export class CommunicationManager implements IComponent {
     }
 
     private _observeRequest(
-        eventTargetId: Uuid,
         eventType: CommunicationEventType,
         eventTypeFilter?: string) {
         const eventTypeName = CommunicationTopic.getEventTypeName(eventType, eventTypeFilter);
-        let isAlreadySubscribed = true;
-        let targetItems = this._observedRequests.get(eventTypeName);
-
-        if (!targetItems) {
-            isAlreadySubscribed = false;
-            targetItems = new Map<Uuid, ObservedRequestItem>();
-            this._observedRequests.set(eventTypeName, targetItems);
-        }
-
-        let item = targetItems.get(eventTargetId);
+        let item = this._observedRequests.get(eventTypeName);
 
         if (!item) {
             const topicFilter = (eventType === CommunicationEventType.Raw) ?
@@ -1306,21 +1192,14 @@ export class CommunicationManager implements IComponent {
                         undefined,
                     undefined);
             item = new ObservedRequestItem(topicFilter);
-            targetItems.set(eventTargetId, item);
-            if (!isAlreadySubscribed) {
-                // Each item for a specific event type filter shares the same subscription.
-                // Do not subscribe the same topic filter for a specific 
-                // event type filter multiple times to avoid receiving multiple
-                // events on this topic. 
-                this._subscribeClient(topicFilter);
-            }
+            this._observedRequests.set(eventTypeName, item);
+            this._subscribeClient(topicFilter);
         }
 
         return item.observable;
     }
 
     private _observeResponse(
-        eventTargetId: Uuid,
         eventType: CommunicationEventType,
         messageToken: string,
         request: CommunicationEvent<CommunicationEventData>,
@@ -1360,14 +1239,8 @@ export class CommunicationManager implements IComponent {
 
     private _unobserveObservedItems() {
         if (this._isClientConnected) {
-            this._observedRequests.forEach(items => {
-                let isFirst = true;
-                items.forEach(item => {
-                    if (isFirst) {
-                        isFirst = false;
-                        this._client.unsubscribe(item.topicFilter);
-                    }
-                });
+            this._observedRequests.forEach(item => {
+                this._client.unsubscribe(item.topicFilter);
             });
             this._observedResponses.forEach(item => {
                 this._client.unsubscribe(item.topicFilter);
@@ -1386,18 +1259,15 @@ export class CommunicationManager implements IComponent {
             this._associatedDevice) {
             // Republish only once on failed reconnection attempts.
             if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseDevice)) {
-                this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this._associatedDevice));
+                this.publishAdvertise(AdvertiseEvent.withObject(this._associatedDevice));
             }
         }
 
-        // Advertise identity once if needed.
+        // Advertise identity once. 
         // (cp. _observeDiscoverIdentity)
-        if (this.options.shouldAdvertiseIdentity === undefined ||
-            this.options.shouldAdvertiseIdentity === true) {
-            // Republish only once on failed reconnection attempts.
-            if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseIdentity)) {
-                this.publishAdvertise(AdvertiseEvent.withObject(this.identity, this.identity));
-            }
+        // Republish only once on failed reconnection attempts.
+        if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseIdentity)) {
+            this.publishAdvertise(AdvertiseEvent.withObject(this._container.identity));
         }
 
         if (this._deadvertiseIds.length === 0) {
@@ -1414,7 +1284,7 @@ export class CommunicationManager implements IComponent {
         return {
             topic: CommunicationTopic.createByLevels(
                 this._associatedUser,
-                this.identity,
+                this._container.identity.objectId,
                 CommunicationEventType.Deadvertise,
                 undefined,
                 this.runtime.newUuid(),
@@ -1422,13 +1292,13 @@ export class CommunicationManager implements IComponent {
                 this._useReadableTopics,
             ).getTopicName(),
             payload: JSON.stringify(
-                new DeadvertiseEventData(...this._deadvertiseIds).toJsonObject()),
+                new DeadvertiseEventData(this._deadvertiseIds).toJsonObject()),
         };
     }
 
     private _deadvertiseIdentityOrDevice() {
         if (this._deadvertiseIds.length > 0) {
-            this.publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, ...this._deadvertiseIds));
+            this.publishDeadvertise(DeadvertiseEvent.withObjectIds(...this._deadvertiseIds));
         }
     }
 
@@ -1468,18 +1338,16 @@ export class CommunicationManager implements IComponent {
         try {
             let isRawDispatch = false;
             // Dispatch raw message on all registered observables of event type "Raw:<any subscription topic>"
-            this._observedRequests.forEach((targetItems, eventTypeName) => {
+            this._observedRequests.forEach((item, eventTypeName) => {
                 if (!eventTypeName.startsWith(CommunicationEventType[CommunicationEventType.Raw] +
                     CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR)) {
                     return;
                 }
-                targetItems.forEach(item => {
-                    isRawDispatch = true;
-                    isDispatching = true;
-                    // Dispatch raw data and the actual topic (parsing is up to the application)
-                    item.dispatchNext(payload, topicName);
-                    isDispatching = false;
-                });
+                isRawDispatch = true;
+                isDispatching = true;
+                // Dispatch raw data and the actual topic (parsing is up to the application)
+                item.dispatchNext(payload, topicName);
+                isDispatching = false;
             });
             return isRawDispatch;
         } catch (error) {
@@ -1494,7 +1362,7 @@ export class CommunicationManager implements IComponent {
         }
     }
 
-    private _observeAdvertise(eventTarget: CoatyObject, coreType?: CoreType, objectType?: string): Observable<AdvertiseEvent> {
+    private _observeAdvertise(coreType?: CoreType, objectType?: string): Observable<AdvertiseEvent> {
         if (coreType && !CoreTypes.isCoreType(coreType)) {
             throw new TypeError(`${coreType} is not a CoreType`);
         }
@@ -1507,7 +1375,6 @@ export class CommunicationManager implements IComponent {
             const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
             if (objectCoreType) {
                 return (this._observeRequest(
-                    eventTarget.objectId,
                     CommunicationEventType.Advertise,
                     objectCoreType) as Observable<AdvertiseEvent>)
                     .pipe(filter(event => event.eventData.object.objectType === objectType));
@@ -1515,7 +1382,6 @@ export class CommunicationManager implements IComponent {
         }
 
         return this._observeRequest(
-            eventTarget.objectId,
             CommunicationEventType.Advertise,
             coreType || CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType) as Observable<AdvertiseEvent>;
     }
@@ -1526,17 +1392,15 @@ export class CommunicationManager implements IComponent {
         }
 
         this._associateSubscription =
-            this._observeRequest(this.identity.objectId, CommunicationEventType.Associate)
+            this._observeRequest(CommunicationEventType.Associate)
                 // No need to filter event on associated user ID since the 
                 // topic subscription already restricts on this ID
                 .subscribe(event => this._handleAssociate(event as AssociateEvent));
     }
 
     private _unobserveAssociate() {
-        if (this._associateSubscription) {
-            this._associateSubscription.unsubscribe();
-            this._associateSubscription = undefined;
-        }
+        this._associateSubscription?.unsubscribe();
+        this._associateSubscription = undefined;
     }
 
     private _observeDiscoverDevice() {
@@ -1547,45 +1411,36 @@ export class CommunicationManager implements IComponent {
         }
 
         this._discoverDeviceSubscription =
-            this._observeRequest(this.identity.objectId, CommunicationEventType.Discover)
+            this._observeRequest(CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
                     (event.eventData.isDiscoveringTypes &&
                         event.eventData.isCoreTypeCompatible("Device")) ||
                     (event.eventData.isDiscoveringObjectId &&
                         event.eventData.objectId === this._associatedDevice.objectId)))
                 .subscribe((event: DiscoverEvent) =>
-                    event.resolve(ResolveEvent.withObject(this.identity, this._associatedDevice)));
+                    event.resolve(ResolveEvent.withObject(this._associatedDevice)));
     }
 
     private _unobserveDiscoverDevice() {
-        if (this._discoverDeviceSubscription) {
-            this._discoverDeviceSubscription.unsubscribe();
-            this._discoverDeviceSubscription = undefined;
-        }
+        this._discoverDeviceSubscription?.unsubscribe();
+        this._discoverDeviceSubscription = undefined;
     }
 
     private _observeDiscoverIdentity() {
-        if (!(this.options.shouldAdvertiseIdentity === undefined ||
-            this.options.shouldAdvertiseIdentity === true)) {
-            return;
-        }
-
         this._discoverIdentitySubscription =
-            this._observeRequest(this.identity.objectId, CommunicationEventType.Discover)
+            this._observeRequest(CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
                     (event.eventData.isDiscoveringTypes &&
                         event.eventData.isCoreTypeCompatible("Identity")) ||
                     (event.eventData.isDiscoveringObjectId &&
-                        event.eventData.objectId === this.identity.objectId)))
+                        event.eventData.objectId === this._container.identity.objectId)))
                 .subscribe((event: DiscoverEvent) =>
-                    event.resolve(ResolveEvent.withObject(this.identity, this.identity)));
+                    event.resolve(ResolveEvent.withObject(this._container.identity)));
     }
 
     private _unobserveDiscoverIdentity() {
-        if (this._discoverIdentitySubscription) {
-            this._discoverIdentitySubscription.unsubscribe();
-            this._discoverIdentitySubscription = undefined;
-        }
+        this._discoverIdentitySubscription?.unsubscribe();
+        this._discoverIdentitySubscription = undefined;
     }
 
     private _handleAssociate(event: AssociateEvent) {

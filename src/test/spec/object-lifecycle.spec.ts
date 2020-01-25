@@ -76,7 +76,7 @@ describe("Object Lifecycle Management", () => {
                     advertisingController.deadvertiseDiscoverableObject(objectToTrack, subscription);
 
                     delayAction(500, done, () => {
-                        expect(objectToTrack.parentObjectId).toBe(advertisingContainer.communicationManager.identity.objectId);
+                        expect(objectToTrack.parentObjectId).toBe(advertisingContainer.identity.objectId);
 
                         expect(lifecycleInfo.length).toBe(3);
 
@@ -118,7 +118,7 @@ describe("Object Lifecycle Management", () => {
                 });
 
             delayAction(200, undefined, () => {
-                const advertisingAgentIdentityId = advertisingContainer.communicationManager.identity.objectId;
+                const advertisingAgentIdentityId = advertisingContainer.identity.objectId;
                 advertisingContainer.shutdown();
 
                 delayAction(500, done, () => {

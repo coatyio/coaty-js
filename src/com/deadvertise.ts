@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoreTypes, Identity, Uuid } from "..";
+import { CoreTypes, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -11,11 +11,10 @@ export class DeadvertiseEvent extends CommunicationEvent<DeadvertiseEventData> {
     /**
      * Create a DeadvertiseEvent instance for deadvertising the given object IDs.
      * 
-     * @param eventSource the event source identity
      * @param objectIds object IDs to be deadvertised
      */
-    static withObjectIds(eventSource: Identity, ...objectIds: string[]) {
-        return new DeadvertiseEvent(eventSource, new DeadvertiseEventData(...objectIds));
+    static withObjectIds(...objectIds: string[]) {
+        return new DeadvertiseEvent(new DeadvertiseEventData(objectIds));
     }
 
     get eventType() {
@@ -25,16 +24,12 @@ export class DeadvertiseEvent extends CommunicationEvent<DeadvertiseEventData> {
 
 /**
  * Defines event data format to deadvertise an object (capability no longer
- * available or last will if client connection is closed abnormally).
+ * available or last will if connection is closed abnormally).
  */
 export class DeadvertiseEventData extends CommunicationEventData {
 
-    private _objectIds: Uuid[];
-
-    constructor(...objectIds: Uuid[]) {
+    constructor(private _objectIds: Uuid[]) {
         super();
-
-        this._objectIds = objectIds;
 
         if (!this._hasValidParameters()) {
             throw new TypeError("in DeadvertiseEventData: arguments not valid");
@@ -42,7 +37,7 @@ export class DeadvertiseEventData extends CommunicationEventData {
     }
 
     static createFrom(eventData: any): DeadvertiseEventData {
-        return new DeadvertiseEventData(...eventData.objectIds);
+        return new DeadvertiseEventData(eventData.objectIds);
     }
 
     /**

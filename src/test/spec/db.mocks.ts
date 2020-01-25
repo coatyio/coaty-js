@@ -25,7 +25,6 @@ export class MockQueryingController extends Controller {
     query(objectFilter: ObjectFilter, objectJoinConditions: ObjectJoinCondition[]): Observable<RetrieveEvent> {
         return this.communicationManager
             .publishQuery(QueryEvent.withObjectTypes(
-                this.identity,
                 [OBJECT_TYPE_NAME_DB_TEST_OBJECT],
                 objectFilter,
                 objectJoinConditions));
@@ -41,7 +40,7 @@ export class DbTestObjectManagementController extends Controller {
 
     private _handleQueryEvents() {
         this.communicationManager
-            .observeQuery(this.identity)
+            .observeQuery()
             .pipe(filter(event => event.eventData.isObjectTypeCompatible(OBJECT_TYPE_NAME_DB_TEST_OBJECT)))
             .subscribe(event => {
                 this._retrieveTestObjects(event);
@@ -72,7 +71,7 @@ export class DbTestObjectManagementController extends Controller {
         dbContext
             .findObjects<DbTestObject>("testobjects", objectFilter, joinConditions)
             .then(iterator => iterator.forBatch(batch => {
-                event.retrieve(RetrieveEvent.withObjects(this.identity, batch));
+                event.retrieve(RetrieveEvent.withObjects(batch));
             }))
             .catch(error => {
                 // In case of retrieval error, do not respond with a Retrieve event.

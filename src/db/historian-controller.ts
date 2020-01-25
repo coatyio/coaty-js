@@ -18,22 +18,27 @@ import {
 import { DbContext } from "./db-context";
 
 /**
- * HistorianController is a generic controller which can be used
- * on each Coaty node to create and/or persist Snapshot objects in time of 
- * arbitrary Coaty objects.
- * 
+ * A controller which can be used on each Coaty agent to create and/or persist
+ * Snapshot objects in time of arbitrary Coaty objects.
+ *
  * Available controller options (default value for all options is `false`):
- * - `shouldAdvertiseSnapshots`: if `true` each generated Snapshot object will be advertised
- * - `shouldPersistLocalSnapshots`: if `true` each Snapshot object generated will be persisted 
- * in a database collection if the `database` option is set with valid values
- * - `shouldPersistObservedSnapshots`: if `true` each Snapshot object observed as Advertise event 
- * will be persisted in database if the `database` option is set with valid values; Note: local snapshots will 
- * not be observed and hereby not persisted, if `shouldPersistLocalSnapshots` is not additionally set to `true`. 
- * - `shouldReplyToQueries`: if `true` HistorianController will execute matching query events 
- * on the database if the `database` option is set with valid values
- * - `database`: with two properties `key` and `collection`; `key` references the database key as defined in the `databases`
- * option of your configuration; `collection` is the name of the collection to be used. If the collection doesn't exist,
- * it will be created in the given database.
+ * - `shouldAdvertiseSnapshots`: if `true` each generated Snapshot object will
+ *   be advertised
+ * - `shouldPersistLocalSnapshots`: if `true` each Snapshot object generated
+ *   will be persisted in a database collection if the `database` option is set
+ *   with valid values
+ * - `shouldPersistObservedSnapshots`: if `true` each Snapshot object observed
+ *   as Advertise event will be persisted in database if the `database` option
+ *   is set with valid values; Note: local snapshots will not be observed and
+ *   hereby not persisted, if `shouldPersistLocalSnapshots` is not additionally
+ *   set to `true`. 
+ * - `shouldReplyToQueries`: if `true` HistorianController will execute matching
+ *   query events on the database if the `database` option is set with valid
+ *   values
+ * - `database`: with two properties `key` and `collection`; `key` references
+ *   the database key as defined in the `databases` option of your
+ *   configuration; `collection` is the name of the collection to be used. If
+ *   the collection doesn't exist, it will be created in the given database.
  */
 export class HistorianController extends Controller {
 
@@ -63,42 +68,50 @@ export class HistorianController extends Controller {
 
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
-        this._querySubscription && this._querySubscription.unsubscribe();
-        this._advertiseSubscription && this._advertiseSubscription.unsubscribe();
+        this._querySubscription?.unsubscribe();
+        this._advertiseSubscription?.unsubscribe();
     }
 
     /**
-     * Create a new snapshot object of the given object with a creation timestamp set 
-     * to `Date.now()`. The new snapshot object will be processed according to the 
-     * controller options specified. The promise returned is resolved with the created 
+     * Create a new snapshot object of the given object with a creation
+     * timestamp set to `Date.now()`.
+     *
+     * The new snapshot object will be processed according to the controller
+     * options specified. The promise returned is resolved with the created
      * snapshot after it has been advertised and/or persisted locally.
-     * 
-     * Note: Advertisement and persistence of snapshots are executed asynchronously.
-     * Whenever a snapshot is both persisted locally and advertised it is guaranteed that 
-     * the snapshot has been stored in the database before being advertised.
-     * This also implies that Advertise events are not necessarily delivered in the same 
-     * order in which snapshots were generated.
-     * 
+     *
+     * Note: Advertisement and persistence of snapshots are executed
+     * asynchronously. Whenever a snapshot is both persisted locally and
+     * advertised it is guaranteed that the snapshot has been stored in the
+     * database before being advertised. This also implies that Advertise events
+     * are not necessarily delivered in the same order in which snapshots were
+     * generated.
+     *
      * @param obj Object from which the snapshot will be created
-     * @param tags String tags which can be used for filtering of (persisted) snapshot objects
+     * @param tags String tags which can be used for filtering of (persisted)
+     * snapshot objects
      */
     generateSnapshot(obj: CoatyObject, ...tags: string[]): Promise<Snapshot>;
 
     /**
-     * Create a new snapshot object of the given object with the given creation timestamp. 
-     * The new snapshot object will be processed according to the controller options specified.
-     * The promise returned is resolved with the created snapshot after it has been
-     * advertised and/or persisted locally.
-     * 
-     * Note: Advertisement and persistence of snapshots are executed asynchronously.
-     * Whenever a snapshot is both persisted locally and advertised it is guaranteed that 
-     * the snapshot has been stored in the database before being advertised.
-     * This also implies that Advertise events are not necessarily delivered in the same 
-     * order in which snapshots were generated.
-     * 
+     * Create a new snapshot object of the given object with the given creation
+     * timestamp. 
+     *
+     * The new snapshot object will be processed according to the controller
+     * options specified. The promise returned is resolved with the created
+     * snapshot after it has been advertised and/or persisted locally.
+     *
+     * Note: Advertisement and persistence of snapshots are executed
+     * asynchronously. Whenever a snapshot is both persisted locally and
+     * advertised it is guaranteed that the snapshot has been stored in the
+     * database before being advertised. This also implies that Advertise events
+     * are not necessarily delivered in the same order in which snapshots were
+     * generated.
+     *
      * @param obj CoatyObject from which the snapshot will be created
      * @param timestamp creation timestamp of the snapshot
-     * @param tags String tags which can be used for filtering of (persisted) snapshot objects
+     * @param tags String tags which can be used for filtering of (persisted)
+     * snapshot objects
      */
     generateSnapshot(obj: CoatyObject, timestamp: number, ...tags: string[]): Promise<Snapshot>;
 
@@ -116,7 +129,7 @@ export class HistorianController extends Controller {
             objectType: CoreTypes.OBJECT_TYPE_SNAPSHOT,
             coreType: "Snapshot",
             name: `${obj.objectType} ${obj.name}`,
-            creatorId: this.identity.objectId,
+            creatorId: this.container.identity.objectId,
             creationTimestamp: param1,
             object: CoreTypes.clone(obj),
             tags: param2,
@@ -126,9 +139,10 @@ export class HistorianController extends Controller {
 
     /**
      * Convenience method that queries snapshot objects for the given parent ID.
-     * Returns an observable of matching snapshot objects ordered descendingly by 
-     * creation timestamp.
-     * 
+     *
+     * Returns an observable of matching snapshot objects ordered descendingly
+     * by creation timestamp.
+     *
      * @param parentObjectId object id from which snapshots were taken
      */
     querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]> {
@@ -138,18 +152,22 @@ export class HistorianController extends Controller {
         };
 
         return this.communicationManager
-            .publishQuery(QueryEvent.withCoreTypes(this.identity, ["Snapshot"], objectFilter))
+            .publishQuery(QueryEvent.withCoreTypes(["Snapshot"], objectFilter))
             .pipe(map(retrieve => retrieve.eventData.objects as Snapshot[]));
     }
 
     /**
-     * Find snapshot objects in connected database for a specific object ID which are created within
-     * a certain time period. The array of snapshot objects returned is ordered descendingly by
+     * Find snapshot objects in connected database for a specific object ID
+     * which are created within a certain time period. 
+     *
+     * The array of snapshot objects returned is ordered descendingly by
      * creation timestamp.
-     * 
+     *
      * @param parentObjectId object id from which snapshots were taken
-     * @param startTimestamp start timestamp of filter interval (optional); `undefined` if unrestricted
-     * @param endTimestamp end timestamp of filter interval (optional); `undefined` if unrestricted
+     * @param startTimestamp start timestamp of filter interval (optional);
+     * `undefined` if unrestricted
+     * @param endTimestamp end timestamp of filter interval (optional);
+     * `undefined` if unrestricted
      */
     findSnapshotsByParentId(parentObjectId: Uuid, startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]> {
         const andConds = [];
@@ -175,9 +193,11 @@ export class HistorianController extends Controller {
     /**
      * Find all snapshot objects in connected database which are created within
      * a certain time period.
-     * 
-     * @param startTimestamp start timestamp of filter interval (optional); `undefined` if unrestricted
-     * @param endTimestamp end timestamp of filter interval (optional); `undefined` if unrestricted
+     *
+     * @param startTimestamp start timestamp of filter interval (optional);
+     * `undefined` if unrestricted
+     * @param endTimestamp end timestamp of filter interval (optional);
+     * `undefined` if unrestricted
      */
     findSnapshotsByTimeFrame(startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]> {
         return this.findSnapshotsByParentId(undefined, startTimestamp, endTimestamp);
@@ -185,7 +205,7 @@ export class HistorianController extends Controller {
 
     /**
      * Find snapshot objects in connected database which match a given filter.
-     * 
+     *
      * @param objectFilter object filter to apply to snapshot objects
      */
     findSnapshotsByFilter(objectFilter: ObjectFilter): Promise<Snapshot[]> {
@@ -199,14 +219,15 @@ export class HistorianController extends Controller {
     }
 
     /**
-     * Called whenever the Historian controller receives an incoming Query event.
-     * Overwrite this method in a subclass to perform some side effect. 
-     * Do not call this method in your application code, it is 
-     * called by the framework.
-     * 
+     * Called whenever the Historian controller receives an incoming Query
+     * event.
+     *
+     * Overwrite this method in a subclass to perform some side effect. Do not
+     * call this method in your application code, it is called by the framework.
+     *
      * The base method implementation does nothing. The method is only invoked
      * when `shouldReplyToQueries` is set to true.
-     * 
+     *
      * @param event incoming Query event
      */
     protected onQueryReceived(event: QueryEvent) {
@@ -215,16 +236,18 @@ export class HistorianController extends Controller {
     }
 
     /**
-     * Called whenever the Historian controller replies to an incoming Query with
-     * a Retrieve event. Overwrite this method in a subclass to perform
-     * some side effect. Do not call this method in your application code, it is 
-     * called by the framework.
-     * 
+     * Called whenever the Historian controller replies to an incoming Query
+     * with a Retrieve event.
+     *
+     * Overwrite this method in a subclass to perform some side effect. Do not
+     * call this method in your application code, it is called by the framework.
+     *
      * The base method implementation does nothing. The method is only invoked
      * when `shouldReplyToQueries` is set to true.
-     * 
+     *
      * @param event incoming Query event
-     * @param snapshots array of Snapshot objects to be passed as Retrieve event data
+     * @param snapshots array of Snapshot objects to be passed as Retrieve event
+     * data
      */
     protected onQueryRetrieved(event: QueryEvent, snapshots: Snapshot[]) {
         /* tslint:disable:empty-block */
@@ -233,7 +256,7 @@ export class HistorianController extends Controller {
 
     private _observeQueries() {
         return this.communicationManager
-            .observeQuery(this.identity)
+            .observeQuery()
             .pipe(filter(event => event.eventData.isCoreTypeCompatible("Snapshot")))
             .subscribe(event => {
                 this.onQueryReceived(event);
@@ -241,7 +264,7 @@ export class HistorianController extends Controller {
                     .then(dbCtx => dbCtx.findObjects<Snapshot>(this.options["database"].collection, event.eventData.objectFilter))
                     .then(iterator => iterator.forBatch(results => {
                         this.onQueryRetrieved(event, results);
-                        event.retrieve(RetrieveEvent.withObjects(this.identity, results));
+                        event.retrieve(RetrieveEvent.withObjects(results));
                     }))
                     .catch(error => {
                         // In case of retrieval error, do not respond with a 
@@ -255,7 +278,7 @@ export class HistorianController extends Controller {
 
     private _observeAdvertise() {
         return this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "Snapshot")
+            .observeAdvertiseWithCoreType("Snapshot")
             .subscribe(event => {
                 this._getDbContext()
                     .then(dbCtx => dbCtx.insertObjects(this.options["database"].collection, event.eventData.object))
@@ -266,7 +289,7 @@ export class HistorianController extends Controller {
     private _processSnaphot(snapshot: Snapshot): Promise<Snapshot> {
         const advertiseIfRequested = (s: Snapshot) => {
             if (this.options["shouldAdvertiseSnapshots"]) {
-                this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, s));
+                this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(s));
             }
             return s;
         };

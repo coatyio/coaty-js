@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes, Identity } from "..";
+import { CoatyObject, CoreTypes } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -11,12 +11,11 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
     /**
      * Create an AdvertiseEvent instance for advertising the given object.
      * 
-     * @param eventSource the event source identity
      * @param object the object to be advertised
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: Identity, object: CoatyObject, privateData?: any) {
-        return new AdvertiseEvent(eventSource, new AdvertiseEventData(object, privateData));
+    static withObject(object: CoatyObject, privateData?: any) {
+        return new AdvertiseEvent(new AdvertiseEventData(object, privateData));
     }
 
     get eventType() {

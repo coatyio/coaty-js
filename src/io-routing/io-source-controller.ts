@@ -136,9 +136,9 @@ export class IoSourceController extends Controller {
 
     private _deregisterAll() {
         this._sourceItems.forEach(item => {
-            item[1] && item[1].unsubscribe();
+            item[1]?.unsubscribe();
             item[1] = undefined;
-            item[5] && item[5].unsubscribe();
+            item[5]?.unsubscribe();
             item[5] = undefined;
         });
     }
@@ -188,7 +188,7 @@ export class IoSourceController extends Controller {
         const [source, , updateRate, association, updateSubject, updateSubscription] = item;
 
         // Unsubscribe and discard already scheduled IO values
-        updateSubscription && updateSubscription.unsubscribe();
+        updateSubscription?.unsubscribe();
 
         if (!association.value) {
             item[5] = undefined;

@@ -12,7 +12,7 @@ module.exports = {
         familyName: "Feuerstein",
       }
     },
-    testProp: 4711
+    extra: { testProp: 4711 }
   },
   communication: {
     shouldAutoStart: true,

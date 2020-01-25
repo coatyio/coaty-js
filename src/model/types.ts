@@ -453,8 +453,7 @@ export class CoreTypes {
             typeof obj.logMessage === "string" &&
             typeof obj.logDate === "string" &&
             (obj.logTags === undefined || CoreTypes.isStringArray(obj.logTags)) &&
-            (obj.logLabels === undefined ||
-                (obj.logLabels && typeof obj.logLabels === "object")) &&
+            (obj.logLabels === undefined || (obj.logLabels && typeof obj.logLabels === "object")) &&
             (obj.logHost === undefined || CoreTypes._isLogHost(obj.logHost));
     }
 

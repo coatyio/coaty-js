@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes, Identity, Uuid } from "..";
+import { CoatyObject, CoreTypes, Uuid } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -22,23 +22,21 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     /**
      * Create an UpdateEvent instance for the given partial update.
      * 
-     * @param eventSource the event source identity
      * @param objectId the UUID of the object to be updated (partial update)
      * @param changedValues Object hash for properties that have changed or should be changed (partial update)
      * @param object the object to be updated (for full updates)
      */
-    static withPartial(eventSource: Identity, objectId: Uuid, changedValues: { [property: string]: any; }) {
-        return new UpdateEvent(eventSource, new UpdateEventData(objectId, changedValues));
+    static withPartial(objectId: Uuid, changedValues: { [property: string]: any; }) {
+        return new UpdateEvent(new UpdateEventData(objectId, changedValues));
     }
 
     /**
      * Create an UpdateEvent instance for the given full update.
      * 
-     * @param eventSource the event source identity
      * @param object the full object to be updated
      */
-    static withFull(eventSource: Identity, object: CoatyObject) {
-        return new UpdateEvent(eventSource, new UpdateEventData(undefined, undefined, object));
+    static withFull(object: CoatyObject) {
+        return new UpdateEvent(new UpdateEventData(undefined, undefined, object));
     }
 
     /**
@@ -173,12 +171,11 @@ export class CompleteEvent extends CommunicationEvent<CompleteEventData> {
     /**
      * Create a CompleteEvent instance for updating the given object.
      * 
-     * @param eventSource the event source identity
      * @param object the updated object
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: Identity, object: CoatyObject, privateData?: any) {
-        return new CompleteEvent(eventSource, new CompleteEventData(object, privateData));
+    static withObject(object: CoatyObject, privateData?: any) {
+        return new CompleteEvent(new CompleteEventData(object, privateData));
     }
 }
 

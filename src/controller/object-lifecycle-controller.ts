@@ -44,41 +44,37 @@ export interface ObjectLifecycleInfo {
 }
 
 /**
- * Keeps track of specific agents/objects in a Coaty network by monitoring
- * identity objects of communication managers, controllers or custom object
- * types. The controller observes advertisements and deadvertisements of such
- * objects and initially discovers them. Changes are emitted on an observable
- * that applications can subscribe to.
+ * Keeps track of agents or specific Coaty objects in a Coaty network by
+ * monitoring agent identities or custom object types.
+ *
+ * This controller observes advertisements and deadvertisements of such objects
+ * and discovers them. Changes are emitted on corresponding observables that
+ * applications can subscribe to.
  *
  * You can use this controller either standalone by adding it to the container
- * components or make your custom controller class extend this controller class.
+ * components or extend your custom controller class from this controller class.
  *
- * Basically, to keep track of identities, the `shouldAdvertiseIdentity` option
- * in `CommunicationOptions` and/or `ControllerOptions` must be set to `true`.
- * Note that this controller also supports tracking the identities of the
- * communication manager and the *other* controllers inside its *own* agent
- * container.
+ * If you want to keep track of custom object types (not agent identities), you
+ * have to implement the remote side of the distributed object lifecycle
+ * management explicitely, i.e. advertise/readvertise/deadvertise your custom
+ * objects and observe/resolve corresponding Discover events. To facilitate
+ * this, this controller provides convenience methods:
+ * `advertiseDiscoverableObject`, `readvertiseDiscoverableObject`, and
+ * `deadvertiseDiscoverableObject`.
  *
- * If you want to keep track of custom object types (not commmunication manager
- * or controller identities), you have to implement the remote side of the
- * distributed object lifecycle management, i.e.
- * advertise/readvertise/deadvertise your custom objects and observe/resolve
- * corresponding Discover events explicitely. To facilitate this, this
- * controller provides convenience methods: `advertiseDiscoverableObject`,
- * `readvertiseDiscoverableObject`, and `deadvertiseDiscoverableObject`.
- *
- * Usually, a custom object should have the identity UUID of its associated
- * communication manager set as its `parentObjectId` to be automatically
- * deadvertised when the agent terminates abnormally. You can automate this by
- * passing `true` to the optional parameter `shouldSetParentObjectId` of method
- * `advertiseDiscoverableObject` (`true` is also the default parameter value).
+ * Usually, a custom object should have the object ID of its agent identity,
+ * i.e. `Container.identity`, set as its `parentObjectId` in order to be
+ * automatically deadvertised when the agent terminates abnormally. You can
+ * automate this by passing `true` to the optional parameter
+ * `shouldSetParentObjectId` of method `advertiseDiscoverableObject` (`true` is
+ * also the default parameter value).
  */
 export class ObjectLifecycleController extends Controller {
 
     /**
      * Observes advertisements, deadvertisments and initial discoveries of
-     * objects of the given core type. To track identity objects of
-     * communication managers or controllers, use core type `Identity`.
+     * objects of the given core type. To track agent identity objects, specify
+     * core type `Identity`.
      *
      * Specify an optional filter predicate to be applied to trackable objects.
      * If the predicate function returns `true`, the object is being tracked;
@@ -88,8 +84,8 @@ export class ObjectLifecycleController extends Controller {
      * @param coreType the core type of objects to be tracked
      * @param objectFilter a predicate for filtering objects to be tracked
      * (optional)
-     * @returns a hot observable emitting changes concerning tracked objects of
-     * the given core type
+     * @returns an observable emitting changes concerning tracked objects of the
+     * given core type
      */
     observeObjectLifecycleInfoByCoreType(
         coreType: CoreType,
@@ -110,8 +106,8 @@ export class ObjectLifecycleController extends Controller {
      * @param objectType the object type of objects to be tracked
      * @param objectFilter a predicate for filtering objects to be tracked
      * (optional)
-     * @returns a hot observable emitting changes concerning tracked objects of
-     * the given object type
+     * @returns an observable emitting changes concerning tracked objects of the
+     * given object type
      */
     observeObjectLifecycleInfoByObjectType(
         objectType: string,
@@ -121,14 +117,14 @@ export class ObjectLifecycleController extends Controller {
     }
 
     /**
-     * Advertises the given Coaty object and makes it discoverable by its
+     * Advertises the given Coaty object and makes it discoverable either by its
      * `objectType` or `objectId`.
      *
      * The optional `shouldSetParentObjectId` parameter determines whether the
-     * parent object ID of the given object should be set to the communication
-     * manager's identity objectId property (default is `true`). This is
-     * required if you want to observe the object's lifecycle info by method
-     * `observeObjectLifecycleInfoByObjectType` and get notified when the
+     * parent object ID of the given object should be set to the agent
+     * identity's object ID (default is `true`). This is required if you want to
+     * observe the object's lifecycle info by method
+     * `observeObjectLifecycleInfoByObjectType` and to get notified when the
      * advertising agent terminates abnormally.
      *
      * The returned subscription should be unsubscribed when the object is
@@ -139,24 +135,25 @@ export class ObjectLifecycleController extends Controller {
      *
      * @param object a CoatyObject that is advertised and discoverable
      * @param shouldSetParentObjectId determines whether the parent object ID of
-     * the given object should be set to the communication manager's identity
-     * objectId (default is `true`)
-     * @returns subscription on DiscoverEvent observable
+     * the given object should be set to the agent identity's object ID (default
+     * is `true`)
+     * @returns the subscription on a DiscoverEvent observable that should be
+     * unsubscribed if no longer needed
      */
     advertiseDiscoverableObject(object: CoatyObject, shouldSetParentObjectId = true): Subscription {
         if (shouldSetParentObjectId) {
-            object.parentObjectId = this.communicationManager.identity.objectId;
+            object.parentObjectId = this.container.identity.objectId;
         }
-        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, object));
+        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(object));
         return this.communicationManager
-            .observeDiscover(this.identity)
+            .observeDiscover()
             .pipe(filter((event: DiscoverEvent) =>
                 (event.eventData.isDiscoveringTypes &&
                     event.eventData.isObjectTypeCompatible(object.objectType)) ||
                 (event.eventData.isDiscoveringObjectId &&
                     event.eventData.objectId === object.objectId)))
             .subscribe(event =>
-                event.resolve(ResolveEvent.withObject(this.identity, object)));
+                event.resolve(ResolveEvent.withObject(object)));
     }
 
     /**
@@ -168,7 +165,7 @@ export class ObjectLifecycleController extends Controller {
      * properties have changed
      */
     readvertiseDiscoverableObject(object: CoatyObject) {
-        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(this.identity, object));
+        this.communicationManager.publishAdvertise(AdvertiseEvent.withObject(object));
     }
 
     /**
@@ -187,12 +184,10 @@ export class ObjectLifecycleController extends Controller {
      * unsubscribed
      */
     deadvertiseDiscoverableObject(object: CoatyObject, discoverableSubscription: Subscription) {
-        if (discoverableSubscription) {
-            // Stop observing Discover events that have been set up in
-            // advertiseDiscoverableObject.
-            discoverableSubscription.unsubscribe();
-        }
-        this.communicationManager.publishDeadvertise(DeadvertiseEvent.withObjectIds(this.identity, object.objectId));
+        // Stop observing Discover events that have been set up in
+        // advertiseDiscoverableObject.
+        discoverableSubscription?.unsubscribe();
+        this.communicationManager.publishDeadvertise(DeadvertiseEvent.withObjectIds(object.objectId));
     }
 
     private _observeObjectLifecycleInfo(
@@ -210,17 +205,17 @@ export class ObjectLifecycleController extends Controller {
         const registry = new Map<Uuid, CoatyObject>();
 
         const discovered = this.communicationManager
-            // Note that the Discover event will also resolve the identity of
-            // this agent's communication manager itself!
-            .publishDiscover(coreType ? DiscoverEvent.withCoreTypes(this.identity, [coreType]) :
-                DiscoverEvent.withObjectTypes(this.identity, [objectType]));
+            // Note that the Discover event will also resolve the identity of this agent itself!
+            .publishDiscover(coreType ?
+                DiscoverEvent.withCoreTypes([coreType]) :
+                DiscoverEvent.withObjectTypes([objectType]));
 
         const advertised = coreType ?
-            this.communicationManager.observeAdvertiseWithCoreType(this.identity, coreType) :
-            this.communicationManager.observeAdvertiseWithObjectType(this.identity, objectType);
+            this.communicationManager.observeAdvertiseWithCoreType(coreType) :
+            this.communicationManager.observeAdvertiseWithObjectType(objectType);
 
         const deadvertised = this.communicationManager
-            .observeDeadvertise(this.identity);
+            .observeDeadvertise();
 
         return merge(
             merge(discovered, advertised)

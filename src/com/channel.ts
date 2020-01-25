@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes, Identity } from "..";
+import { CoatyObject, CoreTypes } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
 
@@ -32,15 +32,13 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
      * `/ (U+002F)`.
      * 
-     * @param eventSource source identity associated with this Channel event
      * @param channelId the channel identifier of this Channel event
      * @param eventData data associated with this Channel event
      */
     constructor(
-        eventSource: Identity,
         channelId: string,
         eventData: ChannelEventData) {
-        super(eventSource, eventData);
+        super(eventData);
 
         if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
             throw new TypeError("in ChannelEvent: argument 'channelId' is not a valid channel identifier");
@@ -52,23 +50,21 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
     /**
      * Create a ChannelEvent instance for delivering the given object.
      * 
-     * @param eventSource the event source identity
      * @param object the object to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObject(eventSource: Identity, channelId: string, object: CoatyObject, privateData?: any) {
-        return new ChannelEvent(eventSource, channelId, new ChannelEventData(object, undefined, privateData));
+    static withObject(channelId: string, object: CoatyObject, privateData?: any) {
+        return new ChannelEvent(channelId, new ChannelEventData(object, undefined, privateData));
     }
 
     /**
      * Create a ChannelEvent instance for delivering the given objects.
      * 
-     * @param eventSource the event source identity
      * @param objects the objects to be channelized
      * @param privateData application-specific options (optional)
      */
-    static withObjects(eventSource: Identity, channelId: string, objects: CoatyObject[], privateData?: any) {
-        return new ChannelEvent(eventSource, channelId, new ChannelEventData(undefined, objects, privateData));
+    static withObjects(channelId: string, objects: CoatyObject[], privateData?: any) {
+        return new ChannelEvent(channelId, new ChannelEventData(undefined, objects, privateData));
     }
 }
 

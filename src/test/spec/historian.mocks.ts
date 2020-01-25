@@ -14,7 +14,7 @@ export class MockSnapshotController extends HistorianController {
 
     watchForAdvertiseEvents(logger: AdvertiseEventLogger) {
         this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "Snapshot")
+            .observeAdvertiseWithCoreType("Snapshot")
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);

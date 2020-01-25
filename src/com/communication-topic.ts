@@ -5,12 +5,12 @@ import { CoatyObject, User, Uuid } from "..";
 import { CommunicationEventType } from "./communication-event";
 
 /**
- * Encapsulates the internal representation of messaging topics
- * used by the Coaty communication infrastructure.
+ * Encapsulates the internal representation of messaging topics used by the
+ * Coaty communication infrastructure.
  *
- * Note: this class is exported only for testing purposes within the Coaty framework.
- * It has not been exported in the public "com" module because it is
- * useless in an application.
+ * Note: this class is exported only for testing purposes within the Coaty
+ * framework. It has not been exported in the public API module because it
+ * should not be used by an application.
  */
 export class CommunicationTopic {
 
@@ -62,6 +62,7 @@ export class CommunicationTopic {
 
     /**
      * Create a new topic from the given topic name.
+     * 
      * @param topicName the structured name of a topic
      * @throws exception when topic name is not in correct format
      */
@@ -86,8 +87,9 @@ export class CommunicationTopic {
 
     /**
      * Create a new topic for the given topic levels.
+     * 
      * @param associatedUser user or user ID associated with the topic, or undefined
-     * @param sourceObject event source identity or object ID
+     * @param sourceObjectId event source object ID
      * @param eventType an event type
      * @param eventTypeFilter an optional filter for an event type
      * @param messageToken a token to identify the message
@@ -97,7 +99,7 @@ export class CommunicationTopic {
      */
     static createByLevels(
         associatedUser: User | Uuid,
-        sourceObject: CoatyObject | Uuid,
+        sourceObjectId: Uuid,
         eventType: CommunicationEventType,
         eventTypeFilter: string,
         messageToken: Uuid,
@@ -121,13 +123,7 @@ export class CommunicationTopic {
             }
         }
 
-        if (typeof sourceObject === "string") {
-            topic._sourceObjectId = sourceObject;
-        } else {
-            topic._sourceObjectId = isReadable ?
-                CommunicationTopic._readable(sourceObject) :
-                sourceObject.objectId;
-        }
+        topic._sourceObjectId = sourceObjectId;
 
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter || undefined;
@@ -144,6 +140,7 @@ export class CommunicationTopic {
 
     /**
      * Gets a topic filter for subscription.
+     *
      * @param version the protocol version
      * @param eventTypeName the event name topic level
      * @param associatedUser user associated with the topic, or undefined
@@ -156,8 +153,10 @@ export class CommunicationTopic {
 
     /**
      * Gets a topic level that represents the event type name.
+     *
      * @param eventType the event type to use
-     * @param eventTypeFilter the optional event type filter to use, or undefined (optional)
+     * @param eventTypeFilter the optional event type filter to use, or
+     * undefined (optional)
      */
     static getEventTypeName(eventType: CommunicationEventType, eventTypeFilter?: string) {
         let name = CommunicationEventType[eventType];
@@ -171,7 +170,8 @@ export class CommunicationTopic {
      * Gets the UUID for a readable or non-readable topic level, either for
      * sourceObject or associatedUser.
      *
-     * @param level either sourceId or associatedUserId level (may also be undefined)
+     * @param level either sourceId or associatedUserId level (may also be
+     * undefined)
      */
     static uuidFromLevel(level: string) {
         if (!level) {
@@ -185,13 +185,14 @@ export class CommunicationTopic {
     }
 
     /**
-     * Determines whether the given topic name conforms to the communication topic
-     * specification of an internal or external IoValue topic that is used
+     * Determines whether the given topic name conforms to the communication
+     * topic specification of an internal or external IoValue topic that is used
      * for publishing and subscription.
      *
      * @param topic a topic name
      * @param protocolVersion communication protocol version
-     * @returns true if the given topic name is a valid IoValue topic; false otherwise
+     * @returns true if the given topic name is a valid IoValue topic; false
+     * otherwise
      */
     static isValidIoValueTopic(
         topic: string,
@@ -232,7 +233,8 @@ export class CommunicationTopic {
      * Determines whether the given data is valid as an event type filter.
      *
      * @param filter an event type filter
-     * @returns true if the given topic name is a valid event type filter; false otherwise
+     * @returns true if the given topic name is a valid event type filter; false
+     * otherwise
      */
     static isValidEventTypeFilter(filter: string) {
         return typeof filter === "string" && filter.length > 0 &&

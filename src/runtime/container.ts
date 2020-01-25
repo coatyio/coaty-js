@@ -1,40 +1,41 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Subscription } from "rxjs";
+import { first } from "rxjs/operators";
 
-import { CommunicationManager, Controller, OperatingState } from "..";
+import { CommunicationManager, Controller, CoreTypes, Identity, OperatingState } from "..";
 import { IController, IControllerStatic } from "../controller/controller";
 
-import { Configuration, ControllerConfig } from "./configuration";
+import { Configuration, ControllerOptions } from "./configuration";
 import { Runtime } from "./runtime";
 
 /**
- * Defines the application-specific container components to be registered
- * with a Coaty Container.
+ * Defines the application-specific container components to be registered with a
+ * Coaty Container.
  *
- * The configuration options for the container component classes
- * are specified in the `controllers` options of a Configuration object.
+ * The configuration options for the container component classes are specified
+ * in the `controllers` options of a Configuration object.
  */
 export interface Components {
 
     /**
-     * Application-specific controller classes to be registered
-     * with the runtime container. The configuration options for a
-     * controller class listed here are specified in the controller
-     * configuration under a key that matches the associated name of the
-     * controller.
+     * Application-specific controller classes to be registered with the runtime
+     * container. The configuration options for a controller class listed here
+     * are specified in the controller configuration under a key that matches
+     * the associated name of the controller.
      */
     controllers?: { [controllerName: string]: IControllerStatic<Controller> };
 }
 
 /**
- * An IoC container that uses constructor dependency injection to
- * create container components and to resolve dependencies.
- * This container defines the entry and exit points for any Coaty application
- * providing lifecycle management for its components.
+ * An IoC container that uses constructor dependency injection to create
+ * container components and to resolve dependencies. This container defines the
+ * entry and exit points for any Coaty application providing lifecycle
+ * management for its components.
  */
 export class Container {
 
+    private _identity: Identity;
     private _runtime: Runtime;
     private _comManager: CommunicationManager;
     private _controllers = new Map<string, [IController, IControllerStatic<IController>]>();
@@ -42,11 +43,13 @@ export class Container {
     private _operatingStateSubscription: Subscription;
 
     /**
-     * Creates and bootstraps a Coaty container by registering and resolving
-     * the given components and configuration options.
+     * Creates and bootstraps a Coaty container by registering and resolving the
+     * given components and configuration options.
+     * 
      * @param components the components to set up within this container
      * @param configuration the configuration options for the components
-     * @param configTransformer a function to transform the given configuration (optional)
+     * @param configTransformer a function to transform the given configuration
+     * (optional)
      * @returns a Container for the given components
      * @throws if configuration is falsy.
      */
@@ -65,16 +68,17 @@ export class Container {
     }
 
     /**
-     * Asynchronously creates and bootstraps a Coaty container by registering and
-     * resolving the given components and configuration options.
-     * Use this method if configuration should be retrieved asnychronously
-     * (e.g. via HTTP) by one of the predefined runtime configuration providers
-     * (see runtime-angular, runtime-node).
-     * The promise returned will be rejected if the configuration could not be
-     * retrieved or has a falsy value.
+     * Asynchronously creates and bootstraps a Coaty container by registering
+     * and resolving the given components and configuration options. Use this
+     * method if configuration should be retrieved asnychronously (e.g. via
+     * HTTP) by one of the predefined runtime configuration providers (see
+     * runtime-angular, runtime-node). The promise returned will be rejected if
+     * the configuration could not be retrieved or has a falsy value.
+     * 
      * @param components the components to set up within this container
      * @param configuration a promise for the configuration options
-     * @param configTransformer a function to transform the retrieved configuration (optional)
+     * @param configTransformer a function to transform the retrieved
+     * configuration (optional)
      * @returns a promise on a Container for the given components
      */
     static resolveAsync(
@@ -94,38 +98,45 @@ export class Container {
     }
 
     /**
-     * Dynamically registers and resolves the given controller class
-     * with the specified controller config options.
-     * The request is silently ignored if the container has already
-     * been shut down.
-     * 
-     * @param controllerName the name of the controller (must match the name associated with the controller in `Components`)
+     * Dynamically registers and resolves the given controller type with the
+     * specified controller options. The request is silently ignored if the
+     * container has already been shut down.
+     *
+     * @param controllerName the name to be registered with the controller
      * @param controllerType the class type of the controller
-     * @param config the controller's configuration options
-     * @returns the resolved controller instance or `undefined` if no controller could be resolved
+     * @param controllerOptions the controller's configuration options (optional)
+     * @returns the resolved controller instance or `undefined` if a controller
+     * could not be resolved
      */
     registerController<T extends IController>(
         controllerName: string,
         controllerType: IControllerStatic<T>,
-        config: ControllerConfig) {
+        controllerOptions?: ControllerOptions) {
 
         if (this._isShutdown) {
             return;
         }
 
-        const ctrl = this._resolveController(controllerName, controllerType, this._runtime, config, this._comManager);
+        const ctrl = this._resolveController(controllerName, controllerType, controllerOptions);
         if (ctrl) {
-            ctrl.onContainerResolved(this);
+            ctrl.onInit();
+            // Immediately dispatch the current communication state if needed.
             this._comManager.observeOperatingState()
+                .pipe(first())
                 .subscribe(opState => {
-                    if (opState === OperatingState.Started ||
-                        opState === OperatingState.Starting) {
-                        this._dispatchOperatingState(OperatingState.Starting, ctrl);
+                    if (opState === OperatingState.Started) {
+                        this._operatingStateCallback(OperatingState.Started, ctrl);
                     }
-                })
-                .unsubscribe();
+                });
         }
         return ctrl as T;
+    }
+
+    /**
+     * Gets the identity object of this container.
+     */
+    get identity() {
+        return this._identity;
     }
 
     /**
@@ -143,9 +154,12 @@ export class Container {
     }
 
     /**
-     * Gets the registered controller of the given controller name.
-     * Returns `undefined` if a controller with the given name is not registered in `Components`.
-     * @param controllerName the name of the controller specified as `Components` key for the controller
+     * Gets the registered controller of the given controller name. Returns
+     * `undefined` if a controller with the given name is not registered in
+     * `Components`.
+     * 
+     * @param controllerName the name of the controller specified as
+     * `Components` key for the controller
      */
     getController<T extends IController>(controllerName: string): T {
         if (this._controllers) {
@@ -159,20 +173,21 @@ export class Container {
 
     /**
      * Creates a new array with the results of calling the provided callback
-     * function once for each registered controller name/controllerType/controller instance 
-     * triple.
+     * function once for each registered controller
+     * name/controllerType/controller instance triple.
+     * 
      * @param callback function that returns an element of the new array
      */
     mapControllers<T>(callback: (controllerName: string, controllerType: IControllerStatic<IController>, controller: IController) => T) {
         const results: T[] = [];
-        this._controllers && this._controllers.forEach((value, name) => results.push(callback(name, value[1], value[0])));
+        this._controllers?.forEach((value, name) => results.push(callback(name, value[1], value[0])));
         return results;
     }
 
     /**
-     * The exit point for a Coaty applicaton.
-     * Releases all registered container components and its associated system resources.
-     * This container should no longer be used afterwards.
+     * The exit point for a Coaty applicaton. Releases all registered container
+     * components and its associated system resources. This container should no
+     * longer be used afterwards.
      */
     shutdown() {
         if (this._isShutdown) {
@@ -183,29 +198,44 @@ export class Container {
         this._releaseComponents();
     }
 
+    private _createIdentity(props: Partial<Identity>) {
+        const defaultIdentity: Partial<Identity> = {
+            objectId: Runtime.newUuid(),
+            name: "Coaty Agent",
+        };
+        return Object.assign(defaultIdentity, props || {}, {
+            objectType: CoreTypes.OBJECT_TYPE_IDENTITY,
+            coreType: "Identity",
+        }) as Identity;
+    }
+
     private _resolveComponents(components: Components, config: Configuration) {
         if (!config) {
             throw new Error("Container: Configuration is not defined");
         }
+        if (!config.communication) {
+            throw new Error("Container: Configuration communication options not defined");
+        }
 
-        const runtime = this._runtime = new Runtime(config.common, config.databases);
-        const comManager = this._comManager = new CommunicationManager(runtime, config.communication);
+        this._identity = this._createIdentity(config.common?.agentIdentity);
+        this._runtime = new Runtime(config.common, config.databases);
+        const comManager = this._comManager = new CommunicationManager(this, config.communication);
 
         // Resolve controllers
         components.controllers &&
             Object.keys(components.controllers).forEach(controllerName => {
                 const controllerType = components.controllers[controllerName];
-                this._resolveController(controllerName, controllerType, runtime, config.controllers, comManager);
+                const controllerOptions = (config.controllers && config.controllers[controllerName]);
+                this._resolveController(controllerName, controllerType, controllerOptions);
             });
 
         // Then call initialization method of each controller
-        this._controllers &&
-            this._controllers.forEach(ctrl => ctrl[0].onContainerResolved(this));
+        this._controllers?.forEach(ctrl => ctrl[0].onInit());
 
         // Observe operating state and dispatch to registered controllers
         this._operatingStateSubscription = comManager.observeOperatingState()
-            .subscribe(state => this._controllers &&
-                this._controllers.forEach(ctrl => this._dispatchOperatingState(state, ctrl[0])));
+            .subscribe(state =>
+                this._controllers?.forEach(ctrl => this._operatingStateCallback(state, ctrl[0])));
 
         // Finally start communication manager if auto-connect option is set
         if (config.communication.shouldAutoStart) {
@@ -216,12 +246,9 @@ export class Container {
     private _resolveController<T extends IController>(
         controllerName: string,
         controllerType: IControllerStatic<T>,
-        runtime: Runtime,
-        config: ControllerConfig,
-        comManager: CommunicationManager): IController {
+        controllerOptions: ControllerOptions): IController {
         if (controllerName && controllerType) {
-            const ctrl = new controllerType(runtime, (config && config[controllerName]) || {}, comManager, controllerName);
-            ctrl.onInit();
+            const ctrl = new controllerType(this, controllerOptions || {}, controllerName);
             this._controllers.set(controllerName, [ctrl, controllerType]);
             return ctrl;
         }
@@ -233,19 +260,19 @@ export class Container {
         this._comManager.onDispose();
         this._controllers.forEach(ctrl => ctrl[0].onDispose());
 
-        this._operatingStateSubscription && this._operatingStateSubscription.unsubscribe();
+        this._operatingStateSubscription?.unsubscribe();
 
         this._controllers = undefined;
         this._comManager = undefined;
         this._runtime = undefined;
     }
 
-    private _dispatchOperatingState(state: OperatingState, ctrl: IController) {
+    private _operatingStateCallback(state: OperatingState, ctrl: IController) {
         switch (state) {
-            case OperatingState.Starting:
+            case OperatingState.Started:
                 ctrl.onCommunicationManagerStarting();
                 break;
-            case OperatingState.Stopping:
+            case OperatingState.Stopped:
                 ctrl.onCommunicationManagerStopping();
                 break;
             default:

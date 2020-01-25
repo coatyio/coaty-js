@@ -27,25 +27,26 @@ export class Runtime {
     }
 
     /**
-     * Determines whether runtime supports CommonJS (such as Node.js).
+     * Determines whether container is running on a CommonJS platform (such as
+     * Node.js).
      */
     get isCommonJsPlatform(): boolean {
-        return typeof module !== "undefined" && module.exports &&
-            typeof require === "function";
+        return this._isCommonJsPlatform;
     }
 
     /**
-     * Determines whether runtime is a web browser (excluding web worker).
+     * Determines whether container is running in a web browser (excluding web
+     * worker).
      */
     get isWebPlatform(): boolean {
-        return new Function("try {return this===window;}catch(e){return false;}")();
+        return this._isWebPlatform;
     }
 
     /**
-     * Determines whether code is running inside a web worker.
+     * Determines whether container is running inside a web worker.
      */
     get isWebWorkerPlatform(): boolean {
-        return new Function("try {return self instanceof WorkerGlobalScope;}catch(e){return false;}")();
+        return this._isWebWorkerPlatform;
     }
 
     /**
@@ -75,18 +76,22 @@ export class Runtime {
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
     private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
-    private static FRAMEWORK_BUILD_DATE = 1579784288090;
+    private static FRAMEWORK_BUILD_DATE = 1579947983750;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */
 
-    private _commonOptions: CommonOptions;
-    private _databaseOptions: DatabaseOptions;
+    private _isCommonJsPlatform: boolean;
+    private _isWebPlatform: boolean;
+    private _isWebWorkerPlatform: boolean;
 
     /** @internal - For internal use in framework only. */
-    constructor(commonOptions: CommonOptions, databaseOptions: DatabaseOptions) {
-        this._commonOptions = commonOptions;
-        this._databaseOptions = databaseOptions;
+    constructor(
+        private _commonOptions: CommonOptions,
+        private _databaseOptions: DatabaseOptions) {
+        this._isCommonJsPlatform = typeof module !== "undefined" && module.exports && typeof require === "function";
+        this._isWebPlatform = new Function("try {return this===window;}catch(e){return false;}")();
+        this._isWebWorkerPlatform = new Function("try {return self instanceof WorkerGlobalScope;}catch(e){return false;}")();
     }
 
     /**

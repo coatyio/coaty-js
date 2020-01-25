@@ -196,10 +196,10 @@ For instance this is a valid GeoJson object:
 ```
 
 The `phenomenonTime` property is the temporal interval of the phenomenon times of all observations belonging
-to this Sensor. TimeInterval interface is defined in `coaty/util`.
+to this Sensor. TimeInterval interface is defined in `@coaty/core`.
 
 The `resultTime` property is the temporal interval of the result times of all observations belonging to this
-Sensor. TimeInterval interface is defined in `coaty/util`.
+Sensor. TimeInterval interface is defined in `@coaty/core`.
 
 The `parentObjectId` property is the objectId of the Thing associated to this Sensor.
 
@@ -257,7 +257,7 @@ As long as even the [OGC test suite](https://github.com/opengeospatial/ets-sta10
 as a string, so do we.
 
 The `validTime` property is an optional property which describes the time period during which the result may be used.
-It uses the time interval interface defined in `coaty/util`.
+It uses the time interval interface defined in `@coaty/core`.
 
 The `parameters` property is an optional Javascript object, containing the environmental conditions during measurement
 as key-value pairs. For instance, `{'battery': '0.55', 'uptime': '86400'}` is a valid `parameters` object.
@@ -593,8 +593,8 @@ export class SensorDataObserverController extends ThingSensorObservationObserver
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
 
-        this._sensorsSubscription && this._sensorsSubscription.unsubscribe();
-        this._observationSubscription && this._observationSubscription.unsubscribe();
+        this._sensorsSubscription?.unsubscribe();
+        this._observationSubscription?.unsubscribe();
     }
 
     observeSensors() {

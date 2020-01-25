@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoreTypes, Identity, Uuid } from "..";
+import { Uuid } from "..";
 
 /**
  * Predefined event types used by Coaty communication event patterns.
@@ -42,9 +42,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     /** @internal For internal use in framework only. Do not use in application code. */
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;
 
-    private _eventSource: Identity;
     private _eventSourceId: Uuid;
-    private _eventData: T;
     private _eventUserId: Uuid | string;
 
     /**
@@ -52,55 +50,36 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      * 
      * Create an event instance for the given event type.
      *
-     * @param eventSource source identity associated with this event
      * @param eventData data associated with this event
      */
-    constructor(eventSource: Identity, eventData: T) {
-        const source: any = eventSource;
-
-        // This is to support passing a UUID as event source 
-        // (for internal use such as validation checks).
-        if ((typeof source === "string") && source.length > 0) {
-            this._eventSource = undefined;
-            this._eventSourceId = source;
-        } else if (CoreTypes.isObject(source, "Identity")) {
-            this._eventSource = eventSource;
-            this._eventSourceId = eventSource.objectId;
-        } else {
-            throw new TypeError("in CommunicationEvent<T>: argument 'eventSource' is not an Identity");
-        }
-
-        this._eventData = eventData;
+    constructor(private _eventData: T) {
     }
 
     /**
-     * Gets the event source identity associated with this event.
-     * Returns undefined if the source identity is not available
-     * but only its ID (via `eventSourceId`). This is always the
-     * case on the receiving, i.e. observing side, since the
-     * message topic only transmits the source ID but not the source
-     * object itself.
-     */
-    get eventSource() {
-        return this._eventSource;
-    }
-
-    /**
-     * Gets the event source object ID associated with this event.
+     * Gets the object ID of the event source object.
      */
     get eventSourceId() {
         return this._eventSourceId;
     }
 
     /**
-     * Gets the event data associated with this event.
+     * @internal For internal use in framework only.
+     *
+     * Sets the object ID of the event source object.
+     */
+    set eventSourceId(sourceId: Uuid) {
+        this._eventSourceId = sourceId;
+    }
+
+    /**
+     * Gets the event data of this event.
      */
     get eventData() {
         return this._eventData;
     }
 
     /**
-     * Gets the user ID associated with this event.
+     * Gets the user ID of this event.
      * Returns undefined if this is not a user-associated event.
      */
     get eventUserId() {
@@ -111,7 +90,6 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      * @internal For internal use in framework only.
      *
      * Sets the user ID associated with this event.
-     * For framework-internal use only. Do not use in application code.
      */
     set eventUserId(userId: Uuid | string) {
         this._eventUserId = userId;

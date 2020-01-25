@@ -61,7 +61,7 @@ export interface Log extends CoatyObject {
 
     /**
      * Timestamp in ISO 8601 format (with or without timezone offset), as from
-     * `coaty/util/toLocalIsoString` or `Date.toISOString`.
+     * `@coaty/core/toLocalIsoString` or `Date.toISOString`.
      */
     logDate: string;
 
@@ -100,12 +100,6 @@ export interface Log extends CoatyObject {
      * source ID.
      */
     logHost?: LogHost;
-
-    /**
-     * Any other custom properties accessible by indexer
-     */
-    [extra: string]: any;
-
 }
 
 /**
@@ -138,8 +132,4 @@ export interface LogHost {
      */
     userAgent?: string;
 
-    /**
-     * Any other custom properties accessible by indexer
-     */
-    [extra: string]: any;
 }

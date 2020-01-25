@@ -1,6 +1,6 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, ContextFilter, Identity, isContextFilterValid, ObjectMatcher  } from "..";
+import { CoatyObject, ContextFilter, isContextFilterValid, ObjectMatcher } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 import { CommunicationTopic } from "./communication-topic";
 
@@ -39,15 +39,13 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
      * 
      * Create a Call event instance.
      * 
-     * @param eventSource source identity associated with this Call event
      * @param operation the operation name of this Call event
      * @param eventData data associated with this Call event
      */
     constructor(
-        eventSource: Identity,
         operation: string,
         eventData: CallEventData) {
-        super(eventSource, eventData);
+        super(eventData);
 
         if (!CommunicationTopic.isValidEventTypeFilter(operation)) {
             throw new TypeError("in CallEvent: argument 'operation' is not a valid operation name");
@@ -70,7 +68,6 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
      * call is only executed if the filter conditions match a context object
      * provided by the remote end.
      *
-     * @param eventSource the event source identity
      * @param operation a non-empty string containing the name of the operation
      * to be invoked
      * @param parameters holds the parameter values to be used during the
@@ -78,8 +75,8 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
      * @param filter a context filter that must match a given context object at
      * the remote end (optional)
      */
-    static with(eventSource: Identity, operation: string, parameters?: any[] | { [key: string]: any; }, filter?: ContextFilter) {
-        return new CallEvent(eventSource, operation, new CallEventData(parameters, filter));
+    static with(operation: string, parameters?: any[] | { [key: string]: any; }, filter?: ContextFilter) {
+        return new CallEvent(operation, new CallEventData(parameters, filter));
     }
 
     /**
@@ -251,12 +248,11 @@ export class ReturnEvent extends CommunicationEvent<ReturnEventData> {
     /**
      * Create a ReturnEvent instance for a remote operation call that successfully yields a result.
      *
-     * @param eventSource the event source identity
      * @param result the result value to be returned (any JSON data type)
      * @param executionInfo information about execution environment (optional)
      */
-    static withResult(eventSource: Identity, result: any, executionInfo?: any) {
-        return new ReturnEvent(eventSource, new ReturnEventData(result, undefined, executionInfo));
+    static withResult(result: any, executionInfo?: any) {
+        return new ReturnEvent(new ReturnEventData(result, undefined, executionInfo));
     }
 
     /**
@@ -271,17 +267,15 @@ export class ReturnEvent extends CommunicationEvent<ReturnEventData> {
      * The error message provides a short description of the error. Predefined error messages
      * exist for all predefined error codes (see enum `RemoteCallErrorMessage`).
      *
-     * @param eventSource the event source identity
      * @param code an integer that indicates the error type that occurred
      * @param message a string providing a short description of the error
      * @param executionInfo information about execution environment (optional)
      */
     static withError(
-        eventSource: Identity,
         code: RemoteCallErrorCode | number,
         message: RemoteCallErrorMessage | string,
         executionInfo?: any) {
-        return new ReturnEvent(eventSource, new ReturnEventData(undefined, { code, message }, executionInfo));
+        return new ReturnEvent(new ReturnEventData(undefined, { code, message }, executionInfo));
     }
 }
 

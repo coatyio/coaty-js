@@ -51,7 +51,7 @@ export class MockReceiverController extends Controller {
     onInit() {
         super.onInit();
         this.communicationManager
-            .publishDiscover(DiscoverEvent.withObjectTypes(this.identity, [SensorThingsTypes.OBJECT_TYPE_SENSOR]))
+            .publishDiscover(DiscoverEvent.withObjectTypes([SensorThingsTypes.OBJECT_TYPE_SENSOR]))
             .subscribe(event => {
                 Spy.set("MockConsumerController", event);
             });
@@ -65,7 +65,7 @@ export class MockReceiverController extends Controller {
 
     watchForAdvertiseEvents(logger: AdvertiseEventLogger, objectType: string) {
         this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, objectType)
+            .observeAdvertiseWithObjectType(objectType)
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -74,7 +74,7 @@ export class MockReceiverController extends Controller {
 
     watchForChannelEvents(logger: ChannelEventLogger, channelId: string) {
         this.communicationManager
-            .observeChannel(this.identity, channelId)
+            .observeChannel(channelId)
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -83,7 +83,7 @@ export class MockReceiverController extends Controller {
 
     watchForRawEvents(logger: RawEventLogger, topic: string) {
         this.communicationManager
-            .observeRaw(this.identity, topic)
+            .observeRaw(topic)
             .subscribe(value => {
                 logger.count++;
                 // Raw values are emitted as Uint8Array/Buffer objects
@@ -116,7 +116,6 @@ export class MockEmitterController extends Controller {
         for (let i = 1; i <= count; i++) {
             this.communicationManager.publishAdvertise(
                 AdvertiseEvent.withObject(
-                    this.identity,
                     this._createSensorThings(i, objectType, "Advertised")));
         }
     }
@@ -131,7 +130,6 @@ export class MockEmitterController extends Controller {
         for (let i = 1; i <= count; i++) {
             this.communicationManager.publishChannel(
                 ChannelEvent.withObject(
-                    this.identity,
                     channelId,
                     this._createSensorThings(1000 + i, objectType, "Channeled")));
         }
@@ -144,7 +142,7 @@ export class MockEmitterController extends Controller {
      */
     watchForAdvertiseEvents(logger: AdvertiseEventLogger, objectTypes: string) {
         this.communicationManager
-            .observeAdvertiseWithObjectType(this.identity, objectTypes)
+            .observeAdvertiseWithObjectType(objectTypes)
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.eventData);
@@ -156,7 +154,7 @@ export class MockEmitterController extends Controller {
      */
     private _handleDiscoverEvents() {
         this.communicationManager
-            .observeDiscover(this.identity)
+            .observeDiscover()
             .pipe(
                 filter(event => event.eventData.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)),
                 // Take first event only and unsubscribe automatically afterwards
@@ -168,7 +166,6 @@ export class MockEmitterController extends Controller {
                 setTimeout(
                     () => {
                         event.resolve(ResolveEvent.withObject(
-                            this.identity,
                             this._createSensorThings(100, SensorThingsTypes.OBJECT_TYPE_SENSOR)));
                     },
                     this.options["responseDelay"]);
@@ -182,7 +179,7 @@ export class MockEmitterController extends Controller {
 }
 
 /**
- * A collection of sensorThings objects. Used to check validators behaviours
+ * A collection of sensorThings objects. Used to check validators behaviours.
  */
 export class SensorThingsCollection {
     public static readonly sensor: Sensor = {

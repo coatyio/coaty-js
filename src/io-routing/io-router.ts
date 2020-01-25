@@ -67,8 +67,11 @@ export abstract class IoRouter extends Controller {
 
     /**
      * Finds an associated device that matches the given predicate.
+     *
      * Returns undefined if no such device exists.
-     * @param predicate a function returning true if a device matches; false otherwise.
+     *
+     * @param predicate a function returning true if a device matches; false
+     * otherwise.
      */
     findAssociatedDevice(predicate: (device: Device) => boolean) {
         let foundDevice: Device;
@@ -113,7 +116,7 @@ export abstract class IoRouter extends Controller {
             this._sourceTopics.set(source.objectId, topic);
         }
         this.communicationManager.publishAssociate(
-            AssociateEvent.with(this.identity, source, actor, topic, updateRate));
+            AssociateEvent.with(source, actor, topic, updateRate));
     }
 
     /**
@@ -125,7 +128,7 @@ export abstract class IoRouter extends Controller {
      */
     protected disassociate(source: IoSource, actor: IoActor) {
         this.communicationManager.publishAssociate(
-            AssociateEvent.with(this.identity, source, actor, undefined));
+            AssociateEvent.with(source, actor, undefined));
     }
 
     /**
@@ -169,17 +172,16 @@ export abstract class IoRouter extends Controller {
         this._sourceTopics = new Map<Uuid, string>();
 
         if (!user) {
-            this._advertisedSubscription && this._advertisedSubscription.unsubscribe();
-            this._deadvertisedSubscription && this._deadvertisedSubscription.unsubscribe();
-            this._discoverSubscription && this._discoverSubscription.unsubscribe();
+            this._advertisedSubscription?.unsubscribe();
+            this._deadvertisedSubscription?.unsubscribe();
+            this._discoverSubscription?.unsubscribe();
             return;
         }
 
         // Initially preconfigured external devices with
         // IO sources and IO actors for external topics
         const externalDevices = this.options["externalDevices"] as Device[];
-        externalDevices &&
-            externalDevices.forEach(device => this._associatedDevices.set(device.objectId, device));
+        externalDevices?.forEach(device => this._associatedDevices.set(device.objectId, device));
 
         this._advertisedSubscription = this._watchForDeviceAdvertised();
         this._deadvertisedSubscription = this._watchForDeviceDeadvertised();
@@ -188,7 +190,7 @@ export abstract class IoRouter extends Controller {
 
     private _watchForDeviceAdvertised(): Subscription {
         return this.communicationManager
-            .observeAdvertiseWithCoreType(this.identity, "Device")
+            .observeAdvertiseWithCoreType("Device")
             .pipe(filter(event => event.eventUserId === this._associatedUser.objectId))
             .subscribe(event => {
                 this._deviceAdvertised(event.eventData.object as Device);
@@ -197,7 +199,7 @@ export abstract class IoRouter extends Controller {
 
     private _watchForDeviceDeadvertised(): Subscription {
         return this.communicationManager
-            .observeDeadvertise(this.identity)
+            .observeDeadvertise()
             .pipe(filter(event => event.eventUserId === this._associatedUser.objectId))
             .subscribe(event => {
                 this._devicesDeadvertised(event.eventData.objectIds);
@@ -246,7 +248,7 @@ export abstract class IoRouter extends Controller {
 
     private _discoverDevices(): Subscription {
         return this.communicationManager.publishDiscover(
-            DiscoverEvent.withCoreTypes(this.identity, ["Device"]))
+            DiscoverEvent.withCoreTypes(["Device"]))
             .pipe(filter(event =>
                 event.eventUserId === this._associatedUser.objectId &&
                 event.eventData.object !== undefined))
