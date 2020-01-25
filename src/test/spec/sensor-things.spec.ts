@@ -14,7 +14,6 @@ import { delayAction, Spy } from "./utils";
 describe("Sensor things", () => {
 
     const TEST_TIMEOUT = 10000;
-    const USE_READABLE_TOPICS = true;
     const SENSOR_THINGS_TYPES_SET = [
         SensorThingsTypes.OBJECT_TYPE_FEATURE_OF_INTEREST,
         SensorThingsTypes.OBJECT_TYPE_OBSERVATION,
@@ -53,7 +52,6 @@ describe("Sensor things", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
         };
 
@@ -69,7 +67,6 @@ describe("Sensor things", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
             controllers: {
                 MockEmitterController: {
@@ -89,7 +86,6 @@ describe("Sensor things", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
             controllers: {
                 MockEmitterController: {

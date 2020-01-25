@@ -189,6 +189,8 @@ this.communicationManager.observeDiscover()
   Use `CommunicationEvent.sourceId` instead.
 * Stop using `CommunicationEvent.eventUserId` as this getter has been removed.
   For details, see section "Changes in IO routing".
+* Stop using `CommunicationOptions.useReadableTopics` as this property has been
+  removed. This feature is no longer supported.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

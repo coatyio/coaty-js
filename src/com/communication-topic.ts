@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, User, Uuid } from "..";
+import { Uuid } from "..";
 
 import { CommunicationEventType } from "./communication-event";
 
@@ -43,7 +43,6 @@ export class CommunicationTopic {
     }
 
     static PROTOCOL_NAME = "coaty";
-    static READABLE_NAME_ID_SEPARATOR = "_";
     static EVENT_TYPE_FILTER_SEPARATOR = ":";
     static MESSAGE_TOKEN_ID_COUNTER = 0;
     static TOPIC_ASSOCIATED_USER_ID_NONE = "-";
@@ -88,52 +87,28 @@ export class CommunicationTopic {
     /**
      * Create a new topic for the given topic levels.
      * 
-     * @param associatedUser user or user ID associated with the topic, or undefined
+     * @param associatedUserId user ID associated with the topic, or undefined
      * @param sourceObjectId event source object ID
      * @param eventType an event type
      * @param eventTypeFilter an optional filter for an event type
      * @param messageToken a token to identify the message
      * @param protocolVersion the integral protocol version number
-     * @param isReadable whether to generate a readable topic name
-     * @param preserveMessageToken whether to generate a readable topic for the given token
      */
     static createByLevels(
-        associatedUser: User | Uuid,
+        associatedUserId: Uuid,
         sourceObjectId: Uuid,
         eventType: CommunicationEventType,
         eventTypeFilter: string,
         messageToken: Uuid,
-        protocolVersion: number,
-        isReadable: boolean,
-        preserveMessageToken: boolean = false): CommunicationTopic {
+        protocolVersion: number): CommunicationTopic {
         const topic = new CommunicationTopic();
 
-        if (!associatedUser) {
-            topic._associatedId = undefined;
-        } else {
-            if (typeof associatedUser === "string") {
-                topic._associatedId = associatedUser;
-            } else {
-                // Do not create readable topic level for Associate events
-                // in order to match the Associate topic filter where 
-                // the associatedID level is always non-readable (see getTopicFilter)
-                topic._associatedId = isReadable && (eventType !== CommunicationEventType.Associate) ?
-                    CommunicationTopic._readable(associatedUser) :
-                    associatedUser.objectId;
-            }
-        }
-
+        topic._associatedId = associatedUserId;
         topic._sourceObjectId = sourceObjectId;
-
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter || undefined;
         topic._version = protocolVersion;
-
-        if (isReadable && !preserveMessageToken) {
-            topic._messageToken = `${topic._sourceObjectId.replace(/[|]/g, "_")}_${this.MESSAGE_TOKEN_ID_COUNTER++}`;
-        } else {
-            topic._messageToken = messageToken;
-        }
+        topic._messageToken = messageToken;
 
         return topic;
     }
@@ -143,12 +118,11 @@ export class CommunicationTopic {
      *
      * @param version the protocol version
      * @param eventTypeName the event name topic level
-     * @param associatedUser user associated with the topic, or undefined
+     * @param associatedUserId user ID associated with the topic, or undefined
      * @param messageToken message token with the topic, or undefined
      */
-    static getTopicFilter(version: number, eventTypeName: string, associatedUser: User, messageToken: string): string {
-        /* tslint:disable-next-line:max-line-length */
-        return `/${CommunicationTopic.PROTOCOL_NAME}/${version}/${eventTypeName}/${associatedUser ? associatedUser.objectId : "+"}/+/${messageToken || "+"}/`;
+    static getTopicFilter(version: number, eventTypeName: string, associatedUserId: Uuid, messageToken: string): string {
+        return `/${CommunicationTopic.PROTOCOL_NAME}/${version}/${eventTypeName}/${associatedUserId ?? "+"}/+/${messageToken || "+"}/`;
     }
 
     /**
@@ -164,24 +138,6 @@ export class CommunicationTopic {
             name += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
         }
         return name;
-    }
-
-    /**
-     * Gets the UUID for a readable or non-readable topic level, either for
-     * sourceObject or associatedUser.
-     *
-     * @param level either sourceId or associatedUserId level (may also be
-     * undefined)
-     */
-    static uuidFromLevel(level: string) {
-        if (!level) {
-            return undefined;
-        }
-        const i = level.lastIndexOf(this.READABLE_NAME_ID_SEPARATOR);
-        if (i === -1) {
-            return level;
-        }
-        return level.substr(i + 1);
     }
 
     /**
@@ -265,15 +221,6 @@ export class CommunicationTopic {
         const type = index === -1 ? event : event.substring(0, index);
         const filter = index === -1 ? undefined : event.substring(index + 1);
         return [CommunicationEventType[type], filter];
-    }
-
-    private static _readable(obj: CoatyObject) {
-        return this._normalize(obj.name) + this.READABLE_NAME_ID_SEPARATOR + obj.objectId;
-    }
-
-    private static _normalize(name: string) {
-        // Replace invalid Unicode chars within a topic level by underscores
-        return name.replace(/[\u0000\+#\/]/g, "_");
     }
 
     private static _getUtf8BytesCount(str: string) {

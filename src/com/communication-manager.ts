@@ -65,7 +65,6 @@ export class CommunicationManager implements IDisposable {
     private _isClientConnected: boolean;
     private _associatedUser: User;
     private _associatedDevice: Device;
-    private _useReadableTopics: boolean;
     private _isDisposed: boolean;
     private _deadvertiseIds: Uuid[];
     private _associateSubscription: Subscription;
@@ -560,13 +559,12 @@ export class CommunicationManager implements IDisposable {
      */
     createIoValueTopic(ioSource: IoSource): string {
         return CommunicationTopic.createByLevels(
-            this._associatedUser,
+            this._associatedUser?.objectId,
             ioSource.objectId,
             CommunicationEventType.IoValue,
             undefined,
             this.runtime.newUuid(),
-            CommunicationManager.PROTOCOL_VERSION,
-            this._useReadableTopics).getTopicName();
+            CommunicationManager.PROTOCOL_VERSION).getTopicName();
     }
 
     /**
@@ -591,8 +589,6 @@ export class CommunicationManager implements IDisposable {
         // while the communication manager is being online.
         this._associatedUser = CoreTypes.clone<User>(this.runtime.commonOptions?.associatedUser);
         this._associatedDevice = CoreTypes.clone<Device>(this.runtime.commonOptions?.associatedDevice);
-
-        this._useReadableTopics = !!this.options.useReadableTopics;
     }
 
     private _updateCommunicationState(newState: CommunicationState) {
@@ -755,9 +751,9 @@ export class CommunicationManager implements IDisposable {
         const id = this._container.identity.objectId;
         if (this.options.useProtocolCompliantClientId === undefined ||
             this.options.useProtocolCompliantClientId === false) {
-            return `COATY${id}`;
+            return `Coaty${id}`;
         }
-        return `COATY${id.replace("-", "").substr(0, this._useReadableTopics ? 8 : 19)}`;
+        return `Coaty${id.replace("-", "").substr(0, 18)}`;
     }
 
     private _onClientConnected(connack) {
@@ -882,8 +878,8 @@ export class CommunicationManager implements IDisposable {
 
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    sourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
-                    eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
+                    sourceId: topic.sourceObjectId,
+                    eventUserId: topic.associatedUserId,
                     data: JSON.parse(msgPayload),
                     eventRequest: item.request,
                 });
@@ -919,8 +915,8 @@ export class CommunicationManager implements IDisposable {
                 }
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    sourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
-                    eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
+                    sourceId: topic.sourceObjectId,
+                    eventUserId: topic.associatedUserId,
                     data: JSON.parse(msgPayload),
                     eventTypeFilter: topic.eventTypeFilter,
                 });
@@ -1042,14 +1038,12 @@ export class CommunicationManager implements IDisposable {
         // Publish a response message for a request
         if (forMessageToken) {
             const responseTopic = CommunicationTopic.createByLevels(
-                this._associatedUser,
+                this._associatedUser?.objectId,
                 eventSourceId,
                 eventType,
                 eventTypeFilter,
                 forMessageToken,
                 CommunicationManager.PROTOCOL_VERSION,
-                this._useReadableTopics,
-                true,
             );
             this._getPublisher(responseTopic.getTopicName(), eventData.toJsonObject())();
             return undefined;
@@ -1057,14 +1051,12 @@ export class CommunicationManager implements IDisposable {
 
         // Publish a request message
         const topic = CommunicationTopic.createByLevels(
-            this._associatedUser,
+            this._associatedUser?.objectId,
             eventSourceId,
             eventType,
             eventTypeFilter,
             this.runtime.newUuid(),
             CommunicationManager.PROTOCOL_VERSION,
-            this._useReadableTopics,
-            false,
         );
 
         event.eventUserId = this._associatedUser ? this._associatedUser.objectId : undefined;
@@ -1188,7 +1180,7 @@ export class CommunicationManager implements IDisposable {
                     CommunicationManager.PROTOCOL_VERSION,
                     eventTypeName,
                     (eventType === CommunicationEventType.Associate) ?
-                        this._associatedUser :
+                        this._associatedUser?.objectId :
                         undefined,
                     undefined);
             item = new ObservedRequestItem(topicFilter);
@@ -1283,13 +1275,12 @@ export class CommunicationManager implements IDisposable {
         // cached in the last will at the broker would no longer be correct.
         return {
             topic: CommunicationTopic.createByLevels(
-                this._associatedUser,
+                this._associatedUser?.objectId,
                 this._container.identity.objectId,
                 CommunicationEventType.Deadvertise,
                 undefined,
                 this.runtime.newUuid(),
                 CommunicationManager.PROTOCOL_VERSION,
-                this._useReadableTopics,
             ).getTopicName(),
             payload: JSON.stringify(
                 new DeadvertiseEventData(this._deadvertiseIds).toJsonObject()),

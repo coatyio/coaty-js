@@ -5,10 +5,12 @@ title: Coaty JS Documentation
 
 # Coaty Communication Protocol
 
-> This specification conforms to Coaty Communication Protocol Version 2
+> This specification conforms to Coaty Communication Protocol Version 3
 
 ## Version History
 
+* **Version 3**: for Coaty 2; remove readable topic feature; change topic
+  structure; not backward compatible with v2
 * **Version 2**: add Call-Return pattern; backward compatible with v1
 * **Version 1**: initial specification
 
@@ -18,7 +20,6 @@ title: Coaty JS Documentation
 * [Message Topics and Payloads](#message-topics-and-payloads)
 * [Events and Event Patterns](#events-and-event-patterns)
 * [Topic Structure](#topic-structure)
-  * [Readable Topics](#readable-topics)
 * [Topic Filters](#topic-filters)
 * [Topic Payloads](#topic-payloads)
   * [Payload for Advertise Event](#payload-for-advertise-event)
@@ -153,30 +154,6 @@ outbound message containing the original message token of the incoming message
 topic. Note that the Event topic level of response events **must never** include
 a filter field.
 
-### Readable Topics
-
-To support optimized testing and debugging for published topics, instead of
-using a UUID alone, a readable name can be part of the topic levels of
-Associated User ID, Source Object ID, and Message Tokens.
-
-Readable Associated User ID and Source Object ID levels are composed of the name
-of the user/object and the original UUID, separated by an underscore.
-The name must be normalized to conform to the topic specification: any
-occurrences of the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and
-`/ (U+002F)` must be replaced by an underscore character `_ (U+005F)`.
-
-The readable option for Associated User ID *must* *not* be used
-in combination with the Associate event (see section 'Topic Filters' below).
-
-A readable message token is composed of the readable Source Object ID and a
-local decimal integer counter value separated by an underscore. The counter
-should be incremented by a client locally whenever a new message token is generated
-and used. The counter can be used to easily trace and count the number of
-request-response events published by a client.
-
-The readable topic option is intended for debugging and should not be used
-in production systems.
-
 ## Topic Filters
 
 Each communication client should subscribe to topics according to the defined
@@ -211,17 +188,16 @@ the channel ID field: `Channel:<channelId>`.
 When subscribing to a Call event, the Event topic level **must** include the
 operation name field: `Call:<operationname>`.
 
-When subscribing to Associate events which are published by an IO router,
-the Associated User ID level should also be filtered (the readable topic option
-does *not* apply for topic filters):
+When subscribing to Associate events which are published by an IO router, the
+Associated User ID level must also be filtered:
 
 ```
 /coaty/+/Associate/<Associated User ID>/+/+/
 ```
 
-For IoValue events the topic name must *not* contain any wildcard tokens on topic
-levels, since both IO source and IO actor use this topic; the IO actor subscribes
-on it and the IO source publishes on it.
+For IoValue events the topic name *must not* contain any wildcard tokens on
+topic levels, since both IO source and IO actor use this topic; the IO actor
+subscribes on it and the IO source publishes on it.
 
 ## Topic Payloads
 

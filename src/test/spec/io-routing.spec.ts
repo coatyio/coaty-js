@@ -45,7 +45,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: false,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: true,
             },
             controllers: {
             },
@@ -96,34 +95,31 @@ describe("IO Routing", () => {
         it("validates internal IoValue topics", () => {
             const version = CommunicationManager.PROTOCOL_VERSION;
             let topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser,
+                configuration1.common.associatedUser.objectId,
                 "source45567",
                 CommunicationEventType.IoValue,
                 undefined,
                 "token236526",
-                CommunicationManager.PROTOCOL_VERSION,
-                true).getTopicName();
+                CommunicationManager.PROTOCOL_VERSION).getTopicName();
 
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeTruthy();
 
             topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser,
+                configuration1.common.associatedUser.objectId,
                 "source45567",
                 CommunicationEventType.IoValue,
                 undefined,
                 "token236526",
-                CommunicationManager.PROTOCOL_VERSION - 1,
-                true).getTopicName();
+                CommunicationManager.PROTOCOL_VERSION - 1).getTopicName();
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
             topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser,
+                configuration1.common.associatedUser.objectId,
                 "source45567",
                 CommunicationEventType.Advertise,
                 "CoatyObject",
                 "token236526",
-                CommunicationManager.PROTOCOL_VERSION,
-                true).getTopicName();
+                CommunicationManager.PROTOCOL_VERSION).getTopicName();
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
         });
@@ -182,7 +178,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: true,
             },
             controllers: {
                 MockIoActorController: {
@@ -353,7 +348,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: false,
             },
             controllers: {
                 IoSourceController: {
@@ -376,7 +370,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: true,
             },
             controllers: {
                 MockIoActorController: {
@@ -399,7 +392,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: true,
             },
             controllers: {
                 MockIoActorController: {
@@ -414,7 +406,6 @@ describe("IO Routing", () => {
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-                useReadableTopics: true,
             },
             controllers: {
                 RuleBasedIoRouter: {

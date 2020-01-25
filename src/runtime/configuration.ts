@@ -122,16 +122,6 @@ export interface CommunicationOptions {
     shouldAdvertiseDevice?: boolean;
 
     /**
-     * Determines whether the communication manager should publish readable
-     * messaging topics for optimized testing and debugging. Instead of using
-     * a UUID alone, a readable name can be part of the topic levels of
-     * Associated User ID, Source Object ID, and Message Tokens.
-     *
-     * If not specified, the value of this option defaults to false.
-     */
-    useReadableTopics?: boolean;
-
-    /**
      * Determines whether the communication manager should provide a protocol
      * compliant client ID when connecting to the broker/router.
      *
@@ -144,7 +134,7 @@ export interface CommunicationOptions {
      * However, broker implementations are free to allow non-compliant Client
      * IDs.
      *
-     * By default, non-compliant Client IDs of the form "COATY<uuid>" are used
+     * By default, non-compliant Client IDs of the form "Coaty<uuid>" are used
      * where `<uuid>` specifies the `objectId` of the communication manager's
      * `Identity` object. If you experience issues with a specific broker,
      * specify this option as `true`.

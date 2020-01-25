@@ -349,7 +349,6 @@ const configuration: Configuration = {
           mqttClientOptions: ... ,
           shouldAutoStart: ... ,
           shouldAdvertiseDevice: ... ,
-          useReadableTopics: ... ,
     },
     controllers: {
         // Controller-specific configuration options

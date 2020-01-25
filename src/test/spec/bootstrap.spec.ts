@@ -90,7 +90,6 @@ describe("Bootstrapping", () => {
             communication: {
                 shouldAutoStart: false,
                 brokerUrl: "inproc",
-                useReadableTopics: true,
             },
             controllers: {
                 MockObjectController1: { mockCtrlProp: 2 },
@@ -105,7 +104,6 @@ describe("Bootstrapping", () => {
         expect(config.common.extra.testProp1).toBe(undefined);
         expect(config.communication.shouldAutoStart).toBe(primary.communication.shouldAutoStart);
         expect(config.communication.brokerUrl).toBe(primary.communication.brokerUrl);
-        expect(config.communication.useReadableTopics).toBe(secondary.communication.useReadableTopics);
         expect(config.controllers["MockObjectController1"]["mockCtrlProp"])
             .toBe(primary.controllers["MockObjectController1"]["mockCtrlProp"]);
         expect(config.controllers["MockObjectController3"]["mockCtrlProp"])

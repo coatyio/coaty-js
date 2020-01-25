@@ -21,7 +21,6 @@ describe("Historian", () => {
 
     const TEST_TIMEOUT = 10000;
     const ADAPTER_NAME = "InMemoryAdapter";
-    const USE_READABLE_TOPICS = true;
 
     const components: Components = {
         controllers: {
@@ -34,7 +33,6 @@ describe("Historian", () => {
         communication: {
             brokerUrl: "mqtt://localhost:1898",
             shouldAutoStart: true,
-            useReadableTopics: USE_READABLE_TOPICS,
         },
         controllers: {
             HistorianController: {

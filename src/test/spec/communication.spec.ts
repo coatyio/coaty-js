@@ -35,7 +35,6 @@ describe("Communication", () => {
     describe("Communication Topic", () => {
 
         const version = CommunicationManager.PROTOCOL_VERSION;
-        const isReadable = true;
         const associatedUserId = "0ea293e5-f8be-4a5d-886b-0e231e8234b2";
         const associatedUser: User = {
             name: "User+/#HHO\u0000",
@@ -43,27 +42,26 @@ describe("Communication", () => {
             coreType: "User",
             objectId: associatedUserId,
             names: {
-                givenName: "Hubertus",
-                familyName: "Hohl",
+                givenName: "Fred",
+                familyName: "Flintstone",
             },
         };
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
+        const msgToken = "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d";
         const topic = CommunicationTopic.createByLevels(
-            associatedUser,
+            associatedUser.objectId,
             senderId,
             CommunicationEventType.Advertise,
             "CoatyObject",
-            "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d",
-            version,
-            isReadable);
+            msgToken,
+            version);
         const topicNoUser = CommunicationTopic.createByLevels(
             undefined,
             senderId,
             CommunicationEventType.Advertise,
             "CoatyObject",
-            "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d",
-            version,
-            isReadable);
+            msgToken,
+            version);
 
         it("throws on invalid topic structure format", () => {
             expect(() => CommunicationTopic.createByName(
@@ -75,7 +73,7 @@ describe("Communication", () => {
             expect(topicNoUser.sourceObjectId).toBe(senderId);
             expect(topicNoUser.eventType).toBe(CommunicationEventType.Advertise);
             expect(topicNoUser.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(topicNoUser.messageToken).toBe(`${senderId}_1`);
+            expect(topicNoUser.messageToken).toBe(msgToken);
             expect(topicNoUser.version).toBe(version);
 
             const tpc = CommunicationTopic.createByName(topicNoUser.getTopicName());
@@ -83,30 +81,30 @@ describe("Communication", () => {
             expect(tpc.sourceObjectId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
             expect(tpc.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(tpc.messageToken).toBe(`${senderId}_1`);
+            expect(tpc.messageToken).toBe(msgToken);
             expect(tpc.version).toBe(version);
         });
 
         it("has correct level structure for associated user", () => {
-            expect(topic.associatedUserId).toBe("User___HHO_" + "_" + associatedUserId);
+            expect(topic.associatedUserId).toBe(associatedUserId);
             expect(topic.sourceObjectId).toBe(senderId);
             expect(topic.eventType).toBe(CommunicationEventType.Advertise);
             expect(topic.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(topic.messageToken).toBe(`${senderId}_0`);
+            expect(topic.messageToken).toBe(msgToken);
             expect(topic.version).toBe(version);
 
             const tpc = CommunicationTopic.createByName(topic.getTopicName());
-            expect(tpc.associatedUserId).toBe("User___HHO_" + "_" + associatedUserId);
+            expect(tpc.associatedUserId).toBe(associatedUserId);
             expect(tpc.sourceObjectId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
             expect(tpc.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(tpc.messageToken).toBe(`${senderId}_0`);
+            expect(tpc.messageToken).toBe(msgToken);
             expect(tpc.version).toBe(version);
         });
 
         it("has correct filter structure for associated user", () => {
             const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Discover);
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, associatedUser, undefined);
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, associatedUser.objectId, undefined);
             const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
             expect(start).toBe("");
             expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
@@ -152,7 +150,6 @@ describe("Communication", () => {
     describe("Event Patterns", () => {
 
         const TEST_TIMEOUT = 10000;
-        const USE_READABLE_TOPICS = true;
 
         const components1: Components = {
             controllers: {
@@ -185,7 +182,6 @@ describe("Communication", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
         };
 
@@ -202,7 +198,6 @@ describe("Communication", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
             controllers: {
                 MockObjectController: {
@@ -221,7 +216,6 @@ describe("Communication", () => {
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
-                useReadableTopics: USE_READABLE_TOPICS,
             },
             controllers: {
                 MockObjectController: {
@@ -299,13 +293,7 @@ describe("Communication", () => {
         it("Discover event yields Resolve events", (done) => {
             delayAction(responseDelay + 2000, done, () => {
 
-                let associatedUserId = configuration1.common.associatedUser.name +
-                    "_" +
-                    configuration1.common.associatedUser.objectId;
-
-                if (!USE_READABLE_TOPICS) {
-                    associatedUserId = configuration1.common.associatedUser.objectId;
-                }
+                const associatedUserId = configuration1.common.associatedUser.objectId;
 
                 const mockDeviceControllerMatch = UUID_REGEX;
                 const mockObjectControllerMatch = UUID_REGEX;
@@ -344,7 +332,7 @@ describe("Communication", () => {
                     .toHaveBeenCalledTimes(1);
                 expect(Spy.get("MockObjectController1").value1
                     .calls.argsFor(0)[0].eventUserId)
-                    .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
+                    .toBe(associatedUserId);
                 expect(Spy.get("MockObjectController1").value1
                     .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
@@ -359,7 +347,7 @@ describe("Communication", () => {
                     .toHaveBeenCalledTimes(1);
                 expect(Spy.get("MockObjectController2").value1
                     .calls.argsFor(0)[0].eventUserId)
-                    .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
+                    .toBe(associatedUserId);
                 expect(Spy.get("MockObjectController2").value1
                     .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
