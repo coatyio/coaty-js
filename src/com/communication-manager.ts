@@ -249,7 +249,7 @@ export class CommunicationManager implements IDisposable {
             throw new TypeError(`${operation} is not a valid operation name`);
         }
         return (this._observeRequest(CommunicationEventType.Call, operation) as Observable<CallEvent>)
-            .pipe(filter(event => event.eventData.matchesFilter(context)));
+            .pipe(filter(event => event.data.matchesFilter(context)));
     }
 
     /**
@@ -461,8 +461,8 @@ export class CommunicationManager implements IDisposable {
      * @param event the Advertise event to be published
      */
     publishAdvertise(event: AdvertiseEvent): void {
-        const coreType = event.eventData.object.coreType;
-        const objectType = event.eventData.object.objectType;
+        const coreType = event.data.object.coreType;
+        const objectType = event.data.object.objectType;
 
         // Publish event with core type filter to satisfy core type observers.
         this._publishClient(event, coreType);
@@ -478,8 +478,8 @@ export class CommunicationManager implements IDisposable {
 
         // Ensure a Deadvertise event/last will is emitted for an advertised Identity or Device.
         if (coreType === "Identity" || coreType === "Device") {
-            this._deadvertiseIds.find(id => id === event.eventData.object.objectId) ||
-                this._deadvertiseIds.push(event.eventData.object.objectId);
+            this._deadvertiseIds.find(id => id === event.data.object.objectId) ||
+                this._deadvertiseIds.push(event.data.object.objectId);
         }
     }
 
@@ -882,27 +882,27 @@ export class CommunicationManager implements IDisposable {
 
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    eventSourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
+                    sourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
                     eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
-                    eventData: JSON.parse(msgPayload),
+                    data: JSON.parse(msgPayload),
                     eventRequest: item.request,
                 });
 
                 if (message.eventType === CommunicationEventType.Complete) {
                     const completeEvent = message as CompleteEvent;
-                    completeEvent.eventRequest.ensureValidResponseParameters(completeEvent.eventData);
+                    completeEvent.eventRequest.ensureValidResponseParameters(completeEvent.data);
                 }
                 if (message.eventType === CommunicationEventType.Resolve) {
                     const resolveEvent = message as ResolveEvent;
-                    resolveEvent.eventRequest.ensureValidResponseParameters(resolveEvent.eventData);
+                    resolveEvent.eventRequest.ensureValidResponseParameters(resolveEvent.data);
                 }
                 if (message.eventType === CommunicationEventType.Retrieve) {
                     const retrieveEvent = message as RetrieveEvent;
-                    retrieveEvent.eventRequest.ensureValidResponseParameters(retrieveEvent.eventData);
+                    retrieveEvent.eventRequest.ensureValidResponseParameters(retrieveEvent.data);
                 }
                 if (message.eventType === CommunicationEventType.Return) {
                     const returnEvent = message as ReturnEvent;
-                    returnEvent.eventRequest.ensureValidResponseParameters(returnEvent.eventData);
+                    returnEvent.eventRequest.ensureValidResponseParameters(returnEvent.data);
                 }
 
                 isDispatching = true;
@@ -919,33 +919,33 @@ export class CommunicationManager implements IDisposable {
                 }
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    eventSourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
+                    sourceId: CommunicationTopic.uuidFromLevel(topic.sourceObjectId),
                     eventUserId: CommunicationTopic.uuidFromLevel(topic.associatedUserId),
-                    eventData: JSON.parse(msgPayload),
+                    data: JSON.parse(msgPayload),
                     eventTypeFilter: topic.eventTypeFilter,
                 });
 
                 if (message instanceof DiscoverEvent) {
                     message.resolve = (event: ResolveEvent) => {
-                        message.ensureValidResponseParameters(event.eventData);
+                        message.ensureValidResponseParameters(event.data);
                         this._publishClient(event, undefined, topic.messageToken);
                     };
                 }
                 if (message instanceof QueryEvent) {
                     message.retrieve = (event: RetrieveEvent) => {
-                        message.ensureValidResponseParameters(event.eventData);
+                        message.ensureValidResponseParameters(event.data);
                         this._publishClient(event, undefined, topic.messageToken);
                     };
                 }
                 if (message instanceof UpdateEvent) {
                     message.complete = (event: CompleteEvent) => {
-                        message.ensureValidResponseParameters(event.eventData);
+                        message.ensureValidResponseParameters(event.data);
                         this._publishClient(event, undefined, topic.messageToken);
                     };
                 }
                 if (message instanceof CallEvent) {
                     message.returnEvent = (event: ReturnEvent) => {
-                        message.ensureValidResponseParameters(event.eventData);
+                        message.ensureValidResponseParameters(event.data);
                         this._publishClient(event, undefined, topic.messageToken);
                     };
                 }
@@ -978,50 +978,50 @@ export class CommunicationManager implements IDisposable {
         let instance: CommunicationEvent<CommunicationEventData>;
         switch (event.eventType) {
             case CommunicationEventType.Advertise:
-                instance = new AdvertiseEvent(AdvertiseEventData.createFrom(event.eventData));
+                instance = new AdvertiseEvent(AdvertiseEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Associate:
-                instance = new AssociateEvent(AssociateEventData.createFrom(event.eventData));
+                instance = new AssociateEvent(AssociateEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Deadvertise:
-                instance = new DeadvertiseEvent(DeadvertiseEventData.createFrom(event.eventData));
+                instance = new DeadvertiseEvent(DeadvertiseEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Channel:
                 instance = new ChannelEvent(
                     event.eventTypeFilter,
-                    ChannelEventData.createFrom(event.eventData));
+                    ChannelEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Discover:
-                instance = new DiscoverEvent(DiscoverEventData.createFrom(event.eventData));
+                instance = new DiscoverEvent(DiscoverEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Resolve:
-                instance = new ResolveEvent(ResolveEventData.createFrom(event.eventData));
+                instance = new ResolveEvent(ResolveEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Query:
-                instance = new QueryEvent(QueryEventData.createFrom(event.eventData));
+                instance = new QueryEvent(QueryEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Retrieve:
-                instance = new RetrieveEvent(RetrieveEventData.createFrom(event.eventData));
+                instance = new RetrieveEvent(RetrieveEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Update:
-                instance = new UpdateEvent(UpdateEventData.createFrom(event.eventData));
+                instance = new UpdateEvent(UpdateEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Complete:
-                instance = new CompleteEvent(CompleteEventData.createFrom(event.eventData));
+                instance = new CompleteEvent(CompleteEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Call:
                 instance = new CallEvent(
                     event.eventTypeFilter,
-                    CallEventData.createFrom(event.eventData));
+                    CallEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Return:
-                instance = new ReturnEvent(ReturnEventData.createFrom(event.eventData));
+                instance = new ReturnEvent(ReturnEventData.createFrom(event.data));
                 break;
             default:
                 throw new TypeError(`Couldn't create event instance for event type ${event.eventType}`);
         }
         // For inbound event, sourceId is given; for outbound event sourceId is the agent identity.
-        instance.eventSourceId = event.eventSourceId || this._container.identity.objectId;
+        instance.sourceId = event.sourceId || this._container.identity.objectId;
         instance.eventUserId = event.eventUserId;
         if (event.eventRequest) {
             instance.eventRequest = event.eventRequest;
@@ -1037,7 +1037,7 @@ export class CommunicationManager implements IDisposable {
         // Safety check for valid event structure
         event = this._createEventInstance(event);
 
-        const { eventType, eventSourceId, eventData } = event;
+        const { eventType, sourceId: eventSourceId, data: eventData } = event;
 
         // Publish a response message for a request
         if (forMessageToken) {
@@ -1377,7 +1377,7 @@ export class CommunicationManager implements IDisposable {
                 return (this._observeRequest(
                     CommunicationEventType.Advertise,
                     objectCoreType) as Observable<AdvertiseEvent>)
-                    .pipe(filter(event => event.eventData.object.objectType === objectType));
+                    .pipe(filter(event => event.data.object.objectType === objectType));
             }
         }
 
@@ -1413,10 +1413,10 @@ export class CommunicationManager implements IDisposable {
         this._discoverDeviceSubscription =
             this._observeRequest(CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
-                    (event.eventData.isDiscoveringTypes &&
-                        event.eventData.isCoreTypeCompatible("Device")) ||
-                    (event.eventData.isDiscoveringObjectId &&
-                        event.eventData.objectId === this._associatedDevice.objectId)))
+                    (event.data.isDiscoveringTypes &&
+                        event.data.isCoreTypeCompatible("Device")) ||
+                    (event.data.isDiscoveringObjectId &&
+                        event.data.objectId === this._associatedDevice.objectId)))
                 .subscribe((event: DiscoverEvent) =>
                     event.resolve(ResolveEvent.withObject(this._associatedDevice)));
     }
@@ -1430,10 +1430,10 @@ export class CommunicationManager implements IDisposable {
         this._discoverIdentitySubscription =
             this._observeRequest(CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
-                    (event.eventData.isDiscoveringTypes &&
-                        event.eventData.isCoreTypeCompatible("Identity")) ||
-                    (event.eventData.isDiscoveringObjectId &&
-                        event.eventData.objectId === this._container.identity.objectId)))
+                    (event.data.isDiscoveringTypes &&
+                        event.data.isCoreTypeCompatible("Identity")) ||
+                    (event.data.isDiscoveringObjectId &&
+                        event.data.objectId === this._container.identity.objectId)))
                 .subscribe((event: DiscoverEvent) =>
                     event.resolve(ResolveEvent.withObject(this._container.identity)));
     }
@@ -1446,8 +1446,8 @@ export class CommunicationManager implements IDisposable {
     private _handleAssociate(event: AssociateEvent) {
         let isDispatching = false;
         try {
-            const ioSourceId = event.eventData.ioSource.objectId;
-            const ioActorId = event.eventData.ioActor.objectId;
+            const ioSourceId = event.data.ioSource.objectId;
+            const ioActorId = event.data.ioActor.objectId;
             const isIoSourceAssociated = this._associatedDevice.ioCapabilities
                 && this._associatedDevice.ioCapabilities
                     .some(ioPoint => ioPoint.objectId === ioSourceId);
@@ -1459,7 +1459,7 @@ export class CommunicationManager implements IDisposable {
                 return;
             }
 
-            const associatedTopic = event.eventData.associatedTopic;
+            const associatedTopic = event.data.associatedTopic;
 
             if (associatedTopic !== undefined &&
                 !CommunicationTopic.isValidIoValueTopic(associatedTopic, CommunicationManager.PROTOCOL_VERSION)) {
@@ -1470,7 +1470,7 @@ export class CommunicationManager implements IDisposable {
 
             // Update own IO source associations
             if (isIoSourceAssociated) {
-                this._updateIoSourceItems(ioSourceId, ioActorId, associatedTopic, event.eventData.updateRate);
+                this._updateIoSourceItems(ioSourceId, ioActorId, associatedTopic, event.data.updateRate);
             }
 
             // Update own IO actor associations

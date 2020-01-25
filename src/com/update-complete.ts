@@ -47,13 +47,13 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
      * @param eventData event data for Complete response event
      */
     ensureValidResponseParameters(eventData: CompleteEventData) {
-        if (this.eventData.isPartialUpdate &&
-            this.eventData.objectId !== eventData.object.objectId) {
+        if (this.data.isPartialUpdate &&
+            this.data.objectId !== eventData.object.objectId) {
             throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
         }
 
-        if (this.eventData.isFullUpdate &&
-            this.eventData.object.objectId !== eventData.object.objectId) {
+        if (this.data.isFullUpdate &&
+            this.data.object.objectId !== eventData.object.objectId) {
             throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
         }
     }
@@ -126,6 +126,7 @@ export class UpdateEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): UpdateEventData {
         return new UpdateEventData(
             eventData.objectId,
@@ -206,6 +207,7 @@ export class CompleteEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): CompleteEventData {
         return new CompleteEventData(
             eventData.object,

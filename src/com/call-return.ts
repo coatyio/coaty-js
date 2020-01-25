@@ -138,6 +138,7 @@ export class CallEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): CallEventData {
         return new CallEventData(
             eventData.parameters,
@@ -361,6 +362,7 @@ export class ReturnEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): ReturnEventData {
         return new ReturnEventData(
             eventData.result,

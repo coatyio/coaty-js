@@ -64,6 +64,7 @@ export class AssociateEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): AssociateEventData {
         return new AssociateEventData(
             eventData.ioSource,

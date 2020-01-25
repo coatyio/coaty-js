@@ -76,7 +76,7 @@ export class Runtime {
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
     private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
-    private static FRAMEWORK_BUILD_DATE = 1579947983750;
+    private static FRAMEWORK_BUILD_DATE = 1579951307163;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */

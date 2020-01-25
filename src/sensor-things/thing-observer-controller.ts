@@ -28,8 +28,8 @@ export class ThingObserverController extends Controller {
         return this.communicationManager
             .publishDiscover(DiscoverEvent.withObjectTypes([SensorThingsTypes.OBJECT_TYPE_THING]))
             .pipe(
-                filter(event => !!event.eventData.object),
-                map(event => event.eventData.object as Thing),
+                filter(event => !!event.data.object),
+                map(event => event.data.object as Thing),
             );
     }
 
@@ -43,7 +43,7 @@ export class ThingObserverController extends Controller {
         return this.communicationManager
             .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_THING)
             .pipe(
-                map(event => event.eventData.object as Thing),
+                map(event => event.data.object as Thing),
                 filter(thing => !!thing),
             );
     }
@@ -67,6 +67,6 @@ export class ThingObserverController extends Controller {
             .publishQuery(QueryEvent.withObjectTypes(
                 [SensorThingsTypes.OBJECT_TYPE_THING],
                 objectFilter))
-            .pipe(map(event => event.eventData.objects as Thing[]));
+            .pipe(map(event => event.data.objects as Thing[]));
     }
 }

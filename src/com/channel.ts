@@ -101,6 +101,7 @@ export class ChannelEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): ChannelEventData {
         return new ChannelEventData(
             eventData.object,

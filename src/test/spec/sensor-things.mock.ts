@@ -68,7 +68,7 @@ export class MockReceiverController extends Controller {
             .observeAdvertiseWithObjectType(objectType)
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -77,7 +77,7 @@ export class MockReceiverController extends Controller {
             .observeChannel(channelId)
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -145,7 +145,7 @@ export class MockEmitterController extends Controller {
             .observeAdvertiseWithObjectType(objectTypes)
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -156,7 +156,7 @@ export class MockEmitterController extends Controller {
         this.communicationManager
             .observeDiscover()
             .pipe(
-                filter(event => event.eventData.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)),
+                filter(event => event.data.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)),
                 // Take first event only and unsubscribe automatically afterwards
                 take(1),
             )

@@ -58,7 +58,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     /**
      * Gets the object ID of the event source object.
      */
-    get eventSourceId() {
+    get sourceId() {
         return this._eventSourceId;
     }
 
@@ -67,14 +67,14 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      *
      * Sets the object ID of the event source object.
      */
-    set eventSourceId(sourceId: Uuid) {
+    set sourceId(sourceId: Uuid) {
         this._eventSourceId = sourceId;
     }
 
     /**
      * Gets the event data of this event.
      */
-    get eventData() {
+    get data() {
         return this._eventData;
     }
 

@@ -93,26 +93,26 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
      * @param eventData event data for Resolve response event
      */
     ensureValidResponseParameters(eventData: ResolveEventData) {
-        if (this.eventData.coreTypes !== undefined && eventData.object) {
-            if (!this.eventData.coreTypes.some(t => t === eventData.object.coreType)) {
+        if (this.data.coreTypes !== undefined && eventData.object) {
+            if (!this.data.coreTypes.some(t => t === eventData.object.coreType)) {
                 throw new TypeError("resolved coreType not contained in Discover coreTypes");
             }
         }
 
-        if (this.eventData.objectTypes !== undefined && eventData.object) {
-            if (!this.eventData.objectTypes.some(t => t === eventData.object.objectType)) {
+        if (this.data.objectTypes !== undefined && eventData.object) {
+            if (!this.data.objectTypes.some(t => t === eventData.object.objectType)) {
                 throw new TypeError("resolved objectType not contained in Discover objectTypes");
             }
         }
 
-        if (this.eventData.objectId && eventData.object) {
-            if (this.eventData.objectId !== eventData.object.objectId) {
+        if (this.data.objectId && eventData.object) {
+            if (this.data.objectId !== eventData.object.objectId) {
                 throw new TypeError("resolved object's UUID doesn't match Discover objectId");
             }
         }
 
-        if (this.eventData.externalId && eventData.object) {
-            if (this.eventData.externalId !== eventData.object.externalId) {
+        if (this.data.externalId && eventData.object) {
+            if (this.data.externalId !== eventData.object.externalId) {
                 throw new TypeError("resolved object's external ID doesn't match Discover externalId");
             }
         }
@@ -232,6 +232,7 @@ export class DiscoverEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): DiscoverEventData {
         return new DiscoverEventData(
             eventData.externalId,
@@ -404,6 +405,7 @@ export class ResolveEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): ResolveEventData {
         return new ResolveEventData(
             eventData.object,

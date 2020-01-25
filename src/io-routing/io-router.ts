@@ -193,7 +193,7 @@ export abstract class IoRouter extends Controller {
             .observeAdvertiseWithCoreType("Device")
             .pipe(filter(event => event.eventUserId === this._associatedUser.objectId))
             .subscribe(event => {
-                this._deviceAdvertised(event.eventData.object as Device);
+                this._deviceAdvertised(event.data.object as Device);
             });
     }
 
@@ -202,7 +202,7 @@ export abstract class IoRouter extends Controller {
             .observeDeadvertise()
             .pipe(filter(event => event.eventUserId === this._associatedUser.objectId))
             .subscribe(event => {
-                this._devicesDeadvertised(event.eventData.objectIds);
+                this._devicesDeadvertised(event.data.objectIds);
             });
     }
 
@@ -251,9 +251,9 @@ export abstract class IoRouter extends Controller {
             DiscoverEvent.withCoreTypes(["Device"]))
             .pipe(filter(event =>
                 event.eventUserId === this._associatedUser.objectId &&
-                event.eventData.object !== undefined))
+                event.data.object !== undefined))
             .subscribe(event => {
-                this._deviceAdvertised(event.eventData.object as Device);
+                this._deviceAdvertised(event.data.object as Device);
             });
     }
 }

@@ -153,7 +153,7 @@ export class HistorianController extends Controller {
 
         return this.communicationManager
             .publishQuery(QueryEvent.withCoreTypes(["Snapshot"], objectFilter))
-            .pipe(map(retrieve => retrieve.eventData.objects as Snapshot[]));
+            .pipe(map(retrieve => retrieve.data.objects as Snapshot[]));
     }
 
     /**
@@ -257,11 +257,11 @@ export class HistorianController extends Controller {
     private _observeQueries() {
         return this.communicationManager
             .observeQuery()
-            .pipe(filter(event => event.eventData.isCoreTypeCompatible("Snapshot")))
+            .pipe(filter(event => event.data.isCoreTypeCompatible("Snapshot")))
             .subscribe(event => {
                 this.onQueryReceived(event);
                 this._getDbContext()
-                    .then(dbCtx => dbCtx.findObjects<Snapshot>(this.options["database"].collection, event.eventData.objectFilter))
+                    .then(dbCtx => dbCtx.findObjects<Snapshot>(this.options["database"].collection, event.data.objectFilter))
                     .then(iterator => iterator.forBatch(results => {
                         this.onQueryRetrieved(event, results);
                         event.retrieve(RetrieveEvent.withObjects(results));
@@ -281,7 +281,7 @@ export class HistorianController extends Controller {
             .observeAdvertiseWithCoreType("Snapshot")
             .subscribe(event => {
                 this._getDbContext()
-                    .then(dbCtx => dbCtx.insertObjects(this.options["database"].collection, event.eventData.object))
+                    .then(dbCtx => dbCtx.insertObjects(this.options["database"].collection, event.data.object))
                     .catch(error => this.logError(error, "Failed to persist observed snapshot", HistorianController._LOG_TAG_DB));
             });
     }

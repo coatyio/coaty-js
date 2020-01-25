@@ -236,10 +236,10 @@ describe("IO Routing", () => {
                 delayAction(2000, undefined, () => {
                     expect(logger.stateEvents.length).toBe(2);
                     if (logger.stateEvents[0]) {
-                        expect(logger.stateEvents[0].eventData.hasAssociations).toBe(false);
+                        expect(logger.stateEvents[0].data.hasAssociations).toBe(false);
                     }
                     if (logger.stateEvents[1]) {
-                        expect(logger.stateEvents[1].eventData.hasAssociations).toBe(true);
+                        expect(logger.stateEvents[1].data.hasAssociations).toBe(true);
                     }
                     expect(logger.values.length).toBe(emittedValues.length);
                     for (let i = 0; i < emittedValues.length; i++) {
@@ -499,13 +499,13 @@ describe("IO Routing", () => {
                 delayAction(2000, done, () => {
                     expect(logger1.stateEvents.length).toBe(3);
                     if (logger1.stateEvents[0]) {
-                        expect(logger1.stateEvents[0].eventData.hasAssociations).toBe(false);
+                        expect(logger1.stateEvents[0].data.hasAssociations).toBe(false);
                     }
                     if (logger1.stateEvents[1]) {
-                        expect(logger1.stateEvents[1].eventData.hasAssociations).toBe(true);
+                        expect(logger1.stateEvents[1].data.hasAssociations).toBe(true);
                     }
                     if (logger1.stateEvents[2]) {
-                        expect(logger1.stateEvents[2].eventData.hasAssociations).toBe(true);
+                        expect(logger1.stateEvents[2].data.hasAssociations).toBe(true);
                     }
                     expect(logger1.values.length).toBe(emittedValues.length * 2);
                     for (let i = 0; i < emittedValues.length * 2; i += 2) {
@@ -544,25 +544,25 @@ describe("IO Routing", () => {
                     // actor1 should receive 2 Disassociate events for both sources
                     expect(logger1.stateEvents.length).toBe(3);
                     if (logger1.stateEvents[0]) {
-                        expect(logger1.stateEvents[0].eventData.hasAssociations).toBe(true);
+                        expect(logger1.stateEvents[0].data.hasAssociations).toBe(true);
                     }
                     if (logger1.stateEvents[1]) {
-                        expect(logger1.stateEvents[1].eventData.hasAssociations).toBe(false);
+                        expect(logger1.stateEvents[1].data.hasAssociations).toBe(false);
                     }
                     if (logger1.stateEvents[2]) {
-                        expect(logger1.stateEvents[2].eventData.hasAssociations).toBe(false);
+                        expect(logger1.stateEvents[2].data.hasAssociations).toBe(false);
                     }
 
                     // actor2 should receive 2 Associate events for both sources
                     expect(logger2.stateEvents.length).toBe(3);
                     if (logger2.stateEvents[0]) {
-                        expect(logger2.stateEvents[0].eventData.hasAssociations).toBe(false);
+                        expect(logger2.stateEvents[0].data.hasAssociations).toBe(false);
                     }
                     if (logger2.stateEvents[1]) {
-                        expect(logger2.stateEvents[1].eventData.hasAssociations).toBe(true);
+                        expect(logger2.stateEvents[1].data.hasAssociations).toBe(true);
                     }
                     if (logger2.stateEvents[2]) {
-                        expect(logger2.stateEvents[2].eventData.hasAssociations).toBe(true);
+                        expect(logger2.stateEvents[2].data.hasAssociations).toBe(true);
                     }
 
                     // actor1 should receive no IO values any more

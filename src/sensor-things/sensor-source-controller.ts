@@ -224,7 +224,7 @@ export class SensorSourceController extends Controller {
     }
 
     /**
-     * Returns a hot observable that emits values read from the sensor.
+     * Returns an observable that emits values read from the sensor.
      *
      * Only the values read with publishChanneledObservation or
      * publishAdvertisedObservation will emit new values. Reading the sensor
@@ -493,14 +493,14 @@ export class SensorSourceController extends Controller {
 
         this._querySubscription = this.communicationManager
             .observeQuery()
-            .pipe(filter(event => event.eventData.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)))
+            .pipe(filter(event => event.data.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)))
             .subscribe(event => {
                 let retrieved: Sensor[] = [];
-                if (!event.eventData.objectFilter) {
+                if (!event.data.objectFilter) {
                     retrieved = this.registeredSensors;
                 } else {
                     this._sensors.forEach(container => {
-                        if (ObjectMatcher.matchesFilter(container.sensor, event.eventData.objectFilter)) {
+                        if (ObjectMatcher.matchesFilter(container.sensor, event.data.objectFilter)) {
                             retrieved.push(container.sensor);
                         }
                     });
@@ -519,13 +519,13 @@ export class SensorSourceController extends Controller {
         this._discoverSubscription = this.communicationManager
             .observeDiscover()
             .subscribe(event => {
-                if (event.eventData.isDiscoveringObjectId) {
-                    if (this._sensors.has(event.eventData.objectId)) {
-                        event.resolve(ResolveEvent.withObject(this._sensors.get(event.eventData.objectId).sensor));
+                if (event.data.isDiscoveringObjectId) {
+                    if (this._sensors.has(event.data.objectId)) {
+                        event.resolve(ResolveEvent.withObject(this._sensors.get(event.data.objectId).sensor));
                     }
                 } else if (
-                    event.eventData.isDiscoveringTypes &&
-                    event.eventData.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)) {
+                    event.data.isDiscoveringTypes &&
+                    event.data.isObjectTypeCompatible(SensorThingsTypes.OBJECT_TYPE_SENSOR)) {
                     this._sensors.forEach(container => {
                         event.resolve(ResolveEvent.withObject(container.sensor));
                     });

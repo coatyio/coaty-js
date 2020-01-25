@@ -147,7 +147,7 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
             .subscribe(thing => this._onThingReceived(thing));
 
         this._thingOfflineSubscription = this.communicationManager.observeDeadvertise()
-            .subscribe(event => event.eventData.objectIds.forEach(id => this._onDeadvertised(id)));
+            .subscribe(event => event.data.objectIds.forEach(id => this._onDeadvertised(id)));
     }
 
     private _onThingReceived(thing: Thing) {

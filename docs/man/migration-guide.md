@@ -182,6 +182,13 @@ this.communicationManager.observeDiscover()
 * Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
   enum members have been removed. Use `OperatingState.Started` and
   `OperatingState.Stopped` instead.
+* Rename `IoStateEvent.eventData` getter to `IoStateEvent.data`.
+* Rename `CommunicationEvent.eventData` getter to `CommunicationEvent.data`.
+* Rename `CommunicationEvent.eventSourceId` getter to `CommunicationEvent.sourceId`.
+* Stop using `CommunicationEvent.eventSource` as this getter has been removed.
+  Use `CommunicationEvent.sourceId` instead.
+* Stop using `CommunicationEvent.eventUserId` as this getter has been removed.
+  For details, see section "Changes in IO routing".
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

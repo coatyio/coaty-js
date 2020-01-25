@@ -127,8 +127,8 @@ export class IoSourceController extends Controller {
             item[1] = ioState.subscribe(event => this._onIoStateChanged(source.objectId, event));
 
             // Keep subjects that may be in use by the application code.
-            item[2].next(ioState.value.eventData.updateRate);
-            item[3].next(ioState.value.eventData.hasAssociations);
+            item[2].next(ioState.value.data.updateRate);
+            item[3].next(ioState.value.data.hasAssociations);
 
             this._updateUpdateRateObservable(item);
         });
@@ -151,8 +151,8 @@ export class IoSourceController extends Controller {
             item = [
                 source,
                 ioState.subscribe(event => this._onIoStateChanged(sourceId, event)),
-                new BehaviorSubject<number>(ioState.value.eventData.updateRate),
-                new BehaviorSubject<boolean>(ioState.value.eventData.hasAssociations),
+                new BehaviorSubject<number>(ioState.value.data.updateRate),
+                new BehaviorSubject<boolean>(ioState.value.data.hasAssociations),
                 new Subject<T>(),
                 undefined,
             ];
@@ -171,13 +171,13 @@ export class IoSourceController extends Controller {
 
         let needsUpdate = false;
 
-        if (item[3].value !== event.eventData.hasAssociations) {
-            item[3].next(event.eventData.hasAssociations);
+        if (item[3].value !== event.data.hasAssociations) {
+            item[3].next(event.data.hasAssociations);
             needsUpdate = true;
         }
 
-        if (item[2].value !== event.eventData.updateRate) {
-            item[2].next(event.eventData.updateRate);
+        if (item[2].value !== event.data.updateRate) {
+            item[2].next(event.data.updateRate);
             needsUpdate = true;
         }
 

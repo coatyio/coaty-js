@@ -50,6 +50,7 @@ export class AdvertiseEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): AdvertiseEventData {
         return new AdvertiseEventData(
             eventData.object,

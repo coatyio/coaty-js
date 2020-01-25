@@ -68,13 +68,13 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
      */
     ensureValidResponseParameters(eventData: RetrieveEventData) {
         for (const obj of eventData.objects) {
-            if (this.eventData.coreTypes !== undefined) {
-                if (!this.eventData.coreTypes.some(t => t === obj.coreType)) {
+            if (this.data.coreTypes !== undefined) {
+                if (!this.data.coreTypes.some(t => t === obj.coreType)) {
                     throw new TypeError("retrieved coreType not contained in Query coreTypes");
                 }
             }
-            if (this.eventData.objectTypes !== undefined) {
-                if (!this.eventData.objectTypes.some(t => t === obj.objectType)) {
+            if (this.data.objectTypes !== undefined) {
+                if (!this.data.objectTypes.some(t => t === obj.objectType)) {
                     throw new TypeError("retrieved objectType not contained in Query objectTypes");
                 }
             }
@@ -150,6 +150,7 @@ export class QueryEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): QueryEventData {
         return new QueryEventData(
             eventData.objectTypes,
@@ -266,6 +267,7 @@ export class RetrieveEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): RetrieveEventData {
         return new RetrieveEventData(
             eventData.objects,

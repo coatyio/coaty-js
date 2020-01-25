@@ -104,7 +104,7 @@ export class IoActorController extends Controller {
             item[2] = ioValue.subscribe(value => this._onIoValueChanged(actor.objectId, value));
 
             // Keep subject that may be in use by the application code.
-            item[3].next(ioState.value.eventData.hasAssociations);
+            item[3].next(ioState.value.data.hasAssociations);
         });
     }
 
@@ -127,7 +127,7 @@ export class IoActorController extends Controller {
                 actor,
                 ioState.subscribe(event => this._onIoStateChanged(actorId, event)),
                 ioValue.subscribe(value => this._onIoValueChanged(actorId, value)),
-                new BehaviorSubject<boolean>(ioState.value.eventData.hasAssociations),
+                new BehaviorSubject<boolean>(ioState.value.data.hasAssociations),
                 new BehaviorSubject<T>(undefined),
             ];
             this._actorItems.set(actorId, item);
@@ -142,8 +142,8 @@ export class IoActorController extends Controller {
             return;
         }
 
-        if (item[3].value !== event.eventData.hasAssociations) {
-            item[3].next(event.eventData.hasAssociations);
+        if (item[3].value !== event.data.hasAssociations) {
+            item[3].next(event.data.hasAssociations);
         }
     }
 

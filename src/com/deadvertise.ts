@@ -36,6 +36,7 @@ export class DeadvertiseEventData extends CommunicationEventData {
         }
     }
 
+    /** @internal For internal use in framework only. */
     static createFrom(eventData: any): DeadvertiseEventData {
         return new DeadvertiseEventData(eventData.objectIds);
     }

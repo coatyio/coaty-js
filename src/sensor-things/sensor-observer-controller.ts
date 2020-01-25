@@ -26,10 +26,10 @@ export class SensorObserverController extends Controller {
         return this.communicationManager
             .observeChannel(channelId || sensorId)
             .pipe(
-                filter(event => !!event.eventData.object
-                    && event.eventData.object.objectType === SensorThingsTypes.OBJECT_TYPE_OBSERVATION
-                    && event.eventData.object.parentObjectId === sensorId),
-                map(event => event.eventData.object as Observation));
+                filter(event => !!event.data.object
+                    && event.data.object.objectType === SensorThingsTypes.OBJECT_TYPE_OBSERVATION
+                    && event.data.object.parentObjectId === sensorId),
+                map(event => event.data.object as Observation));
     }
 
     /**
@@ -41,14 +41,14 @@ export class SensorObserverController extends Controller {
         return this.communicationManager
             .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_OBSERVATION)
             .pipe(
-                filter(event => !!event.eventData.object
-                    && event.eventData.object.parentObjectId === sensorId),
-                map(event => event.eventData.object as Observation),
+                filter(event => !!event.data.object
+                    && event.data.object.parentObjectId === sensorId),
+                map(event => event.data.object as Observation),
             );
     }
 
     /**
-     * Returns a hot observable emitting advertised Sensors.
+     * Returns an observable emitting advertised Sensors.
      * 
      * This method does not perform any kind of caching and it should
      * be performed on the application-side.
@@ -57,7 +57,7 @@ export class SensorObserverController extends Controller {
         return this.communicationManager
             .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_SENSOR)
             .pipe(
-                map(event => event.eventData.object as Sensor),
+                map(event => event.data.object as Sensor),
                 filter(sensor => !!sensor),
             );
     }
@@ -75,8 +75,8 @@ export class SensorObserverController extends Controller {
         return this.communicationManager
             .publishDiscover(DiscoverEvent.withObjectTypes([SensorThingsTypes.OBJECT_TYPE_SENSOR]))
             .pipe(
-                filter(event => !!event.eventData.object),
-                map(event => event.eventData.object as Sensor),
+                filter(event => !!event.data.object),
+                map(event => event.data.object as Sensor),
             );
     }
 
@@ -98,6 +98,6 @@ export class SensorObserverController extends Controller {
         return this.communicationManager
             .publishQuery(QueryEvent.withObjectTypes([SensorThingsTypes.OBJECT_TYPE_SENSOR],
                 objectFilter))
-            .pipe(map(event => event.eventData.objects as Sensor[]));
+            .pipe(map(event => event.data.objects as Sensor[]));
     }
 }

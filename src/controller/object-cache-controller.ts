@@ -65,7 +65,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
             resolve = this.communicationManager
                 .publishDiscover(DiscoverEvent.withObjectId(objectId))
                 .pipe(
-                    map(event => event.eventData.object as T),
+                    map(event => event.data.object as T),
                     first(obj => obj &&
                         (obj.coreType === this.coreType) &&
                         (this._objectFilter ? this._objectFilter(obj) : true)),
@@ -116,9 +116,9 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
     private _observeObjectAdvertisements() {
         return this.communicationManager
             .observeAdvertiseWithCoreType(this.coreType)
-            .pipe(filter(event => this._objectCache.has(event.eventData.object.objectId)))
+            .pipe(filter(event => this._objectCache.has(event.data.object.objectId)))
             .subscribe(event => {
-                const obj = event.eventData.object as T;
+                const obj = event.data.object as T;
                 this._objectCache.set(obj.objectId, obj);
             });
     }

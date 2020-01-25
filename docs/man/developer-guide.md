@@ -688,7 +688,7 @@ export class SupportTaskController extends Controller {
 
     private _observeAdvertiseTask() {
         return this.communicationManager.observeAdvertiseWithObjectType("com.helloworld.SupportTask")
-            .pipe(map(event => event.eventData.object as SupportTask))
+            .pipe(map(event => event.data.object as SupportTask))
             .subscribe(task => {
                 // Do something whenever a support task object is advertised
             });
@@ -1209,7 +1209,7 @@ this.communicationManager
 this.communicationManager
     .observeAdvertiseWithCoreType("Task")
     .pipe(
-        map(event => event.eventData.object as Task),
+        map(event => event.data.object as Task),
         filter(task => task.status === TaskStatus.Request)
     )
     .subscribe(task => {
@@ -1220,7 +1220,7 @@ this.communicationManager
 this.communicationManager
     .observeAdvertiseWithObjectType("com.helloworld.Task")
     .pipe(
-        map(event => event.eventData.object as HelloWorldTask),
+        map(event => event.data.object as HelloWorldTask),
         filter(task => task.status === TaskStatus.Request)
     )
     .subscribe(task => {
@@ -1250,7 +1250,7 @@ this.communicationManager
 // Observe Deadvertise events
 this.communicationManager
     .observeDeadvertise()
-    .pipe(map(event => event.eventData.objectIds))
+    .pipe(map(event => event.data.objectIds))
     .subscribe(objectIds => {
         // Handle object IDs of deadvertised objects which have been advertised previously
     });
@@ -1315,7 +1315,7 @@ import { SensorThingsTypes, Thing } from "@coaty/core/sensor-things";
 // Observe Advertise events on Thing objects
 this.communicationManager
     .observeAdvertiseWithObjectType(SensorThingsTypes.OBJECT_TYPE_THING)
-    .pipe(map(event => event.eventData.object as Thing))
+    .pipe(map(event => event.data.object as Thing))
     .subscribe(thing => {
          // Store thing for later use
          this.onlineThings.push(thing);
@@ -1324,7 +1324,7 @@ this.communicationManager
 // Observe Deadvertise events
 this.communicationManager
     .observeDeadvertise()
-    .pipe(map(event => event.eventData.objectIds))
+    .pipe(map(event => event.data.objectIds))
     .subscribe(objectIds => {
         const offlineThings = this.onlineThings.filter(t => objectIds.some(id => id === t.parentObjectId));
         // These things are no longer online.
@@ -1353,7 +1353,7 @@ this.communicationManager
 // Observe Channel events for the given channel ID
 this.communicationManager
     .observeChannel(channelId)
-    .pipe(filter(event => event.eventData.object))
+    .pipe(filter(event => event.data.object))
     .subscribe(obj => {
          // Handle object emitted by channel event
     });
@@ -1378,7 +1378,7 @@ this.communicationManager
     .publishDiscover(DiscoverEvent.withExternalId(externalId))
     .pipe(
         first(),
-        map(event => event.eventData.object),
+        map(event => event.data.object),
         timeout(5000)
     )
     .subscribe(
@@ -1392,12 +1392,12 @@ this.communicationManager
 
 // Observe Discover events and respond with a Resolve event
 this.communicationManager.observeDiscover()
-    .pipe(filter(event => event.eventData.isDiscoveringExternalId))
+    .pipe(filter(event => event.data.isDiscoveringExternalId))
     .subscribe(event => {
          // Agent-specific lookup of an object with given external ID.
-         // Alternatively, use `event.eventData.matchesObject()` here to find a
+         // Alternatively, use `event.data.matchesObject()` here to find a
          // match in a collection of objects.
-         const object = findObjectWithExternalId(event.eventData.externalId);
+         const object = findObjectWithExternalId(event.data.externalId);
          // Respond with found object in Resolve event
          event.resolve(ResolveEvent.withObject(object));
     });
@@ -1432,14 +1432,14 @@ import { filter, map } from "rxjs/operators";
 const discoveredTasks = this.communicationManager
     .publishDiscover(DiscoverEvent.withObjectTypes(["com.helloworld.Task"]))
     .pipe(
-        filter(event => event.eventData.object !== undefined),
-        map(event => event.eventData.object as HelloWorldTask)
+        filter(event => event.data.object !== undefined),
+        map(event => event.data.object as HelloWorldTask)
     );
 
 const advertisedTasks = this.communicationManager
     .observeAdvertiseWithObjectType("com.helloworld.Task")
     .pipe(
-        map(event => event.eventData.object as HelloWorldTask),
+        map(event => event.data.object as HelloWorldTask),
         filter(task => task !== undefined)
     );
 
@@ -1494,7 +1494,7 @@ this.communicationManager
     .subscribe(
         event => {
             // Handle resulting log objects emitted by Retrieve event
-            const logs = event.eventData.objects as Log[];
+            const logs = event.data.objects as Log[];
         },
         error => {
             // No response has been received within the given period of time
@@ -1506,17 +1506,17 @@ this.communicationManager
 // from a database.
 this.communicationManager
   .observeQuery()
-  .pipe(filter(event => event.eventData.isCoreTypeCompatible("Log")))
+  .pipe(filter(event => event.data.isCoreTypeCompatible("Log")))
   .subscribe(event => {
     const dbJoinCond = DbContext.getDbJoinConditionsFrom(
-      event.eventData.objectJoinConditions,
+      event.data.objectJoinConditions,
       {
         localProperty: "locationId",
         fromCollection: "location",
         fromProperty: "objectId"
       });
     this.databaseContext
-      .findObjects<Log>("log", event.eventData.objectFilter, dbJoinCond)
+      .findObjects<Log>("log", event.data.objectFilter, dbJoinCond)
       .then(iterator => iterator.forBatch(logs => {
          event.retrieve(RetrieveEvent.withObjects(logs));
       }))
@@ -1568,7 +1568,7 @@ this.communicationManager.publishUpdate(
     .pipe(
         // Unsubscribe automatically after first response event arrives.
         take(1),
-        map(event => event.eventData.object as Task),
+        map(event => event.data.object as Task),
     )
     .subscribe(
         task => {
@@ -1579,11 +1579,11 @@ this.communicationManager.publishUpdate(
 // the changed property values in a database. Afterwards, it responds
 // with a Complete event which contains the fully updated object.
 this.communicationManager.observeUpdate()
-    .pipe(filter(event => event.eventData.isPartialUpdate))
+    .pipe(filter(event => event.data.isPartialUpdate))
     .subscribe(event => {
-        const task = this.getTaskWithIdFromDb(event.eventData.objectId);
+        const task = this.getTaskWithIdFromDb(event.data.objectId);
         if (task !== undefined) {
-            this.updateTaskWithIdinDb(task.objectId, event.eventData.changedValues);
+            this.updateTaskWithIdinDb(task.objectId, event.data.changedValues);
             event.complete(CompleteEvent.withObject(task));
         }
     });
@@ -1635,15 +1635,15 @@ this.communicationManager.publishCall(
             contextFilter))
     .subscribe(
         returnEvent => {
-            if (returnEvent.eventData.isError) {
+            if (returnEvent.data.isError) {
                 // An error has been returned by a light control agent.
-                console.log(returnEvent.eventData.error.code);           // 10001
-                console.log(returnEvent.eventData.error.message);        // "Failed"
-                console.log(returnEvent.eventData.executionInfo);        // { lightId: "<id of light>" }
+                console.log(returnEvent.data.error.code);           // 10001
+                console.log(returnEvent.data.error.message);        // "Failed"
+                console.log(returnEvent.data.executionInfo);        // { lightId: "<id of light>" }
             } else {
                 // A light has been switched on/off successfully by a light control agent.
-                console.log(returnEvent.eventData.result);               // true
-                console.log(returnEvent.eventData.executionInfo);        // { lightId: "<id of light>" }
+                console.log(returnEvent.data.result);               // true
+                console.log(returnEvent.data.executionInfo);        // { lightId: "<id of light>" }
             }
         });
 ```
@@ -1666,8 +1666,8 @@ const context: LightControlContext = {
 this.communicationManager.observeCall("com.mydomain.lights.switchLight", context)
     .subscribe(event => {
         // For each remote call that matches the given context, a Call event is emitted.
-        const status = event.eventData.getParameterByName("status");
-        const brightness = event.eventData.getParameterByName("brightness");
+        const status = event.data.getParameterByName("status");
+        const brightness = event.data.getParameterByName("brightness");
 
         const executionInfo = { lightId: this.lightId };
 
@@ -1736,7 +1736,7 @@ specified and they do not match (checked by using
 > import { filter } from "rxjs/operators";
 >
 > this.communicationManager.observeCall("com.mydomain.lights.switchLight")
->     .pipe(filter(event => isMatchingFilter(event.eventData.filter))
+>     .pipe(filter(event => isMatchingFilter(event.data.filter))
 >     .subscribe(event => ...);
 > ```
 

@@ -148,10 +148,10 @@ export class ObjectLifecycleController extends Controller {
         return this.communicationManager
             .observeDiscover()
             .pipe(filter((event: DiscoverEvent) =>
-                (event.eventData.isDiscoveringTypes &&
-                    event.eventData.isObjectTypeCompatible(object.objectType)) ||
-                (event.eventData.isDiscoveringObjectId &&
-                    event.eventData.objectId === object.objectId)))
+                (event.data.isDiscoveringTypes &&
+                    event.data.isObjectTypeCompatible(object.objectType)) ||
+                (event.data.isDiscoveringObjectId &&
+                    event.data.objectId === object.objectId)))
             .subscribe(event =>
                 event.resolve(ResolveEvent.withObject(object)));
     }
@@ -220,14 +220,14 @@ export class ObjectLifecycleController extends Controller {
         return merge(
             merge(discovered, advertised)
                 .pipe(
-                    map(event => event.eventData.object),
+                    map(event => event.data.object),
                     filter(obj => obj !== undefined && (objectFilter ? objectFilter(obj) === true : true)),
                     map(obj => this._addToRegistry(registry, obj)),
                     filter(info => info !== undefined),
                 ),
             deadvertised
                 .pipe(
-                    map(event => this._removeFromRegistry(registry, event.eventData.objectIds)),
+                    map(event => this._removeFromRegistry(registry, event.data.objectIds)),
                     filter(info => info !== undefined),
                 ))
             // All subscribers share the same source so that side effecting

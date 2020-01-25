@@ -315,26 +315,26 @@ describe("Communication", () => {
                     .toHaveBeenCalledTimes(2);
 
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(0)[0].eventData.object.name)
+                    .calls.argsFor(0)[0].data.object.name)
                     .toMatch(/MockObject_MockObjectController[12]/);
                 expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(0)[0].eventUserId)
                     .toBe(undefined);
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(0)[0].eventSourceId)
+                    .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockObjectControllerMatch);
                 expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(0)[0].eventType)
                     .toBe(CommunicationEventType.Resolve);
 
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(1)[0].eventData.object.name)
+                    .calls.argsFor(1)[0].data.object.name)
                     .toMatch(/MockObject_MockObjectController[12]/);
                 expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(1)[0].eventUserId)
                     .toBe(undefined);
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(1)[0].eventSourceId)
+                    .calls.argsFor(1)[0].sourceId)
                     .toMatch(mockObjectControllerMatch);
                 expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(1)[0].eventType)
@@ -346,13 +346,13 @@ describe("Communication", () => {
                     .calls.argsFor(0)[0].eventUserId)
                     .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
                 expect(Spy.get("MockObjectController1").value1
-                    .calls.argsFor(0)[0].eventSourceId)
+                    .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
                 expect(Spy.get("MockObjectController1").value1
                     .calls.argsFor(0)[0].eventType)
                     .toBe(CommunicationEventType.Discover);
                 expect(Spy.get("MockObjectController1").value1
-                    .calls.argsFor(0)[0].eventData.objectTypes)
+                    .calls.argsFor(0)[0].data.objectTypes)
                     .toContain("coaty.test.MockObject");
 
                 expect(Spy.get("MockObjectController2").value1)
@@ -361,13 +361,13 @@ describe("Communication", () => {
                     .calls.argsFor(0)[0].eventUserId)
                     .toBe(CommunicationTopic.uuidFromLevel(associatedUserId));
                 expect(Spy.get("MockObjectController2").value1
-                    .calls.argsFor(0)[0].eventSourceId)
+                    .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
                 expect(Spy.get("MockObjectController2").value1
                     .calls.argsFor(0)[0].eventType)
                     .toBe(CommunicationEventType.Discover);
                 expect(Spy.get("MockObjectController2").value1
-                    .calls.argsFor(0)[0].eventData.objectTypes)
+                    .calls.argsFor(0)[0].data.objectTypes)
                     .toContain("coaty.test.MockObject");
 
                 // Check state changes of MockDeviceController

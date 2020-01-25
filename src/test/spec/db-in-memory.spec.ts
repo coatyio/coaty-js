@@ -501,7 +501,7 @@ describe("In-Memory NoSQL Database Access", () => {
                     timeout(2000),
                 )
                 .subscribe(event => {
-                    const result = event.eventData.objects as DbTestObject[];
+                    const result = event.data.objects as DbTestObject[];
                     expect(result.length).toBe(objectFilter.take);
                     if (result.length === objectFilter.take) {
                         let i = 0;

@@ -8,12 +8,16 @@ import { CommunicationEventData } from "./communication-event";
  */
 export class IoStateEvent {
 
-    get eventData() {
+    /**
+     * Gets the data of this event.
+     */
+    get data() {
         return this._eventData;
     }
 
     private _eventData: IoStateEventData;
 
+    /** @internal For internal use in framework only. */
     constructor(eventData: IoStateEventData) {
         this._eventData = eventData;
     }

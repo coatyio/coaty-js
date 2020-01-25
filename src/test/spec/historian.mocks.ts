@@ -17,7 +17,7 @@ export class MockSnapshotController extends HistorianController {
             .observeAdvertiseWithCoreType("Snapshot")
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 

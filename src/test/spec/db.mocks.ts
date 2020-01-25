@@ -41,7 +41,7 @@ export class DbTestObjectManagementController extends Controller {
     private _handleQueryEvents() {
         this.communicationManager
             .observeQuery()
-            .pipe(filter(event => event.eventData.isObjectTypeCompatible(OBJECT_TYPE_NAME_DB_TEST_OBJECT)))
+            .pipe(filter(event => event.data.isObjectTypeCompatible(OBJECT_TYPE_NAME_DB_TEST_OBJECT)))
             .subscribe(event => {
                 this._retrieveTestObjects(event);
             });
@@ -50,8 +50,8 @@ export class DbTestObjectManagementController extends Controller {
     private _retrieveTestObjects(event: QueryEvent) {
         const connectionInfo = this.runtime.databaseOptions["testdb"];
         const dbContext = new DbContext(connectionInfo);
-        const objectFilter = event.eventData.objectFilter;
-        const joinConditions = dbContext.getDbJoinConditionsFrom(event.eventData.objectJoinConditions,
+        const objectFilter = event.data.objectFilter;
+        const joinConditions = dbContext.getDbJoinConditionsFrom(event.data.objectJoinConditions,
             {
                 localProperty: "testId",
                 fromCollection: "testobjects",

@@ -62,21 +62,21 @@ export class MockDeviceController extends Controller {
             .observeAdvertiseWithCoreType("CoatyObject")
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
 
         this.communicationManager
             .observeAdvertiseWithObjectType(CoreTypes.OBJECT_TYPE_OBJECT)
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
 
         this.communicationManager
             .observeAdvertiseWithObjectType("com.mydomain.mypackage.MyCustomObjectType")
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -85,7 +85,7 @@ export class MockDeviceController extends Controller {
             .observeChannel(channelId)
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -149,7 +149,7 @@ export class MockObjectController extends Controller {
             .observeAdvertiseWithCoreType("CoatyObject")
             .subscribe(event => {
                 logger.count++;
-                logger.eventData.push(event.eventData);
+                logger.eventData.push(event.data);
             });
     }
 
@@ -157,7 +157,7 @@ export class MockObjectController extends Controller {
         this.communicationManager
             .observeDiscover()
             .pipe(
-                filter(event => event.eventData.isObjectTypeCompatible("coaty.test.MockObject")),
+                filter(event => event.data.isObjectTypeCompatible("coaty.test.MockObject")),
                 // Take first event only and unsubscribe automatically afterwards
                 take(1),
             )
@@ -195,7 +195,7 @@ export class MockOperationsCallController extends Controller {
                 contextFilter,
             ))
             .subscribe(returnEvent => {
-                logger.eventData[loggerKey] = returnEvent.eventData;
+                logger.eventData[loggerKey] = returnEvent.data;
             });
     }
 }
@@ -218,8 +218,8 @@ export class MockOperationsExecutionController extends Controller {
         this._handleCallEvents(
             "coaty.test.switchLight",
             event => {
-                const color = event.eventData.getParameterByName("color");
-                const state = event.eventData.getParameterByName("state");
+                const color = event.data.getParameterByName("color");
+                const state = event.data.getParameterByName("state");
                 if (color === "black" && state === "on") {
                     return new Error("Cannot turn on black light");
                 }
@@ -233,8 +233,8 @@ export class MockOperationsExecutionController extends Controller {
         this._handleCallEvents(
             "coaty.test.add",
             event => {
-                const add1 = event.eventData.getParameterByIndex(0);
-                const add2 = event.eventData.getParameterByIndex(1);
+                const add1 = event.data.getParameterByIndex(0);
+                const add2 = event.data.getParameterByIndex(1);
                 if (add1 !== undefined && add2 !== undefined) {
                     return add1 + add2;
                 }
