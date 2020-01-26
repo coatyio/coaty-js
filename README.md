@@ -5,6 +5,9 @@
 [![release](https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg)](https://conventionalcommits.org/)
 [![npm version](https://badge.fury.io/js/%40coaty%2Fcore.svg)](https://www.npmjs.com/package/@coaty/core)
 
+> To upgrade to Coaty 2, take a look at the [Migration
+> Guide](https://coatyio.github.io/coaty-js/man/migration-guide/).
+
 Using the Coaty [koʊti] framework as a middleware, you can build distributed
 applications out of decentrally organized application components, so called
 *Coaty agents*, which are loosely coupled and communicate with each other in

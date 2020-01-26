@@ -5,6 +5,9 @@ title: Coaty JS Documentation
 
 # Coaty Developer Guide
 
+> This document refers to Coaty 2. To upgrade to Coaty 2, take a look at the
+> [Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/).
+
 This document covers everything a developer needs to know about using the Coaty
 framework to implement collaborative IoT applications targeting Node.js, as well
 as mobile and web apps. We assume you know nothing about Coaty JS before reading
@@ -1764,6 +1767,9 @@ be used to specify additional parameters of the execution environment, such as
 the execution time of the operation, or the ID of the operated control unit.
 
 ### Observing and publishing raw MQTT messages
+
+A Coaty agent can act as a gateway to an external system that communicates by
+MQTT. It can publish and subscribe to external, so-called "raw" MQTT messages.
 
 To enable interoperation with external MQTT clients, use `publishRaw` to publish
 a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
