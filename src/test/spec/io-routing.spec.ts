@@ -95,31 +95,34 @@ describe("IO Routing", () => {
         it("validates internal IoValue topics", () => {
             const version = CommunicationManager.PROTOCOL_VERSION;
             let topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser.objectId,
-                "source45567",
+                CommunicationManager.PROTOCOL_VERSION,
                 CommunicationEventType.IoValue,
                 undefined,
-                "token236526",
-                CommunicationManager.PROTOCOL_VERSION).getTopicName();
+                "source45567",
+                configuration1.common.associatedUser.objectId,
+                undefined,
+            ).getTopicName();
 
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeTruthy();
 
             topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser.objectId,
-                "source45567",
+                CommunicationManager.PROTOCOL_VERSION - 1,
                 CommunicationEventType.IoValue,
                 undefined,
-                "token236526",
-                CommunicationManager.PROTOCOL_VERSION - 1).getTopicName();
+                "source45567",
+                configuration1.common.associatedUser.objectId,
+                undefined,
+            ).getTopicName();
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
             topic = CommunicationTopic.createByLevels(
-                configuration1.common.associatedUser.objectId,
-                "source45567",
+                CommunicationManager.PROTOCOL_VERSION,
                 CommunicationEventType.Advertise,
                 "CoatyObject",
-                "token236526",
-                CommunicationManager.PROTOCOL_VERSION).getTopicName();
+                "source45567",
+                configuration1.common.associatedUser.objectId,
+                undefined,
+            ).getTopicName();
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
         });

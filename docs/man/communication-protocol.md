@@ -46,158 +46,188 @@ application, the default QoS level should be 0.
 
 ## Message Topics and Payloads
 
-A topic name is structured into topic levels separated by a topic level separator
-`/`. A topic name consists of UTF-8 encoded characters except `NULL (U+0000)`,
-`# (U+0023)`, and `+ (U+002B)`. A topic name must not contain more than 65535
-UTF-8 encoded bytes. Topic names are case sensitive. Client defined topic
-names should not start with a `$` character, it is reserved for broker usage
-(e.g. `$SYS/` topics).
+A topic name is structured into topic levels separated by a topic level
+separator `/`. A topic name consists of UTF-8 encoded characters except `NULL
+(U+0000)`, `# (U+0023)`, and `+ (U+002B)`. A topic name must not contain more
+than 65535 UTF-8 encoded bytes. Topic names are case sensitive. Client defined
+topic names should not start with a `$` character, it is reserved for broker
+usage (e.g. `$SYS/` topics).
 
 Topic filters are used to subscribe to published topics. A topic filter is a
 topic name that can contain wildcard tokens for topic levels:
 
-* `#` matches any number of topic levels and sublevels. Only allowed in
-  trailing position, e.g. `#`or `/level1/level2/#`
+* `#` matches any number of topic levels and sublevels. Only allowed in trailing
+  position, e.g. `#`or `/level1/level2/#`
 * `+`  matches a single topic level, e.g. `level1/+` matches `level1/` and
   `level/level2` but not `level1`
 
 Within the framework, message payloads are always specified as UTF-8 encoded
 strings in JavaScript Object Notation ([JSON](http://www.json.org)) format (see
 [RFC 4627](https://www.ietf.org/rfc/rfc4627.txt)). Binary payload formats are
-not supported. The reason behind is that messaging should only be used to transfer object
-metadata but not content itself, such as multimedia content in the form of audio,
-video or documents. To upload or download content data an appropriate data transfer
-communication protocol should be used that gets the target data location (e.g. a URL)
-from the message payload.
+not supported. The reason behind is that messaging should only be used to
+transfer object metadata but not content itself, such as multimedia content in
+the form of audio, video or documents. To upload or download content data an
+appropriate data transfer communication protocol should be used that gets the
+target data location (e.g. a URL) from the message payload.
 
 Note that MQTT allows applications to send MQTT Control Packets of size up to
 256 MB. For Publish messages, this includes the message topic of size up to 64K,
 the payload, as well as some bytes of header data.
 
 > To debug MQTT messages published by a Coaty agent, you can use any MQTT client
-> and subscribe to the `#` topic. We recommend [mqtt-spy](https://kamilfb.github.io/mqtt-spy/)
-> or [MQTT.fx](http://www.mqttfx.org/), both cross-platform clients provide
+> and subscribe to the `#` topic. We recommend
+> [mqtt-spy](https://kamilfb.github.io/mqtt-spy/) or
+> [MQTT.fx](http://www.mqttfx.org/), both cross-platform clients provide
 > graphical user interfaces for message inspection.
 
 ## Events and Event Patterns
 
-The framework uses a minimum set of predefined events and event patterns to
-discover, distribute, and share object information in a decentralized application:
+Coaty provides a set of predefined one-way and two-way communication event
+patterns to exchange data in a decentralized application:
 
-* **Advertise** an object: broadcast an object to parties interested in objects of a
-  specific core or object type.
-* **Deadvertise** an object by its unique ID: notify subscribers when capability is
-  no longer available; for abnormal disconnection of a party, last will concept can
-  be implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in any kind of objects delivered
-  through a channel with a specific channel identifier.
-* **Discover - Resolve** Discover an object and/or related objects by external ID,
-  internal ID, or object type, and receive responses by Resolve events.
-* **Query - Retrieve**  Query objects by specifying selection and ordering criteria,
-  receive responses by Retrieve events.
+* **Advertise** an object: broadcast an object to parties interested in objects
+  of a specific core or object type.
+* **Deadvertise** an object by its unique ID: notify subscribers when capability
+  is no longer available; for abnormal disconnection of a party, last will
+  concept of Coaty is implemented by sending this event.
+* **Channel** Broadcast objects to parties interested in any kind of objects
+  delivered through a channel with a specific channel identifier.
+* **Discover - Resolve** Discover an object and/or related objects by external
+  ID, internal ID, or object type, and receive responses by Resolve events.
+* **Query - Retrieve**  Query objects by specifying selection and ordering
+  criteria, receive responses by Retrieve events.
 * **Update - Complete**  Request or suggest an object update and receive
   accomplishments by Complete events.
-* **Call - Return**  Request execution of a remote operation and receive results by Return events.
-* **Associate** Used by IO Router to dynamically associate/disassociate IO sources with IO actors.
-* **IoValue** Send IO values from a publishing IO source to associated IO actors.
+* **Call - Return**  Request execution of a remote operation and receive results
+  by Return events.
+* **Associate** Used by IO Router to dynamically associate/disassociate IO
+  sources with IO actors.
+* **IoValue** Send IO values from a publishing IO source to associated IO
+  actors.
 
 ## Topic Structure
 
-Any topic used in the framework consists of the following topic levels:
+Any topic used in the framework contains the following topic levels:
 
-* **Protocol Version** - for versioning the communication protocol.
-  The protocol version number conforming to this specification is shown at the top of
-  this page.
-* **Associated User ID** - globally unique ID (UUID) of a user associated with the
-  source component; specify a dash (`-`) if component is not associated with a user.
-* **Source Object ID** - globally unique ID (UUID) of the event source that is
-  publishing a topic. Each agent container's identity represents an event source.
-* **Event** - one of the predefined events listed above.
-* **Message Token** - UUID that uniquely identifies a messages. Used to
-  correlate a response message to the request message in Discover-Resolve,
-  Query-Retrieve, Update-Complete, and Call-Return event patterns.
+* **ProtocolVersion** - for versioning the communication protocol. The protocol
+  version number conforming to this specification is shown at the top of this
+  page.
+* **Event** - shortcut versions of the predefined events listed above.
+* **SourceObjectID** - globally unique ID (UUID) of the event source that is
+  publishing a topic. Each agent container's identity represents an event
+  source.
+* **AssociatedUserID** - globally unique ID (UUID) of a user associated with the
+  source component; empty or not present if component is not associated with a
+  user.
+* **CorrelationID** - UUID that correlates a response message with its request
+  message. This level is only present in two-way event patterns, i.e.
+  Discover-Resolve, Query-Retrieve, Update-Complete, and Call-Return event
+  patterns.
 
-UUIDs (Universally Unique Identifiers) must conform to the UUID version 4 format as
-specified in RFC 4122. In the string representation of a UUID the hexadecimal
+UUIDs (Universally Unique Identifiers) must conform to the UUID version 4 format
+as specified in RFC 4122. In the string representation of a UUID the hexadecimal
 values "a" through "f" are output as lower case characters.
 
-A topic name is composed as follows:
+A topic name for publication is composed as follows:
 
-`/coaty/<ProtocolVersion>/<Event>/<AssociatedUserId>/<SourceObjectId>/<MessageToken>/`
+```
+// Publication of one-way event without AssociatedUserId
+coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/-
 
-The protocol version topic level represents the communication protocol version of
+// Publication of one-way event with AssociatedUserId
+coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/<AssociatedUserID>
+
+// Publication of two-way event without AssociatedUserId
+coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/-/<CorrelationId>
+
+// Publication of two-way event with AssociatedUserId
+coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/<AssociatedUserID>/<CorrelationId>
+```
+
+The ProtocolVersion topic level represents the communication protocol version of
 the publishing party, as a positive integer.
 
-When publishing an Advertise event the Event topic level **must** include a filter
-field of the form: `Advertise:<filter>`. The filter field
-must not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
-`+ (U+002B)`, and `/ (U+002F)`. Framework implementations specify the core type
-(`Advertise:<coreType>`) or the object type (`Advertise::<objectType>`) of the
-advertised object (see section [Topic Playloads](#topic-payloads)) as filter in order
-to allow subscribers to listen just to objects of a specific core or object type.
-To support subscriptions on both types of filters every Advertise event should be
-published twice, once for the core type and once for the object type of the object
-to be advertised.
+To denote event types in the Event topic level, 3-character shortcuts are used:
+
+| Event Type            | Shortcut       |
+|-------------------    |--------------- |
+| Advertise             | ADV            |
+| Deadvertise           | DAD            |
+| Channel               | CHN            |
+| Associate             | ASC            |
+| IoValue               | IOV            |
+| Discover              | DSC            |
+| Resolve               | RSV            |
+| Query                 | QRY            |
+| Retrieve              | RTV            |
+| Update                | UPD            |
+| Complete              | CPL            |
+| Call                  | CLL            |
+| Return                | RTN            |
+
+When publishing an Advertise event the Event topic level **must** include a
+filter of the form: `ADV:<filter>`. The filter must not be empty. It must not
+contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and `/
+(U+002F)`. Framework implementations specify the core type (`ADV:<coreType>`) or
+the object type (`ADV::<objectType>`) of the advertised object (see section
+[Topic Payloads](#topic-payloads)) as filter in order to allow subscribers to
+listen just to objects of a specific core or object type. To support
+subscriptions on both types of filters every Advertise event should be published
+twice, once for the core type and once for the object type of the object to be
+advertised.
 
 When publishing a Channel event the Event topic level **must** include a channel
-identifier field of the form: `Channel:<channelId>`. The channel ID field must
-not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
-`+ (U+002B)`, and `/ (U+002F)`.
+identifier of the form: `CHN:<channelId>`. The channel ID must not be empty. It
+must not contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and
+`/ (U+002F)`.
 
 When publishing a Call event the Event topic level **must** include an operation
-name field of the form: `Call:<operationname>`. The operation name field must
-not be empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`,
-`+ (U+002B)`, and `/ (U+002F)`.
+name of the form: `CLL:<operationname>`. The operation name must not be empty.
+It must not contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
+and `/ (U+002F)`.
 
 For any request-response event pattern the receiving party must respond with an
-outbound message containing the original message token of the incoming message
-topic. Note that the Event topic level of response events **must never** include
-a filter field.
+outbound message topic containing the original CorrelationID of the incoming
+message topic. Note that the Event topic level of response events **must never**
+include a filter field.
 
 ## Topic Filters
 
-Each communication client should subscribe to topics according to the defined
+Each communication client must subscribe to topics according to the defined
 topic structure. These subscriptions should be kept for the lifetime of the
-communication client.
-
-Associated User ID, Source Object ID, and Message Token levels should be treated
-as wildcards when observing request events. When publishing response events, the
-Message Token level **must** equal the original message token of the
-corresponding request event.
-
-The Event level is always added to the topic filter to support event-specific
-subscriptions for observing request and response events:
+communication client:
 
 ```
-/// subscription for request events
-/coaty/<ProtocolVersion>/Event/+/+/+/
+// Subscription for one-way events (except Associate)
+coaty/<ProtocolVersion>/<Event>/+/+
 
-/// subscription for response events
-/coaty/<ProtocolVersion>/Event/+/+/<Message Token of request event>/
+// Subscription for Associate events filtered by AssociatedUserId
+coaty/<ProtocolVersion>/Associate/+/<AssociatedUserId>
+
+// Subscription for two-way request events
+coaty/<ProtocolVersion>/<Event>/+/+/+
+
+// Subscription for two-way response events
+coaty/<ProtocolVersion>/<Event>/+/+/<CorrelationID>
 ```
 
 When subscribing to a response event, the Event topic level **must not** include
-an event filter field.
+an event filter.
 
 When subscribing to an Advertise event, the Event topic level **must** include
-the Advertise filter field: `Advertise:<filter>` or `Advertise::<filter>`.
+the Advertise filter: `ADV:<filter>` or `ADV::<filter>`.
 
-When subscribing to a Channel event, the Event topic level **must** include
-the channel ID field: `Channel:<channelId>`.
+When subscribing to a Channel event, the Event topic level **must** include the
+channel ID: `CHN:<channelId>`.
 
 When subscribing to a Call event, the Event topic level **must** include the
-operation name field: `Call:<operationname>`.
+operation name: `CLL:<operationname>`.
 
-When subscribing to Associate events which are published by an IO router, the
-Associated User ID level must also be filtered:
+When subscribing to a response event, the CorrelationID topic level must be
+filtered.
 
-```
-/coaty/+/Associate/<Associated User ID>/+/+/
-```
-
-For IoValue events the topic name *must not* contain any wildcard tokens on
-topic levels, since both IO source and IO actor use this topic; the IO actor
-subscribes on it and the IO source publishes on it.
+When subscribing to an Associate event, the AssociatedUserID topic level must be
+filtered.
 
 ## Topic Payloads
 
@@ -216,42 +246,44 @@ A Coaty object is defined by the following generic properties:
 }
 ```
 
-The property `coreType` is the framework core type name of the object;
-it corresponds to the name of the interface that defines the object's shape.
+The property `coreType` is the framework core type name of the object; it
+corresponds to the name of the interface that defines the object's shape.
 
 The `objectType` property is the concrete type name of the object in a canonical
-form. It should be defined using a hierarchical naming pattern with some levels in the
-hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
-following Java package naming conventions (i.e. `com.domain.package.Type`).
-All predefined object types use the form `coaty.<InterfaceName>`,
-e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class). Do not use the
-reserved toplevel namespace `coaty.*` for your application defined object types.
+form. It should be defined using a hierarchical naming pattern with some levels
+in the hierarchy separated by periods (`.`, pronounced "dot") to avoid name
+collisions, following Java package naming conventions (i.e.
+`com.domain.package.Type`). All predefined object types use the form
+`coaty.<InterfaceName>`, e.g. `coaty.CoatyObject` (see constants in `CoreTypes`
+class). Do not use the reserved toplevel namespace `coaty.*` for your
+application defined object types.
 
-The concrete and core type names of all predefined object types are defined
-as static properties of the `CoreTypes` class in the framework `model` module.
+The concrete and core type names of all predefined object types are defined as
+static properties of the `CoreTypes` class in the framework `model` module.
 
 The `objectId` property defines the unique identity of an object within the system.
 
 The optional `externalId` property defines the identity of an object relative to
-an external system, such as the primary key for this object in an external database.
-Note that external IDs are not guaranteed to be unique across
-the whole universe of system objects. Usually, external IDs are only unique for
-a specific type of objects.
+an external system, such as the primary key for this object in an external
+database. Note that external IDs are not guaranteed to be unique across the
+whole universe of system objects. Usually, external IDs are only unique for a
+specific type of objects.
 
 The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
-Annotation objects can be modelled as children of target objects they are attached to.
+Annotation objects can be modelled as children of target objects they are
+attached to.
 
-The optional `locationId` property refers to the UUID of the Location
-object that this object has been associated with.
+The optional `locationId` property refers to the UUID of the Location object
+that this object has been associated with.
 
-The optional `isDeactivated` property marks an object that is no longer used. The
-concrete definition meaning of this property is defined by the application.
+The optional `isDeactivated` property marks an object that is no longer used.
+The concrete definition meaning of this property is defined by the application.
 The property value is optional and defaults to false.
 
-Application specific object types can be defined based on the predefined core object
-types by adding additional property-value pairs. Allowed value types must conform to
-JSON data types.
+Application specific object types can be defined based on the predefined core
+object types by adding additional property-value pairs. Allowed value types must
+conform to JSON data types.
 
 ### Payload for Advertise Event
 
@@ -519,21 +551,23 @@ The payload for the Complete response event looks like the following:
 }
 ```
 
-The property `privateData` is optional. It contains application-specific
-options in the form of an object hash (key-value pairs).
+The property `privateData` is optional. It contains application-specific options
+in the form of an object hash (key-value pairs).
 
 ### Payloads for Call - Return Event
 
-The Call-Return pattern is used to request execution of a remote operation and to receive
+The Call-Return pattern is used to request execution of a remote operation and
+to receive
 results - or errors in case the operation fails - by one or multiple agents.
 
-The name of the remote operation is not specified in the payload but in
-the Event topic level of the Call Event (`Call:<operationname>`). The operation
-name should be defined using a hierarchical naming pattern with some levels in the
+The name of the remote operation is not specified in the payload but in the
+Event topic level of the Call Event (`Call:<operationname>`). The operation name
+should be defined using a hierarchical naming pattern with some levels in the
 hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
-following Java package naming conventions (i.e. `com.domain.package.operationname`).
-For example, the remote operation to switch on/off lights in the `lights` package
-of domain `mydomain` could be named `"com.mydomain.lights.switchLight"`.
+following Java package naming conventions (i.e.
+`com.domain.package.operationname`). For example, the remote operation to switch
+on/off lights in the `lights` package of domain `mydomain` could be named
+`"com.mydomain.lights.switchLight"`.
 
 The payload of the Call event contains the optional parameter values passed to
 the referenced operation to be invoked, and an optional context filter that
@@ -546,12 +580,12 @@ defines conditions under which the operation should be executed by a remote end.
 }
 ```
 
-If parameters are given, they must be specified either by-position through a JSON array
-or by-name through a JSON object.
+If parameters are given, they must be specified either by-position through a
+JSON array or by-name through a JSON object.
 
-The optional `filter` property defines contextual constraints by conditions that must match
-a local context object provided by the remote end in order to allow execution of the remote
-operation:
+The optional `filter` property defines contextual constraints by conditions that
+must match a local context object provided by the remote end in order to allow
+execution of the remote operation:
 
 ```js
 {
@@ -569,9 +603,10 @@ operation:
 
 More details and valid filter operators are specified [here](#payloads-for-query---retrieve-event).
 
-A filter match fails if and only if a context filter in the payload and a context object
-at the remote end are *both* specified and they do not match (by checking object property values
-against the filter conditions). In all other cases, the match is considered successfull.
+A filter match fails if and only if a context filter in the payload and a
+context object at the remote end are *both* specified and they do not match (by
+checking object property values against the filter conditions). In all other
+cases, the match is considered successfull.
 
 The payload for the Return response event has two forms. If the remote operation
 executes successfully, the payload looks like the following:
@@ -583,16 +618,16 @@ executes successfully, the payload looks like the following:
 }
 ```
 
-The `result` property contains the return value of the operation call which can be
-any JSON value.
+The `result` property contains the return value of the operation call which can
+be any JSON value.
 
 The optional `executionInfo` property (any JSON value) in the Return event data
 may be used to specify additional parameters of the execution environment, such
 as the execution time of the operation, or the ID and name of the operated
 control unit.
 
-If an error occurred while executing the remote operation, the response payload looks
-like the following:
+If an error occurred while executing the remote operation, the response payload
+looks like the following:
 
 ```js
 {
@@ -601,23 +636,23 @@ like the following:
 }
 ```
 
-The error code given is an integer that indicates the error type
-that occurred, either a predefined error or an application defined one.
-Predefined error codes are within the range -32768 to -32000.
-Any code within this range, but not defined explicitly in the table below is reserved
-for future use. Application defined error codes must be defined outside this range.
+The error code given is an integer that indicates the error type that occurred,
+either a predefined error or an application defined one. Predefined error codes
+are within the range -32768 to -32000. Any code within this range, but not
+defined explicitly in the table below is reserved for future use. Application
+defined error codes must be defined outside this range.
 
 | Error Code   | Error Message    |
 |--------------|------------------|
 | -32602       | Invalid params   |
 
-The error message provides a short description of the error. Predefined
-error messages exist for all predefined error codes.
+The error message provides a short description of the error. Predefined error
+messages exist for all predefined error codes.
 
 ### Payload for Associate Event
 
-An Associate event is published by an IO router to associate or disassociate
-an IO source with an IO actor (see next section). Associate events accept the
+An Associate event is published by an IO router to associate or disassociate an
+IO source with an IO actor (see next section). Associate events accept the
 following JSON payload:
 
 ```js
@@ -629,61 +664,61 @@ following JSON payload:
 }
 ```
 
-The properties `ioSource` and `ioActor` are mandatory.
-The property `associatedTopic` defines the subscription or publication
-topic for an association; if undefined the association should be removed.
-`updateRate` is optional; if given it specifies the recommended update rate
-(in milliseconds) for publishing `IOValue` events.
+The properties `ioSource` and `ioActor` are mandatory. The property
+`associatedTopic` defines the subscription or publication topic for an
+association; if undefined the association should be removed. `updateRate` is
+optional; if given it specifies the recommended update rate (in milliseconds)
+for publishing `IOValue` events.
 
 ### IO Routing
 
 IO sources publish `IoValue` events or external events. IO actors can receive
-such events by subscribing to the topics on which IO sources publish values.
-IO sources are dynamically associated with IO actors depending on the
-context of the associated user.
+such events by subscribing to the topics on which IO sources publish values. IO
+sources are dynamically associated with IO actors depending on the context of
+the associated user.
 
 The communication event flow of IO routing comprises the following steps:
 
 1. `Device` objects with their IO capabilities, i.e. IO sources and IO actors,
-  are advertised/deadvertised by user-associated device objects.
+   are advertised/deadvertised by user-associated device objects.
 
 2. The IO router associates/disassociates the currently advertised IO sources
    and IO actors based on application-specific logic which usually considers the
-   user's context, such as user's role or profile, user's task flow, location, and
-   other environmental factors. On context changes, the IO router should change
-   associations accordingly.
+   user's context, such as user's role or profile, user's task flow, location,
+   and other environmental factors. On context changes, the IO router should
+   change associations accordingly.
 
-   An IO source is associated/disassociated with an IO actor by publishing
-   an Associate event. Since the associated topic is used for both
-   publication and subscription, it must never contain wildcard tokens (i.e.
-   `#` or `+`) on topic levels.
+   An IO source is associated/disassociated with an IO actor by publishing an
+   Associate event. Since the associated topic is used for both publication and
+   subscription, it must never contain wildcard tokens (i.e. `#` or `+`) on
+   topic levels.
 
    Associated topics are generated by the IO router using the topic structure
    with an `IoValue` event type as described above. Associated topics published
    by external IO sources or subscribed to by external IO actors need not
    conform to this topic structure but can be of any valid MQTT topic shape.
 
-   The payload data published by both external and internal IO sources
-   must conform to the protocol specification, i.e. it must be specified as
-   UTF-8 encoded strings in JSON format.
+   The payload data published by both external and internal IO sources must
+   conform to the protocol specification, i.e. it must be specified as UTF-8
+   encoded strings in JSON format.
 
 Associations of IO sources with IO actors are constrained as follows:
 
-* An IO source can only be associated with an IO actor if their value types
-  are compatible, i.e. they produce/consume data in the same underlying data format.
+* An IO source can only be associated with an IO actor if their value types are
+  compatible, i.e. they produce/consume data in the same underlying data format.
 
 * Each pair of IO source and IO actor publishes/subscribes to exactly one
   associated topic.
 
 * An IO source can be associated with different IO actors.
 
-* An IO actor can be associated with different IO sources. Values are
-  received on all the topic subscriptions for the associated IO sources.
+* An IO actor can be associated with different IO sources. Values are received
+  on all the topic subscriptions for the associated IO sources.
 
 * An IO source publishes values on exactly one associated topic.
 
-* Different IO sources must not publish values on the same topic.
-  Otherwise, an IO actor could receive values from a non-associated source.
+* Different IO sources must not publish values on the same topic. Otherwise, an
+  IO actor could receive values from a non-associated source.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a

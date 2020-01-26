@@ -150,7 +150,6 @@ export abstract class Controller implements IController {
      * @param tags any number of log tags
      */
     logErrorWithStacktrace(error: any, message: string, ...tags: string[]) {
-        /* tslint:disable-next-line:max-line-length */
         const msg = `${message}: ${(error && typeof error === "object" && error.stack) ? error.stack : error}`;
         this._log(LogLevel.Error, msg, tags);
     }

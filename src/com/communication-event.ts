@@ -4,26 +4,33 @@ import { Uuid } from "..";
 
 /**
  * Predefined event types used by Coaty communication event patterns.
- * Note: add new types to the end to maintain existing enum values.
  */
 export enum CommunicationEventType {
-    Raw = 0,
+    // Event types for non-Coaty messages
+    External = 0,
+
+    Raw,
+
+    // Event types for Coaty one-way messages
+    OneWay,
+
     Advertise,
     Deadvertise,
     Channel,
+    Associate,
+    IoValue,
+
+    // Event types for Coaty two-way messages
+    TwoWay,
+
     Discover,
     Resolve,
     Query,
     Retrieve,
     Update,
     Complete,
-    Associate,
-    IoValue,
     Call,
     Return,
-
-    // Indicates the valid range of event type enum values.
-    MAX,
 }
 
 /**
@@ -43,7 +50,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;
 
     private _eventSourceId: Uuid;
-    private _eventUserId: Uuid | string;
+    private _eventUserId: Uuid;
 
     /**
      * @internal For internal use in framework only. Do not use in application code.
@@ -91,7 +98,7 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      *
      * Sets the user ID associated with this event.
      */
-    set eventUserId(userId: Uuid | string) {
+    set eventUserId(userId: Uuid) {
         this._eventUserId = userId;
     }
 

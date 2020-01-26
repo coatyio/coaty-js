@@ -642,7 +642,6 @@ export class PostgresAdapter extends DbAdapterBase {
                 case ObjectFilterOperator.Between:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    /* tslint:disable-next-line:max-line-length */
                     clauses.push(`(${this._getObjectIndexer(propsArray)} BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
                     i += 2;
                     params.push(p1);
@@ -651,7 +650,6 @@ export class PostgresAdapter extends DbAdapterBase {
                 case ObjectFilterOperator.NotBetween:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    /* tslint:disable-next-line:max-line-length */
                     clauses.push(`(${this._getObjectIndexer(propsArray)} NOT BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
                     i += 2;
                     params.push(p1);
@@ -717,7 +715,7 @@ export class PostgresAdapter extends DbAdapterBase {
                     }
                     const sqlOp = op === ObjectFilterOperator.In ? "in" : "not in";
                     p1 = JSON.stringify(opnd1);
-                    /* tslint:disable-next-line:max-line-length */
+
                     clauses.push(`(${this._getObjectIndexer(propsArray)} ${sqlOp} (SELECT value FROM jsonb_array_elements(${para(p1, i++)}::jsonb)))`);
                     params.push(p1);
                     break;
@@ -742,7 +740,6 @@ export class PostgresAdapter extends DbAdapterBase {
         tableId = tableId ? tableId + "." : "";
 
         return "ORDER BY " + filter.orderByProperties
-            /* tslint:disable-next-line:max-line-length */
             .map((order, i) => `${tableId}${this._getObjectIndexer(ObjectMatcher.getFilterProperties(order[0]))} ${this._getSortOrder(order[1])}`)
             .join(", ");
     }

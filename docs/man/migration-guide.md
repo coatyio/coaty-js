@@ -45,8 +45,11 @@ To update the build infrastructure of your application, follow these steps:
 
 ### Changes to package naming and import declarations
 
-Coaty 2 publishes a scoped npm package named `@coaty/core` instead of `coaty`.
-Rewrite all import declarations `coaty/<modulename>` to use the scoped package
+Coaty 2 introduces a common npm package scope named `@coaty` for current and
+future framework projects of the Coaty JS platform. The Coaty 2 core framework
+is published in the scoped npm package named `@coaty/core`.
+
+Rewrite all import declarations `coaty/<modulename>` to use this scoped package
 as follows:
 
 * `coaty/com`, `coaty/controller`, `coaty/model`, `coaty/runtime`, `coaty/util`
@@ -177,7 +180,7 @@ this.communicationManager.observeDiscover()
     });
 ```
 
-### Changes in `CommunicationManager` and `CommunicationEvent`
+### Changes in communication
 
 * Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
   enum members have been removed. Use `OperatingState.Started` and
@@ -191,6 +194,11 @@ this.communicationManager.observeDiscover()
   For details, see section "Changes in IO routing".
 * Stop using `CommunicationOptions.useReadableTopics` as this property has been
   removed. This feature is no longer supported.
+
+### Changes in communication protocol
+
+* The MQTT topic structure has been optimized. Your application code is affected
+  by this change.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

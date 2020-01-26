@@ -54,11 +54,11 @@ export enum OperatingState {
 export class CommunicationManager implements IDisposable {
 
     /**
-     * Defines the communication protocol version number, an integral number.
-     * Increment this version whenever you add new communication events or
-     * change the shape of topics/payloads.
+     * Defines the communication protocol version number, a positive integer.
+     * Increment this version whenever you add new communication events or make
+     * breaking changes to the communication protocol.
      */
-    static readonly PROTOCOL_VERSION: number = 2;
+    static readonly PROTOCOL_VERSION: number = 3;
 
     private _options: CommunicationOptions;
     private _client: Client;
@@ -80,7 +80,7 @@ export class CommunicationManager implements IDisposable {
     // Subscriptions on incoming request events (hashed by event type string)
     private _observedRequests: Map<string, ObservedRequestItem>;
 
-    // Subscriptions on incoming response events (hashed by message token)
+    // Subscriptions on incoming response events (hashed by correlation ID)
     private _observedResponses: Map<Uuid, ObservedResponseItem>;
 
     // IO points that are observing IO state events
@@ -559,12 +559,13 @@ export class CommunicationManager implements IDisposable {
      */
     createIoValueTopic(ioSource: IoSource): string {
         return CommunicationTopic.createByLevels(
-            this._associatedUser?.objectId,
-            ioSource.objectId,
+            CommunicationManager.PROTOCOL_VERSION,
             CommunicationEventType.IoValue,
             undefined,
+            ioSource.objectId,
+            this._associatedUser?.objectId,
             this.runtime.newUuid(),
-            CommunicationManager.PROTOCOL_VERSION).getTopicName();
+        ).getTopicName();
     }
 
     /**
@@ -849,10 +850,13 @@ export class CommunicationManager implements IDisposable {
                 topic.eventType === CommunicationEventType.Resolve ||
                 topic.eventType === CommunicationEventType.Retrieve ||
                 topic.eventType === CommunicationEventType.Return) {
+
+                // Check if 
                 // Dispatch incoming response message to associated observable.
-                const item = this._observedResponses.get(topic.messageToken);
+                const item = this._observedResponses.get(topic.correlationId);
                 if (item === undefined) {
-                    // There are no subscribers for this response event, skip it.
+                    // There are no subscribers for this response event, or
+                    // correlation ID is missing, skip event.
                     return;
                 }
                 if (item.request.eventType === CommunicationEventType.Update &&
@@ -878,8 +882,8 @@ export class CommunicationManager implements IDisposable {
 
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    sourceId: topic.sourceObjectId,
-                    eventUserId: topic.associatedUserId,
+                    sourceId: topic.sourceId,
+                    eventUserId: topic.associationId,
                     data: JSON.parse(msgPayload),
                     eventRequest: item.request,
                 });
@@ -915,8 +919,8 @@ export class CommunicationManager implements IDisposable {
                 }
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
-                    sourceId: topic.sourceObjectId,
-                    eventUserId: topic.associatedUserId,
+                    sourceId: topic.sourceId,
+                    eventUserId: topic.associationId,
                     data: JSON.parse(msgPayload),
                     eventTypeFilter: topic.eventTypeFilter,
                 });
@@ -924,25 +928,25 @@ export class CommunicationManager implements IDisposable {
                 if (message instanceof DiscoverEvent) {
                     message.resolve = (event: ResolveEvent) => {
                         message.ensureValidResponseParameters(event.data);
-                        this._publishClient(event, undefined, topic.messageToken);
+                        this._publishClient(event, undefined, topic.correlationId);
                     };
                 }
                 if (message instanceof QueryEvent) {
                     message.retrieve = (event: RetrieveEvent) => {
                         message.ensureValidResponseParameters(event.data);
-                        this._publishClient(event, undefined, topic.messageToken);
+                        this._publishClient(event, undefined, topic.correlationId);
                     };
                 }
                 if (message instanceof UpdateEvent) {
                     message.complete = (event: CompleteEvent) => {
                         message.ensureValidResponseParameters(event.data);
-                        this._publishClient(event, undefined, topic.messageToken);
+                        this._publishClient(event, undefined, topic.correlationId);
                     };
                 }
                 if (message instanceof CallEvent) {
                     message.returnEvent = (event: ReturnEvent) => {
                         message.ensureValidResponseParameters(event.data);
-                        this._publishClient(event, undefined, topic.messageToken);
+                        this._publishClient(event, undefined, topic.correlationId);
                     };
                 }
 
@@ -1028,35 +1032,35 @@ export class CommunicationManager implements IDisposable {
     private _publishClient(
         event: CommunicationEvent<CommunicationEventData>,
         eventTypeFilter?: string,
-        forMessageToken?: string): Observable<CommunicationEvent<CommunicationEventData>> {
+        correlationId?: string): Observable<CommunicationEvent<CommunicationEventData>> {
 
         // Safety check for valid event structure
         event = this._createEventInstance(event);
 
         const { eventType, sourceId: eventSourceId, data: eventData } = event;
 
-        // Publish a response message for a request
-        if (forMessageToken) {
+        // Publish a response message for a two-way event
+        if (correlationId) {
             const responseTopic = CommunicationTopic.createByLevels(
-                this._associatedUser?.objectId,
-                eventSourceId,
+                CommunicationManager.PROTOCOL_VERSION,
                 eventType,
                 eventTypeFilter,
-                forMessageToken,
-                CommunicationManager.PROTOCOL_VERSION,
+                eventSourceId,
+                this._associatedUser?.objectId,
+                correlationId,
             );
             this._getPublisher(responseTopic.getTopicName(), eventData.toJsonObject())();
             return undefined;
         }
 
-        // Publish a request message
+        // Publish a one-way message or a request message for a two-way event
         const topic = CommunicationTopic.createByLevels(
-            this._associatedUser?.objectId,
-            eventSourceId,
+            CommunicationManager.PROTOCOL_VERSION,
             eventType,
             eventTypeFilter,
-            this.runtime.newUuid(),
-            CommunicationManager.PROTOCOL_VERSION,
+            eventSourceId,
+            this._associatedUser?.objectId,
+            CommunicationTopic.isOneWayEvent(eventType) ? undefined : this.runtime.newUuid(),
         );
 
         event.eventUserId = this._associatedUser ? this._associatedUser.objectId : undefined;
@@ -1113,11 +1117,11 @@ export class CommunicationManager implements IDisposable {
             // request event until the first observer subscribes.
             return this._observeResponse(
                 responseType,
-                topic.messageToken,
+                topic.correlationId,
                 event,
                 publisher,
                 (item: ObservedResponseItem) => {
-                    this._observedResponses.delete(item.messageToken);
+                    this._observedResponses.delete(item.correlationId);
                     this._unsubscribeClient(item.topicFilter);
                 });
         }
@@ -1167,6 +1171,7 @@ export class CommunicationManager implements IDisposable {
         };
     }
 
+    // TODO REdesign IO routing: pass ioGroupId as argument, for Associate events only  (invoke once for each ioGroupId)
     private _observeRequest(
         eventType: CommunicationEventType,
         eventTypeFilter?: string) {
@@ -1178,7 +1183,8 @@ export class CommunicationManager implements IDisposable {
                 eventTypeFilter :
                 CommunicationTopic.getTopicFilter(
                     CommunicationManager.PROTOCOL_VERSION,
-                    eventTypeName,
+                    eventType,
+                    eventTypeFilter,
                     (eventType === CommunicationEventType.Associate) ?
                         this._associatedUser?.objectId :
                         undefined,
@@ -1193,20 +1199,20 @@ export class CommunicationManager implements IDisposable {
 
     private _observeResponse(
         eventType: CommunicationEventType,
-        messageToken: string,
+        correlationId: string,
         request: CommunicationEvent<CommunicationEventData>,
         publisher: () => void,
         cleanup: (item: ObservedResponseItem) => void) {
-        const eventTypeName = CommunicationTopic.getEventTypeName(eventType);
         const topicFilter = CommunicationTopic.getTopicFilter(
             CommunicationManager.PROTOCOL_VERSION,
-            eventTypeName,
+            eventType,
             undefined,
-            messageToken,
+            undefined,
+            correlationId,
         );
-        const item = new ObservedResponseItem(topicFilter, messageToken, request, publisher, cleanup);
+        const item = new ObservedResponseItem(topicFilter, correlationId, request, publisher, cleanup);
 
-        this._observedResponses.set(item.messageToken, item);
+        this._observedResponses.set(item.correlationId, item);
         this._subscribeClient(item.topicFilter);
 
         return item.createObservable();
@@ -1275,12 +1281,12 @@ export class CommunicationManager implements IDisposable {
         // cached in the last will at the broker would no longer be correct.
         return {
             topic: CommunicationTopic.createByLevels(
-                this._associatedUser?.objectId,
-                this._container.identity.objectId,
+                CommunicationManager.PROTOCOL_VERSION,
                 CommunicationEventType.Deadvertise,
                 undefined,
+                this._container.identity.objectId,
+                this._associatedUser?.objectId,
                 this.runtime.newUuid(),
-                CommunicationManager.PROTOCOL_VERSION,
             ).getTopicName(),
             payload: JSON.stringify(
                 new DeadvertiseEventData(this._deadvertiseIds).toJsonObject()),
@@ -1327,11 +1333,11 @@ export class CommunicationManager implements IDisposable {
     private _tryDispatchAsRawMessage(topicName: string, payload: any): boolean {
         let isDispatching = false;
         try {
+            const rawType = CommunicationEventType[CommunicationEventType.Raw];
             let isRawDispatch = false;
             // Dispatch raw message on all registered observables of event type "Raw:<any subscription topic>"
             this._observedRequests.forEach((item, eventTypeName) => {
-                if (!eventTypeName.startsWith(CommunicationEventType[CommunicationEventType.Raw] +
-                    CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR)) {
+                if (!eventTypeName.startsWith(rawType)) {
                     return;
                 }
                 isRawDispatch = true;
@@ -1454,8 +1460,7 @@ export class CommunicationManager implements IDisposable {
 
             if (associatedTopic !== undefined &&
                 !CommunicationTopic.isValidIoValueTopic(associatedTopic, CommunicationManager.PROTOCOL_VERSION)) {
-                /* tslint:disable-next-line:max-line-length */
-                console.log(`CommunicationManager: associated topic of incoming ${CommunicationEventType[event.eventType]} event is invalid: '${associatedTopic}'`);
+                console.log(`CommunicationManager: associated topic of incoming ${event.eventType} event is invalid: '${associatedTopic}'`);
                 return;
             }
 
@@ -1504,9 +1509,7 @@ export class CommunicationManager implements IDisposable {
             if (isDispatching) {
                 throw error;
             }
-
-            /* tslint:disable-next-line:max-line-length */
-            console.log(`CommunicationManager: failed to handle incoming ${CommunicationEventType[event.eventType]} event: ${error}`);
+            console.log(`CommunicationManager: failed to handle incoming ${event.eventType} event: ${error}`);
         }
     }
 
@@ -1739,7 +1742,7 @@ class ObservedResponseItem extends SubscriberItem<CommunicationEvent<Communicati
 
     constructor(
         public topicFilter: string,
-        public messageToken: string,
+        public correlationId: string,
         public request: CommunicationEvent<CommunicationEventData>,
         public publisher: () => void,
         cleanup: (item: ObservedResponseItem) => void) {

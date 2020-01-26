@@ -26,16 +26,16 @@ export class CommunicationTopic {
         return CommunicationTopic.getEventTypeName(this._eventType, this._eventTypeFilter);
     }
 
-    get associatedUserId() {
-        return this._associatedId;
+    get sourceId() {
+        return this._sourceId;
     }
 
-    get sourceObjectId() {
-        return this._sourceObjectId;
+    get associationId() {
+        return this._associationId;
     }
 
-    get messageToken() {
-        return this._messageToken;
+    get correlationId() {
+        return this._correlationId;
     }
 
     get version() {
@@ -44,15 +44,16 @@ export class CommunicationTopic {
 
     static PROTOCOL_NAME = "coaty";
     static EVENT_TYPE_FILTER_SEPARATOR = ":";
-    static MESSAGE_TOKEN_ID_COUNTER = 0;
-    static TOPIC_ASSOCIATED_USER_ID_NONE = "-";
 
-    private _associatedId: Uuid | string;
-    private _sourceObjectId: Uuid | string;
+    static EVENT_TYPE_TOPIC_LEVELS: { [level: string]: CommunicationEventType };
+    static TOPIC_LEVELS_BY_EVENT_TYPE: string[];
+
+    private _version: number;
     private _eventType: CommunicationEventType;
     private _eventTypeFilter: string;
-    private _messageToken: Uuid | string;
-    private _version: number;
+    private _sourceId: Uuid;
+    private _associationId: Uuid;
+    private _correlationId: Uuid;
 
     private constructor() {
         /* tslint:disable:empty-block */
@@ -60,55 +61,94 @@ export class CommunicationTopic {
     }
 
     /**
-     * Create a new topic from the given topic name.
+     * Create a new topic from the given publication topic name.
      * 
-     * @param topicName the structured name of a topic
+     * @param topicName the structured name of a publication topic
      * @throws exception when topic name is not in correct format
      */
     static createByName(topicName: string): CommunicationTopic {
         const topic = new CommunicationTopic();
-        const [start, protocolName, version, event, userId, sourceId, token, end] = topicName.split("/");
+        const [protocolName, version, event, sourceId, assocId, corrId, postfix] = topicName.split("/");
 
-        if (start !== "" || protocolName !== CommunicationTopic.PROTOCOL_NAME || version === "" ||
-            event === "" || userId === "" || sourceId === "" || token === "" || end !== "") {
-            throw new Error("Communication topic structure invalid");
+        if (protocolName !== this.PROTOCOL_NAME || !version || !event || !sourceId || !assocId) {
+            throw new Error("Communication topic is invalid");
         }
-        topic._associatedId = userId === CommunicationTopic.TOPIC_ASSOCIATED_USER_ID_NONE ? undefined : userId;
-        topic._sourceObjectId = sourceId;
+        if (corrId === "" && postfix === undefined) {
+            throw new Error("Communication topic is invalid");
+        }
+        if (!!corrId && postfix !== undefined) {
+            throw new Error("Communication topic is invalid");
+        }
+
+        const v = parseInt(version, 10);
+        if (isNaN(v) || v <= 0) {
+            throw new Error(`Communication topic has invalid protocol version: ${v}`);
+        }
 
         const [eventType, eventTypeFilter] = this._parseEvent(event);
+        if (!eventType) {
+            throw new Error(`Communication topic has invalid event type: ${event}`);
+        }
+        const eventTypeKey = CommunicationEventType[eventType];
+        const isOneWayEvent = this.isOneWayEvent(eventType);
+        if (isOneWayEvent) {
+            if (corrId) {
+                throw new Error(`Communication topic has correlation id for ${eventTypeKey} event`);
+            }
+            if ((eventType === CommunicationEventType.Advertise || eventType === CommunicationEventType.Channel) && !eventTypeFilter) {
+                throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
+            }
+            if ((eventType !== CommunicationEventType.Advertise && eventType !== CommunicationEventType.Channel) && eventTypeFilter) {
+                throw new Error(`Communication topic has event filter for ${eventTypeKey} event`);
+            }
+        } else {
+            if (!corrId) {
+                throw new Error(`Communication topic missing correlation id for two-way event: ${eventTypeKey}`);
+            }
+            if ((eventType === CommunicationEventType.Call) && !eventTypeFilter) {
+                throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
+            }
+            if ((eventType !== CommunicationEventType.Call) && eventTypeFilter) {
+                throw new Error(`Communication topic has event filter for ${eventTypeKey} event`);
+            }
+        }
+
+        topic._version = v;
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter;
-        topic._messageToken = token;
-        topic._version = this._parseVersion(version);
+        topic._sourceId = sourceId;
+        topic._associationId = assocId === "-" ? undefined : assocId;
+        topic._correlationId = corrId === "" ? undefined : corrId;
+
         return topic;
     }
 
     /**
      * Create a new topic for the given topic levels.
-     * 
-     * @param associatedUserId user ID associated with the topic, or undefined
-     * @param sourceObjectId event source object ID
+     *
+     * @param version the protocol version
      * @param eventType an event type
-     * @param eventTypeFilter an optional filter for an event type
-     * @param messageToken a token to identify the message
-     * @param protocolVersion the integral protocol version number
+     * @param eventTypeFilter a filter for an event type, or undefined
+     * @param sourceId an event source ID
+     * @param associationId an association ID, or undefined
+     * @param correlationId correlation ID for response message, or undefined
      */
     static createByLevels(
-        associatedUserId: Uuid,
-        sourceObjectId: Uuid,
+        version: number,
         eventType: CommunicationEventType,
         eventTypeFilter: string,
-        messageToken: Uuid,
-        protocolVersion: number): CommunicationTopic {
+        sourceId: Uuid,
+        associationId: Uuid,
+        correlationId: Uuid,
+    ): CommunicationTopic {
         const topic = new CommunicationTopic();
 
-        topic._associatedId = associatedUserId;
-        topic._sourceObjectId = sourceObjectId;
+        topic._version = version;
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter || undefined;
-        topic._version = protocolVersion;
-        topic._messageToken = messageToken;
+        topic._sourceId = sourceId;
+        topic._associationId = associationId;
+        topic._correlationId = correlationId;
 
         return topic;
     }
@@ -117,16 +157,32 @@ export class CommunicationTopic {
      * Gets a topic filter for subscription.
      *
      * @param version the protocol version
-     * @param eventTypeName the event name topic level
-     * @param associatedUserId user ID associated with the topic, or undefined
-     * @param messageToken message token with the topic, or undefined
+     * @param eventType the event type
+     * @param eventTypeFilter the event filter or undefined
+     * @param associationId an association ID, or undefined
+     * @param correlationId correlation ID for response message, or undefined
      */
-    static getTopicFilter(version: number, eventTypeName: string, associatedUserId: Uuid, messageToken: string): string {
-        return `/${CommunicationTopic.PROTOCOL_NAME}/${version}/${eventTypeName}/${associatedUserId ?? "+"}/+/${messageToken || "+"}/`;
+    static getTopicFilter(
+        version: number,
+        eventType: CommunicationEventType,
+        eventTypeFilter: string,
+        associationId: Uuid,
+        correlationId: Uuid): string {
+        let eventLevel = CommunicationTopic._getTopicLevelPrefix(eventType);
+        if (eventTypeFilter) {
+            eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
+        }
+        let levels = `${this.PROTOCOL_NAME}/${version}/${eventLevel}/+`;
+        levels += associationId ? `/${associationId}` : "/+";
+        if (!this.isOneWayEvent(eventType)) {
+            levels += correlationId ? `/${correlationId}` : "/+";
+        }
+
+        return levels;
     }
 
     /**
-     * Gets a topic level that represents the event type name.
+     * Gets a name that represents the given event type and filter.
      *
      * @param eventType the event type to use
      * @param eventTypeFilter the optional event type filter to use, or
@@ -135,9 +191,13 @@ export class CommunicationTopic {
     static getEventTypeName(eventType: CommunicationEventType, eventTypeFilter?: string) {
         let name = CommunicationEventType[eventType];
         if (eventTypeFilter) {
-            name += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
+            name += this.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
         }
         return name;
+    }
+
+    static isOneWayEvent(eventType: CommunicationEventType) {
+        return eventType > CommunicationEventType.OneWay && eventType < CommunicationEventType.TwoWay;
     }
 
     /**
@@ -145,41 +205,23 @@ export class CommunicationTopic {
      * topic specification of an internal or external IoValue topic that is used
      * for publishing and subscription.
      *
-     * @param topic a topic name
+     * @param topicName a topic name
      * @param protocolVersion communication protocol version
      * @returns true if the given topic name is a valid IoValue topic; false
      * otherwise
      */
     static isValidIoValueTopic(
-        topic: string,
+        topicName: string,
         protocolVersion: number) {
-        if (!CommunicationTopic._isValidMqttTopicWithoutWildcards(topic)) {
+        if (!this._isValidMqttTopicWithoutWildcards(topicName)) {
             return false;
         }
 
-        const [start, protocolName, version, event, userId, sourceId, messageToken, end] = topic.split("/");
-        if (start === "" && protocolName === CommunicationTopic.PROTOCOL_NAME &&
-            !!version && !!event && !!userId && !!sourceId && !!messageToken &&
-            end === "") {
-
-            // Matches internal topic structure (but could still be external)
-            const [eventType] = this._parseEvent(event);
-            if (typeof eventType !== "number" || (eventType <= 0 || eventType >= CommunicationEventType.MAX)) {
-                // Valid external topic
-                return true;
-            }
-
-            // Assume internal topic
-            try {
-                if (eventType === CommunicationEventType.IoValue &&
-                    this._parseVersion(version) === protocolVersion) {
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                return false;
-            }
-        } else {
+        let topic: CommunicationTopic;
+        try {
+            topic = this.createByName(topicName);
+            return (topic.eventType === CommunicationEventType.IoValue && topic.version === protocolVersion);
+        } catch {
             // Valid external topic
             return true;
         }
@@ -199,7 +241,7 @@ export class CommunicationTopic {
     }
 
     private static _isValidMqttTopicWithoutWildcards(topic: string): boolean {
-        if (!topic || CommunicationTopic._getUtf8BytesCount(topic) > 65535) {
+        if (!topic || this._getUtf8BytesCount(topic) > 65535) {
             return false;
         }
 
@@ -212,15 +254,11 @@ export class CommunicationTopic {
         return true;
     }
 
-    private static _parseVersion(versionLevel: string) {
-        return parseInt(versionLevel, 10);
-    }
-
-    private static _parseEvent(event: string) {
-        const index = event.indexOf(CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR);
+    private static _parseEvent(event: string): [CommunicationEventType, string] {
+        const index = event.indexOf(this.EVENT_TYPE_FILTER_SEPARATOR);
         const type = index === -1 ? event : event.substring(0, index);
         const filter = index === -1 ? undefined : event.substring(index + 1);
-        return [CommunicationEventType[type], filter];
+        return [this._getEventType(type), filter];
     }
 
     private static _getUtf8BytesCount(str: string) {
@@ -244,12 +282,64 @@ export class CommunicationTopic {
         return count;
     }
 
+    private static _initTopicLevels() {
+        if (this.EVENT_TYPE_TOPIC_LEVELS === undefined) {
+            this.EVENT_TYPE_TOPIC_LEVELS = {
+                ADV: CommunicationEventType.Advertise,
+                DAD: CommunicationEventType.Deadvertise,
+                CHN: CommunicationEventType.Channel,
+                ASC: CommunicationEventType.Associate,
+                IOV: CommunicationEventType.IoValue,
+
+                DSC: CommunicationEventType.Discover,
+                RSV: CommunicationEventType.Resolve,
+                QRY: CommunicationEventType.Query,
+                RTV: CommunicationEventType.Retrieve,
+                UPD: CommunicationEventType.Update,
+                CPL: CommunicationEventType.Complete,
+                CLL: CommunicationEventType.Call,
+                RTN: CommunicationEventType.Return,
+            };
+        }
+        if (this.TOPIC_LEVELS_BY_EVENT_TYPE === undefined) {
+            this.TOPIC_LEVELS_BY_EVENT_TYPE = [];
+            Object.keys(this.EVENT_TYPE_TOPIC_LEVELS).findIndex(key => {
+                const eventType = this.EVENT_TYPE_TOPIC_LEVELS[key];
+                this.TOPIC_LEVELS_BY_EVENT_TYPE[eventType] = key;
+            });
+        }
+    }
+
+    private static _getEventType(topicLevel: string) {
+        this._initTopicLevels();
+        return this.EVENT_TYPE_TOPIC_LEVELS[topicLevel];
+    }
+
+    private static _getTopicLevelPrefix(eventType: CommunicationEventType) {
+        this._initTopicLevels();
+        return this.TOPIC_LEVELS_BY_EVENT_TYPE[eventType];
+    }
+
     /**
      * Gets the topic name for publishing.
      */
     getTopicName(): string {
-        /* tslint:disable-next-line:max-line-length */
-        return `/${CommunicationTopic.PROTOCOL_NAME}/${this.version}/${this.eventTypeName}/${this.associatedUserId || CommunicationTopic.TOPIC_ASSOCIATED_USER_ID_NONE}/${this.sourceObjectId}/${this.messageToken}/`;
+        let eventLevel = CommunicationTopic._getTopicLevelPrefix(this.eventType);
+        if (this.eventTypeFilter) {
+            eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + this.eventTypeFilter;
+        }
+        let topic = `${CommunicationTopic.PROTOCOL_NAME}/${this.version}/${eventLevel}/${this.sourceId}/`;
+        if (this.associationId) {
+            topic += this.associationId;
+        } else {
+            // aedes and mosca MQTT brokers do not support single-level wildcard
+            // matching against empty topic levels.
+            topic += "-";
+        }
+        if (!CommunicationTopic.isOneWayEvent(this.eventType)) {
+            topic += `/${this.correlationId}`;
+        }
+        return topic;
     }
 
 }

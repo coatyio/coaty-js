@@ -946,28 +946,29 @@ const task: HelloWorldTask = {
 ## Communication event patterns
 
 By default, each Coaty container has a *Communication Manager* component that is
-registered implicitely with the container. It provides a complete set of
-predefined communication event patterns to exchange object data in a
+registered implicitely with the container. It provides a set of predefined
+one-way and two-way communication event patterns to exchange object data in a
 decentralized Coaty application:
 
-* **Advertise** an object: broadcast an object to parties interested in objects of a
-  specific core or object type.
-* **Deadvertise** an object by its unique ID: notify subscribers when capability is
-  no longer available; for abnormal disconnection of a client, last will concept can be
-  implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in any type of objects delivered
-  through a channel with a specific channel identifier.
-* **Discover - Resolve** Discover an object and/or related objects by external ID,
-  internal ID, or object type, and receive responses by Resolve events.
-* **Query - Retrieve**  Query objects by specifying selection and ordering criteria,
-  receive responses by Retrieve events.
+* **Advertise** an object: broadcast an object to parties interested in objects
+  of a specific core or object type.
+* **Deadvertise** an object by its unique ID: notify subscribers when capability
+  is no longer available; for abnormal disconnection of a client, last will
+  concept of Coaty is implemented by sending this event.
+* **Channel** Broadcast objects to parties interested in any type of objects
+  delivered through a channel with a specific channel identifier.
+* **Discover - Resolve** Discover an object and/or related objects by external
+  ID, internal ID, or object type, and receive responses by Resolve events.
+* **Query - Retrieve**  Query objects by specifying selection and ordering
+  criteria, receive responses by Retrieve events.
 * **Update - Complete**  Request or suggest an object update and receive
   accomplishments by Complete events.
-* **Call - Return**  Request execution of a remote operation and receive results by
-  Return events.
-* **Associate** Used by IO Router to dynamically associate/disassociate IO sources
-  with IO actors.
-* **IoValue** Send IO values from a publishing IO source to associated IO actors.
+* **Call - Return**  Request execution of a remote operation and receive results
+  by Return events.
+* **Associate** Used by IO Router to dynamically associate/disassociate IO
+  sources with IO actors.
+* **IoValue** Send IO values from a publishing IO source to associated IO
+  actors.
 
 Coaty not only provides *one-way* communication event patterns, such as Advertise
 and Channel, that support classic publish-subscribe interaction between Coaty
@@ -1765,21 +1766,23 @@ the execution time of the operation, or the ID of the operated control unit.
 ### Observing and publishing raw MQTT messages
 
 To enable interoperation with external MQTT clients, use `publishRaw` to publish
-a raw MQTT message specifying an MQTT topic, a payload (of type `string` or `Uint8Array`
-(`Buffer` in Node.js), and an optional flag indicating whether the published message
-should be retained.
+a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
+`Uint8Array` (`Buffer` in Node.js), and an optional flag indicating whether the
+published message should be retained.
 
-Likewise, use `observeRaw` to observe incoming messages on raw MQTT subscription topics.
-The observable returned by calling `observeRaw` emits messages as tuples including the
-actual published topic and the payload. Payload is represented as
+Likewise, use `observeRaw` to observe incoming messages on raw MQTT subscription
+topics. The observable returned by calling `observeRaw` emits messages as tuples
+including the actual published topic and the payload. Payload is represented as
 `Uint8Array` (`Buffer` in Node.js) and needs to be parsed by the application.
-Use the `toString` method on a payload to convert the raw data to an UTF8 encoded string.
+Use the `toString` method on a payload to convert the raw data to an UTF8
+encoded string.
 
-Note that the observable returned by `observeRaw` is *shared* among all raw topic observers.
-This basically means that the observable will emit messages for *all* observed
-raw subscription topics, not only for the one specified in a single method call.
-Thus, you should always pipe the observable through an RxJS `filter` operator to
-filter out the messages associated with the given subscription topic:
+Note that the observable returned by `observeRaw` is *shared* among all raw
+topic observers. This basically means that the observable will emit messages for
+*all* observed raw subscription topics, not only for the one specified in a
+single method call. Thus, you should always pipe the observable through an RxJS
+`filter` operator to filter out the messages associated with the given
+subscription topic:
 
 ```ts
 import { filter } from "rxjs/operators";

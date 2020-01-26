@@ -47,102 +47,135 @@ describe("Communication", () => {
             },
         };
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
-        const msgToken = "7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d";
-        const topic = CommunicationTopic.createByLevels(
-            associatedUser.objectId,
-            senderId,
+        const oneWayTopic = CommunicationTopic.createByLevels(
+            version,
             CommunicationEventType.Advertise,
             "CoatyObject",
-            msgToken,
-            version);
-        const topicNoUser = CommunicationTopic.createByLevels(
+            senderId,
+            associatedUser.objectId,
+            undefined,
+        );
+        const oneWayTopicNoUser = CommunicationTopic.createByLevels(
+            version,
+            CommunicationEventType.Advertise,
+            "CoatyObject",
+            senderId,
+            undefined,
+            undefined,
+        );
+        const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
+        const twoWayTopic = CommunicationTopic.createByLevels(
+            version,
+            CommunicationEventType.Discover,
             undefined,
             senderId,
-            CommunicationEventType.Advertise,
-            "CoatyObject",
-            msgToken,
-            version);
+            associatedUser.objectId,
+            correlationId,
+        );
+        const twoWayTopicNoUser = CommunicationTopic.createByLevels(
+            version,
+            CommunicationEventType.Discover,
+            undefined,
+            senderId,
+            undefined,
+            correlationId,
+        );
 
         it("throws on invalid topic structure format", () => {
-            expect(() => CommunicationTopic.createByName(
-                topicNoUser.getTopicName().replace("-", ""))).toThrow();
+            expect(() => CommunicationTopic.createByName(oneWayTopic.getTopicName() + "/")).toThrow();
+            expect(() => CommunicationTopic.createByName("/" + oneWayTopicNoUser.getTopicName())).toThrow();
         });
 
-        it("has correct level structure for no associated user", () => {
-            expect(topicNoUser.associatedUserId).toBe(undefined);
-            expect(topicNoUser.sourceObjectId).toBe(senderId);
-            expect(topicNoUser.eventType).toBe(CommunicationEventType.Advertise);
-            expect(topicNoUser.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(topicNoUser.messageToken).toBe(msgToken);
-            expect(topicNoUser.version).toBe(version);
+        it("has correct level structure for one-way event without association", () => {
+            expect(oneWayTopicNoUser.associationId).toBe(undefined);
+            expect(oneWayTopicNoUser.sourceId).toBe(senderId);
+            expect(oneWayTopicNoUser.eventType).toBe(CommunicationEventType.Advertise);
+            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(oneWayTopicNoUser.correlationId).toBe(undefined);
+            expect(oneWayTopicNoUser.version).toBe(version);
 
-            const tpc = CommunicationTopic.createByName(topicNoUser.getTopicName());
-            expect(tpc.associatedUserId).toBe(undefined);
-            expect(tpc.sourceObjectId).toBe(senderId);
+            const tpc = CommunicationTopic.createByName(oneWayTopicNoUser.getTopicName());
+            expect(tpc.associationId).toBe(undefined);
+            expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
-            expect(tpc.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(tpc.messageToken).toBe(msgToken);
+            expect(tpc.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(tpc.correlationId).toBe(undefined);
             expect(tpc.version).toBe(version);
         });
 
-        it("has correct level structure for associated user", () => {
-            expect(topic.associatedUserId).toBe(associatedUserId);
-            expect(topic.sourceObjectId).toBe(senderId);
-            expect(topic.eventType).toBe(CommunicationEventType.Advertise);
-            expect(topic.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(topic.messageToken).toBe(msgToken);
-            expect(topic.version).toBe(version);
+        it("has correct level structure for one-way event with association", () => {
+            expect(oneWayTopic.associationId).toBe(associatedUserId);
+            expect(oneWayTopic.sourceId).toBe(senderId);
+            expect(oneWayTopic.eventType).toBe(CommunicationEventType.Advertise);
+            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(oneWayTopic.correlationId).toBe(undefined);
+            expect(oneWayTopic.version).toBe(version);
 
-            const tpc = CommunicationTopic.createByName(topic.getTopicName());
-            expect(tpc.associatedUserId).toBe(associatedUserId);
-            expect(tpc.sourceObjectId).toBe(senderId);
+            const tpc = CommunicationTopic.createByName(oneWayTopic.getTopicName());
+            expect(tpc.associationId).toBe(associatedUserId);
+            expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
-            expect(tpc.eventTypeName).toBe("Advertise:CoatyObject");
-            expect(tpc.messageToken).toBe(msgToken);
+            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(tpc.correlationId).toBe(undefined);
             expect(tpc.version).toBe(version);
         });
 
-        it("has correct filter structure for associated user", () => {
-            const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Discover);
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, associatedUser.objectId, undefined);
-            const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
-            expect(start).toBe("");
-            expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
-            expect(usr).toBe(associatedUser.objectId);
-            expect(sender).toBe("+");
-            expect(evt).toBe(eventName);
-            expect(token).toBe("+");
-            expect(v).toBe(version.toString());
-            expect(end).toBe("");
+        it("has correct level structure for two-way event without association", () => {
+            expect(twoWayTopicNoUser.associationId).toBe(undefined);
+            expect(twoWayTopicNoUser.sourceId).toBe(senderId);
+            expect(twoWayTopicNoUser.eventType).toBe(CommunicationEventType.Discover);
+            expect(twoWayTopicNoUser.eventTypeName).toBe(`Discover`);
+            expect(twoWayTopicNoUser.correlationId).toBe(correlationId);
+            expect(twoWayTopicNoUser.version).toBe(version);
+
+            const tpc = CommunicationTopic.createByName(twoWayTopicNoUser.getTopicName());
+            expect(tpc.associationId).toBe(undefined);
+            expect(tpc.sourceId).toBe(senderId);
+            expect(tpc.eventType).toBe(CommunicationEventType.Discover);
+            expect(tpc.eventTypeName).toBe(`Discover`);
+            expect(tpc.correlationId).toBe(correlationId);
+            expect(tpc.version).toBe(version);
         });
 
-        it("has correct filter structure for any user", () => {
-            const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Advertise, "CoatyObject");
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, undefined, undefined);
-            const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
-            expect(start).toBe("");
-            expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
-            expect(usr).toBe("+");
-            expect(sender).toBe("+");
-            expect(evt).toBe(eventName);
-            expect(token).toBe("+");
-            expect(v).toBe(version.toString());
-            expect(end).toBe("");
+        it("has correct level structure for two-way event with association", () => {
+            expect(twoWayTopic.associationId).toBe(associatedUserId);
+            expect(twoWayTopic.sourceId).toBe(senderId);
+            expect(twoWayTopic.eventType).toBe(CommunicationEventType.Discover);
+            expect(twoWayTopic.eventTypeName).toBe(`Discover`);
+            expect(twoWayTopic.correlationId).toBe(correlationId);
+            expect(twoWayTopic.version).toBe(version);
+
+            const tpc = CommunicationTopic.createByName(twoWayTopic.getTopicName());
+            expect(tpc.associationId).toBe(associatedUserId);
+            expect(tpc.sourceId).toBe(senderId);
+            expect(tpc.eventType).toBe(CommunicationEventType.Discover);
+            expect(tpc.eventTypeName).toBe(`Discover`);
+            expect(tpc.correlationId).toBe(correlationId);
+            expect(tpc.version).toBe(version);
         });
 
-        it("has correct filter structure for response subscription", () => {
-            const messageToken = "62879980-94c9-47a9-92d5-61c9e86f7742";
-            const eventName = CommunicationTopic.getEventTypeName(CommunicationEventType.Resolve, "CoatyObject");
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventName, undefined, messageToken);
-            const [start, protocolName, v, evt, usr, sender, token, end] = topicFilter.split("/");
-            expect(start).toBe("");
-            expect(protocolName).toBe(CommunicationTopic.PROTOCOL_NAME);
-            expect(usr).toBe("+");
-            expect(sender).toBe("+");
-            expect(evt).toBe(eventName);
-            expect(token).toBe(messageToken);
-            expect(v).toBe(version.toString());
-            expect(end).toBe("");
+        it("has correct filter structure for one-way events", () => {
+            const eventType = CommunicationEventType.Advertise;
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, "CoatyObject", undefined, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/ADV:CoatyObject/+/+`);
+        });
+
+        it("has correct filter structure for Associate event", () => {
+            const eventType = CommunicationEventType.Associate;
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, associatedUser.objectId, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/ASC/+/${associatedUserId}`);
+        });
+
+        it("has correct filter structure for two-way request events", () => {
+            const eventType = CommunicationEventType.Discover;
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, undefined, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/DSC/+/+/+`);
+        });
+
+        it("has correct filter structure for two-way response events", () => {
+            const eventType = CommunicationEventType.Resolve;
+            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, undefined, correlationId);
+            expect(topicFilter).toBe(`coaty/${version}/RSV/+/+/${correlationId}`);
         });
 
     });
@@ -294,7 +327,6 @@ describe("Communication", () => {
             delayAction(responseDelay + 2000, done, () => {
 
                 const associatedUserId = configuration1.common.associatedUser.objectId;
-
                 const mockDeviceControllerMatch = UUID_REGEX;
                 const mockObjectControllerMatch = UUID_REGEX;
 
@@ -546,8 +578,8 @@ describe("Communication", () => {
             };
             const eventCount = 3;
             const topicFilter1 = "/test/42/";
-            const topicFilter2 = `/${CommunicationTopic.PROTOCOL_NAME}/#`;
-            const topic2 = `/${CommunicationTopic.PROTOCOL_NAME}/1/Advertise:CoatyObject/`;
+            const topicFilter2 = `${CommunicationTopic.PROTOCOL_NAME}/#`;
+            const topic2 = `${CommunicationTopic.PROTOCOL_NAME}/${CommunicationManager.PROTOCOL_VERSION}/ADV:CoatyObject/`;
 
             deviceController.watchForRawEvents(logger1, topicFilter1, topicFilter1);
             deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
@@ -555,20 +587,19 @@ describe("Communication", () => {
             delayAction(500, undefined, () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController1")
                     .publishRawEvents(eventCount, topicFilter1);
-                container2
-                    .getController<mocks.MockObjectController>("MockObjectController1")
+                container2.getController<mocks.MockObjectController>("MockObjectController1")
                     .publishRawEvents(eventCount, topic2);
 
                 delayAction(1000, done, () => {
                     expect(logger1.count).toBe(eventCount);
                     expect(logger1.eventData.length).toBe(eventCount);
-                    for (let i = 1; i <= eventCount; i++) {
+                    for (let i = 1; i <= logger1.count; i++) {
                         expect(logger1.eventData[i - 1][0]).toBe(topicFilter1);
                         expect(logger1.eventData[i - 1][1]).toBe(`${i}`);
                     }
                     expect(logger2.count).toBe(eventCount);
                     expect(logger2.eventData.length).toBe(eventCount);
-                    for (let i = 1; i <= eventCount; i++) {
+                    for (let i = 1; i <= logger2.count; i++) {
                         expect(logger2.eventData[i - 1][0]).toBe(topic2);
                         expect(logger2.eventData[i - 1][1]).toBe(`${i}`);
                     }
