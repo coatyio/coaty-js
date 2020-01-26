@@ -199,6 +199,8 @@ this.communicationManager.observeDiscover()
 
 * The MQTT topic structure has been optimized. Your application code is affected
   by this change.
+* `CommunicationManager.observeRaw()` no longer emits messages that represent
+  other Coaty communication event types.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

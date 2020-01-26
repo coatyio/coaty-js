@@ -597,12 +597,8 @@ describe("Communication", () => {
                         expect(logger1.eventData[i - 1][0]).toBe(topicFilter1);
                         expect(logger1.eventData[i - 1][1]).toBe(`${i}`);
                     }
-                    expect(logger2.count).toBe(eventCount);
-                    expect(logger2.eventData.length).toBe(eventCount);
-                    for (let i = 1; i <= logger2.count; i++) {
-                        expect(logger2.eventData[i - 1][0]).toBe(topic2);
-                        expect(logger2.eventData[i - 1][1]).toBe(`${i}`);
-                    }
+                    expect(logger2.count).toBe(0);
+                    expect(logger2.eventData.length).toBe(0);
                 });
             });
         }, TEST_TIMEOUT);

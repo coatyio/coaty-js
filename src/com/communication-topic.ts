@@ -210,9 +210,7 @@ export class CommunicationTopic {
      * @returns true if the given topic name is a valid IoValue topic; false
      * otherwise
      */
-    static isValidIoValueTopic(
-        topicName: string,
-        protocolVersion: number) {
+    static isValidIoValueTopic(topicName: string, protocolVersion: number) {
         if (!this._isValidMqttTopicWithoutWildcards(topicName)) {
             return false;
         }
@@ -225,6 +223,16 @@ export class CommunicationTopic {
             // Valid external topic
             return true;
         }
+    }
+
+    /**
+     * Determines whether the given topic name conforms to a raw message.
+     *
+     * @param topicName a topic name
+     * @returns true if the given topic name is a raw topic; false otherwise
+     */
+    static isRawTopic(topicName: string) {
+        return !topicName.startsWith(this.PROTOCOL_NAME + "/");
     }
 
     /**

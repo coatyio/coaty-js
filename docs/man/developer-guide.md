@@ -1795,11 +1795,8 @@ this.communicationManager
     });
 ```
 
-> Observing raw subscription topics does *not* suppress observation of non-raw
-> communication event types by the communication manager: If at least one raw
-> topic is observed, the communication manager first dispatches *any* incoming
-> message to *all* raw message observers. Then, event dispatching continues as
-> usual by handling all non-raw communication event types which are observed.
+> **Note**: Only incoming messages that are *not* Coaty communication events are
+> dispatched to the raw message observers.
 
 ### Distributed lifecycle management
 

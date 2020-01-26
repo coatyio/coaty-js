@@ -829,15 +829,19 @@ export class CommunicationManager implements IDisposable {
     }
 
     private _onClientMessage(topicName: string, payload: any) {
-        let isDispatching = false;
         let isDispatchedAsRaw = false;
+        let isDispatching = false;
         try {
-
             isDispatching = true;
+            // Even if a raw message has been successfully dispatched, further
+            // processing is needed by checking external IO value topics.
             if (this._tryDispatchAsRawMessage(topicName, payload)) {
                 isDispatchedAsRaw = true;
             }
             if (this._tryDispatchAsIoValueMessage(topicName, payload)) {
+                return;
+            }
+            if (isDispatchedAsRaw) {
                 return;
             }
             isDispatching = false;
@@ -960,8 +964,9 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
+            // Silently ignore undispatched raw messages do not conform to the
+            // shape of real Coaty messages.
             if (!isDispatchedAsRaw) {
-                /* tslint:disable-next-line:max-line-length */
                 console.log(`CommunicationManager: failed to handle incoming message topic ${topicName}': ${error}`);
             }
         }
@@ -1323,7 +1328,6 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            /* tslint:disable-next-line:max-line-length */
             console.log(`CommunicationManager: failed to handle incoming IO value topic ${topicName}': ${error}`);
 
             return true;
@@ -1331,6 +1335,9 @@ export class CommunicationManager implements IDisposable {
     }
 
     private _tryDispatchAsRawMessage(topicName: string, payload: any): boolean {
+        if (!CommunicationTopic.isRawTopic(topicName)) {
+            return false;
+        }
         let isDispatching = false;
         try {
             const rawType = CommunicationEventType[CommunicationEventType.Raw];
@@ -1352,7 +1359,6 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            /* tslint:disable-next-line:max-line-length */
             console.log(`CommunicationManager: failed to handle incoming Raw topic ${topicName}': ${error}`);
 
             return true;
@@ -1634,7 +1640,6 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            /* tslint:disable-next-line:max-line-length */
             console.log(`CommunicationManager: failed to cleanup IO state: ${error}`);
         }
     }
