@@ -503,15 +503,16 @@ export class CommunicationManager implements IDisposable {
 
         // Publish event with object type filter to satisfy object type
         // observers unless the advertised object is a core object with a core
-        // object type. In this case, core object type observers subscribe on
-        // the core type followed by a local filter operation to filter out
-        // unwanted objects (see `observeAdvertise`).
+        // object type. In this case, object type observers subscribe on the
+        // core type followed by a local filter operation to filter out unwanted
+        // objects (see `observeAdvertise`).
         if (CoreTypes.getObjectTypeFor(coreType) !== objectType) {
             this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType);
         }
 
         // Ensure a Deadvertise event/last will is emitted for an advertised Identity or Device.
-        if (coreType === "Identity" || coreType === "Device") {
+        if ((coreType === "Identity" && objectType === CoreTypes.OBJECT_TYPE_IDENTITY) ||
+            (coreType === "Device" && objectType === CoreTypes.OBJECT_TYPE_DEVICE)) {
             this._deadvertiseIds.find(id => id === event.data.object.objectId) ||
                 this._deadvertiseIds.push(event.data.object.objectId);
         }
@@ -1417,10 +1418,10 @@ export class CommunicationManager implements IDisposable {
             throw new TypeError(`${coreType} is not a CoreType`);
         }
 
-        // Optimization: in case core objects should be observed by core object type (an exotic case)
-        // we do not subscribe on the object type filter but on the core type filter instead,
-        // filtering out objects that do not satisfy the core object type.
-        // (see `publishAdvertise`).
+        // Optimization: in case core objects should be observed by their object
+        // type, we do not subscribe on the object type filter but on the core
+        // type filter instead, filtering out objects that do not satisfy the
+        // core object type. (see `publishAdvertise`).
         if (objectType) {
             const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
             if (objectCoreType) {
