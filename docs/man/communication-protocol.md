@@ -42,9 +42,9 @@ communication message is comprised of a topic name and a payload. The format of
 topic names and payloads conforms to the [MQTT](https://mqtt.org/) Specification
 Version 3.1.1.
 
-For publishing messages and subscribing to topics, Coaty should support any MQTT
-Quality of Service level: QoS 0, QoS 1, and QoS 2. If not specified by a Coaty
-application, the default QoS level should be 0.
+For publishing messages, subscribing to topics, and for last will messages,
+Coaty should support any MQTT Quality of Service level: QoS 0, QoS 1, or QoS 2.
+If not specified by a Coaty application, the default QoS level should be 0.
 
 ## Message Topics and Payloads
 

@@ -201,16 +201,21 @@ this.communicationManager.observeDiscover()
 
 * The MQTT topic structure has been optimized. Your application code is not
   affected by this change.
+* You can now specify the MQTT QoS level for all publications, subscriptions,
+  and last will messages in `CommunicationOptions.mqttClientOptions`. The
+  default level is 0.
 * You can now specify partial options for `CommunicationManager.restart()`.
 * Take further actions after calling `CommunicationManager.restart()` not until
   the returned promise resolves.
 * `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
   communication event types.
-* Add [namespacing
+* A [namespacing
   concept](https://coatyio.github.io/coaty-js/man/developer-guide/#namespacing)
-  to isolate different Coaty applications (see `CommunicationOptions.namespace`
-  and `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events
-  are only routed between agents within a common namespace.
+  has been added to isolate different Coaty applications (see
+  `CommunicationOptions.namespace` and
+  `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events are
+  only routed between agents within a common namespace. This feature is
+  backward-compatible with Coaty 1.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

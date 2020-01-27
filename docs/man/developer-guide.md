@@ -352,6 +352,7 @@ const configuration: Configuration = {
           brokerUrl: ... ,
           mqttClientOptions: ... ,
           namespace: ...,
+          shouldEnableCrossNamespacing: ...,
           shouldAutoStart: ... ,
           shouldAdvertiseDevice: ... ,
     },
@@ -975,20 +976,20 @@ decentralized Coaty application:
 * **IoValue** Send IO values from a publishing IO source to associated IO
   actors.
 
-Coaty not only provides *one-way* communication event patterns, such as Advertise
-and Channel, that support classic publish-subscribe interaction between Coaty
-agents. With *two-way* event patterns, *request-response* interaction between
-Coaty agents can be realized, similar to, for example, HTTP/REST or RPC.
+Coaty not only provides *one-way* communication event patterns, such as
+Advertise and Channel, that support classic publish-subscribe interaction
+between Coaty agents. With *two-way* event patterns, *request-response*
+interaction between Coaty agents can be realized, similar to, for example,
+HTTP/REST or RPC.
 
-While traditional request-response interaction is always directed towards
-a single concrete endpoint that must be known by the requester, Coaty two-way
+While traditional request-response interaction is always directed towards a
+single concrete endpoint that must be known by the requester, Coaty two-way
 request-response event patterns share the characteristics of publish-subscribe
-communication: A request event is always directed towards all subscribers
-which are interested in this kind of event. Response events are published
-by all subscribers that are willing to provide answers. This means that
-response events for a single request event can be provided independently
-by multiple subscribers, and each subscriber can publish multiple
-responses over time.
+communication: A request event is always directed towards all subscribers which
+are interested in this kind of event. Response events are published by all
+subscribers that are willing to provide answers. This means that response events
+for a single request event can be provided independently by multiple
+subscribers, and each subscriber can publish multiple responses over time.
 
 The use case specific logic implemented by the requester determines how to
 handle such responses. For example, the requester can decide to
@@ -999,12 +1000,11 @@ handle such responses. For example, the requester can decide to
 * handle any response over time, or
 * process responses as defined by any other application-specific logic.
 
-In the latter case innovative scenarios beyond classic request-response
-can be realized. For example, a Query event responder could
-re-execute the database query and publish a Retrieve event with the
-new results every time the concerned storage area is updated.
-In this way inefficient database polling is replaced by an efficient
-push-based approach.
+In the latter case innovative scenarios beyond classic request-response can be
+realized. For example, a Query event responder could re-execute the database
+query and publish a Retrieve event with the new results every time the concerned
+storage area is updated. In this way inefficient database polling is replaced by
+an efficient push-based approach.
 
 Internally, events are emitted and received by the Communication Manager using
 publish-subscribe messaging with an MQTT message broker. Events are passed to
@@ -1014,6 +1014,12 @@ observables.
 The Communication Manager provides features to transparently control the underlying
 publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
 upon connection, and queued offline publishing.
+
+When initializing the Communication Manager you can customize characteristics of
+the underlying MQTT client library in the configuration property
+`CommunicationOptions.mqttClientOptions`. Among others, you can specify the MQTT
+QoS level for all publications, subscriptions, and last will messages (default
+is 0).
 
 ### Starting and stopping communication
 

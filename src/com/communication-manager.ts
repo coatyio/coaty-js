@@ -67,6 +67,7 @@ export class CommunicationManager implements IDisposable {
 
     private _options: CommunicationOptions;
     private _namespace: string;
+    private _qos: 0 | 1 | 2;
     private _client: Client;
     private _isClientConnected: boolean;
     private _associatedUser: User;
@@ -673,8 +674,11 @@ export class CommunicationManager implements IDisposable {
             Object.assign(mqttClientOpts, mqttClientOptions);
         }
 
+        this._qos = Math.max(0, Math.min(2, mqttClientOpts.qos ?? 0)) as 0 | 1 | 2;
+
         if (lastWill) {
             mqttClientOpts.will = lastWill;
+            mqttClientOpts.will.qos = this._qos;
         }
 
         mqttClientOpts.clientId = this._brokerClientId;
@@ -809,7 +813,7 @@ export class CommunicationManager implements IDisposable {
 
         // Apply all deferred subscriptions and keep them for later reconnects.
         if (this._deferredSubscriptions) {
-            this._deferredSubscriptions.forEach(sub => this._client.subscribe(sub));
+            this._client.subscribe(this._deferredSubscriptions, { qos: this._qos });
         }
 
         // Apply all deferred offline publications and clear them if
@@ -1187,7 +1191,7 @@ export class CommunicationManager implements IDisposable {
         isAdvertiseDevice = false) {
         return () => {
             const payload = isDataRaw ? data : JSON.stringify(data);
-            const pubOptions: IClientPublishOptions = { qos: 0, retain: shouldRetain };
+            const pubOptions: IClientPublishOptions = { qos: this._qos, retain: shouldRetain };
             const deferPublication = () => {
                 const msg = {
                     topic: topicName,
@@ -1217,7 +1221,6 @@ export class CommunicationManager implements IDisposable {
         };
     }
 
-    // TODO REdesign IO routing: pass ioGroupId as argument, for Associate events only  (invoke once for each ioGroupId)
     private _observeRequest(
         eventType: CommunicationEventType,
         eventTypeFilter?: string) {
@@ -1268,7 +1271,7 @@ export class CommunicationManager implements IDisposable {
 
     private _subscribeClient(topicFilter: string) {
         if (this._isClientConnected) {
-            this._client.subscribe(topicFilter);
+            this._client.subscribe(topicFilter, { qos: this._qos });
         }
         this._deferredSubscriptions.push(topicFilter);
     }

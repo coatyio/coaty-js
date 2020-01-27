@@ -155,6 +155,10 @@ export interface CommunicationOptions {
 
     /**
      * Options passed to MQTT Client (see MQTT.js connect options).
+     *
+     * In addition to the MQTT.js options, you can also pass a QoS level (0 | 1
+     * | 2) for publications, subscriptions, and last will messages in the `qos`
+     * property. If it is not specified, the QoS level is 0.
      */
     mqttClientOptions?: any;
 
