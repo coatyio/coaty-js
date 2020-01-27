@@ -842,9 +842,6 @@ describe("Communication", () => {
 
         it("All events between different namespaces are delivered if cross-namespacing is enabled", (done) => {
 
-            configuration1.communication.shouldEnableCrossNamespacing = true;
-            container1.communicationManager.restart();
-
             const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
             const objectController = container2.getController<mocks.MockObjectController>("MockObjectController");
             const logger: mocks.AdvertiseEventLogger = {
@@ -852,18 +849,21 @@ describe("Communication", () => {
                 eventData: [],
             };
 
-            // Observes both core type and object type, so two events are received.
-            deviceController.watchForAdvertiseEvents(logger);
+            container1.communicationManager.restart({ shouldEnableCrossNamespacing: true })
+                .then(() => {
+                    // Observes both core type and object type, so two events are received.
+                    deviceController.watchForAdvertiseEvents(logger);
 
-            delayAction(1000, undefined, () => {
-                objectController.publishAdvertiseEvents(1);
+                    delayAction(1000, undefined, () => {
+                        objectController.publishAdvertiseEvents(1);
 
-                delayAction(1000, done, () => {
-                    expect(logger.count).toBe(2);
-                    expect(logger.eventData.length).toBe(logger.count);
-                    expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(2);
+                        delayAction(1000, done, () => {
+                            expect(logger.count).toBe(2);
+                            expect(logger.eventData.length).toBe(logger.count);
+                            expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(2);
+                        });
+                    });
                 });
-            });
         }, TEST_TIMEOUT);
 
     });

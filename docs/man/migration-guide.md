@@ -197,10 +197,13 @@ this.communicationManager.observeDiscover()
 
 ### Changes in communication protocol
 
-* The MQTT topic structure has been optimized. Your application code is affected
-  by this change.
-* `CommunicationManager.observeRaw()` no longer emits messages that represent
-  other Coaty communication event types.
+* The MQTT topic structure has been optimized. Your application code is not
+  affected by this change.
+* You can now specify partial options for `CommunicationManager.restart()`.
+* Take further actions after calling `CommunicationManager.restart()` not until
+  the returned promise resolves.
+* `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
+  communication event types.
 * Add [namespacing
   concept](https://coatyio.github.io/coaty-js/man/developer-guide/#namespacing)
   to isolate different Coaty applications (see `CommunicationOptions.namespace`

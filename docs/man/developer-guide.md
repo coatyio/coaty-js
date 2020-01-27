@@ -1017,19 +1017,18 @@ upon connection, and queued offline publishing.
 
 ### Starting and stopping communication
 
-Use the `CommunicationManager.start` method to connect to a broker. Note
-that the Communication Manager automatically connects after the container is
-resolved if the communication option `shouldAutoStart` is set to `true`
-(opt-in). The communication manager automatically tries to reconnect
-periodically whenever the broker connection is lost.
+Use the `CommunicationManager.start` method to connect to the communication
+infrastructure. Note that the Communication Manager automatically connects after
+the container is resolved if the communication option `shouldAutoStart` is set
+to `true` (opt-in). The communication manager automatically tries to reconnect
+periodically whenever the communication connection is lost.
 
-Use the `CommunicationManager.restart` method to reconnect to a (maybe different)
-broker. This is useful if you want to switch connection from one broker to another
-or after the container configuration has changed.
+Use the `CommunicationManager.restart` method to re-establish communication with
+new communication options.
 
-Use the `CommunicationManager.stop` method to disconnect from the broker.
-Afterwards, events are no longer dispatched and emitted. You can start the
-Communication Manager again later using the `start` method.
+Use the `CommunicationManager.stop` method to disconnect from the communication
+infrastructure. Afterwards, events are no longer dispatched and emitted. You can
+start the Communication Manager sometime later using the `start` method.
 
 Whenever the operating state of the Communication Manager changes by invoking
 one of the above method calls all the controllers of the container are notified

@@ -134,7 +134,7 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Gets the the communication manager's options as specified in the
+     * Gets the communication manager's options as specified in the
      * configuration options.
      */
     get options() {
@@ -165,23 +165,41 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Restarts this communication manager with the specified options.
-     * To be used to switch connection from the backend broker to a
-     * hub broker or after the runtime user/device association has changed.
+     * Restarts this communication manager using the given options.
      *
-     * @param options the new communication options to be used for a restart
+     * Useful if you want to re-establish communication after changing
+     * communication options on the fly.
+     *
+     * The given partial options are merged with the communication options
+     * specified in the container configuration. Partial options override
+     * configuration options.
+     *
+     * Note that further actions, like publishing or observing events, should
+     * only be taken *after* the returned promise resolves.
+     *
+     * @param options new communication options to be used for a restart
+     * (optional)
+     * @returns a promise that is resolved when restart has been completed.
      */
-    restart(options?: CommunicationOptions) {
-        this._endClient(() => {
-            this._initOptions(options);
-            this._startClient();
+    restart(options?: Partial<CommunicationOptions>): Promise<any> {
+        return new Promise<any>(resolve => {
+            this._endClient(() => {
+                this._initOptions(options);
+                this._startClient();
+                resolve();
+            });
         });
     }
 
     /**
-     * Stops dispatching and emitting events by disconnecting from the message
-     * broker. The returned promise is resolved when the communication manager
-     * has disconnected.
+     * Stops dispatching and emitting events and disconnects from the
+     * communication infrastructure.
+     *
+     * To continue processing with this communication manager sometime later,
+     * invoke `start()`, but not before the returned promise resolves.
+     *
+     * @returns a promise that is resolved when communication connection has
+     * been closed
      */
     stop(): Promise<any> {
         return new Promise<any>(resolve => {
@@ -597,8 +615,10 @@ export class CommunicationManager implements IDisposable {
 
     /* Private stuff */
 
-    private _initOptions(options?: CommunicationOptions) {
-        options && (this._options = options);
+    private _initOptions(options?: Partial<CommunicationOptions>) {
+        if (options) {
+            this._options = Object.assign(this._options || {}, options);
+        }
 
         const namespace = this._options.namespace || CommunicationManager.DEFAULT_NAMESPACE;
         if (!CommunicationTopic.isValidTopicLevel(namespace)) {
