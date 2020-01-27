@@ -194,7 +194,7 @@ npm comes with `Node.js` so you need to install it first.
 You can install the latest distribution package in your agent project as follows:
 
 ```sh
-npm install coaty --save
+npm install coaty
 ```
 
 For detailed installation instructions, consult the
