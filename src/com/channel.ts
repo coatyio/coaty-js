@@ -40,7 +40,7 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
         eventData: ChannelEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
+        if (!CommunicationTopic.isValidTopicLevel(channelId)) {
             throw new TypeError("in ChannelEvent: argument 'channelId' is not a valid channel identifier");
         }
 

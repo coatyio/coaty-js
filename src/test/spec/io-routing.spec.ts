@@ -86,16 +86,18 @@ describe("IO Routing", () => {
             expect(CommunicationTopic.isValidIoValueTopic("foo", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic("/foo/bar", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic("foo/bar/", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/coaty/IOVALUE/user/source/token/", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("/coaty/IOV/user/source/token/", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic(
-                "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/IOVALUE/user/source/token/",
+                "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/-" + "/IOV/user/source/token/",
                 version)).toBeTruthy();
         });
 
         it("validates internal IoValue topics", () => {
             const version = CommunicationManager.PROTOCOL_VERSION;
+            const namespace = "-";
             let topic = CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION,
+                namespace,
                 CommunicationEventType.IoValue,
                 undefined,
                 "source45567",
@@ -107,6 +109,7 @@ describe("IO Routing", () => {
 
             topic = CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION - 1,
+                namespace,
                 CommunicationEventType.IoValue,
                 undefined,
                 "source45567",
@@ -117,6 +120,7 @@ describe("IO Routing", () => {
 
             topic = CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION,
+                namespace,
                 CommunicationEventType.Advertise,
                 "CoatyObject",
                 "source45567",

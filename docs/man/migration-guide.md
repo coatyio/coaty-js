@@ -201,6 +201,11 @@ this.communicationManager.observeDiscover()
   by this change.
 * `CommunicationManager.observeRaw()` no longer emits messages that represent
   other Coaty communication event types.
+* Add [namespacing
+  concept](https://coatyio.github.io/coaty-js/man/developer-guide/#namespacing)
+  to isolate different Coaty applications (see `CommunicationOptions.namespace`
+  and `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events
+  are only routed between agents within a common namespace.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

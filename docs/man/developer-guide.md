@@ -36,6 +36,7 @@ this guide.
   * [Publishing events](#publishing-events)
   * [Observing events](#observing-events)
   * [Deferred publication and subscription of events](#deferred-publication-and-subscription-of-events)
+  * [Namespacing](#namespacing)
   * [Advertise event pattern - an example](#advertise-event-pattern---an-example)
   * [Deadvertise event pattern - an example](#deadvertise-event-pattern---an-example)
   * [Channel event pattern - an example](#channel-event-pattern---an-example)
@@ -350,6 +351,7 @@ const configuration: Configuration = {
           // Options used for communication
           brokerUrl: ... ,
           mqttClientOptions: ... ,
+          namespace: ...,
           shouldAutoStart: ... ,
           shouldAdvertiseDevice: ... ,
     },
@@ -1194,10 +1196,31 @@ deferred publications and subscriptions will be discarded.
 > methods `onCommunicationManagerStarted` and `onCommunicationManagerStopped` to
 > implement this subscription pattern.
 
+### Namespacing
+
+To separate the communication traffic of different Coaty applications running in
+the same networking infrastructure (e.g. on the same MQTT broker), Coaty adds a
+namespacing mechanism. Communication events are only routed between agents
+within a common namespace.
+
+You can specify an optional namespace string in the communication options
+(`CommunicationOptions.namespace`). If not specified (default) or empty, the
+agent is assigned a default namespace named "-".
+
+To enable cross-namespace communication between agents in special use cases,
+e.g. for monitoring purposes, an agent can choose to receive communication
+events published by *any* agent in the same networking infrastructure,
+regardless of namespace (see
+`CommunicationOptions.shouldEnableCrossNamespacing`). By default, this option is
+not enabled.
+
+> Note that namespacing is not supported for Raw events and IO value events with
+> external routes.
+
 ### Advertise event pattern - an example
 
 The Advertise event is used to communicate Coaty objects to agents interested in
-a specific tyoe of object. Advertise events can be observed based on either an
+a specific type of object. Advertise events can be observed based on either an
 object's core type (`coreType`) or an object's object type (`objectType`).
 
 ```ts

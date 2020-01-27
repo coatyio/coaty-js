@@ -83,23 +83,28 @@ export interface CommonOptions {
 export interface CommunicationOptions {
 
     /**
-     * Connection Url to MQTT broker (schema 'protocol://host:port') (optional).
-     * If the `servers` option in property `mqttClientOptions` is specified this
-     * property is ignored.
+     * Namespace used to isolate different Coaty applications (optional).
+     *
+     * Communication events are only routed between agents within a common
+     * namespace.
+     *
+     * A namespace string must not contain the following characters: `NULL
+     * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
+     *
+     * If not specified or empty, a default namespace named "-" is used.
      */
-    brokerUrl?: string;
+    namespace?: string;
 
     /**
-     * Options passed to MQTT Client (see MQTT.js connect options).
+     * Determines whether to enable cross-namespace communication between agents
+     * in special use cases (optional). 
+     *
+     * If `true`, an agent receives communication events published by *any*
+     * agent in the same networking infrastructure, regardless of namespace.
+     *
+     * If not specified or `false`, this option is not enabled.
      */
-    mqttClientOptions?: any;
-
-    /**
-     * Property-value pairs to be initialized on the identity object of the
-     * communication manager (optional). For example, the `name` of the
-     * identity object can be configured here.
-     */
-    identity?: Partial<Identity>;
+    shouldEnableCrossNamespacing?: boolean;
 
     /**
      * Determines whether the communication manager should start initially
@@ -140,6 +145,19 @@ export interface CommunicationOptions {
      * specify this option as `true`.
      */
     useProtocolCompliantClientId?: boolean;
+
+    /**
+     * Connection Url to MQTT broker (schema 'protocol://host:port') (optional).
+     * If the `servers` option in property `mqttClientOptions` is specified this
+     * property is ignored.
+     */
+    brokerUrl?: string;
+
+    /**
+     * Options passed to MQTT Client (see MQTT.js connect options).
+     */
+    mqttClientOptions?: any;
+
 }
 
 /**

@@ -9,8 +9,10 @@ title: Coaty JS Documentation
 
 ## Version History
 
-* **Version 3**: for Coaty 2; remove readable topic feature; change topic
-  structure; not backward compatible with v2
+* **Version 3**: complies with Coaty 2, not backward compatible with v2
+  * remove readable topic feature
+  * change topic structure
+  * redesign IO routing
 * **Version 2**: add Call-Return pattern; backward compatible with v1
 * **Version 1**: initial specification
 
@@ -112,6 +114,8 @@ Any topic used in the framework contains the following topic levels:
 * **ProtocolVersion** - for versioning the communication protocol. The protocol
   version number conforming to this specification is shown at the top of this
   page.
+* **Namespace** - namespace used to isolate different Coaty applications.
+  Communication events are only routed between agents within a common namespace.
 * **Event** - shortcut versions of the predefined events listed above.
 * **SourceObjectID** - globally unique ID (UUID) of the event source that is
   publishing a topic. Each agent container's identity represents an event
@@ -132,16 +136,16 @@ A topic name for publication is composed as follows:
 
 ```
 // Publication of one-way event without AssociatedUserId
-coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/-
+coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/-
 
 // Publication of one-way event with AssociatedUserId
-coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/<AssociatedUserID>
+coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/<AssociatedUserID>
 
 // Publication of two-way event without AssociatedUserId
-coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/-/<CorrelationId>
+coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/-/<CorrelationId>
 
 // Publication of two-way event with AssociatedUserId
-coaty/<ProtocolVersion>/<Event>/<SourceObjectId>/<AssociatedUserID>/<CorrelationId>
+coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/<AssociatedUserID>/<CorrelationId>
 ```
 
 The ProtocolVersion topic level represents the communication protocol version of
@@ -164,6 +168,8 @@ To denote event types in the Event topic level, 3-character shortcuts are used:
 | Complete              | CPL            |
 | Call                  | CLL            |
 | Return                | RTN            |
+
+The Namespace topic level **must** specify a non-empty string.
 
 When publishing an Advertise event the Event topic level **must** include a
 filter of the form: `ADV:<filter>`. The filter must not be empty. It must not
@@ -199,17 +205,25 @@ communication client:
 
 ```
 // Subscription for one-way events (except Associate)
-coaty/<ProtocolVersion>/<Event>/+/+
+coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+
+coaty/<ProtocolVersion>/+/<Event>/+/+
 
 // Subscription for Associate events filtered by AssociatedUserId
-coaty/<ProtocolVersion>/Associate/+/<AssociatedUserId>
+coaty/<ProtocolVersion>/<Namespace>/Associate/+/<AssociatedUserId>
+coaty/<ProtocolVersion>/+/Associate/+/<AssociatedUserId>
 
 // Subscription for two-way request events
-coaty/<ProtocolVersion>/<Event>/+/+/+
+coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+/+
+coaty/<ProtocolVersion>/+/<Event>/+/+/+
 
 // Subscription for two-way response events
-coaty/<ProtocolVersion>/<Event>/+/+/<CorrelationID>
+coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+/<CorrelationID>
+coaty/<ProtocolVersion>/+/<Event>/+/+/<CorrelationID>
 ```
+
+The Namespace topic level **must** either specify a non-empty string or a
+single-level wildcard (`+`), depending on whether the agent should support
+namespacing or not.
 
 When subscribing to a response event, the Event topic level **must not** include
 an event filter.

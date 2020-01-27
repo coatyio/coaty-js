@@ -47,7 +47,7 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
         eventData: CallEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidEventTypeFilter(operation)) {
+        if (!CommunicationTopic.isValidTopicLevel(operation)) {
             throw new TypeError("in CallEvent: argument 'operation' is not a valid operation name");
         }
 

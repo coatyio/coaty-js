@@ -35,6 +35,7 @@ describe("Communication", () => {
     describe("Communication Topic", () => {
 
         const version = CommunicationManager.PROTOCOL_VERSION;
+        const namespace = "-";
         const associatedUserId = "0ea293e5-f8be-4a5d-886b-0e231e8234b2";
         const associatedUser: User = {
             name: "User+/#HHO\u0000",
@@ -49,6 +50,7 @@ describe("Communication", () => {
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
         const oneWayTopic = CommunicationTopic.createByLevels(
             version,
+            namespace,
             CommunicationEventType.Advertise,
             "CoatyObject",
             senderId,
@@ -57,6 +59,7 @@ describe("Communication", () => {
         );
         const oneWayTopicNoUser = CommunicationTopic.createByLevels(
             version,
+            namespace,
             CommunicationEventType.Advertise,
             "CoatyObject",
             senderId,
@@ -66,6 +69,7 @@ describe("Communication", () => {
         const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
         const twoWayTopic = CommunicationTopic.createByLevels(
             version,
+            namespace,
             CommunicationEventType.Discover,
             undefined,
             senderId,
@@ -74,6 +78,7 @@ describe("Communication", () => {
         );
         const twoWayTopicNoUser = CommunicationTopic.createByLevels(
             version,
+            namespace,
             CommunicationEventType.Discover,
             undefined,
             senderId,
@@ -156,26 +161,30 @@ describe("Communication", () => {
 
         it("has correct filter structure for one-way events", () => {
             const eventType = CommunicationEventType.Advertise;
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, "CoatyObject", undefined, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/ADV:CoatyObject/+/+`);
+            const topicFilter = CommunicationTopic
+                .getTopicFilter(version, namespace, eventType, "CoatyObject", undefined, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ADV:CoatyObject/+/+`);
         });
 
         it("has correct filter structure for Associate event", () => {
             const eventType = CommunicationEventType.Associate;
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, associatedUser.objectId, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/ASC/+/${associatedUserId}`);
+            const topicFilter = CommunicationTopic
+                .getTopicFilter(version, namespace, eventType, undefined, associatedUser.objectId, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ASC/+/${associatedUserId}`);
         });
 
         it("has correct filter structure for two-way request events", () => {
             const eventType = CommunicationEventType.Discover;
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, undefined, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/DSC/+/+/+`);
+            const topicFilter = CommunicationTopic
+                .getTopicFilter(version, namespace, eventType, undefined, undefined, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/DSC/+/+/+`);
         });
 
         it("has correct filter structure for two-way response events", () => {
             const eventType = CommunicationEventType.Resolve;
-            const topicFilter = CommunicationTopic.getTopicFilter(version, eventType, undefined, undefined, correlationId);
-            expect(topicFilter).toBe(`coaty/${version}/RSV/+/+/${correlationId}`);
+            const topicFilter = CommunicationTopic
+                .getTopicFilter(version, namespace, eventType, undefined, undefined, correlationId);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/+/${correlationId}`);
         });
 
     });
@@ -579,7 +588,8 @@ describe("Communication", () => {
             const eventCount = 3;
             const topicFilter1 = "/test/42/";
             const topicFilter2 = `${CommunicationTopic.PROTOCOL_NAME}/#`;
-            const topic2 = `${CommunicationTopic.PROTOCOL_NAME}/${CommunicationManager.PROTOCOL_VERSION}/ADV:CoatyObject/`;
+            /* tslint:disable-next-line:max-line-length */
+            const topic2 = `${CommunicationTopic.PROTOCOL_NAME}/foo/bar/baz`;
 
             deviceController.watchForRawEvents(logger1, topicFilter1, topicFilter1);
             deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
@@ -729,6 +739,129 @@ describe("Communication", () => {
                     expect(logger.eventData.filter(e => e.object.name === "Advertised_2").length).toBe(3);
                     expect(logger.eventData.filter(e => e.object.name === "Advertised_3").length).toBe(3);
                     expect(logger.eventData.filter(e => e.object.name === "Advertised_4").length).toBe(3);
+                });
+            });
+        }, TEST_TIMEOUT);
+
+    });
+
+    describe("Cross-Platform Communication", () => {
+
+        const TEST_TIMEOUT = 10000;
+
+        const components1: Components = {
+            controllers: {
+                MockDeviceController: mocks.MockDeviceController,
+            },
+        };
+
+        const configuration1: Configuration = {
+            common: {
+                agentIdentity: { name: "CrossNamespaceTestContainer" },
+            },
+            communication: {
+                namespace: "my-namespace-1",
+                shouldAutoStart: true,
+                shouldAdvertiseDevice: false,
+                brokerUrl: "mqtt://localhost:1898",
+            },
+            controllers: {
+                MockDeviceController: {
+                },
+            },
+        };
+
+        const components2: Components = {
+            controllers: {
+                MockObjectController: mocks.MockObjectController,
+            },
+        };
+
+        const configuration2: Configuration = {
+            common: {
+                agentIdentity: { name: "CrossNamespaceTestContainer" },
+            },
+            communication: {
+                namespace: "my-namespace-2",
+                shouldAutoStart: true,
+                shouldAdvertiseDevice: false,
+                brokerUrl: "mqtt://localhost:1898",
+            },
+            controllers: {
+                MockObjectController: {
+                    responseDelay: 0,
+                },
+            },
+        };
+
+        let container1: Container;
+        let container2: Container;
+
+        beforeAll(done => {
+            Spy.reset();
+
+            delayAction(0, done, () => {
+                container1 = Container.resolve(components1, configuration1);
+                container2 = Container.resolve(components2, configuration2);
+            });
+        });
+
+        afterAll(
+            done => {
+                container1.shutdown();
+                container2.shutdown();
+
+                Spy.reset();
+
+                delayAction(1000, done, () => {
+                    // give broker time to log output messages
+                });
+            },
+            TEST_TIMEOUT);
+
+        it("All events between different namespaces are blocked by default", (done) => {
+
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
+            const objectController = container2.getController<mocks.MockObjectController>("MockObjectController");
+            const logger: mocks.AdvertiseEventLogger = {
+                count: 0,
+                eventData: [],
+            };
+
+            deviceController.watchForAdvertiseEvents(logger);
+
+            delayAction(1000, undefined, () => {
+                objectController.publishAdvertiseEvents(1);
+
+                delayAction(1000, done, () => {
+                    expect(logger.count).toBe(0);
+                    expect(logger.eventData.length).toBe(logger.count);
+                });
+            });
+        }, TEST_TIMEOUT);
+
+        it("All events between different namespaces are delivered if cross-namespacing is enabled", (done) => {
+
+            configuration1.communication.shouldEnableCrossNamespacing = true;
+            container1.communicationManager.restart();
+
+            const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController");
+            const objectController = container2.getController<mocks.MockObjectController>("MockObjectController");
+            const logger: mocks.AdvertiseEventLogger = {
+                count: 0,
+                eventData: [],
+            };
+
+            // Observes both core type and object type, so two events are received.
+            deviceController.watchForAdvertiseEvents(logger);
+
+            delayAction(1000, undefined, () => {
+                objectController.publishAdvertiseEvents(1);
+
+                delayAction(1000, done, () => {
+                    expect(logger.count).toBe(2);
+                    expect(logger.eventData.length).toBe(logger.count);
+                    expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(2);
                 });
             });
         }, TEST_TIMEOUT);

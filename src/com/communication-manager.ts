@@ -58,9 +58,15 @@ export class CommunicationManager implements IDisposable {
      * Increment this version whenever you add new communication events or make
      * breaking changes to the communication protocol.
      */
-    static readonly PROTOCOL_VERSION: number = 3;
+    static readonly PROTOCOL_VERSION = 3;
+
+    /**
+     * Defines the default namespace used for communication.
+     */
+    static readonly DEFAULT_NAMESPACE = "-";
 
     private _options: CommunicationOptions;
+    private _namespace: string;
     private _client: Client;
     private _isClientConnected: boolean;
     private _associatedUser: User;
@@ -133,6 +139,17 @@ export class CommunicationManager implements IDisposable {
      */
     get options() {
         return this._options;
+    }
+
+    /**
+     * Gets the namespace for communication as specified in the configuration
+     * options.
+     *
+     * Returns the default namespace used, if no namespace has been specified in
+     * options.
+     */
+    get namespace() {
+        return this._namespace;
     }
 
     /**
@@ -244,7 +261,7 @@ export class CommunicationManager implements IDisposable {
      * matches the given context
      */
     observeCall(operation: string, context?: CoatyObject): Observable<CallEvent> {
-        if (!CommunicationTopic.isValidEventTypeFilter(operation)) {
+        if (!CommunicationTopic.isValidTopicLevel(operation)) {
             throw new TypeError(`${operation} is not a valid operation name`);
         }
         return (this._observeRequest(CommunicationEventType.Call, operation) as Observable<CallEvent>)
@@ -292,7 +309,7 @@ export class CommunicationManager implements IDisposable {
      * @returns an observable emitting incoming Channel events
      */
     observeChannel(channelId: string): Observable<ChannelEvent> {
-        if (!CommunicationTopic.isValidEventTypeFilter(channelId)) {
+        if (!CommunicationTopic.isValidTopicLevel(channelId)) {
             throw new TypeError(`${channelId} is not a valid channel identifier`);
         }
         return this._observeRequest(CommunicationEventType.Channel, channelId) as Observable<ChannelEvent>;
@@ -513,11 +530,7 @@ export class CommunicationManager implements IDisposable {
      * @param shouldRetain whether to publish a retained message (default false)
      */
     publishRaw(topic: string, value: string | Uint8Array, shouldRetain = false) {
-        if (typeof topic !== "string" ||
-            topic.length === 0 ||
-            topic.indexOf("\u0000") !== -1 ||
-            topic.indexOf("#") !== -1 ||
-            topic.indexOf("+") !== -1) {
+        if (!CommunicationTopic.isValidPublicationTopic(topic)) {
             throw new TypeError(`${topic} is not a valid publication topic`);
         }
         this._getPublisher(topic, value, true, shouldRetain)();
@@ -560,6 +573,7 @@ export class CommunicationManager implements IDisposable {
     createIoValueTopic(ioSource: IoSource): string {
         return CommunicationTopic.createByLevels(
             CommunicationManager.PROTOCOL_VERSION,
+            this.namespace,
             CommunicationEventType.IoValue,
             undefined,
             ioSource.objectId,
@@ -585,6 +599,12 @@ export class CommunicationManager implements IDisposable {
 
     private _initOptions(options?: CommunicationOptions) {
         options && (this._options = options);
+
+        const namespace = this._options.namespace || CommunicationManager.DEFAULT_NAMESPACE;
+        if (!CommunicationTopic.isValidTopicLevel(namespace)) {
+            throw new TypeError(`CommunicationManager: namespace '${namespace}' contains invalid characters`);
+        }
+        this._namespace = namespace;
 
         // Capture state of associated user and device in case it might change 
         // while the communication manager is being online.
@@ -967,7 +987,7 @@ export class CommunicationManager implements IDisposable {
             // Silently ignore undispatched raw messages do not conform to the
             // shape of real Coaty messages.
             if (!isDispatchedAsRaw) {
-                console.log(`CommunicationManager: failed to handle incoming message topic ${topicName}': ${error}`);
+                console.log(`CommunicationManager: ignoring incoming event on ${topicName}: ${error}`);
             }
         }
     }
@@ -1048,6 +1068,7 @@ export class CommunicationManager implements IDisposable {
         if (correlationId) {
             const responseTopic = CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION,
+                this.namespace,
                 eventType,
                 eventTypeFilter,
                 eventSourceId,
@@ -1061,6 +1082,7 @@ export class CommunicationManager implements IDisposable {
         // Publish a one-way message or a request message for a two-way event
         const topic = CommunicationTopic.createByLevels(
             CommunicationManager.PROTOCOL_VERSION,
+            this.namespace,
             eventType,
             eventTypeFilter,
             eventSourceId,
@@ -1188,6 +1210,7 @@ export class CommunicationManager implements IDisposable {
                 eventTypeFilter :
                 CommunicationTopic.getTopicFilter(
                     CommunicationManager.PROTOCOL_VERSION,
+                    this.options.shouldEnableCrossNamespacing ? undefined : this.namespace,
                     eventType,
                     eventTypeFilter,
                     (eventType === CommunicationEventType.Associate) ?
@@ -1210,6 +1233,7 @@ export class CommunicationManager implements IDisposable {
         cleanup: (item: ObservedResponseItem) => void) {
         const topicFilter = CommunicationTopic.getTopicFilter(
             CommunicationManager.PROTOCOL_VERSION,
+            this.options.shouldEnableCrossNamespacing ? undefined : this.namespace,
             eventType,
             undefined,
             undefined,
@@ -1287,6 +1311,7 @@ export class CommunicationManager implements IDisposable {
         return {
             topic: CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION,
+                this.namespace,
                 CommunicationEventType.Deadvertise,
                 undefined,
                 this._container.identity.objectId,
