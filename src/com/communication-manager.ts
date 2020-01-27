@@ -134,10 +134,9 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Gets the communication manager's options as specified in the
-     * configuration options.
+     * Gets the communication manager's current communication options.
      */
-    get options() {
+    get options(): Readonly<CommunicationOptions> {
         return this._options;
     }
 
@@ -146,7 +145,7 @@ export class CommunicationManager implements IDisposable {
      * options.
      *
      * Returns the default namespace used, if no namespace has been specified in
-     * options.
+     * configuration options.
      */
     get namespace() {
         return this._namespace;

@@ -1325,7 +1325,7 @@ const thing: Thing = {
 };
 
 // Associate communication manager's identity with thing
-thing.parentObjectId = this.communicationManager.identity.objectId;
+thing.parentObjectId = this.container.identity.objectId;
 // Publish an Advertise event for Thing object
 this.communicationManager
     .publishAdvertise(AdvertiseEvent.withObject(thing)));

@@ -15,14 +15,14 @@ export class Runtime {
     /**
      * Gets common options specified in container configuration (optional).
      */
-    get commonOptions() {
+    get commonOptions(): Readonly<CommonOptions> {
         return this._commonOptions;
     }
 
     /**
      * Gets database options specified in container configuration (optional).
      */
-    get databaseOptions() {
+    get databaseOptions(): Readonly<DatabaseOptions> {
         return this._databaseOptions;
     }
 
@@ -76,7 +76,7 @@ export class Runtime {
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
     private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
-    private static FRAMEWORK_BUILD_DATE = 1580128251609;
+    private static FRAMEWORK_BUILD_DATE = 1580149912958;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */

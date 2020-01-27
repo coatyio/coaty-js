@@ -94,7 +94,8 @@ Refactor the following definitions:
 ### Changes in `Configuration` options
 
 * The `Configuration.common` property is now optional.
-* Move extra properties on `Configuration.common` into its new `extra` property.
+* Move extra properties defined on `Configuration.common` into its new `extra`
+  property.
 * Rename `Runtime.options` to `Runtime.commonOptions`. Its value is `undefined`
   if the `Configuration.common` property is not specified.
 
@@ -154,7 +155,8 @@ Upgrade to the new approach as follows:
 * Stop expecting `ObjectLifecycleController` or your custom controllers to track
   identity of controllers. Only identity of containers can be observed or
   discovered.
-* Stop using `Controller.identity` as this getter have been removed.
+* Stop using `Controller.identity` as this getter have been removed. Use
+  `Container.identity`  instead.
 * Stop defining `Controller.initializeIdentity()` as this method has been
   removed.
 * Stop using `ControllerOptions.shouldAdvertiseIdentity` as this property has

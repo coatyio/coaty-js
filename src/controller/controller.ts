@@ -78,7 +78,7 @@ export abstract class Controller implements IController {
     /**
      * Gets the controller's options as specified in the configuration options.
      */
-    get options() {
+    get options(): Readonly<ControllerOptions> {
         return this._options;
     }
 

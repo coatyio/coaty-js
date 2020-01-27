@@ -134,8 +134,11 @@ export class Container {
 
     /**
      * Gets the identity object of this container.
+     *
+     * The identity is can be initialized in the common configuration option
+     * `agentIdentity`.
      */
-    get identity() {
+    get identity(): Readonly<Identity> {
         return this._identity;
     }
 
