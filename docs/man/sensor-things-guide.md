@@ -438,11 +438,11 @@ export class CPULoadSensorIo extends SensorIo {
 ```
 
 A Sensor then can be registered to the SensorSourceController with the method
-`registerSensor(sensor: Sensor, io: SensorIo)` at runtime. You can also define Sensors at
-configuration in the `sensors` option of SensorSourceController. This option should
-contain an array of `SensorDefinitions`. A SensorDefinition contains the Coaty
-sensor, the type of SensorIo used and optional parameters. For instance, we can add
-a sensor using the above defined CPUSensorIo as such:
+`registerSensor(sensor: Sensor, io: SensorIo)` at runtime. You can also define
+Sensors at configuration in the `sensors` option of SensorSourceController. This
+option should contain an array of `SensorDefinition`. A `SensorDefinition`
+contains the Coaty sensor, the type of SensorIo used and optional parameters.
+For instance, we can add a sensor using the above defined `CPUSensorIo` as such:
 
 ```ts
 // In controller options:
@@ -486,20 +486,23 @@ SensorIo used with it. You can access a container with
 with `registeredSensorContainers()`. You can find a sensor satisfying a
 predicate by `findSensor()`.
 
-Once a Sensor is registered, it is advertised (unless skipSensorAdvertise is
+Once a Sensor is registered, it is advertised (unless `skipSensorAdvertise` is
 set in controller options). The controller also starts to listen for Discover
-and Query events for this Sensor (unless ignoreSensorDiscoverEvents or
-ignoreSensorQueryEvents options are set in controller options). You can
-always unregister a Sensor with `unregisterSensor(sensorId: Uuid)` method. This will
-send a Deadvertise event unless skipSensorDeadvertise option is set under
+and Query events for this Sensor (unless `ignoreSensorDiscoverEvents` or
+`ignoreSensorQueryEvents` options are set in controller options). You can always
+unregister a Sensor with `unregisterSensor(sensorId: Uuid)` method. This will
+send a Deadvertise event unless `skipSensorDeadvertise` option is set under
 controller options. When a Sensor is unregistered, it is no longer resolved or
 retrieved.
 
-You can also publish observations for registered Sensors. You can decide to
-channel the observations with `publishChanneledObservation` or advertise them
-with `publishAdvertisedObservation`. The controller will use the Io interface
-for the Sensor to read the value of the sensor and create an Observation object
-with that.
+Once a sensor is registered, you can choose to automatically sample sensor data
+from its `SensorIo` and publish observations.
+
+You can also publish observations manually for registered Sensors. You can
+decide to channel the observations with `publishChanneledObservation` or
+advertise them with `publishAdvertisedObservation`. For each invocation, the
+controller will use the `SensorIo` interface of the sensor to read its current
+value and create an Observation object with that.
 
 ### Thing Observer Controller
 

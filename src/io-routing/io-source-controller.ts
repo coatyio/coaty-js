@@ -26,6 +26,7 @@ type IoSourceItems = [
 /**
  * Provides data transfer rate controlled publishing of IO values for
  * IO sources and monitoring of changes in the association state of IO sources.
+ * 
  * This controller respects the backpressure strategy of an IO source in order to
  * cope with IO values that are more rapidly produced than specified in the
  * recommended update rate.
