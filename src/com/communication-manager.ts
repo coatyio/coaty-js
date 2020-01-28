@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Client, connect, IClientPublishOptions } from "mqtt";
-import { BehaviorSubject, Observable, Subscriber, Subscription } from "rxjs";
+import { BehaviorSubject, merge, Observable, Subscriber, Subscription } from "rxjs";
 import { filter } from "rxjs/operators";
 
 import {
@@ -250,12 +250,23 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Observe Update events.
+     * Observe Update events for the given core type.
      *
+     * @param coreType core type of objects to be observed.
      * @returns an observable emitting incoming Update events
      */
-    observeUpdate(): Observable<UpdateEvent> {
-        return this._observeRequest(CommunicationEventType.Update) as Observable<UpdateEvent>;
+    observeUpdateWithCoreType(coreType: CoreType): Observable<UpdateEvent> {
+        return this._observeUpdate(coreType);
+    }
+
+    /**
+     * Observe Update events for the given object type.
+     *
+     * @param objectType object type of objects to be observed
+     * @returns an observable emitting incoming Update events
+     */
+    observeUpdateWithObjectType(objectType: string): Observable<UpdateEvent> {
+        return this._observeUpdate(undefined, objectType);
     }
 
     /**
@@ -450,8 +461,8 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Request or propose partial or full update of the specified object and
-     * receive accomplishments.
+     * Request or propose an update of the specified object and receive
+     * accomplishments.
      *
      * Note that the Update event is lazily published when the first observer
      * subscribes to the observable.
@@ -466,7 +477,23 @@ export class CommunicationManager implements IDisposable {
      * @returns an observable of associated Complete events
      */
     publishUpdate(event: UpdateEvent): Observable<CompleteEvent> {
-        return this._publishClient(event) as Observable<CompleteEvent>;
+        const coreType = event.data.object.coreType;
+        const objectType = event.data.object.objectType;
+
+        // Publish event with core type filter to satisfy core type observers.
+        const coreCompletes = this._publishClient(event, coreType);
+
+        // Publish event with object type filter to satisfy object type
+        // observers unless the updated object is a core object with a core
+        // object type. In this case, object type observers subscribe on the
+        // core type followed by a local filter operation to filter out unwanted
+        // objects (see `observeUpdate`).
+        if (CoreTypes.getObjectTypeFor(coreType) !== objectType) {
+            return merge(
+                this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType),
+                coreCompletes) as Observable<CompleteEvent>;
+        }
+        return coreCompletes as Observable<CompleteEvent>;
     }
 
     /**
@@ -1435,6 +1462,30 @@ export class CommunicationManager implements IDisposable {
         return this._observeRequest(
             CommunicationEventType.Advertise,
             coreType || CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType) as Observable<AdvertiseEvent>;
+    }
+
+    private _observeUpdate(coreType?: CoreType, objectType?: string) {
+        if (coreType && !CoreTypes.isCoreType(coreType)) {
+            throw new TypeError(`${coreType} is not a CoreType`);
+        }
+
+        // Optimization: in case core objects should be observed by their object
+        // type, we do not subscribe on the object type filter but on the core
+        // type filter instead, filtering out objects that do not satisfy the
+        // core object type. (see `publishUpdate`).
+        if (objectType) {
+            const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
+            if (objectCoreType) {
+                return (this._observeRequest(
+                    CommunicationEventType.Update,
+                    objectCoreType) as Observable<UpdateEvent>)
+                    .pipe(filter(event => event.data.object.objectType === objectType));
+            }
+        }
+
+        return this._observeRequest(
+            CommunicationEventType.Update,
+            coreType || CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType) as Observable<UpdateEvent>;
     }
 
     private _observeAssociate() {

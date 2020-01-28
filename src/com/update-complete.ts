@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes, Uuid } from "..";
+import { CoatyObject, CoreTypes } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
 
 /**
@@ -20,40 +20,23 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     complete: (event: CompleteEvent) => void;
 
     /**
-     * Create an UpdateEvent instance for the given partial update.
+     * Create an UpdateEvent instance for the given object.
      * 
-     * @param objectId the UUID of the object to be updated (partial update)
-     * @param changedValues Object hash for properties that have changed or should be changed (partial update)
-     * @param object the object to be updated (for full updates)
+     * @param object the object with properties to be updated
      */
-    static withPartial(objectId: Uuid, changedValues: { [property: string]: any; }) {
-        return new UpdateEvent(new UpdateEventData(objectId, changedValues));
-    }
-
-    /**
-     * Create an UpdateEvent instance for the given full update.
-     * 
-     * @param object the full object to be updated
-     */
-    static withFull(object: CoatyObject) {
-        return new UpdateEvent(new UpdateEventData(undefined, undefined, object));
+    static withObject(object: CoatyObject) {
+        return new UpdateEvent(new UpdateEventData(object));
     }
 
     /**
      * @internal For internal use in framework only.
-     * 
-     * Throws an error if the given Complete event data does not correspond to 
+     *
+     * Throws an error if the given Complete event data does not correspond to
      * the event data of this Update event.
      * @param eventData event data for Complete response event
      */
     ensureValidResponseParameters(eventData: CompleteEventData) {
-        if (this.data.isPartialUpdate &&
-            this.data.objectId !== eventData.object.objectId) {
-            throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
-        }
-
-        if (this.data.isFullUpdate &&
-            this.data.object.objectId !== eventData.object.objectId) {
+        if (this.data.object.objectId !== eventData.object.objectId) {
             throw new TypeError("object ID of Complete event doesn't match object ID of Update event");
         }
     }
@@ -65,61 +48,19 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
 export class UpdateEventData extends CommunicationEventData {
 
     /**
-     * The UUID of the object to be updated (for partial updates only)
-     */
-    get objectId() {
-        return this._objectId;
-    }
-
-    /**
-     * Key value pairs for properties that have changed or should be changed
-     * (accessible by indexer). For partial updates only.
-     */
-    get changedValues() {
-        return this._changedValues;
-    }
-
-    /**
-     * The object to be updated (for full updates only).
+     * The object the object with properties to be updated.
      */
     get object() {
         return this._object;
     }
 
     /**
-     * Determines wheher this event data defines a partial update.
-     */
-    get isPartialUpdate() {
-        return this._objectId !== undefined;
-    }
-
-    /**
-     * Determines wheher this event data defines a full update.
-     */
-    get isFullUpdate() {
-        return this._object !== undefined;
-    }
-
-    private _objectId: Uuid;
-    private _changedValues: { [property: string]: any; };
-    private _object: CoatyObject;
-
-    /**
      * Create a new UpdateEventData instance.
      *
-     * @param objectId The UUID of the object to be updated (for partial updates)
-     * @param changedValues Object hash for properties that have changed or should be changed (for partial updates)
-     * @param object the object to be updated (for full updates)
+     * @param object the object with properties to be updated
      */
-    constructor(
-        objectId?: Uuid,
-        changedValues?: { [property: string]: any; },
-        object?: CoatyObject) {
+    constructor(private _object: CoatyObject) {
         super();
-
-        this._objectId = objectId;
-        this._changedValues = changedValues;
-        this._object = object;
 
         if (!this._hasValidParameters()) {
             throw new TypeError("in UpdateEventData: arguments not valid");
@@ -128,30 +69,15 @@ export class UpdateEventData extends CommunicationEventData {
 
     /** @internal For internal use in framework only. */
     static createFrom(eventData: any): UpdateEventData {
-        return new UpdateEventData(
-            eventData.objectId,
-            eventData.changedValues,
-            eventData.object);
+        return new UpdateEventData(eventData.object);
     }
 
     toJsonObject() {
-        return {
-            objectId: this._objectId,
-            changedValues: this._changedValues,
-            object: this._object,
-        };
+        return { object: this._object };
     }
 
     private _hasValidParameters(): boolean {
-        return (typeof this._objectId === "string" &&
-            this._objectId.length > 0 &&
-            this._changedValues &&
-            typeof this._changedValues === "object" &&
-            this._object === undefined) ||
-            (this._objectId === undefined &&
-                this._changedValues === undefined &&
-                CoreTypes.isObject(this._object)
-            );
+        return CoreTypes.isObject(this._object);
     }
 }
 

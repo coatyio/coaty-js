@@ -6,6 +6,7 @@
 
 import {
     ChannelEvent,
+    CoatyObject,
     CommunicationManager,
     CommunicationState,
     Components,
@@ -299,15 +300,23 @@ describe("Communication", () => {
         it("throws on resubscription for response events", (done) => {
             let isResubOkay = false;
             let isResubError = false;
-            const obs = container2.communicationManager
-                .publishUpdate(UpdateEvent.withPartial("7d6dd7e6-4f3d-4cdf-92f5-3d926a55663d", { foo: 1 }));
-            const subscription = obs.subscribe(event => event);
-            subscription.unsubscribe();
-            obs.subscribe(
-                event => { isResubOkay = true; },
-                error => { isResubError = true; });
+            const myFooObject: CoatyObject = {
+                objectId: "77f43e72-1d1e-415d-ab91-079ef2dfb06b",
+                name: "Foo",
+                coreType: "CoatyObject",
+                objectType: "coaty.test.MockObject",
+            };
+            const obs = container2.communicationManager.publishUpdate(UpdateEvent.withObject(myFooObject));
+            let completedObject: CoatyObject;
+            const subscription = obs.subscribe(event => completedObject = event.data.object);
 
             delayAction(responseDelay, done, () => {
+                subscription.unsubscribe();
+                obs.subscribe(
+                    event => { isResubOkay = true; },
+                    error => { isResubError = true; });
+
+                expect(completedObject).toEqual(myFooObject);
                 expect(isResubOkay).toBeFalsy();
                 expect(isResubError).toBeTruthy();
             });

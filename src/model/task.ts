@@ -51,6 +51,11 @@ export interface Task extends CoatyObject {
     coreType: "Task";
 
     /**
+     * Status of task
+     */
+    status: TaskStatus;
+
+    /**
      * Object ID of user who created the task
      */
     creatorId: Uuid;
@@ -88,11 +93,6 @@ export interface Task extends CoatyObject {
      * take or should took to complete (optional).
      */
     duration?: number;
-
-    /**
-     * Status of task
-     */
-    status: TaskStatus;
 
     /**
      * Required competencies, roles, etc. needed to fulfill this task

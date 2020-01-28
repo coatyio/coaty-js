@@ -612,7 +612,7 @@ container.shutdown();
 The shutdown method first shuts down all container controllers by invoking the
 component's `onDispose` method (in arbitrary order). Finally, the Communication
 Manager's `onDispose` method is called which unsubscribes all subscriptions and
-disconnects the messaging client from the MQTT message broker.
+disconnects the agent from the communication infrastructure.
 
 After invoking shutdown, the container and its components are no longer usable.
 
@@ -715,8 +715,9 @@ onCommunicationManagerStarting()
 onCommunicationManagerStopping()
 ```
 
-Usually, in the starting method, RxJS subscriptions for incoming communication events
-are set up; whereas in the stopping method these subscriptions should be unsubscribed.
+Usually, in the starting method, RxJS subscriptions for incoming communication
+events are set up; whereas in the stopping method these subscriptions should be
+unsubscribed.
 
 > Ensure you always call the corresponding super method in your overridden method.
 
@@ -1154,12 +1155,14 @@ well and don’t leak. A detailed explanation is given
 
 ### Observing events
 
-Use any of the `observeDiscover`, `observeQuery`, `observeUpdate`, `observeCall`,
-`observeAdvertiseWithCoreType`, `observeAdvertiseWithObjectType`, `observeDeadvertise`,
-`observeChannel`, or `observeAssociate` methods to observe incoming request events
-in your agent. For `observeDiscover`, `observeQuery`, `observeUpdate`, or `observeCall`,
-invoke the `resolve`, `retrieve`, `complete`, or `returnEvent` method on the received
-event object to send a response event.
+Use any of the `observeDiscover`, `observeQuery`, `observeUpdateWithCoreType`,
+`observeUpdateWithObjectType`, `observeCall`, `observeAdvertiseWithCoreType`,
+`observeAdvertiseWithObjectType`, `observeDeadvertise`, `observeChannel`, or
+`observeAssociate` methods to observe incoming request events in your agent. For
+`observeDiscover`, `observeQuery`, `observeUpdateWithCoreType`,
+`observeUpdateWithObjectType`, or `observeCall`, invoke the `resolve`,
+`retrieve`, `complete`, or `returnEvent` method on the received event object to
+send a response event.
 
 > Note that there is no guarantee that response events are ever delivered by the
 > Discover, Query, Update, and Call communication patterns. Depending on your system
@@ -1185,8 +1188,9 @@ deferred publications and subscriptions will be discarded.
 
 > In your controller classes we recommend to subscribe to observe methods when
 > the Communication Manager is (re)starting and unsubscribe from observe methods
-> when the Communication Manager is stopping. Use the controller lifecycle
-> methods `onCommunicationManagerStarted` and `onCommunicationManagerStopped` to
+> *as soon as* they are no longer needed, latest when the Communication Manager
+> is stopping. Use the controller lifecycle methods
+> `onCommunicationManagerStarted` and `onCommunicationManagerStopped` to
 > implement this subscription pattern.
 
 ### Namespacing
@@ -1549,40 +1553,37 @@ this.communicationManager
 
 ### Update - Complete event pattern - an example
 
-The Update-Complete pattern is used to update and synchronize object state across agents.
-An agent can request or suggest an object update and receive accomplishments by Complete events.
+The Update-Complete pattern is used to update and synchronize object state
+across agents. An agent can request or suggest an object update and receive
+accomplishments by Complete events.
 
-An Update request or proposal for a Coaty object may be either *partial* or *full*.
+An Update request or proposal specifies an entire Coaty object as event data.
 
-For a *partial* update, the object id and the property name-value pairs that
-change are specified as event data. The interpretation of the new value for a
-property depends on the application context: For example, if the new value is not a
-primitive value, but an object consisting of attribute-value pairs, the update operation
-could be interpreted as a partial or a full update on this value object. Also, the
-interpretation of the property name itself depends on the application context. For
-example, the name could specify a chain of property/subproperty names to support
-updating values of a subproperty object on any level (e.g.
-`<property>.<subproperty>.<subsubproperty>`). It could also be a virtual property
-that is *not* even defined in the associated object.
+An Update event signal accomplishment by responding with a Complete event with
+the entire (usually changed) object as event data. This approach avoids complex
+merging operations of incremental change deltas in the agents. Since objects are
+treated as immutable entities on the agent this approach is in line.
 
-For a *full* update, the entire Coaty object is specified as event data.
-
-Both partial and full Update events signal accomplishment by sending back
-a Complete event with the entire (usually changed) object as event data.
-This approach avoids complex merging operations of incremental change deltas in
-the client. Since objects are treated as immutable entities on the client
-this approach is in line.
+The Update-Complete pattern can also be used to propose potential object
+changes. Observes can then express how to accept the proposal by responding with
+a Complete event with modified properties.
 
 ```ts
-import { filter, take, map } from "rxjs/operators";
+import { take, map } from "rxjs/operators";
 
-// Publish a partial Update event on a finished task object and observe first
-// Complete event response from the persistent storage agent.
+// Publish an Update event on a finished task object and observe first
+// Complete event response from a persistent storage agent.
 this.communicationManager.publishUpdate(
-        UpdateEvent.withPartial(taskObjectId,
-        {
-            status: TaskStatus.Done,
-            doneTimestamp: Date.now(),
+        UpdateEvent.withObject({
+                objectId: "ea71320b-ac1b-45b1-abb1-8298d21e7f63",
+                name: "MyTask",
+                coreType: "Task",
+                objectType: "mycompany.MyTask",
+                creatorId: "b3aa27ae-deca-4e52-ab43-30c4c220e46e",
+                creationTimestamp: ...,
+                status: TaskStatus.Done,
+                doneTimestamp: Date.now(),
+            }
         }))
     .pipe(
         // Unsubscribe automatically after first response event arrives.
@@ -1595,16 +1596,17 @@ this.communicationManager.publishUpdate(
         });
 
 // The persistent storage agent observes task updates and stores
-// the changed property values in a database. Afterwards, it responds
-// with a Complete event which contains the fully updated object.
+// the changed object in a database. Afterwards, it responds
+// with a Complete event containing the updated object.
 this.communicationManager.observeUpdate()
-    .pipe(filter(event => event.data.isPartialUpdate))
     .subscribe(event => {
-        const task = this.getTaskWithIdFromDb(event.data.objectId);
-        if (task !== undefined) {
-            this.updateTaskWithIdinDb(task.objectId, event.data.changedValues);
-            event.complete(CompleteEvent.withObject(task));
-        }
+        const task = event.data.object;
+
+        // Update task in database.
+        ...
+
+        // Signal completion.
+        event.complete(CompleteEvent.withObject(task));
     });
 ```
 

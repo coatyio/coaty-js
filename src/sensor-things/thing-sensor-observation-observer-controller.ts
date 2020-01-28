@@ -100,8 +100,8 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
      * Registered sensor objects are augmented by a property `thing` which
      * references the associated `Thing` object.
      *
-     * Emitted sensor objects are read-only. If you need to manipulate one, e.g.
-     * to delete the `thing` property, clone the object first (using `clone()`
+     * Emitted sensor objects are read-only. If you need to modify one, e.g. to
+     * delete the `thing` property, clone the object first (using `clone()`
      * function in `@coaty/core`).
      */
     get registeredSensorsChangeInfo$() {

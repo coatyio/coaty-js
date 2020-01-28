@@ -9,6 +9,7 @@ import {
     ChannelEvent,
     ChannelEventData,
     CoatyObject,
+    CompleteEvent,
     ContextFilter,
     Controller,
     CoreTypes,
@@ -109,6 +110,9 @@ export class MockObjectController extends Controller {
         super.onInit();
 
         this._handleDiscoverEvents();
+
+        this.communicationManager.observeUpdateWithObjectType("coaty.test.MockObject")
+            .subscribe(event => event.complete(CompleteEvent.withObject(event.data.object)));
     }
 
     publishAdvertiseEvents(count: number) {

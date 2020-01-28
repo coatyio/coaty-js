@@ -96,6 +96,9 @@ Refactor the following definitions:
 * The `Configuration.common` property is now optional.
 * Move extra properties defined on `Configuration.common` into its new `extra`
   property.
+* Stop defining `Configuration.common.associatedUser` and
+  `Configuration.common.associatedDevice` as these properties have been
+  removed. For details, see section "Changes in IO routing".
 * Rename `Runtime.options` to `Runtime.commonOptions`. Its value is `undefined`
   if the `Configuration.common` property is not specified.
 
@@ -152,15 +155,14 @@ Upgrade to the new approach as follows:
   Instead, use `Container.identity` to access the container's identity object.
 * Stop configuring identity properties in `CommunicationOptions.identity` as
   this property has been removed. Instead, customize properties of the
-  container's identity object, usually its name, in the new
-  `CommonOptions.agentIdentity` property.
+  container's identity object in the new `CommonOptions.agentIdentity` property.
 * Stop using `CommunicationOptions.shouldAdvertiseIdentity` as this property has
   been removed.
 * Stop expecting `ObjectLifecycleController` or your custom controllers to track
-  identity of controllers. Only identity of containers can be observed or
+  the identity of controllers. Only identity of containers can be observed or
   discovered.
 * Stop using `Controller.identity` as this getter have been removed. Use
-  `Container.identity`  instead.
+  `Container.identity` instead.
 * Stop defining `Controller.initializeIdentity()` as this method has been
   removed.
 * Stop using `ControllerOptions.shouldAdvertiseIdentity` as this property has
@@ -201,7 +203,7 @@ this.communicationManager.observeDiscover()
 * Stop using `CommunicationOptions.useReadableTopics` as this property has been
   removed. This feature is no longer supported.
 
-### Changes in communication protocol
+### Changes in communication protocol and events
 
 * The MQTT topic structure has been optimized. Your application code is not
   affected by this change.
@@ -221,18 +223,38 @@ this.communicationManager.observeDiscover()
 * `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
   communication event types.
 
+We abandon *partial* Update events in favor of full Update events where you can
+choose to observe Update events for a specific core type or object type,
+analogous to Advertise events. This optimizes messaging traffic because Update
+events are no longer submitted to all Update event observers but only to the
+ones interested in a specific type of object.
+
+* Stop publishing partial Update events using `UpdateEvent.withPartial()`.
+  Replace them by full Update events.
+* Stop using `UpdateEventData.isPartialUpdate()`,
+  `UpdateEventData.isFullUpdate()`, and `UpdateEventData.objectId` and
+  `UpdateEventData.changedProperties` getters.
+* Stop publishing full Update events using `UpdateEvent.withFull()`. Use
+  `UpdateEvent.withObject()` instead.
+* Stop observing Update events with `CommunicationManager.observeUpdate()`. Use
+  either `CommunicationManager.observeUpdateWithCoreType()` or
+  `CommunicationManager.observeUpdateWithObjectType()`.
+
 ### Changes in Sensor Things
 
 * You can now call `SensorSourceController.findSensor(predicate)` to look up a
-  registered sensor satisfying a predicate.
+  registered sensor satisfying a certain predicate.
 * Sensor objects emitted by `SourceCodeController.registeredSensorsChangeInfo$`
-  are read-only. If you need to manipulate one, clone the object first (using
+  are read-only. If you need to modify one, clone the object first (using
   `clone()` function in `@coaty/core`).
 
 ### Changes in Database Adapters
 
+Registration of database adpaters has been simplified: You can register them as
+container components, like controllers.
+
 * Stop registering your adapters with `DbAdapterFactory.registerAdapter()`.
-  Instead, register adapters as container components using the new
+* Register adapters as container components using the new
   [`Components.dbAdapters`](https://coatyio.github.io/coaty-js/man/developer-guide/#persistent-storage-and-retrieval-of-coaty-objects)
   property.
 

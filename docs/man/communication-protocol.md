@@ -11,7 +11,8 @@ title: Coaty JS Documentation
 
 * **Version 3**: complies with Coaty 2, not backward compatible with v2
   * remove readable topic feature
-  * change topic structure
+  * change topic structure and topic filters
+  * change topic and payload of Update event (removing partial updates)
   * redesign IO routing
 * **Version 2**: add Call-Return pattern; backward compatible with v1
 * **Version 1**: initial specification
@@ -182,6 +183,16 @@ subscriptions on both types of filters every Advertise event should be published
 twice, once for the core type and once for the object type of the object to be
 advertised.
 
+When publishing an Advertise event the Event topic level **must** include a
+filter of the form: `UPD:<filter>`. The filter must not be empty. It must not
+contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and `/
+(U+002F)`. Framework implementations specify the core type (`UPD:<coreType>`) or
+the object type (`UPD::<objectType>`) of the updated object (see section [Topic
+Payloads](#topic-payloads)) as filter in order to allow subscribers to listen
+just to objects of a specific core or object type. To support subscriptions on
+both types of filters every Update event should be published twice, once for the
+core type and once for the object type of the object to be updated.
+
 When publishing a Channel event the Event topic level **must** include a channel
 identifier of the form: `CHN:<channelId>`. The channel ID must not be empty. It
 must not contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and
@@ -200,8 +211,7 @@ include a filter field.
 ## Topic Filters
 
 Each communication client must subscribe to topics according to the defined
-topic structure. These subscriptions should be kept for the lifetime of the
-communication client:
+topic structure:
 
 ```
 // Subscription for one-way events (except Associate)
@@ -221,6 +231,12 @@ coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+/<CorrelationID>
 coaty/<ProtocolVersion>/+/<Event>/+/+/<CorrelationID>
 ```
 
+These subscriptions, especially response subscriptions, should be unsubscribed
+as soon as they are no longer needed by the agent. Since Coaty uses Reactive
+Programming `Observables` to observe communication events, subscription topics
+should be unsubscribed whenever the corresponding observable is unsubscribed by
+the application.
+
 The Namespace topic level **must** either specify a non-empty string or a
 single-level wildcard (`+`), depending on whether the agent should support
 namespacing or not.
@@ -233,6 +249,9 @@ the Advertise filter: `ADV:<filter>` or `ADV::<filter>`.
 
 When subscribing to a Channel event, the Event topic level **must** include the
 channel ID: `CHN:<channelId>`.
+
+When subscribing to an Update event, the Event topic level **must** include
+the Update filter: `UPD:<filter>` or `UPD::<filter>`.
 
 When subscribing to a Call event, the Event topic level **must** include the
 operation name: `CLL:<operationname>`.
@@ -519,30 +538,9 @@ options in the form of an object hash (key-value pairs).
 
 ### Payloads for Update - Complete Event
 
-The Update-Complete pattern is used to update and synchronize object state across
-agents. An Update request or proposal for a Coaty object may be either *partial*
-or *full*.
-
-For a *partial* update, the object id and the property name-value pairs that
-change are specified as payload:
-
-```js
-{
-  "objectId": UUID,
-  "changedValues": { "<name of prop>": <newValue>, ... }
-}
-```
-
-The interpretation of the new value for a property depends on the application
-context: For example, if the new value is not a primitive value, but an object
-consisting of attribute-value pairs, the update operation could be interpreted
-as a partial or a full update on this value object. Also, the interpretation
-of the property name itself depends on the application context. For example, the name
-could specify a chain of property/subproperty names to support updating values
-of a subproperty object on any level (e.g. `<property>.<subproperty>.<subsubproperty>`).
-It could also be a virtual property that is *not* even defined in the associated object.
-
-For a *full* update, the entire Coaty object is specified as payload:
+The Update-Complete pattern is used to update and synchronize object state
+across agents. An Update request or proposal specifies an entire Coaty object as
+payload:
 
 ```js
 {
@@ -550,11 +548,10 @@ For a *full* update, the entire Coaty object is specified as payload:
 }
 ```
 
-Both partial and full Update events signal accomplishment by sending back
-a Complete event with the entire (usually changed) object in the payload.
-This approach avoids complex merging operations of incremental change deltas in
-the client. Since objects are treated as immutable entities on the client
-this approach is in line.
+An Update event signals accomplishment by responding with a Complete event with
+the entire (usually changed) object in the payload. This approach avoids complex
+merging operations of incremental change deltas in the agents. Since objects are
+treated as immutable entities on the agent this approach is in line.
 
 The payload for the Complete response event looks like the following:
 

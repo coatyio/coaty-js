@@ -104,17 +104,20 @@ export class CommunicationTopic {
             if ((eventType === CommunicationEventType.Advertise || eventType === CommunicationEventType.Channel) && !eventTypeFilter) {
                 throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
             }
-            if ((eventType !== CommunicationEventType.Advertise && eventType !== CommunicationEventType.Channel) && eventTypeFilter) {
+            if (eventType !== CommunicationEventType.Advertise && eventType !== CommunicationEventType.Channel && eventTypeFilter) {
                 throw new Error(`Communication topic has event filter for ${eventTypeKey} event`);
             }
         } else {
             if (!corrId) {
                 throw new Error(`Communication topic missing correlation id for two-way event: ${eventTypeKey}`);
             }
-            if ((eventType === CommunicationEventType.Call) && !eventTypeFilter) {
+            if (eventType === CommunicationEventType.Call && !eventTypeFilter) {
                 throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
             }
-            if ((eventType !== CommunicationEventType.Call) && eventTypeFilter) {
+            if (eventType === CommunicationEventType.Update && !eventTypeFilter) {
+                throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
+            }
+            if (eventType !== CommunicationEventType.Call && eventType !== CommunicationEventType.Update && eventTypeFilter) {
                 throw new Error(`Communication topic has event filter for ${eventTypeKey} event`);
             }
         }
