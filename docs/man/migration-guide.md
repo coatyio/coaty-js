@@ -217,6 +217,11 @@ this.communicationManager.observeDiscover()
   only routed between agents within a common namespace. This feature is
   backward-compatible with Coaty 1.
 
+### Changes in Sensor Things
+
+* You can now call `SensorSourceController.findSensor(predicate)` to look up a
+  registered sensor satisfying a predicate.
+
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a
 [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).

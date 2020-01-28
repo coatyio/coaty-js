@@ -51,7 +51,7 @@ export type ObservationPublicationType =
  * Static definition of a sensor for use in SensorController.
  *
  * This is used in the options of the controller to register the sensors
- * directly at creation. The 'sensors' option of the SensorController should
+ * directly at creation. The `sensors` option of the SensorController should
  * contain an array of SensorDefinitions.
  *
  * Each definition should contain the Sensor object, the hardware pin that it is
@@ -75,8 +75,8 @@ export interface SensorDefinition {
     /**
      * The type of the IO handling used for this sensor. 
      *
-     * You can use predefined ones such as 'Aio', 'InputGpio', 'OuputGpio' or
-     * define your own class. You can also use 'MockSensorIo' if you don't have
+     * You can use predefined ones such as `Aio`, `InputGpio`, `OuputGpio` or
+     * define your own class. You can also use `MockSensorIo` if you don't have
      * any actual hardware connection.
      */
     io: ISensorIoStatic<SensorIo>;
@@ -129,7 +129,7 @@ export interface SensorContainer {
  *
  * You can either register the Sensors manually by calling registerSensor method
  * or do it automatically from the controller options by defining your Sensors
- * in a SensorDefinition array given in the 'sensors' option of the controller.
+ * in a SensorDefinition array given in the `sensors` option of the controller.
  *
  * SensorSourceController also takes some other options (they all default to
  * false):
@@ -198,7 +198,7 @@ export class SensorSourceController extends Controller {
     /**
      * Returns the sensor container associated with the given Sensor objectId.
      *
-     * If no such container exists then 'undefined' is returned.
+     * If no such container exists then `undefined` is returned.
      */
     getSensorContainer(sensorId: Uuid): SensorContainer {
         return this._sensors.get(sensorId);
@@ -207,7 +207,7 @@ export class SensorSourceController extends Controller {
     /**
      * Returns the Sensor associated with the given Sensor objectId.
      *
-     * If no such sensor exists then 'undefined' is returned.
+     * If no such sensor exists then `undefined` is returned.
      */
     getSensor(sensorId: Uuid): Sensor {
         const container = this._sensors.get(sensorId);
@@ -216,7 +216,7 @@ export class SensorSourceController extends Controller {
 
     /**
      * Returns the sensor IO interface associated with the given Sensor objectId.
-     * If no such sensor IO exists then 'undefined' is returned.
+     * If no such sensor IO exists then `undefined` is returned.
      */
     getSensorIo(sensorId: Uuid): SensorIo {
         const container = this._sensors.get(sensorId);
@@ -248,12 +248,32 @@ export class SensorSourceController extends Controller {
     }
 
     /**
+     * Returns the first registered sensor where the given predicate is true,
+     * `undefined` otherwise.
+     *
+     * @param predicate findSensor calls predicate once in arbitrary order for
+     * each registered sensor, until it finds one where predicate returns true.
+     * If such a sensor is found, that sensor is returned immediately.
+     * Otherwise, undefined is returned
+     * @returns the first sensor matching the predicate; otherwise `undefined`
+     */
+    findSensor(predicate: (sensor: Sensor) => boolean) {
+        let found: Sensor;
+        this._sensors.forEach(container => {
+            if (!found && predicate(container.sensor)) {
+                found = container.sensor;
+            }
+        });
+        return found;
+    }
+
+    /**
      * Registers a Sensor to this controller along with its IO handler
      * interface.
      *
      * You can call this function at runtime or register sensors automatically
      * at the beginning by passing them in the controller options under
-     * 'sensors' as a SensorDefinition array.
+     * `sensors` as a SensorDefinition array.
      *
      * If a Sensor with the given objectId already exists, this method is simply
      * ignored.
@@ -268,8 +288,8 @@ export class SensorSourceController extends Controller {
      * an observation automatically.
      *
      * @param sensor Sensor to register to the controller.
-     * @param io IO handler interface for the sensor. This could be an 'Aio',
-     * 'InputGpio', 'OutputGpio', 'MockSensorIo' or a custom handler.
+     * @param io IO handler interface for the sensor. This could be an `Aio`,
+     * `InputGpio`, `OutputGpio`, `MockSensorIo` or a custom handler.
      * @param observationPublicationType Whether and how the observations of the
      * sensor should be published.
      * @param samplingInterval If the observations are published automatically,

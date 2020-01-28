@@ -479,11 +479,12 @@ a sensor using the above defined CPUSensorIo as such:
 }
 ```
 
-When a Sensor is registered, SensorSourceController contains the Sensors in
-its memory in SensorContainers, which contain both the Coaty Sensor object
-and the SensorIo used with it. You can access a container with
+When a Sensor is registered, SensorSourceController contains the Sensors in its
+memory in SensorContainers, which contain both the Coaty Sensor object and the
+SensorIo used with it. You can access a container with
 `getSensorContainer(sensorId: Uuid)` method. You can also find all containers
-with `registeredSensorContainers()`.
+with `registeredSensorContainers()`. You can find a sensor satisfying a
+predicate by `findSensor()`.
 
 Once a Sensor is registered, it is advertised (unless skipSensorAdvertise is
 set in controller options). The controller also starts to listen for Discover
