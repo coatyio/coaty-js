@@ -328,7 +328,7 @@ const components: Components = {
         ProductionOrderController,
         SupportTaskController,
         WorkflowController
-    }
+    },
 };
 ```
 
@@ -368,19 +368,7 @@ const configuration: Configuration = {
             ...
         },
     },
-    databases: {
-        // Options to configure database access
-        database1: {
-            adapter: ... ,
-            adapterOptions: ... ,
-            connectionString: ... ,
-            connectionOptions: ... ,
-        },
-        database2: {
-            ...
-        },
-        ...
-    }
+    ...
 };
 ```
 
@@ -2146,10 +2134,17 @@ to the value of the `adapter` property specified in the connection info
 of the database configuration.
 
 ```ts
-import { DbAdapterFactory } from "@coaty/core/db";
+import { Components } from "@coaty/core";
 import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
-DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
+const components: Components = {
+    controller: {
+        ...
+    },
+    dbAdapters: {
+        "PostgresAdapter": PostgresAdapter,
+    },
+};
 
 const container = Container.resolve(...);
 ```
@@ -2162,21 +2157,18 @@ in sequence. A database context object can be short-lived but you
 can also use it for the lifetime of your container by storing it as an
 instance member in a controller.
 
-We recommend to register database adapters **before** resolving the Container
-so that controllers within the container can instantiate database contexts
-in their `onInit` method.
-
 A database context object is created with the connection information specified
-in the configuration. Optionally, you can specify the adapter constructor
-function for the connection info's adapter as a second argument. In this case,
-you don't need to register the adapter explicitely as explained above:
+in the configuration:
 
 ```ts
 import { DbContext } from "@coaty/core/db";
-import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
+// Adapter type is registered with container components.
 const dbContext1 = new DbContext(this.runtime.databaseOptions["mydb1"]);
 
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
+
+// Alternative: Register adapter type on first use.
 const dbContext2 = new DbContext(this.runtime.databaseOptions["mydb1"], PostgresAdapter);
 ```
 
@@ -2625,10 +2617,14 @@ class.
 Finally, the Postgres adapter must be registered before use:
 
 ```ts
-import { DbAdapterFactory } from "@coaty/core/db";
 import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
-DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
+const components: Components = {
+    ...
+    dbAdapters: {
+        PostgresAdapter,
+    },
+};
 ```
 
 The Postgres adapter supports both SQL and NoSQL operations as well as extension
@@ -2653,7 +2649,15 @@ The following example shows how to initialize a database (i.e. create a database
 database user, and add collections) at program startup with the PostgreSQL adapter:
 
 ```ts
-import { Configuration } from "@coaty/core";
+import { Components, Configuration } from "@coaty/core";
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
+
+const components: Components = {
+    ...
+    dbAdapters: {
+        PostgresAdapter,
+    },
+};
 
 const configuration: Configuration = {
     ...
@@ -2673,9 +2677,8 @@ const configuration: Configuration = {
 };
 
 import { DbContext } from "@coaty/core/db";
-import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
-const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"], PostgresAdapter);
+const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"]);
 
 // Set up a Postgres database by creating a database user and a database with
 // two collections named "mycollection1" and "mycollection2".
@@ -2716,9 +2719,16 @@ automatically created in-memory the first time you are creating a `DbContext` on
 The following example shows how to create and use a database with the `InMemoryAdapter`:
 
 ```ts
-import { Configuration } from "@coaty/core";
+import { Components, Configuration } from "@coaty/core";
 import { DbContext } from "@coaty/core/db";
 import { InMemoryAdapter } from "@coaty/core/db/adapter-in-memory";
+
+const components: Components = {
+    ...
+    dbAdapters: {
+        InMemoryAdapter,
+    },
+};
 
 const configuration: Configuration = {
     ...
@@ -2730,7 +2740,7 @@ const configuration: Configuration = {
     }
 };
 
-const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"], InMemoryAdapter);
+const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"]);
 
 dbContext.addCollection("appusers")
     .then(() => dbContext.insertObjects("appusers", <newObjects>))
@@ -2770,11 +2780,17 @@ To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { Configuration } from "@coaty/core";
-import { DbAdapterFactory, DbLocalContext } from "@coaty/core/db";
+import { Components, Configuration } from "@coaty/core";
+import { DbLocalContext } from "@coaty/core/db";
 import { SqLiteNodeAdapter } from "@coaty/core/db/adapter-sqlite-node";
 
-// Specify adapter in configuration
+const components: Components = {
+    ...
+    dbAdapters: {
+        SqLiteNodeAdapter,
+    },
+};
+
 const configuration: Configuration = {
     communication: {
         ...
@@ -2792,11 +2808,7 @@ const configuration: Configuration = {
     }
 };
 
-// Register adapter explicitely or
-DbAdapterFactory.registerAdapter("SqLiteNodeAdapter", SqLiteNodeAdapter);
-
-// Register adapter in local database context
-const dbContext = new DbLocalContext(connectionInfo, SqLiteNodeAdapter);
+const dbContext = new DbLocalContext(connectionInfo);
 ```
 
 ### SQLite Cordova adapter
@@ -2843,11 +2855,17 @@ To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { Configuration } from "@coaty/core";
-import { DbAdapterFactory, DbLocalContext } from "@coaty/core/db";
+import { Components, Configuration } from "@coaty/core";
+import { DbLocalContext } from "@coaty/core/db";
 import { SqLiteCordovaAdapter } from "@coaty/core/db/adapter-sqlite-cordova";
 
-// Specify adapter in configuration
+const components: Components = {
+    ...
+    dbAdapters: {
+        SqLiteCordovaAdapter,
+    },
+};
+
 const configuration: Configuration = {
     ...
     databases: {
@@ -2868,11 +2886,7 @@ const configuration: Configuration = {
     }
 };
 
-// Register adapter explicitely or
-DbAdapterFactory.registerAdapter("SqLiteCordovaAdapter", SqLiteCordovaAdapter);
-
-// Register adapter in local database context
-const dbContext = new DbLocalContext(connectionInfo, SqLiteCordovaAdapter);
+const dbContext = new DbLocalContext(connectionInfo);
 ```
 
 ### Implement a custom database adapter
@@ -2888,6 +2902,14 @@ Note that the custom adapter class must be registered before use.
 
 ```ts
 import { Configuration } from "@coaty/core";
+import { MyCustomDatabaseAdapter } from "myapp/my-custom-adapter";
+
+const components: Components = {
+    ...
+    dbAdapters: {
+        MyCustomDatabaseAdapter,
+    },
+};
 
 const configuration: Configuration = {
     ...
@@ -2901,11 +2923,6 @@ const configuration: Configuration = {
         }
     }
 };
-
-import { DbAdapterFactory } from "@coaty/core/db";
-import { MyCustomDatabaseAdapter } from "myapp/my-custom-adapter";
-
-DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdapter);
 
 ```
 

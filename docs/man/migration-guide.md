@@ -207,8 +207,6 @@ this.communicationManager.observeDiscover()
 * You can now specify partial options for `CommunicationManager.restart()`.
 * Take further actions after calling `CommunicationManager.restart()` not until
   the returned promise resolves.
-* `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
-  communication event types.
 * A [namespacing
   concept](https://coatyio.github.io/coaty-js/man/developer-guide/#namespacing)
   has been added to isolate different Coaty applications (see
@@ -216,6 +214,8 @@ this.communicationManager.observeDiscover()
   `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events are
   only routed between agents within a common namespace. This feature is
   backward-compatible with Coaty 1.
+* `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
+  communication event types.
 
 ### Changes in Sensor Things
 
@@ -224,6 +224,13 @@ this.communicationManager.observeDiscover()
 * Sensor objects emitted by `SourceCodeController.registeredSensorsChangeInfo$`
   are read-only. If you need to manipulate one, clone the object first (using
   `clone()` function in `@coaty/core`).
+
+### Changes in Database Adapters
+
+* Stop registering your adapters with `DbAdapterFactory.registerAdapter()`.
+  Instead, register adapters as container components using the new
+  [`Components.dbAdapters`](https://coatyio.github.io/coaty-js/man/developer-guide/#persistent-storage-and-retrieval-of-coaty-objects)
+  property.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

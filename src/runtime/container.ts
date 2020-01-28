@@ -6,6 +6,8 @@ import { first } from "rxjs/operators";
 import { CommunicationManager, Controller, CoreTypes, Identity, OperatingState } from "..";
 import { IController, IControllerStatic } from "../controller/controller";
 
+import { IDbAdapterConstructor } from "../db";
+import { DbAdapterFactory } from "../db/db-adapter-factory";
 import { Configuration, ControllerOptions } from "./configuration";
 import { Runtime } from "./runtime";
 
@@ -19,12 +21,23 @@ import { Runtime } from "./runtime";
 export interface Components {
 
     /**
-     * Application-specific controller classes to be registered with the runtime
-     * container. The configuration options for a controller class listed here
-     * are specified in the controller configuration under a key that matches
-     * the associated name of the controller.
+     * Application-specific controller classes to be registered with the
+     * container (optional).
+     *
+     * The configuration options for a controller class listed here are
+     * specified in the controller configuration under a key that matches the
+     * associated name of the controller.
      */
     controllers?: { [controllerName: string]: IControllerStatic<Controller> };
+
+    /**
+     * Database adapter classes to be registered with the container (optional).
+     *
+     * Any adapter registered here can be used in the databases configuration
+     * options by specifying its name in the `DbConnectionInfo.adapter`
+     * property.
+     */
+    dbAdapters?: { [adapterName: string]: IDbAdapterConstructor };
 }
 
 /**
@@ -223,6 +236,13 @@ export class Container {
         this._identity = this._createIdentity(config.common?.agentIdentity);
         this._runtime = new Runtime(config.common, config.databases);
         const comManager = this._comManager = new CommunicationManager(this, config.communication);
+
+        // Resolve adapters
+        components.dbAdapters &&
+            Object.keys(components.dbAdapters).forEach(adapterName => {
+                const adapterType = components.dbAdapters[adapterName];
+                DbAdapterFactory.registerAdapter(adapterName, adapterType);
+            });
 
         // Resolve controllers
         components.controllers &&

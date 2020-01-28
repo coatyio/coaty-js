@@ -20,7 +20,6 @@ import {
 } from "../..";
 import {
     AggregateOp,
-    DbAdapterFactory,
     DbContext,
     DbJoinCondition,
     DbObjectFilter,
@@ -47,6 +46,9 @@ describe("Postgres NoSQL Database Access", () => {
         controllers: {
             DbTestObjectManagementController,
             MockQueryingController,
+        },
+        dbAdapters: {
+            PostgresAdapter,
         },
     };
 
@@ -90,9 +92,6 @@ describe("Postgres NoSQL Database Access", () => {
             },
         },
     };
-
-    // Register database adapter before creating database contexts.
-    DbAdapterFactory.registerAdapter(PG_ADAPTER_NAME, PostgresAdapter);
 
     let container: Container;
     let connectionInfo: DbConnectionInfo;

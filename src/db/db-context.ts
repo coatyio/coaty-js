@@ -61,7 +61,7 @@ export class DbContext implements IDbNoSqlOperations, IDbSqlOperations, IDbTrans
     }
 
     /**
-     * For internal use only. Do not use in your application code.
+     * @internal For internal use only. Do not use in your application code.
      */
     get adapter() {
         return this._adapter;

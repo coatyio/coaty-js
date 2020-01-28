@@ -69,7 +69,7 @@ export class DbLocalContext implements IDbSqlOperations, IDbTransaction, IDbLoca
     }
 
     /**
-     * For internal use only. Do not use in your application code.
+     * @internal For internal use only. Do not use in your application code.
      */
     get adapter() {
         return this._adapter;

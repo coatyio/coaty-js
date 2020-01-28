@@ -5,7 +5,7 @@
  */
 
 import { Components, Configuration, Container, DbConnectionInfo } from "../..";
-import { DbAdapterFactory, DbContext, RAW, SQL, SqlQueryBuilder } from "../../db";
+import { DbContext, RAW, SQL, SqlQueryBuilder } from "../../db";
 import { PostgresAdapter } from "../../db/adapter-postgres";
 
 import { failTest, skipTestIf } from "./utils";
@@ -19,6 +19,9 @@ describe("SQL Database Access", () => {
     const PG_ADAPTER_NAME = "PostgresAdapter";
 
     const components: Components = {
+        dbAdapters: {
+            PostgresAdapter,
+        },
     };
 
     const configuration: Configuration = {
@@ -63,9 +66,6 @@ describe("SQL Database Access", () => {
             },
         },
     };
-
-    // Register database adapter before creating database contexts.
-    DbAdapterFactory.registerAdapter(PG_ADAPTER_NAME, PostgresAdapter);
 
     let container: Container;
     let serverConnectionInfo: DbConnectionInfo;
