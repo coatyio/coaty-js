@@ -106,8 +106,12 @@ Refactor the following definitions:
 
 ### Changes in Coaty object types
 
-* Stop using `CoatyObject.assigneeUserId` as this property has been removed. If
-  needed, add it to your custom object type.
+* Stop using `CoatyObject.assigneeUserId` as this property has been removed.
+* Stop using `Task.workflowId` as this property has been removed. If needed,
+  define an equivalent property in your custom task type.
+* Use new property `Task.assigneeObjectId` to reference an object, e.g. a user
+  or machine, that this task is assigned to.
+* Change type of `Task.requirements` property to consist of key-value pairs.
 * Stop using `Config` as this core type has been removed. If needed, define an
   equivalent object type in your application code.
 * Rename core object type `Component` to `Identity`. This name better reflects

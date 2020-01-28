@@ -403,12 +403,12 @@ export class CoreTypes {
             typeof obj.status === "number" &&
             TaskStatus[obj.status] !== undefined &&
             (obj.requirements === undefined ||
-                CoreTypes.isStringArray(obj.requirements)) &&
+                (obj.requirements && typeof obj.requirements === "object")) &&
             (obj.description === undefined ||
                 typeof obj.description === "string") &&
-            (obj.workflowId === undefined ||
-                (typeof obj.workflowId === "string" &&
-                    obj.workflowId.length > 0));
+            (obj.assigneeObjectId === undefined ||
+                (typeof obj.assigneeObjectId === "string" &&
+                    obj.assigneeObjectId.length > 0));
     }
 
     private static _isIoSource(obj: any) {

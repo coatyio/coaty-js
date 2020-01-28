@@ -95,11 +95,13 @@ export interface Task extends CoatyObject {
     status: TaskStatus;
 
     /**
-     * Required competencies / roles needed for this task (optional).
-     * The requirements specified are combined by logical AND, i.e. all
-     * requirements must be fullfilled.
+     * Required competencies, roles, etc. needed to fulfill this task
+     * (optional).
+     *
+     * Requirements are specified as key-value pairs with JSON compatible
+     * values.
      */
-    requirements?: string[];
+    requirements?: { [key: string]: any };
 
     /**
      * Description of the task (optional)
@@ -107,9 +109,9 @@ export interface Task extends CoatyObject {
     description?: string;
 
     /**
-     * Associated workflow Id (optional)
+     * Unique ID of object that this task is assigned to (optional)
      */
-    workflowId?: Uuid;
+    assigneeObjectId?: Uuid;
 
 }
 
