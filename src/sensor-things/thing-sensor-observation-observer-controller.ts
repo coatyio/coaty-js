@@ -16,22 +16,22 @@ export interface RegisteredSensorsChangeInfo {
     /**
      * New sensors that have been added.
      */
-    added: Sensor[];
+    added: Array<Readonly<Sensor>>;
 
     /**
      * Previously added sensors that have been removed.
      */
-    removed: Sensor[];
+    removed: Array<Readonly<Sensor>>;
 
     /**
      * Existing sensors that have been readvertised (some properties might have changed).
      */
-    changed: Sensor[];
+    changed: Array<Readonly<Sensor>>;
 
     /**
      * The current sensors after changes have been applied.
      */
-    total: Sensor[];
+    total: Array<Readonly<Sensor>>;
 }
 
 /**
@@ -99,6 +99,10 @@ export class ThingSensorObservationObserverController extends ThingObserverContr
      *
      * Registered sensor objects are augmented by a property `thing` which
      * references the associated `Thing` object.
+     *
+     * Emitted sensor objects are read-only. If you need to manipulate one, e.g.
+     * to delete the `thing` property, clone the object first (using `clone()`
+     * function in `@coaty/core`).
      */
     get registeredSensorsChangeInfo$() {
         return this._registeredSensorsChangeInfo$;

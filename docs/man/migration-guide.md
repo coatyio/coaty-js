@@ -221,6 +221,9 @@ this.communicationManager.observeDiscover()
 
 * You can now call `SensorSourceController.findSensor(predicate)` to look up a
   registered sensor satisfying a predicate.
+* Sensor objects emitted by `SourceCodeController.registeredSensorsChangeInfo$`
+  are read-only. If you need to manipulate one, clone the object first (using
+  `clone()` function in `@coaty/core`).
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

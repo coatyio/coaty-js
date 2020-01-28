@@ -550,9 +550,12 @@ sensor-related events as well as sensor observations.
 
 This controller provides the following getters to handle incoming events for sensors, and observations:
 
-* `registeredSensorsChangeInfo$`: Gets an Observable emitting information about changes in
-  the currently registered sensors. Registered sensor objects are augmented by a property `thing`
-  which references the associated `Thing` object.
+* `registeredSensorsChangeInfo$`: Gets an Observable emitting information about
+  changes in the currently registered sensors. Registered sensor objects are
+  augmented by a property `thing` which references the associated `Thing`
+  object. Emitted sensor objects are read-only. If you need to manipulate one,
+  e.g. to delete the `thing` property, clone the object first (using `clone()`
+  function in `@coaty/core`).
 * `sensorObservation$`: Gets an Observable emitting incoming observations on registered
   sensors.
 
