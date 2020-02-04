@@ -24,6 +24,9 @@ naming and import declarations, object types, distributed lifecycle management,
 IO routing, and the communication protocol. Therefore, Coaty 2 applications are
 no longer backward-compatible and interoperable with Coaty 1 applications.
 
+Coaty 1 is still available on npm package `coaty@1.x.y`. Coaty 2 is deployed
+separately on scoped npm package `@coaty/core@2.x.y`.
+
 To update to Coaty 2, follow the migration steps described in the following
 sections.
 
@@ -49,8 +52,8 @@ Coaty 2 introduces a common npm package scope named `@coaty` for current and
 future framework projects of the Coaty JS platform. The Coaty 2 core framework
 is published in the scoped npm package named `@coaty/core`.
 
-Rewrite all import declarations `coaty/<modulename>` to use this scoped package
-as follows:
+Rewrite all import and require declarations `coaty/<modulename>` to use this
+scoped package as follows:
 
 * `coaty/com`, `coaty/controller`, `coaty/model`, `coaty/runtime`, `coaty/util`
   -> `@coaty/core`
@@ -64,6 +67,8 @@ as follows:
 * `coaty/runtime-node` -> `@coaty/core/runtime-node`
 * `coaty/sensor-things` -> `@coaty/core/sensor-things`
 * `coaty/sensor-things-io` -> `@coaty/core/sensor-things/io`
+* `coaty/scripts` -> `@coaty/core/scripts`
+* `coaty/tslint-config` -> `@coaty/core/tslint-config`
 
 Refactor import declarations of the following type references:
 
@@ -96,9 +101,12 @@ Refactor the following definitions:
 * The `Configuration.common` property is now optional.
 * Move extra properties defined on `Configuration.common` into its new `extra`
   property.
-* Stop defining `Configuration.common.associatedUser` and
-  `Configuration.common.associatedDevice` as these properties have been
-  removed. For details, see section "Changes in IO routing".
+* Stop defining `Configuration.common.associatedUser` as this property has been
+  removed. If needed for any other purpose than IO routing, define and access
+  your User object in `Configuration.common.extra`. For more details, see
+  section "Changes in IO routing".
+* Stop defining `Configuration.common.associatedDevice` as this property has
+  been removed. For details, see section "Changes in IO routing".
 * Rename `Runtime.options` to `Runtime.commonOptions`. Its value is `undefined`
   if the `Configuration.common` property is not specified.
 
@@ -110,6 +118,8 @@ Refactor the following definitions:
 ### Changes in Coaty object types
 
 * Stop using `CoatyObject.assigneeUserId` as this property has been removed.
+* Stop using `Device` as this object type has been removed. For details, see
+  section "Changes in IO routing".
 * Stop using `Task.workflowId` as this property has been removed. If needed,
   define an equivalent property in your custom task type.
 * Use new property `Task.assigneeObjectId` to reference an object, e.g. a user
@@ -141,12 +151,12 @@ efficient:
 * The agent container is assigned a unique identity object to be shared by all
   controllers and the communication manager. Controllers and the communication
   manager no longer own separate identities.
-* The container's identity is *always* advertised and discoverable. You can no
-  longer disable this behavior.
+* The container's identity is *always* advertised and discoverable to support
+  distributed lifecycle management. You can no longer disable this behavior.
 * When publishing or observing communication events, an identity object no
   longer needs to be specified as event source or event target, respectively.
 * By design, echo suppression of communication events has been revoked. The
-  communication manager dispatches any incoming event to every controller that
+  communication manager dispatches *any* incoming event to every controller that
   *observes* it, even if the controller published the event itself.
 
 Upgrade to the new approach as follows:
@@ -220,24 +230,24 @@ this.communicationManager.observeDiscover()
   `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events are
   only routed between agents within a common namespace. This feature is
   backward-compatible with Coaty 1.
-* `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
-  communication event types.
+* `CommunicationManager.observeRaw()` no longer emits messages related to Coaty
+  communication patterns.
 
 We abandon *partial* Update events in favor of full Update events where you can
 choose to observe Update events for a specific core type or object type,
-analogous to Advertise events. This optimizes messaging traffic because Update
+analogous to Advertise events. This reduces messaging traffic because Update
 events are no longer submitted to all Update event observers but only to the
 ones interested in a specific type of object.
 
 * Stop publishing partial Update events using `UpdateEvent.withPartial()`.
   Replace them by full Update events.
 * Stop using `UpdateEventData.isPartialUpdate()`,
-  `UpdateEventData.isFullUpdate()`, and `UpdateEventData.objectId` and
-  `UpdateEventData.changedProperties` getters.
-* Stop publishing full Update events using `UpdateEvent.withFull()`. Use
-  `UpdateEvent.withObject()` instead.
-* Stop observing Update events with `CommunicationManager.observeUpdate()`. Use
-  either `CommunicationManager.observeUpdateWithCoreType()` or
+  `UpdateEventData.isFullUpdate()`, `UpdateEventData.objectId` and
+  `UpdateEventData.changedProperties` as these getters have been removed.
+* Rename `UpdateEvent.withFull()` to `UpdateEvent.withObject()`.
+* Stop observing Update events with `CommunicationManager.observeUpdate()` as
+  this method has been removed. Use either
+  `CommunicationManager.observeUpdateWithCoreType()` or
   `CommunicationManager.observeUpdateWithObjectType()`.
 
 ### Changes in Sensor Things
@@ -253,10 +263,62 @@ ones interested in a specific type of object.
 Registration of database adpaters has been simplified: You can register them as
 container components, like controllers.
 
-* Stop registering your adapters with `DbAdapterFactory.registerAdapter()`.
-* Register adapters as container components using the new
+* Prefer registering adapters as container components by the new
   [`Components.dbAdapters`](https://coatyio.github.io/coaty-js/man/developer-guide/#persistent-storage-and-retrieval-of-coaty-objects)
-  property.
+  property. Avoid calling `DbAdapterFactory.registerAdapter()` explicitely.
+
+### Changes to IO routing
+
+In Coaty 1, the scope of IO routing is restricted to a single user and its
+devices that define IO sources and actors. IO value events are only routed
+between the IO sources and actors of these devices.
+
+Coaty 2 redesigns IO routing by generalizing and broadening the scope of
+routing. `User` and `Device` objects are no longer used for IO routing. They are
+replaced by `IoContext` and `IoNode` objects, respectively:
+
+* An *IO context* represents a context-specific scope for routing (replaces
+  associated user) and is associated with an IO router.
+* An *IO node* consists of a set of IO sources and actors (replaces
+  ioCapabilities of associated device), and node-specific characteristics
+  (replaces device properties) to be used by IO routers to control routes.
+* Each IO node is associated with exactly one IO context. A router routes IO
+  values between IO sources and actors of all IO nodes which belong to its
+  associated IO context.
+* *Multiple* IO nodes for *different* IO contexts can be registered with a Coaty
+  agent.
+* An IO router is responsible for establishing routes between IO sources and
+  actors of all IO nodes which belong to its associated IO context.
+
+To migrate to the new concept, read the updated section on [IO
+routing](https://coatyio.github.io/coaty-js/man/developer-guide/#io-routing) in
+the Developer Guide and follow these steps:
+
+* Rename `IoSource.externalTopic` property to `IoSource.externalRoute`.
+* Rename `IoActor.externalTopic` property to `IoActor.externalRoute`.
+* Stop discovering object type `Device` as this functionality has been removed.
+* Stop using `CommonOptions.associatedUser` and `CommonOptions.associatedDevice`
+  as these properties have been removed. For IO routing, use
+  `CommonOptions.ioNodes` and `CommunicationManager.getIoNodeByContext()`
+  instead.
+* Stop using `CommunicationOptions.shouldAdvertiseDevice` as this property has
+  been removed.
+* Stop defining `externalDevices` for `IoRouter` classes as this router option
+  has been removed.
+* Stop using `IoRouter.getAssociatedUser()` as this method has been removed.
+  Instead, use `IoRouter.ioContext` and configure the IO context by router
+  controller option `ioContext`.
+* Stop using `IoRouter.getAssociatedDevices()` as this method has been
+  removed. Use `IoRouter.managedIoNodes` instead.
+* Stop using `IoRouter.findAssociatedDevice()` as qthis method has been
+  removed. Use `IoRouter.findManagedIoNode()` instead.
+* Stop defining `IoRouter.onDeviceAdvertised()` as this method has been
+  removed. Use `IoRouter.onIoNodeManaged()` instead.
+* Stop defining `IoRouter.onDevicesDeadvertised()` as this method has been
+  removed. Use `IoRouter.onIoNodesUnmanaged()` instead.
+* If you define rules for `RuleBasedIoRouter` expect the fifth argument of the
+  `IoRoutingRuleConditonFunc` to be the `IoContext` of the router, and the sixth
+  argument to be the router itself.
 
 ---
 Copyright (c) 2020 Siemens AG. This work is licensed under a

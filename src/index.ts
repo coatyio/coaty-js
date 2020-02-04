@@ -23,7 +23,8 @@ export * from "./controller/object-cache-controller";
 export * from "./controller/object-lifecycle-controller";
 
 export * from "./model/annotation";
-export * from "./model/device";
+export * from "./model/io-context";
+export * from "./model/io-node";
 export * from "./model/io-point";
 export * from "./model/location";
 export * from "./model/log";
@@ -31,10 +32,10 @@ export * from "./model/object-filter";
 export * from "./model/object-join";
 export * from "./model/object-matcher";
 export * from "./model/object";
-export * from "./model/user";
 export * from "./model/snapshot";
 export * from "./model/task";
 export * from "./model/types";
+export * from "./model/user";
 
 export * from "./runtime/agent-info";
 export * from "./runtime/configuration";

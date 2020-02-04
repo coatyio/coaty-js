@@ -4,7 +4,7 @@
  * Test suite for Sensors Things API
  */
 
-import { Components, Configuration, Container, CoreTypes, DiscoverEvent, DisplayType } from "../..";
+import { Components, Configuration, Container, CoreTypes, DiscoverEvent } from "../..";
 import { SensorThingsTypes } from "../../sensor-things";
 
 import * as mocks from "./sensor-things.mock";
@@ -30,25 +30,6 @@ describe("Sensor things", () => {
         };
 
         const configuration1: Configuration = {
-            common: {
-                associatedUser: {
-                    name: "Fred",
-                    objectType: CoreTypes.OBJECT_TYPE_USER,
-                    coreType: "User",
-                    objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-                    names: {
-                        givenName: "Fred",
-                        familyName: "Feuerstein",
-                    },
-                },
-                associatedDevice: {
-                    name: "Fred's Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "db02ef91-7024-4cbb-9182-61fa57a8f0eb",
-                    displayType: DisplayType.Watch,
-                },
-            },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,

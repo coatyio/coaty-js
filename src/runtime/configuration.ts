@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Device, Identity, User } from "..";
+import { Identity, IoActor, IoSource } from "..";
 import { AgentInfo } from "./agent-info";
 
 /**
@@ -40,24 +40,27 @@ export interface Configuration {
 export interface CommonOptions {
 
     /**
-     * User object that is associated with this runtime configuration
-     * (optional). Used for a Coaty container that runs on a user device.
+     * Specify IO nodes associated with IO contexts for IO routing (optional).
+     *
+     * Each IO node definition is hashed by the IO context name the node should
+     * be associated with. An IO node definition includes IO sources and/or IO
+     * actors, and node-specific characteristics to be used for IO routing.
+     *
+     * If neither IO sources nor IO actors are specified for an IO node, its
+     * node definition is ignored.
      */
-    associatedUser?: User;
-
-    /**
-     * Device object that is associated with this runtime configuration
-     * (optional). Used for a Coaty container that runs on a user device.
-     */
-    associatedDevice?: Device;
+    ioContextNodes?: {
+        [ioContextName: string]:
+        { ioSources?: IoSource[], ioActors?: IoActor[], characteristics?: { [key: string]: any } },
+    };
 
     /**
      * Property-value pairs to be configured on the identity object of the agent
      * container (optional). Usually, an expressive `name` of the identity is
      * configured here.
      *
-     * @remarks Note that the `objectType` and `coreType` properties cannot be
-     * overridden.
+     * @remarks Note that `objectType` and `coreType` properties of an identity
+     * object are ignored, i.e. cannot be overridden.
      */
     agentIdentity?: Partial<Identity>;
 
@@ -107,24 +110,10 @@ export interface CommunicationOptions {
     shouldEnableCrossNamespacing?: boolean;
 
     /**
-     * Determines whether the communication manager should start initially
-     * when the container has been resolved. Its value defaults
-     * to false.
+     * Determines whether the communication manager should start initially when
+     * the container has been resolved. Its value defaults to false.
      */
     shouldAutoStart?: boolean;
-
-    /**
-     * Determines whether the communication manager should advertise the
-     * associated device (defined in Runtime.commonOptions.associatedDevice)
-     * automatically when started and deadvertise the device when stopped or
-     * terminated abnormally (via last will). If not specified or undefined,
-     * de/advertisements will be done by default.
-     *
-     * The associated device is also discoverable (by publishing a Discover
-     * event with core type "Device" or with the object id of a device) if and
-     * only if the device has also been advertised.
-     */
-    shouldAdvertiseDevice?: boolean;
 
     /**
      * Determines whether the communication manager should provide a protocol
@@ -154,7 +143,8 @@ export interface CommunicationOptions {
     brokerUrl?: string;
 
     /**
-     * Options passed to MQTT Client (see MQTT.js connect options).
+     * Options passed to MQTT Client (see [MQTT.js connect
+     * options](https://github.com/mqttjs/MQTT.js#mqttconnecturl-options)).
      *
      * In addition to the MQTT.js options, you can also pass a QoS level (0 | 1
      * | 2) for publications, subscriptions, and last will messages in the `qos`

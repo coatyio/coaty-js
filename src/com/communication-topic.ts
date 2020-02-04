@@ -30,10 +30,6 @@ export class CommunicationTopic {
         return this._sourceId;
     }
 
-    get associationId() {
-        return this._associationId;
-    }
-
     get correlationId() {
         return this._correlationId;
     }
@@ -58,7 +54,6 @@ export class CommunicationTopic {
     private _eventType: CommunicationEventType;
     private _eventTypeFilter: string;
     private _sourceId: Uuid;
-    private _associationId: Uuid;
     private _correlationId: Uuid;
 
     private constructor() {
@@ -74,9 +69,9 @@ export class CommunicationTopic {
      */
     static createByName(topicName: string): CommunicationTopic {
         const topic = new CommunicationTopic();
-        const [protocolName, version, namespace, event, sourceId, assocId, corrId, postfix] = topicName.split("/");
+        const [protocolName, version, namespace, event, sourceId, corrId, postfix] = topicName.split("/");
 
-        if (protocolName !== this.PROTOCOL_NAME || !version || !namespace || !event || !sourceId || !assocId) {
+        if (protocolName !== this.PROTOCOL_NAME || !version || !namespace || !event || !sourceId) {
             throw new Error("Communication topic is invalid");
         }
         if (corrId === "" && postfix === undefined) {
@@ -101,10 +96,16 @@ export class CommunicationTopic {
             if (corrId) {
                 throw new Error(`Communication topic has correlation id for ${eventTypeKey} event`);
             }
-            if ((eventType === CommunicationEventType.Advertise || eventType === CommunicationEventType.Channel) && !eventTypeFilter) {
+            if ((eventType === CommunicationEventType.Advertise ||
+                eventType === CommunicationEventType.Channel ||
+                eventType === CommunicationEventType.Associate) &&
+                !eventTypeFilter) {
                 throw new Error(`Communication topic missing event filter for ${eventTypeKey} event`);
             }
-            if (eventType !== CommunicationEventType.Advertise && eventType !== CommunicationEventType.Channel && eventTypeFilter) {
+            if (eventType !== CommunicationEventType.Advertise &&
+                eventType !== CommunicationEventType.Channel &&
+                eventType !== CommunicationEventType.Associate
+                && eventTypeFilter) {
                 throw new Error(`Communication topic has event filter for ${eventTypeKey} event`);
             }
         } else {
@@ -127,7 +128,6 @@ export class CommunicationTopic {
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter;
         topic._sourceId = sourceId;
-        topic._associationId = assocId === this.EMPTY_TOPIC_LEVEL ? undefined : assocId;
         topic._correlationId = corrId === "" ? undefined : corrId;
 
         return topic;
@@ -140,8 +140,7 @@ export class CommunicationTopic {
      * @param namepace the messaging namespace
      * @param eventType an event type
      * @param eventTypeFilter a filter for an event type, or undefined
-     * @param sourceId an event source ID
-     * @param associationId an association ID, or undefined
+     * @param sourceId ID from which this event originates
      * @param correlationId correlation ID for response message, or undefined
      */
     static createByLevels(
@@ -150,7 +149,6 @@ export class CommunicationTopic {
         eventType: CommunicationEventType,
         eventTypeFilter: string,
         sourceId: Uuid,
-        associationId: Uuid,
         correlationId: Uuid,
     ): CommunicationTopic {
         const topic = new CommunicationTopic();
@@ -160,7 +158,6 @@ export class CommunicationTopic {
         topic._eventType = eventType;
         topic._eventTypeFilter = eventTypeFilter || undefined;
         topic._sourceId = sourceId;
-        topic._associationId = associationId;
         topic._correlationId = correlationId;
 
         return topic;
@@ -173,22 +170,20 @@ export class CommunicationTopic {
      * @param namepace the messaging namespace or undefined
      * @param eventType the event type
      * @param eventTypeFilter the event filter or undefined
-     * @param associationId an association ID, or undefined
      * @param correlationId correlation ID for response message, or undefined
+     * for request message
      */
     static getTopicFilter(
         version: number,
         namespace: string,
         eventType: CommunicationEventType,
         eventTypeFilter: string,
-        associationId: Uuid,
         correlationId: Uuid): string {
         let eventLevel = CommunicationTopic._getEventTopicLevelPrefix(eventType);
         if (eventTypeFilter) {
             eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
         }
         let levels = `${this.PROTOCOL_NAME}/${version}/${namespace || "+"}/${eventLevel}/+`;
-        levels += associationId ? `/${associationId}` : "/+";
         if (!this.isOneWayEvent(eventType)) {
             levels += correlationId ? `/${correlationId}` : "/+";
         }
@@ -362,14 +357,7 @@ export class CommunicationTopic {
         if (this.eventTypeFilter) {
             eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + this.eventTypeFilter;
         }
-        let topic = `${CommunicationTopic.PROTOCOL_NAME}/${this.version}/${this.namespace}/${eventLevel}/${this.sourceId}/`;
-        if (this.associationId) {
-            topic += this.associationId;
-        } else {
-            // aedes and mosca MQTT brokers do not support single-level wildcard
-            // matching against empty topic levels.
-            topic += CommunicationTopic.EMPTY_TOPIC_LEVEL;
-        }
+        let topic = `${CommunicationTopic.PROTOCOL_NAME}/${this.version}/${this.namespace}/${eventLevel}/${this.sourceId}`;
         if (!CommunicationTopic.isOneWayEvent(this.eventType)) {
             topic += `/${this.correlationId}`;
         }

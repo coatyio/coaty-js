@@ -4,15 +4,15 @@
         "bootstrap.spec.js",
         "util.spec.js",
         "object.spec.js",
-        "object-lifecycle.spec.js",
         "communication.spec.js",
+        "object-lifecycle.spec.js",
         "io-routing.spec.js",
+        "sensor-things.spec.js",
         "db-in-memory.spec.js",
         "db-nosql.spec.js",
         "db-sql.spec.js",
         "db-local.spec.js",
-        "historian.spec.js",
-        "sensor-things.spec.js"
+        "historian.spec.js"
     ],
     "helpers": [
         "test/helpers/**/*.js"

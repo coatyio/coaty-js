@@ -13,7 +13,7 @@ title: Coaty JS Documentation
   * remove readable topic feature
   * change topic structure and topic filters
   * change topic and payload of Update event (removing partial updates)
-  * redesign IO routing
+  * redesign events related to IO routing
 * **Version 2**: add Call-Return pattern; backward compatible with v1
 * **Version 1**: initial specification
 
@@ -32,8 +32,9 @@ title: Coaty JS Documentation
   * [Payloads for Query - Retrieve Event](#payloads-for-query---retrieve-event)
   * [Payloads for Update - Complete Event](#payloads-for-update---complete-event)
   * [Payloads for Call - Return Event](#payloads-for-call---return-event)
+  * [Payload for Raw Event](#payload-for-raw-event)
   * [Payload for Associate Event](#payload-for-associate-event)
-  * [IO Routing](#io-routing)
+  * [Payload for IoValue Event](#payload-for-iovalue-event)
 
 ## Introduction
 
@@ -78,14 +79,14 @@ Note that MQTT allows applications to send MQTT Control Packets of size up to
 the payload, as well as some bytes of header data.
 
 > To debug MQTT messages published by a Coaty agent, you can use any MQTT client
-> and subscribe to the `#` topic. We recommend
-> [mqtt-spy](https://kamilfb.github.io/mqtt-spy/) or
-> [MQTT.fx](http://www.mqttfx.org/), both cross-platform clients provide
-> graphical user interfaces for message inspection.
+> and subscribe to the `coaty/#` topic. We recommend [MQTT
+> Explorer](https://mqtt-explorer.com/) or
+> [mqtt-spy](https://kamilfb.github.io/mqtt-spy/), both cross-platform clients
+> provide graphical user interfaces for message inspection.
 
 ## Events and Event Patterns
 
-Coaty provides a set of predefined one-way and two-way communication event
+Coaty provides an essential set of one-way and two-way communication event
 patterns to exchange data in a decentralized application:
 
 * **Advertise** an object: broadcast an object to parties interested in objects
@@ -103,15 +104,19 @@ patterns to exchange data in a decentralized application:
   accomplishments by Complete events.
 * **Call - Return**  Request execution of a remote operation and receive results
   by Return events.
-* **Associate** Used by IO Router to dynamically associate/disassociate IO
-  sources with IO actors.
-* **IoValue** Send IO values from a publishing IO source to associated IO
-  actors.
+* **Raw** Used to publish and observe topic-specific application data in binary
+  format.
+* **Associate** Used by IO routing infrastructure to dynamically
+  associate/disassociate IO sources with IO actors (see section on "IO routing"
+  below).
+* **IoValue** Used by IO routing infrastructure to submit IO values from a
+  publishing IO source to associated IO actors.
 
 ## Topic Structure
 
-Any topic used in the framework contains the following topic levels:
+Any topic used in the framework comprises the following topic levels:
 
+* **ProtocolName** - the name of the protocol, i.e. `coaty`.
 * **ProtocolVersion** - for versioning the communication protocol. The protocol
   version number conforming to this specification is shown at the top of this
   page.
@@ -119,11 +124,8 @@ Any topic used in the framework contains the following topic levels:
   Communication events are only routed between agents within a common namespace.
 * **Event** - shortcut versions of the predefined events listed above.
 * **SourceObjectID** - globally unique ID (UUID) of the event source that is
-  publishing a topic. Each agent container's identity represents an event
+  publishing a topic, either an agent's identity or that of the related IO
   source.
-* **AssociatedUserID** - globally unique ID (UUID) of a user associated with the
-  source component; empty or not present if component is not associated with a
-  user.
 * **CorrelationID** - UUID that correlates a response message with its request
   message. This level is only present in two-way event patterns, i.e.
   Discover-Resolve, Query-Retrieve, Update-Complete, and Call-Return event
@@ -133,20 +135,18 @@ UUIDs (Universally Unique Identifiers) must conform to the UUID version 4 format
 as specified in RFC 4122. In the string representation of a UUID the hexadecimal
 values "a" through "f" are output as lower case characters.
 
+> **Note**: Raw events and external IO value events do not conform to this topic
+> specification. They are published and subscribed on an application-specific
+> topic string, which can be any valid MQTT topic.
+
 A topic name for publication is composed as follows:
 
 ```
-// Publication of one-way event without AssociatedUserId
-coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/-
+// Publication of one-way event
+<ProtocolName>/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>
 
-// Publication of one-way event with AssociatedUserId
-coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/<AssociatedUserID>
-
-// Publication of two-way event without AssociatedUserId
-coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/-/<CorrelationId>
-
-// Publication of two-way event with AssociatedUserId
-coaty/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/<AssociatedUserID>/<CorrelationId>
+// Publication of two-way event (both request and response)
+<ProtocolName>/<ProtocolVersion>/<Namespace>/<Event>/<SourceObjectId>/<CorrelationId>
 ```
 
 The ProtocolVersion topic level represents the communication protocol version of
@@ -183,7 +183,7 @@ subscriptions on both types of filters every Advertise event should be published
 twice, once for the core type and once for the object type of the object to be
 advertised.
 
-When publishing an Advertise event the Event topic level **must** include a
+When publishing an Update event the Event topic level **must** include a
 filter of the form: `UPD:<filter>`. The filter must not be empty. It must not
 contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, and `/
 (U+002F)`. Framework implementations specify the core type (`UPD:<coreType>`) or
@@ -203,6 +203,11 @@ name of the form: `CLL:<operationname>`. The operation name must not be empty.
 It must not contain the characters `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`,
 and `/ (U+002F)`.
 
+When publishing an Associate event the Event topic level **must** include an IO
+context name of the form: `ASC:<contextName>`. The context name must not be
+empty. It must not contain the characters `NULL (U+0000)`, `# (U+0023)`, `+
+(U+002B)`, and `/ (U+002F)`.
+
 For any request-response event pattern the receiving party must respond with an
 outbound message topic containing the original CorrelationID of the incoming
 message topic. Note that the Event topic level of response events **must never**
@@ -214,21 +219,17 @@ Each communication client must subscribe to topics according to the defined
 topic structure:
 
 ```
-// Subscription for one-way events (except Associate)
-coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+
-coaty/<ProtocolVersion>/+/<Event>/+/+
-
-// Subscription for Associate events filtered by AssociatedUserId
-coaty/<ProtocolVersion>/<Namespace>/Associate/+/<AssociatedUserId>
-coaty/<ProtocolVersion>/+/Associate/+/<AssociatedUserId>
+// Subscription for one-way events
+<ProtocolName>/<ProtocolVersion>/<Namespace>/<Event>/+
+<ProtocolName>/<ProtocolVersion>/+/<Event>/+
 
 // Subscription for two-way request events
-coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+/+
-coaty/<ProtocolVersion>/+/<Event>/+/+/+
+<ProtocolName>/<ProtocolVersion>/<Namespace>/<Event>/+/+
+<ProtocolName>/<ProtocolVersion>/+/<Event>/+/+
 
 // Subscription for two-way response events
-coaty/<ProtocolVersion>/<Namespace>/<Event>/+/+/<CorrelationID>
-coaty/<ProtocolVersion>/+/<Event>/+/+/<CorrelationID>
+<ProtocolName>/<ProtocolVersion>/<Namespace>/<Event>/+/<CorrelationID>
+<ProtocolName>/<ProtocolVersion>/+/<Event>/+/<CorrelationID>
 ```
 
 These subscriptions, especially response subscriptions, should be unsubscribed
@@ -238,8 +239,8 @@ should be unsubscribed whenever the corresponding observable is unsubscribed by
 the application.
 
 The Namespace topic level **must** either specify a non-empty string or a
-single-level wildcard (`+`), depending on whether the agent should support
-namespacing or not.
+single-level wildcard (`+`), depending on whether the agent should restrict
+communication to a given namespace or enable cross-namespacing communication.
 
 When subscribing to a response event, the Event topic level **must not** include
 an event filter.
@@ -256,10 +257,10 @@ the Update filter: `UPD:<filter>` or `UPD::<filter>`.
 When subscribing to a Call event, the Event topic level **must** include the
 operation name: `CLL:<operationname>`.
 
-When subscribing to a response event, the CorrelationID topic level must be
-filtered.
+When subscribing to an Associate event, the Event topic level **must** include
+the IO context name: `ASC:<contextName>`.
 
-When subscribing to an Associate event, the AssociatedUserID topic level must be
+When subscribing to a response event, the CorrelationID topic level **must** be
 filtered.
 
 ## Topic Payloads
@@ -308,7 +309,7 @@ Annotation objects can be modelled as children of target objects they are
 attached to.
 
 The optional `locationId` property refers to the UUID of the Location object
-that this object has been associated with.
+that this object is associated with.
 
 The optional `isDeactivated` property marks an object that is no longer used.
 The concrete definition meaning of this property is defined by the application.
@@ -371,7 +372,11 @@ The Discover pattern is used to resolve an object based on its external ID,
 its object ID, or type restrictions. It accepts the following JSON payloads:
 
 ```js
-{ "externalId": "extId", "objectTypes": ["object type", ...], "coreTypes": ["core type", ...] }
+{ 
+    "externalId": "extId",
+    "objectTypes": ["object type", ...],
+    "coreTypes": ["core type", ...]
+}
 ```
 
 Discover an object by specifying its external ID (e.g. barcode scan id).
@@ -660,76 +665,53 @@ defined error codes must be defined outside this range.
 The error message provides a short description of the error. Predefined error
 messages exist for all predefined error codes.
 
+### Payload for Raw Event
+
+A Raw event is publishing arbitrary binary data (byte array) as its payload.
+Encoding and decoding is left to the application.
+
 ### Payload for Associate Event
 
 An Associate event is published by an IO router to associate or disassociate an
-IO source with an IO actor (see next section). Associate events accept the
-following JSON payload:
+IO source with an IO actor. Associate events accept the following JSON payload:
 
 ```js
 {
-  "ioSource": <IO source object definition>,
-  "ioActor": <IO actor object definition>,
-  "associatedTopic": <topic name>,
+  "ioSourceId": <IO source objectId>,
+  "ioActorId": <IO actor objectId>,
+  "associatingRoute": <topic name>,
   "updateRate": <number>
 }
 ```
 
-The properties `ioSource` and `ioActor` are mandatory. The property
-`associatedTopic` defines the subscription or publication topic for an
-association; if undefined the association should be removed. `updateRate` is
-optional; if given it specifies the recommended update rate (in milliseconds)
-for publishing `IOValue` events.
+The properties `ioSourceId` and `ioActorId` are mandatory.
 
-### IO Routing
+`updateRate` is optional; if given it specifies the recommended drain rate (in
+milliseconds) for publishing `IoValue` events.
 
-IO sources publish `IoValue` events or external events. IO actors can receive
-such events by subscribing to the topics on which IO sources publish values. IO
-sources are dynamically associated with IO actors depending on the context of
-the associated user.
+The property `associatingRoute` defines the subscription or publication topic of
+the association; if undefined the association should be dissolved. Since an
+associating route is used for both MQTT topic publication *and* subscription, it
+**must not** contain wildcard tokens (i.e. `#` or `+`) on topic levels.
 
-The communication event flow of IO routing comprises the following steps:
+Associating routes between Coaty-defined IO sources and IO actors use the topic
+structure of an `IoValue` event as specified in [this
+section](#topic-structure). The topic level **SourceObjectID** specifies the
+object ID of the publishing IO source and not the agent's identity.
 
-1. `Device` objects with their IO capabilities, i.e. IO sources and IO actors,
-   are advertised/deadvertised by user-associated device objects.
+Associating routes published by external IO sources or subscribed to by external
+IO actors **must not** use the Coaty topic structure, but any other valid MQTT
+topic shape that doesn't start with `<ProtocolName>/`.
 
-2. The IO router associates/disassociates the currently advertised IO sources
-   and IO actors based on application-specific logic which usually considers the
-   user's context, such as user's role or profile, user's task flow, location,
-   and other environmental factors. On context changes, the IO router should
-   change associations accordingly.
+### Payload for IoValue Event
 
-   An IO source is associated/disassociated with an IO actor by publishing an
-   Associate event. Since the associated topic is used for both publication and
-   subscription, it must never contain wildcard tokens (i.e. `#` or `+`) on
-   topic levels.
+For Coaty-defined IO sources, an IoValue event is published to submit IO values
+to associated IO actors. Such events accept any valid UTF-8 encoded string in
+JSON format as payload.
 
-   Associated topics are generated by the IO router using the topic structure
-   with an `IoValue` event type as described above. Associated topics published
-   by external IO sources or subscribed to by external IO actors need not
-   conform to this topic structure but can be of any valid MQTT topic shape.
-
-   The payload data published by both external and internal IO sources must
-   conform to the protocol specification, i.e. it must be specified as UTF-8
-   encoded strings in JSON format.
-
-Associations of IO sources with IO actors are constrained as follows:
-
-* An IO source can only be associated with an IO actor if their value types are
-  compatible, i.e. they produce/consume data in the same underlying data format.
-
-* Each pair of IO source and IO actor publishes/subscribes to exactly one
-  associated topic.
-
-* An IO source can be associated with different IO actors.
-
-* An IO actor can be associated with different IO sources. Values are received
-  on all the topic subscriptions for the associated IO sources.
-
-* An IO source publishes values on exactly one associated topic.
-
-* Different IO sources must not publish values on the same topic. Otherwise, an
-  IO actor could receive values from a non-associated source.
+Optionally, the payload published by an **external** IO source can be specified
+as raw data, i.e. arbitrary binary data (byte array). Decoding is left to the
+application logic of the receiving IO actor.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a

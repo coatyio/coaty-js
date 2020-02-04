@@ -68,7 +68,8 @@ describe("Bootstrapping", () => {
                 getConfigUrl("bootstrap.config.json")))
             .then(
                 container => {
-                    expect(container.runtime.commonOptions.associatedUser.name).toBe("Barney");
+                    expect(container.runtime.commonOptions.agentIdentity.name).toBe("Barney");
+                    expect(container.identity.name).toBe("Barney");
                     done();
                 },
                 reason => {
@@ -82,6 +83,9 @@ describe("Bootstrapping", () => {
         const primary = NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"));
         const secondary: Configuration = {
             common: {
+                agentIdentity: {
+                    name: "Fred",
+                },
                 extra: {
                     testProp: 4712,
                     testProp1: 4713,
@@ -99,7 +103,7 @@ describe("Bootstrapping", () => {
 
         const config = mergeConfigurations(primary, secondary);
 
-        expect(config.common.associatedUser).toBe(primary.common.associatedUser);
+        expect(config.common.agentIdentity.name).toBe(primary.common.agentIdentity.name);
         expect(config.common.extra.testProp).toBe(primary.common.extra.testProp);
         expect(config.common.extra.testProp1).toBe(undefined);
         expect(config.communication.shouldAutoStart).toBe(primary.communication.shouldAutoStart);

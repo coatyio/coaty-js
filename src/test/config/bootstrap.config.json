@@ -1,14 +1,7 @@
 {
     "common": {
-        "associatedUser": {
-            "name": "Barney",
-            "coreType": "User",
-            "objectType": "coaty.User",
-            "objectId": "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-            "names": {
-                "givenName": "Fred",
-                "familyName": "Feuerstein"
-            }
+        "agentIdentity": {
+            "name": "Barney"
         },
         "extra": { "testProp": 4711 }
     },

@@ -3,8 +3,10 @@
 import { CommunicationEventData } from "./communication-event";
 
 /**
- * IoState event. This event is only used and emitted
- * by the observable returned by `CommunicationManager.observeIoState`.
+ * IoState event.
+ *
+ * This event is internally emitted by the observable returned by
+ * `CommunicationManager.observeIoState`.
  */
 export class IoStateEvent {
 
@@ -24,9 +26,13 @@ export class IoStateEvent {
 
     /**
      * Create an IoStateEvent instance for describing an IO state.
-     * 
-     * @param hasAssociations determines whether the related IO source/actor has associations
-     * @param updateRate the recommended update rate (in millis) for publishing IO source values (optional)
+     *
+     * @internal For internal use in framework only.
+     *
+     * @param hasAssociations determines whether the related IO source/actor has
+     * associations
+     * @param updateRate the recommended update rate (in millis) for publishing
+     * IO source values (optional)
      */
     static with(hasAssociations: boolean, updateRate?: number) {
         return new IoStateEvent(new IoStateEventData(hasAssociations, updateRate));
@@ -34,9 +40,11 @@ export class IoStateEvent {
 }
 
 /**
- * Defines event data format for association/disassociation
- * related to a specific IO source/actor. This data is emitted
- * by the observable returned by `CommunicationManager.observeIoState`.
+ * Defines event data format for association/disassociation related to a
+ * specific IO source/actor.
+ *
+ * This data is emitted by the observable returned by
+ * `CommunicationManager.observeIoState`.
  */
 export class IoStateEventData extends CommunicationEventData {
 
@@ -46,8 +54,12 @@ export class IoStateEventData extends CommunicationEventData {
     /**
      * Create a new IoStateEventData instance.
      *
-     * @param hasAssociations determines whether the related IO source/actor has associations
-     * @param updateRate The recommended update rate (in millis) for publishing IO source values (optional)
+     *  @internal For internal use in framework only.
+     *
+     * @param hasAssociations determines whether the related IO source/actor has
+     * associations
+     * @param updateRate The recommended update rate (in millis) for publishing
+     * IO source values (optional)
      */
     constructor(
         hasAssociations: boolean,
@@ -67,7 +79,10 @@ export class IoStateEventData extends CommunicationEventData {
 
     /**
      * The recommended update rate (in millis) for publishing IO source values
-     * (optional). Only used for association, not for disassociation.
+     * (optional). 
+     *
+     * The value is only specified for association events that are observed by
+     * an IO source; otherwise undefined.
      */
     get updateRate() {
         return this._updateRate;

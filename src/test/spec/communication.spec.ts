@@ -16,14 +16,12 @@ import {
     CoreTypes,
     DiscoverEvent,
     DiscoverEventData,
-    DisplayType,
     filterOp,
     ObjectLifecycleController,
     ObjectLifecycleInfo,
     RemoteCallErrorCode,
     RemoteCallErrorMessage,
     UpdateEvent,
-    User,
 } from "../..";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
@@ -37,17 +35,6 @@ describe("Communication", () => {
 
         const version = CommunicationManager.PROTOCOL_VERSION;
         const namespace = "-";
-        const associatedUserId = "0ea293e5-f8be-4a5d-886b-0e231e8234b2";
-        const associatedUser: User = {
-            name: "User+/#HHO\u0000",
-            objectType: CoreTypes.OBJECT_TYPE_USER,
-            coreType: "User",
-            objectId: associatedUserId,
-            names: {
-                givenName: "Fred",
-                familyName: "Flintstone",
-            },
-        };
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
         const oneWayTopic = CommunicationTopic.createByLevels(
             version,
@@ -55,16 +42,6 @@ describe("Communication", () => {
             CommunicationEventType.Advertise,
             "CoatyObject",
             senderId,
-            associatedUser.objectId,
-            undefined,
-        );
-        const oneWayTopicNoUser = CommunicationTopic.createByLevels(
-            version,
-            namespace,
-            CommunicationEventType.Advertise,
-            "CoatyObject",
-            senderId,
-            undefined,
             undefined,
         );
         const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
@@ -74,34 +51,22 @@ describe("Communication", () => {
             CommunicationEventType.Discover,
             undefined,
             senderId,
-            associatedUser.objectId,
-            correlationId,
-        );
-        const twoWayTopicNoUser = CommunicationTopic.createByLevels(
-            version,
-            namespace,
-            CommunicationEventType.Discover,
-            undefined,
-            senderId,
-            undefined,
             correlationId,
         );
 
         it("throws on invalid topic structure format", () => {
             expect(() => CommunicationTopic.createByName(oneWayTopic.getTopicName() + "/")).toThrow();
-            expect(() => CommunicationTopic.createByName("/" + oneWayTopicNoUser.getTopicName())).toThrow();
+            expect(() => CommunicationTopic.createByName("/" + oneWayTopic.getTopicName())).toThrow();
         });
 
-        it("has correct level structure for one-way event without association", () => {
-            expect(oneWayTopicNoUser.associationId).toBe(undefined);
-            expect(oneWayTopicNoUser.sourceId).toBe(senderId);
-            expect(oneWayTopicNoUser.eventType).toBe(CommunicationEventType.Advertise);
-            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
-            expect(oneWayTopicNoUser.correlationId).toBe(undefined);
-            expect(oneWayTopicNoUser.version).toBe(version);
+        it("has correct level structure for one-way event", () => {
+            expect(oneWayTopic.sourceId).toBe(senderId);
+            expect(oneWayTopic.eventType).toBe(CommunicationEventType.Advertise);
+            expect(oneWayTopic.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(oneWayTopic.correlationId).toBe(undefined);
+            expect(oneWayTopic.version).toBe(version);
 
-            const tpc = CommunicationTopic.createByName(oneWayTopicNoUser.getTopicName());
-            expect(tpc.associationId).toBe(undefined);
+            const tpc = CommunicationTopic.createByName(oneWayTopic.getTopicName());
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
             expect(tpc.eventTypeName).toBe(`Advertise:CoatyObject`);
@@ -109,42 +74,7 @@ describe("Communication", () => {
             expect(tpc.version).toBe(version);
         });
 
-        it("has correct level structure for one-way event with association", () => {
-            expect(oneWayTopic.associationId).toBe(associatedUserId);
-            expect(oneWayTopic.sourceId).toBe(senderId);
-            expect(oneWayTopic.eventType).toBe(CommunicationEventType.Advertise);
-            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
-            expect(oneWayTopic.correlationId).toBe(undefined);
-            expect(oneWayTopic.version).toBe(version);
-
-            const tpc = CommunicationTopic.createByName(oneWayTopic.getTopicName());
-            expect(tpc.associationId).toBe(associatedUserId);
-            expect(tpc.sourceId).toBe(senderId);
-            expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
-            expect(oneWayTopicNoUser.eventTypeName).toBe(`Advertise:CoatyObject`);
-            expect(tpc.correlationId).toBe(undefined);
-            expect(tpc.version).toBe(version);
-        });
-
-        it("has correct level structure for two-way event without association", () => {
-            expect(twoWayTopicNoUser.associationId).toBe(undefined);
-            expect(twoWayTopicNoUser.sourceId).toBe(senderId);
-            expect(twoWayTopicNoUser.eventType).toBe(CommunicationEventType.Discover);
-            expect(twoWayTopicNoUser.eventTypeName).toBe(`Discover`);
-            expect(twoWayTopicNoUser.correlationId).toBe(correlationId);
-            expect(twoWayTopicNoUser.version).toBe(version);
-
-            const tpc = CommunicationTopic.createByName(twoWayTopicNoUser.getTopicName());
-            expect(tpc.associationId).toBe(undefined);
-            expect(tpc.sourceId).toBe(senderId);
-            expect(tpc.eventType).toBe(CommunicationEventType.Discover);
-            expect(tpc.eventTypeName).toBe(`Discover`);
-            expect(tpc.correlationId).toBe(correlationId);
-            expect(tpc.version).toBe(version);
-        });
-
-        it("has correct level structure for two-way event with association", () => {
-            expect(twoWayTopic.associationId).toBe(associatedUserId);
+        it("has correct level structure for two-way event", () => {
             expect(twoWayTopic.sourceId).toBe(senderId);
             expect(twoWayTopic.eventType).toBe(CommunicationEventType.Discover);
             expect(twoWayTopic.eventTypeName).toBe(`Discover`);
@@ -152,7 +82,6 @@ describe("Communication", () => {
             expect(twoWayTopic.version).toBe(version);
 
             const tpc = CommunicationTopic.createByName(twoWayTopic.getTopicName());
-            expect(tpc.associationId).toBe(associatedUserId);
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Discover);
             expect(tpc.eventTypeName).toBe(`Discover`);
@@ -163,29 +92,30 @@ describe("Communication", () => {
         it("has correct filter structure for one-way events", () => {
             const eventType = CommunicationEventType.Advertise;
             const topicFilter = CommunicationTopic
-                .getTopicFilter(version, namespace, eventType, "CoatyObject", undefined, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ADV:CoatyObject/+/+`);
+                .getTopicFilter(version, namespace, eventType, "CoatyObject", undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ADV:CoatyObject/+`);
         });
 
         it("has correct filter structure for Associate event", () => {
             const eventType = CommunicationEventType.Associate;
+            const eventTypeFilter = "IoGroup1";
             const topicFilter = CommunicationTopic
-                .getTopicFilter(version, namespace, eventType, undefined, associatedUser.objectId, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ASC/+/${associatedUserId}`);
+                .getTopicFilter(version, namespace, eventType, eventTypeFilter, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ASC:${eventTypeFilter}/+`);
         });
 
         it("has correct filter structure for two-way request events", () => {
             const eventType = CommunicationEventType.Discover;
             const topicFilter = CommunicationTopic
-                .getTopicFilter(version, namespace, eventType, undefined, undefined, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/DSC/+/+/+`);
+                .getTopicFilter(version, namespace, eventType, undefined, undefined);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/DSC/+/+`);
         });
 
         it("has correct filter structure for two-way response events", () => {
             const eventType = CommunicationEventType.Resolve;
             const topicFilter = CommunicationTopic
-                .getTopicFilter(version, namespace, eventType, undefined, undefined, correlationId);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/+/${correlationId}`);
+                .getTopicFilter(version, namespace, eventType, undefined, correlationId);
+            expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/${correlationId}`);
         });
 
     });
@@ -204,23 +134,6 @@ describe("Communication", () => {
         const configuration1: Configuration = {
             common: {
                 agentIdentity: { name: "Agent1" },
-                associatedUser: {
-                    name: "Fred",
-                    objectType: CoreTypes.OBJECT_TYPE_USER,
-                    coreType: "User",
-                    objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-                    names: {
-                        givenName: "Fred",
-                        familyName: "Feuerstein",
-                    },
-                },
-                associatedDevice: {
-                    name: "Fred's Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "db02ef91-7024-4cbb-9182-61fa57a8f0eb",
-                    displayType: DisplayType.Watch,
-                },
             },
             communication: {
                 brokerUrl: "mqtt://localhost:1898",
@@ -335,7 +248,7 @@ describe("Communication", () => {
                 .publishDiscover(new DiscoverEvent(
                     new DiscoverEventData(
                         undefined,
-                        "f608cdb1-3350-4c62-8feb-4589f26f2efe",
+                        "6ed0d7fe-c555-409a-bd2c-22f5dfc3f118",
                         undefined,
                         ["User"]))))
                 .toThrow();
@@ -344,7 +257,6 @@ describe("Communication", () => {
         it("Discover event yields Resolve events", (done) => {
             delayAction(responseDelay + 2000, done, () => {
 
-                const associatedUserId = configuration1.common.associatedUser.objectId;
                 const mockDeviceControllerMatch = UUID_REGEX;
                 const mockObjectControllerMatch = UUID_REGEX;
 
@@ -356,9 +268,6 @@ describe("Communication", () => {
                     .calls.argsFor(0)[0].data.object.name)
                     .toMatch(/MockObject_MockObjectController[12]/);
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(0)[0].eventUserId)
-                    .toBe(undefined);
-                expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockObjectControllerMatch);
                 expect(Spy.get("MockDeviceController").value1
@@ -369,9 +278,6 @@ describe("Communication", () => {
                     .calls.argsFor(1)[0].data.object.name)
                     .toMatch(/MockObject_MockObjectController[12]/);
                 expect(Spy.get("MockDeviceController").value1
-                    .calls.argsFor(1)[0].eventUserId)
-                    .toBe(undefined);
-                expect(Spy.get("MockDeviceController").value1
                     .calls.argsFor(1)[0].sourceId)
                     .toMatch(mockObjectControllerMatch);
                 expect(Spy.get("MockDeviceController").value1
@@ -380,9 +286,6 @@ describe("Communication", () => {
 
                 expect(Spy.get("MockObjectController1").value1)
                     .toHaveBeenCalledTimes(1);
-                expect(Spy.get("MockObjectController1").value1
-                    .calls.argsFor(0)[0].eventUserId)
-                    .toBe(associatedUserId);
                 expect(Spy.get("MockObjectController1").value1
                     .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
@@ -395,9 +298,6 @@ describe("Communication", () => {
 
                 expect(Spy.get("MockObjectController2").value1)
                     .toHaveBeenCalledTimes(1);
-                expect(Spy.get("MockObjectController2").value1
-                    .calls.argsFor(0)[0].eventUserId)
-                    .toBe(associatedUserId);
                 expect(Spy.get("MockObjectController2").value1
                     .calls.argsFor(0)[0].sourceId)
                     .toMatch(mockDeviceControllerMatch);
@@ -638,20 +538,9 @@ describe("Communication", () => {
         const configuration: Configuration = {
             common: {
                 agentIdentity: { name: "IntraCommunicationTestContainer" },
-                associatedUser: {
-                    name: "Fred",
-                    objectType: CoreTypes.OBJECT_TYPE_USER,
-                    coreType: "User",
-                    objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-                    names: {
-                        givenName: "Fred",
-                        familyName: "Feuerstein",
-                    },
-                },
             },
             communication: {
                 shouldAutoStart: true,
-                shouldAdvertiseDevice: false,
                 brokerUrl: "mqtt://localhost:1898",
             },
             controllers: {
@@ -754,7 +643,7 @@ describe("Communication", () => {
 
     });
 
-    describe("Cross-Platform Communication", () => {
+    describe("Cross-Namespace Communication", () => {
 
         const TEST_TIMEOUT = 10000;
 
@@ -771,7 +660,6 @@ describe("Communication", () => {
             communication: {
                 namespace: "my-namespace-1",
                 shouldAutoStart: true,
-                shouldAdvertiseDevice: false,
                 brokerUrl: "mqtt://localhost:1898",
             },
             controllers: {
@@ -793,7 +681,6 @@ describe("Communication", () => {
             communication: {
                 namespace: "my-namespace-2",
                 shouldAutoStart: true,
-                shouldAdvertiseDevice: false,
                 brokerUrl: "mqtt://localhost:1898",
             },
             controllers: {

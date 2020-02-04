@@ -5,7 +5,7 @@ import { CoatyObject, Uuid } from "./object";
 export enum AnnotationStatus {
 
     /**
-     * Set when annotation media has only been stored on the creator's local device
+     * Set when annotation media has only been stored by the creator
      */
     StoredLocally,
 
@@ -20,7 +20,8 @@ export enum AnnotationStatus {
     Published,
 
     /**
-     * Set when annotation media is outdated, i.e. should no longer be in use by application
+     * Set when annotation media is outdated, i.e. should no longer be in use by
+     * application
      */
     Outdated,
 }

@@ -84,9 +84,6 @@ and/or `roles` properties of the `User` object type.
   (2) access to publish-subscribe communication messages by event types as part of the MQTT topic.
 * ACLs are checked on every communication message received by the broker, i.e. publications and subscriptions.
 * ACLs should be configurable by a tool that is part of your core infrastructure.
-* On any publication received the broker should also check whether the `AssociatedUserId` topic level
-  matches the authenticated user's identity. This is to prevent an authenticated user to publish messages
-  on behalf of another user.
 
 The following sequence diagram depicts the control flow for authentication and authorization:
 
@@ -121,9 +118,11 @@ one of the values `accepted` or `rejected`.
 ## Authentication with the Coaty framework
 
 1. Acquire authentication token by authenticating against IAM in a separate step
-2. Provide user ID and authentication token in the username/password fields as well as
-   the user certificate in the certificate field of the broker options which is part of the
-   Coaty container configuration (see code example below).
+2. Provide user ID and authentication token in the username/password fields as
+   well as the user certificate in the certificate field of the broker options
+   which is part of the Coaty container configuration (see code example below).
+   You could also add the auth token to the user field and skip the password
+   field.
 3. On connection the Communication Manager will pass this information transparently
    to the MQTT broker.
 
@@ -132,17 +131,8 @@ const configuration: Configuration =
     {
         ...
         communication: {
+            brokerUrl: <broker conenction URL>,
             mqttClientOptions: {
-                servers: [
-                    {
-                        host: host,
-
-                        // Note: a client running in a browser environment must use
-                        // websocket port 9883. We are using the standard TCP socket port 1883
-                        // here because the client is just a Node.js program.
-                        port: "1883"
-                    }
-                ],
 
                 // The username string
                 username: "<username>",

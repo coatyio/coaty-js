@@ -26,7 +26,8 @@ export interface Thing extends CoatyObject {
     description: string;
 
     /**
-     * An object hash containing user-annotated properties as key-value pairs. (optional)
+     * An object hash containing application-annotated properties as key-value
+     * pairs. (optional)
      */
     properties?: { [key: string]: any; };
 }

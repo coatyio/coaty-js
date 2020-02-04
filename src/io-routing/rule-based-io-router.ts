@@ -1,17 +1,36 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Device, IoActor, IoSource, Uuid } from "..";
+import { IoActor, IoNode, IoSource, Uuid } from "..";
+import { IoContext } from "../model/io-context";
 import { IoRouter } from "./io-router";
 
 /**
- * Supports rule-based routing of data from IO sources to IO actors for an
- * associated user.
+ * Supports rule-based routing of data from IO sources to IO actors based on an
+ * associated IO context.
  *
- * This router supports the following controller options:
- * - `rules`: an array of rule definitions for this router. The rules listed here
- *   override any predefined rules in the class definition.
- * - `externalDevices`:  an array of `Device` object definitions for external
- *    IO sources or actors with external topics.
+ * Define rules that determine whether a given pair if IO source and IO actor
+ * should be associated or not. A rule is only applied if the value type of IO
+ * source and IO actor are compatible. If no rules are defined or no rule
+ * matches no associations between IO sources and IO actors are established.
+ *
+ * You can define global rules that match IO sources and actors of any
+ * compatible value type or value-type specific rules that are only applied to
+ * IO sources and IO actors with a given value type.
+ *
+ * By default, an IO source and an IO actor are compatible if both define equal
+ * value types. You can define your own custom compatibility check on value
+ * types in a subclass by overriding the `areValueTypesCompatible` method.
+ *
+ * Note that this router makes its IO context available by advertising and for
+ * discovery (by core type, object type, or object Id) and listens for
+ * Update-Complete events on its IO context, triggering `onIoContextChanged`
+ * automatically.
+ *
+ * This router requires the following controller options:
+ * - `ioContext`: the IO context for which this router is managing routes
+ *   (mandatory)
+ * - `rules`: an array of rule definitions for this router. The rules listed
+ *   here override any rules defined in the `onInit` method.
  */
 export class RuleBasedIoRouter extends IoRouter {
 
@@ -25,6 +44,16 @@ export class RuleBasedIoRouter extends IoRouter {
         super.onInit();
         this._currentAssociations = [];
         this._rules = new Map<string, IoAssociationRule[]>();
+    }
+
+    /**
+     * Invoked when the IO context of this router has changed.
+     * 
+     * Triggers reevaluation of all defined rules.
+     */
+    onIoContextChanged() {
+        super.onIoContextChanged();
+        this._evaluateRules();
     }
 
     /**
@@ -58,7 +87,7 @@ export class RuleBasedIoRouter extends IoRouter {
     }
 
     protected onStarted() {
-        const rules = this.options["rules"] as IoAssociationRule[];
+        const rules = this.options.rules as IoAssociationRule[];
         if (rules) {
             this.defineRules(...rules);
         }
@@ -77,24 +106,25 @@ export class RuleBasedIoRouter extends IoRouter {
     }
 
     /**
-     * The default function used to compute the recommended update rate
-     * of an individual IO source - IO actor association. This function
-     * takes into account the maximum possible update rate of the source and the
-     * desired update rate of the actor and returns a value that satisfies
-     * both rates.
+     * The default function used to compute the recommended update rate of an
+     * individual IO source - IO actor association.
+     *
+     * This function takes into account the maximum possible update rate of the
+     * source and the desired update rate of the actor and returns a value that
+     * satisfies both rates.
      *
      * Override this method in a subclass to implement a custom rate function.
      *
      * @param source the IoSource object
      * @param actor the IoActor object
-     * @param sourceDevice the IO source's device
-     * @param actorDevice the IO actor's device
+     * @param sourceNode the IO source's node
+     * @param sourceNode the IO actor's node
      */
     protected computeDefaultUpdateRate(
         source: IoSource,
         actor: IoActor,
-        sourceDevice: Device,
-        actorDevice: Device): number {
+        sourceNode: IoNode,
+        actorNode: IoNode): number {
         if (source.updateRate === undefined) {
             return actor.updateRate;
         }
@@ -104,11 +134,11 @@ export class RuleBasedIoRouter extends IoRouter {
         return Math.max(source.updateRate, actor.updateRate);
     }
 
-    protected onDeviceAdvertised(device: Device) {
+    protected onIoNodeManaged(node: IoNode) {
         this._evaluateRules();
     }
 
-    protected onDevicesDeadvertised(devices: Device[]) {
+    protected onIoNodesUnmanaged(nodes: IoNode[]) {
         this._evaluateRules();
     }
 
@@ -118,23 +148,22 @@ export class RuleBasedIoRouter extends IoRouter {
 
     private _getCompatibleAssociations(): IoCompatibleAssociations {
         const compatibleAssociations: IoCompatibleAssociations = [];
-        const sources = new Map<Uuid, [IoSource, Device]>();
-        const actors = new Map<Uuid, [IoActor, Device]>();
+        const sources = new Map<Uuid, [IoSource, IoNode]>();
+        const actors = new Map<Uuid, [IoActor, IoNode]>();
 
-        this.getAssociatedDevices().forEach(device => {
-            device.ioCapabilities.forEach(point => {
-                if (point.coreType === "IoSource") {
-                    sources.set(point.objectId, [point, device]);
-                } else {
-                    actors.set(point.objectId, [point, device]);
-                }
+        this.managedIoNodes.forEach(node => {
+            node.ioSources.forEach(src => {
+                sources.set(src.objectId, [src, node]);
+            });
+            node.ioActors.forEach(actor => {
+                actors.set(actor.objectId, [actor, node]);
             });
         });
 
-        sources.forEach(([source, sourceDevice]) => {
-            actors.forEach(([actor, actorDevice]) => {
+        sources.forEach(([source, sourceNode]) => {
+            actors.forEach(([actor, actorNode]) => {
                 if (this.areValueTypesCompatible(source, actor)) {
-                    compatibleAssociations.push([source, sourceDevice, actor, actorDevice]);
+                    compatibleAssociations.push([source, sourceNode, actor, actorNode]);
                 }
             });
         });
@@ -145,7 +174,7 @@ export class RuleBasedIoRouter extends IoRouter {
     private _match(compatibleAssociations: IoCompatibleAssociations): IoAssociationPairs {
         const associationMap: IoAssociationPairs = new Map();
 
-        compatibleAssociations.forEach(([source, sourceDevice, actor, actorDevice]) => {
+        compatibleAssociations.forEach(([source, sourceNode, actor, actorNode]) => {
             let valueType = source.valueType;
             let rules = this._rules.get(valueType);
             if (!rules) {
@@ -160,7 +189,7 @@ export class RuleBasedIoRouter extends IoRouter {
                     let isMatch = false;
 
                     try {
-                        isMatch = rule.condition(source, sourceDevice, actor, actorDevice, this);
+                        isMatch = rule.condition(source, sourceNode, actor, actorNode, this.ioContext, this);
                     } catch (error) {
                         console.log(`RuleBasedIoRouter: failed invoking condition of rule '${rule.name}': ${error}`);
                     }
@@ -262,9 +291,10 @@ export class RuleBasedIoRouter extends IoRouter {
  */
 export type IoRoutingRuleConditionFunc = (
     source: IoSource,
-    sourceDevice: Device,
+    sourceNode: IoNode,
     actor: IoActor,
-    actorDevice: Device,
+    actorNode: IoNode,
+    context: IoContext,
     router: RuleBasedIoRouter) => boolean;
 
 /**
@@ -278,16 +308,15 @@ export interface IoAssociationRule {
     name: string;
 
     /**
-     * The value type for which the rule is applicable.
-     * The rule is applied to all IO source - IO actor
-     * pairs whose value type matches this value type.
-     * 
-     * If the value type is undefined or an empty string,
-     * the rule acts as a global rule. It applies to all IO source - IO actor
-     * pairs that have compatible value types. Non-global rules have
-     * precedence over global rules. Global rules only apply if there
-     * are no non-global rules whose value type matches the value type of the
-     * corresponding IO source - IO actor pair.
+     * The value type for which the rule is applicable. The rule is applied to
+     * all IO source - IO actor pairs whose value type matches this value type.
+     *
+     * If the value type is undefined or an empty string, the rule acts as a
+     * global rule. It applies to all IO source - IO actor pairs that have
+     * compatible value types. Non-global rules have precedence over global
+     * rules. Global rules only apply if there are no non-global rules whose
+     * value type matches the value type of the corresponding IO source - IO
+     * actor pair.
      */
     valueType: string;
 
@@ -309,10 +338,10 @@ export interface IoAssociationRule {
 }
 
 /**
- * Maps value types to an array of compatible IO source - IO source device -
- * IO actor - IO actor device pairs.
+ * Maps value types to an array of compatible IO source - IO source node - IO
+ * actor - IO actor node pairs.
  */
-type IoCompatibleAssociations = Array<[IoSource, Device, IoActor, Device]>;
+type IoCompatibleAssociations = Array<[IoSource, IoNode, IoActor, IoNode]>;
 
 /**
  * A tuple describing an association pair with its update rate

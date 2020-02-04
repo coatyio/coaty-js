@@ -50,7 +50,6 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
     eventRequest: CommunicationEvent<CommunicationEventData> = undefined;
 
     private _eventSourceId: Uuid;
-    private _eventUserId: Uuid;
 
     /**
      * @internal For internal use in framework only. Do not use in application code.
@@ -83,23 +82,6 @@ export abstract class CommunicationEvent<T extends CommunicationEventData> {
      */
     get data() {
         return this._eventData;
-    }
-
-    /**
-     * Gets the user ID of this event.
-     * Returns undefined if this is not a user-associated event.
-     */
-    get eventUserId() {
-        return this._eventUserId;
-    }
-
-    /**
-     * @internal For internal use in framework only.
-     *
-     * Sets the user ID associated with this event.
-     */
-    set eventUserId(userId: Uuid) {
-        this._eventUserId = userId;
     }
 
 }

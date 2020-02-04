@@ -2,7 +2,6 @@
 
 import { clone } from "..";
 import { AnnotationStatus, AnnotationType } from "./annotation";
-import { DisplayType } from "./device";
 import { IoSourceBackpressureStrategy } from "./io-point";
 import { LogLevel } from "./log";
 import { CoatyObject } from "./object";
@@ -15,9 +14,10 @@ import { TaskStatus } from "./task";
 export type CoreType =
     "CoatyObject" |
     "User" |
-    "Device" |
     "Annotation" |
     "Task" |
+    "IoContext" |
+    "IoNode" |
     "IoSource" |
     "IoActor" |
     "Identity" |
@@ -34,9 +34,10 @@ export class CoreTypes {
     static readonly OBJECT_TYPE_PREFIX = "coaty.";
     static readonly OBJECT_TYPE_OBJECT = CoreTypes.OBJECT_TYPE_PREFIX + "CoatyObject";
     static readonly OBJECT_TYPE_USER = CoreTypes.OBJECT_TYPE_PREFIX + "User";
-    static readonly OBJECT_TYPE_DEVICE = CoreTypes.OBJECT_TYPE_PREFIX + "Device";
     static readonly OBJECT_TYPE_ANNOTATION = CoreTypes.OBJECT_TYPE_PREFIX + "Annotation";
     static readonly OBJECT_TYPE_TASK = CoreTypes.OBJECT_TYPE_PREFIX + "Task";
+    static readonly OBJECT_TYPE_IO_CONTEXT = CoreTypes.OBJECT_TYPE_PREFIX + "IoContext";
+    static readonly OBJECT_TYPE_IO_NODE = CoreTypes.OBJECT_TYPE_PREFIX + "IoNode";
     static readonly OBJECT_TYPE_IO_SOURCE = CoreTypes.OBJECT_TYPE_PREFIX + "IoSource";
     static readonly OBJECT_TYPE_IO_ACTOR = CoreTypes.OBJECT_TYPE_PREFIX + "IoActor";
     static readonly OBJECT_TYPE_IDENTITY = CoreTypes.OBJECT_TYPE_PREFIX + "Identity";
@@ -48,9 +49,10 @@ export class CoreTypes {
     private static readonly _coreTypesMap = {
         CoatyObject: CoreTypes.OBJECT_TYPE_OBJECT,
         User: CoreTypes.OBJECT_TYPE_USER,
-        Device: CoreTypes.OBJECT_TYPE_DEVICE,
         Annotation: CoreTypes.OBJECT_TYPE_ANNOTATION,
         Task: CoreTypes.OBJECT_TYPE_TASK,
+        IoContext: CoreTypes.OBJECT_TYPE_IO_CONTEXT,
+        IoNode: CoreTypes.OBJECT_TYPE_IO_NODE,
         IoSource: CoreTypes.OBJECT_TYPE_IO_SOURCE,
         IoActor: CoreTypes.OBJECT_TYPE_IO_ACTOR,
         Identity: CoreTypes.OBJECT_TYPE_IDENTITY,
@@ -226,12 +228,14 @@ export class CoreTypes {
                 return CoreTypes._isObject(obj);
             case "User":
                 return CoreTypes._isUser(obj);
-            case "Device":
-                return CoreTypes._isDevice(obj);
             case "Annotation":
                 return CoreTypes._isAnnotation(obj);
             case "Task":
                 return CoreTypes._isTask(obj);
+            case "IoContext":
+                return CoreTypes._isIoContext(obj);
+            case "IoNode":
+                return CoreTypes._isIoNode(obj);
             case "IoSource":
                 return CoreTypes._isIoSource(obj);
             case "IoActor":
@@ -361,13 +365,19 @@ export class CoreTypes {
             });
     }
 
-    private static _isDevice(obj: any) {
+    private static _isIoContext(obj: any) {
+        return CoreTypes._isObject(obj) && obj.coreType === "IoContext";
+    }
+
+    private static _isIoNode(obj: any) {
         return CoreTypes._isObject(obj) &&
-            obj.coreType === "Device" &&
-            typeof obj.displayType === "number" &&
-            DisplayType[obj.displayType] !== undefined &&
-            (obj.ioCapabilities === undefined ||
-                CoreTypes.isObjectArray(obj.ioCapabilities, ["IoSource", "IoActor"]));
+            obj.coreType === "IoNode" &&
+            (obj.ioSources === undefined ||
+                CoreTypes.isObjectArray(obj.ioSources, "IoSource")) &&
+            (obj.ioActors === undefined ||
+                CoreTypes.isObjectArray(obj.ioActors, "IoActor")) &&
+            (obj.characteristics === undefined ||
+                (obj.characteristics && typeof obj.characteristics === "object"));
     }
 
     private static _isAnnotation(obj: any) {
@@ -416,8 +426,8 @@ export class CoreTypes {
             obj.coreType === "IoSource" &&
             typeof obj.valueType === "string" &&
             obj.valueType.length > 0 &&
-            (obj.externalTopic === undefined ||
-                typeof obj.externalTopic === "string") &&
+            (obj.externalRoute === undefined ||
+            typeof obj.externalRoute === "string") &&
             (obj.updateRate === undefined ||
                 (typeof obj.updateRate === "number" &&
                     obj.updateRate >= 0)) &&
@@ -431,8 +441,8 @@ export class CoreTypes {
             obj.coreType === "IoActor" &&
             typeof obj.valueType === "string" &&
             obj.valueType.length > 0 &&
-            (obj.externalTopic === undefined ||
-                typeof obj.externalTopic === "string") &&
+            (obj.externalRoute === undefined ||
+            typeof obj.externalRoute === "string") &&
             (obj.updateRate === undefined ||
                 (typeof obj.updateRate === "number" &&
                     obj.updateRate >= 0)) &&

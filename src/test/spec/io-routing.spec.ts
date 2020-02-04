@@ -4,7 +4,7 @@
  * Test suite for framework IO routing.
  */
 
-import { CommunicationManager, Components, Configuration, Container, CoreTypes, DisplayType, IoActor, IoSource, User } from "../..";
+import { AssociateEvent, CommunicationManager, Components, Configuration, Container, CoreTypes, IoActor, IoContext, IoSource, Runtime } from "../..";
 import { CommunicationEventType } from "../../com/communication-event";
 import { CommunicationTopic } from "../../com/communication-topic";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
@@ -23,25 +23,6 @@ describe("IO Routing", () => {
         };
 
         const configuration1: Configuration = {
-            common: {
-                associatedUser: {
-                    name: "Fred",
-                    objectType: CoreTypes.OBJECT_TYPE_USER,
-                    coreType: "User",
-                    objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-                    names: {
-                        givenName: "Fred",
-                        familyName: "Feuerstein",
-                    },
-                },
-                associatedDevice: {
-                    name: "Fred's Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "db02ef91-7024-4cbb-9182-61fa57a8f0eb",
-                    displayType: DisplayType.Watch,
-                },
-            },
             communication: {
                 shouldAutoStart: false,
                 brokerUrl: "mqtt://localhost:1898",
@@ -86,9 +67,9 @@ describe("IO Routing", () => {
             expect(CommunicationTopic.isValidIoValueTopic("foo", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic("/foo/bar", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic("foo/bar/", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/coaty/IOV/user/source/token/", version)).toBeTruthy();
+            expect(CommunicationTopic.isValidIoValueTopic("/coaty/foo/bar", version)).toBeTruthy();
             expect(CommunicationTopic.isValidIoValueTopic(
-                "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/-" + "/IOV/user/source/token/",
+                "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/-" + "/IOV/5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
                 version)).toBeTruthy();
         });
 
@@ -100,8 +81,7 @@ describe("IO Routing", () => {
                 namespace,
                 CommunicationEventType.IoValue,
                 undefined,
-                "source45567",
-                configuration1.common.associatedUser.objectId,
+                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
                 undefined,
             ).getTopicName();
 
@@ -112,10 +92,10 @@ describe("IO Routing", () => {
                 namespace,
                 CommunicationEventType.IoValue,
                 undefined,
-                "source45567",
-                configuration1.common.associatedUser.objectId,
+                undefined,
                 undefined,
             ).getTopicName();
+
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
             topic = CommunicationTopic.createByLevels(
@@ -123,17 +103,53 @@ describe("IO Routing", () => {
                 namespace,
                 CommunicationEventType.Advertise,
                 "CoatyObject",
-                "source45567",
-                configuration1.common.associatedUser.objectId,
+                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
                 undefined,
             ).getTopicName();
+
             expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
 
         });
 
+        it("validates Associate topic and event", () => {
+            const version = CommunicationManager.PROTOCOL_VERSION;
+            const namespace = "-";
+            const ioContextName = "Temperature Measurememt";
+            const topicName = CommunicationTopic.createByLevels(
+                CommunicationManager.PROTOCOL_VERSION,
+                namespace,
+                CommunicationEventType.Associate,
+                ioContextName,
+                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
+                undefined,
+            ).getTopicName();
+            const topic = CommunicationTopic.createByName(topicName);
+
+            expect(topic.version).toBe(version);
+            expect(topic.namespace).toBe(namespace);
+            expect(topic.eventType).toBe(CommunicationEventType.Associate);
+            expect(topic.eventTypeFilter).toBe(ioContextName);
+            expect(topic.sourceId).toBe("5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7");
+            expect(topic.correlationId).toBe(undefined);
+
+            expect(() => AssociateEvent.with(
+                "Temperature Measurement",
+                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
+                "2805b596-711f-440d-a97d-5b70a8e91ef8",
+                "myroute"))
+                .not.toThrow();
+
+            expect(() => AssociateEvent.with(
+                "Temperature/Measurement",
+                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
+                "2805b596-711f-440d-a97d-5b70a8e91ef8",
+                "myroute"))
+                .toThrow();
+        });
+
     });
 
-    describe("Basic IO Routing - Single Container", () => {
+    describe("Basic IO Routing within a single Container", () => {
 
         const TEST_TIMEOUT = 10000;
 
@@ -150,7 +166,7 @@ describe("IO Routing", () => {
             coreType: "IoSource",
             objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
             objectId: "c547e5cd-ef99-4ccd-b109-fc472fc2d421",
-            valueType: "coaty.test.Temperature",
+            valueType: "coaty.test.Temperature[Celsius]",
         };
 
         const actor1: IoActor = {
@@ -161,25 +177,20 @@ describe("IO Routing", () => {
             valueType: source1.valueType,
         };
 
+        const ioContext: IoContext = {
+            name: "Temperature Measurement",
+            coreType: "IoContext",
+            objectType: CoreTypes.OBJECT_TYPE_IO_CONTEXT,
+            objectId: Runtime.newUuid(),
+        };
+
         const configuration1: Configuration = {
             common: {
-                associatedUser: {
-                    name: "Fred",
-                    objectType: CoreTypes.OBJECT_TYPE_USER,
-                    coreType: "User",
-                    objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-                    names: {
-                        givenName: "Fred",
-                        familyName: "Feuerstein",
+                ioContextNodes: {
+                    "Temperature Measurement": {
+                        ioSources: [source1],
+                        ioActors: [actor1],
                     },
-                },
-                associatedDevice: {
-                    name: "Fred's Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "db02ef91-7024-4cbb-9182-61fa57a8f0eb",
-                    displayType: DisplayType.Watch,
-                    ioCapabilities: [source1, actor1],
                 },
             },
             communication: {
@@ -187,11 +198,8 @@ describe("IO Routing", () => {
                 brokerUrl: "mqtt://localhost:1898",
             },
             controllers: {
-                MockIoActorController: {
-                },
-                IoSourceController: {
-                },
                 BasicIoRouter: {
+                    ioContext,
                 },
             },
         };
@@ -219,14 +227,12 @@ describe("IO Routing", () => {
         it("actor receives all values from source", (done) => {
             const actorController = container.getController<mocks.MockIoActorController>("MockIoActorController");
             const sourceController = container.getController<IoSourceController>("IoSourceController");
-            const logger: mocks.IoActorLogger = { values: [], stateEvents: [] };
+            const logger = new mocks.IoActorLogger();
             const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];
             const sourceAssociations: boolean[] = [];
 
             sourceController.observeAssociation(source1)
-                .subscribe(isAssociated => {
-                    sourceAssociations.push(isAssociated);
-                });
+                .subscribe(isAssociated => sourceAssociations.push(isAssociated));
 
             actorController.logActor(actor1, logger);
 
@@ -235,19 +241,13 @@ describe("IO Routing", () => {
                     sourceController.publish<number>(source1, value);
                 }
 
-                delayAction(2000, undefined, () => {
-                    expect(logger.stateEvents.length).toBe(2);
-                    if (logger.stateEvents[0]) {
-                        expect(logger.stateEvents[0].data.hasAssociations).toBe(false);
-                    }
-                    if (logger.stateEvents[1]) {
-                        expect(logger.stateEvents[1].data.hasAssociations).toBe(true);
-                    }
+                delayAction(1000, undefined, () => {
+                    expect(logger.associations.length).toBe(2);
+                    expect(logger.associations[0]).toBe(false);
+                    expect(logger.associations[1]).toBe(true);
                     expect(logger.values.length).toBe(emittedValues.length);
-                    for (let i = 0; i < emittedValues.length; i++) {
-                        if (logger.values[i]) {
-                            expect(logger.values[i]).toBe(emittedValues[i]);
-                        }
+                    for (let i = 0; i < logger.values.length; i++) {
+                        expect(logger.values[i]).toBe(emittedValues[i]);
                     }
 
                     // This will cause the 3rd state change event (disassociation) on the source
@@ -255,15 +255,9 @@ describe("IO Routing", () => {
 
                     delayAction(1000, done, () => {
                         expect(sourceAssociations.length).toBe(3);
-                        if (sourceAssociations.length > 0) {
-                            expect(sourceAssociations[0]).toBe(false);
-                        }
-                        if (sourceAssociations.length > 1) {
-                            expect(sourceAssociations[1]).toBe(true);
-                        }
-                        if (sourceAssociations.length > 2) {
-                            expect(sourceAssociations[2]).toBe(false);
-                        }
+                        expect(sourceAssociations[0]).toBe(false);
+                        expect(sourceAssociations[1]).toBe(true);
+                        expect(sourceAssociations[2]).toBe(false);
                     });
 
                 });
@@ -272,23 +266,15 @@ describe("IO Routing", () => {
 
     });
 
-    describe("Switching IO Routing - Multiple Containers", () => {
+    describe("IO Routing across containers", () => {
 
         const TEST_TIMEOUT = 10000;
 
-        const associatedUser: User = {
-            name: "Fred",
-            objectType: CoreTypes.OBJECT_TYPE_USER,
-            coreType: "User",
-            objectId: "f608cdb1-3350-4c62-8feb-4589f26f2efe",
-            names: {
-                givenName: "Fred",
-                familyName: "Feuerstein",
-            },
-        };
-
         const components1: Components = {
-            controllers: { IoSourceController },
+            controllers: {
+                IoSourceController,
+                MockIoContextController: mocks.MockIoContextController,
+            },
         };
 
         const components2: Components = {
@@ -304,15 +290,28 @@ describe("IO Routing", () => {
         };
 
         const components4: Components = {
-            controllers: { RuleBasedIoRouter },
+            controllers: {
+                RuleBasedIoRouter,
+                MockIoActorController: mocks.MockIoActorController,
+            },
         };
+
+        const ioContext = {
+            name: "Temperature Measurement",
+            coreType: "IoContext",
+            objectType: "coaty.test.TemperatureIoContext",
+            objectId: Runtime.newUuid(),
+
+            // Either "normal" or "emergency"
+            operatingState: "normal",
+        } as IoContext;
 
         const source1: IoSource = {
             name: "Temperature Source 1",
             coreType: "IoSource",
             objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
             objectId: "c547e5cd-ef99-4ccd-b109-fc472fc2d421",
-            valueType: "coaty.test.Temperature",
+            valueType: "coaty.test.Temperature[Celsius]",
         };
 
         const source2: IoSource = {
@@ -340,75 +339,74 @@ describe("IO Routing", () => {
             valueType: actor1.valueType,
         };
 
+        const actor3: IoActor = {
+            name: "Non-Temperature Actor 3",
+            coreType: "IoActor",
+            objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
+            objectId: "ffcf807e-1758-4108-a53e-2428cef6fae9",
+            // IO value type is incompatible with sources value type.
+            // No values should ever be emitted for this actor.
+            valueType: "coaty.test.Velocity[m/s]",
+        };
+
         const configuration1: Configuration = {
             common: {
-                associatedUser: associatedUser,
-                associatedDevice: {
-                    name: "Fred's Watch Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "db02ef91-7024-4cbb-9182-61fa57a8f0eb",
-                    displayType: DisplayType.Watch,
-                    ioCapabilities: [source1, source2],
+                ioContextNodes: {
+                    "Temperature Measurement": {
+                        ioSources: [source1, source2],
+                    },
                 },
             },
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-            },
-            controllers: {
-                IoSourceController: {
-                },
             },
         };
 
         const configuration2: Configuration = {
             common: {
-                associatedUser: associatedUser,
-                associatedDevice: {
-                    name: "Fred's Arm Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "080b1f2e-60d3-47b6-a715-9f14bfc212e8",
-                    displayType: DisplayType.Arm,
-                    ioCapabilities: [actor1],
+                ioContextNodes: {
+                    "Temperature Measurement": {
+                        ioActors: [actor1],
+                        characteristics: {
+                            isResponsibleForOperatingState: "normal",
+                        },
+                    },
                 },
             },
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
-            },
-            controllers: {
-                MockIoActorController: {
-                },
             },
         };
 
         const configuration3: Configuration = {
             common: {
-                associatedUser: associatedUser,
-                associatedDevice: {
-                    name: "Fred's Monitor Device",
-                    coreType: "Device",
-                    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-                    objectId: "de87d219-4a0e-40e0-8f98-2f60f1771444",
-                    displayType: DisplayType.Monitor,
-                    ioCapabilities: [actor2],
+                ioContextNodes: {
+                    "Temperature Measurement": {
+                        ioActors: [actor2],
+                        characteristics: {
+                            isResponsibleForOperatingState: "emergency",
+                        },
+                    },
                 },
             },
             communication: {
                 shouldAutoStart: true,
                 brokerUrl: "mqtt://localhost:1898",
             },
-            controllers: {
-                MockIoActorController: {
-                },
-            },
         };
 
         const configuration4: Configuration = {
             common: {
-                associatedUser: associatedUser,
+                ioContextNodes: {
+                    "Temperature Measurement": {
+                        ioActors: [actor3],
+                        characteristics: {
+                            isResponsibleForOperatingState: "normal",
+                        },
+                    },
+                },
             },
             communication: {
                 shouldAutoStart: true,
@@ -416,46 +414,38 @@ describe("IO Routing", () => {
             },
             controllers: {
                 RuleBasedIoRouter: {
+                    ioContext,
                     rules: [
                         {
-                            name: "Route sources to Arm device",
+                            name: "Route temperature sources to normal actors if operating state is normal",
                             valueType: source1.valueType,
-                            condition: (source, sourceDevice, actor, actorDevice, router) =>
-                                !isContextMonitor(router) && actorDevice.displayType === DisplayType.Arm,
+                            condition: (source, sourceNode, actor, actorNode, context, router) =>
+                                actorNode.characteristics?.isResponsibleForOperatingState === "normal" &&
+                                context["operatingState"] === "normal",
                         } as IoAssociationRule,
                         {
-                            name: "Route sources to Monitor device",
+                            name: "Route temperature sources to emergency actors if operating state is emergency",
                             valueType: source1.valueType,
-                            condition: (source, sourceDevice, actor, actorDevice, router) =>
-                                isContextMonitor(router) && actorDevice.displayType === DisplayType.Monitor,
+                            condition: (source, sourceNode, actor, actorNode, context, router) =>
+                                actorNode.characteristics?.isResponsibleForOperatingState === "emergency" &&
+                                context["operatingState"] === "emergency",
                         } as IoAssociationRule,
                     ],
                 },
             },
         };
 
-        function isContextMonitor(router: RuleBasedIoRouter) {
-            return router.findAssociatedDevice(device => device.displayType === DisplayType.Monitor);
-        }
-
         let container1: Container;
         let container2: Container;
         let container3: Container;
         let container4: Container;
-
-        const source1Associations: boolean[] = [];
-        const source2Associations: boolean[] = [];
 
         beforeAll(done => {
             Spy.reset();
 
             container1 = Container.resolve(components1, configuration1);
             container2 = Container.resolve(components2, configuration2);
-
-            // By design, IO router is set up after all the other containers
-            // have been resolved, so that it misses the Advertise device events
-            // from the other components. Instead, the IO router issues
-            // a Discover event to retrieve associated devices.
+            container3 = Container.resolve(components3, configuration3);
             container4 = Container.resolve(components4, configuration4);
 
             done();
@@ -471,153 +461,128 @@ describe("IO Routing", () => {
             },
             TEST_TIMEOUT);
 
-        it("actor1 receives all values from both sources", (done) => {
-            const actor1Controller = container2.getController<mocks.MockIoActorController>("MockIoActorController");
-            const sourceController = container1.getController<IoSourceController>("IoSourceController");
-            const logger1: mocks.IoActorLogger = { values: [], stateEvents: [] };
-            const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];
-
-            sourceController.observeAssociation(source1)
-                .subscribe(isAssociated => {
-                    source1Associations.push(isAssociated);
-                });
-            sourceController.observeAssociation(source2)
-                .subscribe(isAssociated => {
-                    source2Associations.push(isAssociated);
-                });
-
-            actor1Controller.logActor(actor1, logger1);
-
-            delayAction(1000, undefined, () => {
-                for (const value of emittedValues) {
-                    sourceController.publish<number>(source1, value);
-                    sourceController.publish<number>(source2, value);
-                }
-
-                delayAction(2000, done, () => {
-                    expect(logger1.stateEvents.length).toBe(3);
-                    if (logger1.stateEvents[0]) {
-                        expect(logger1.stateEvents[0].data.hasAssociations).toBe(false);
-                    }
-                    if (logger1.stateEvents[1]) {
-                        expect(logger1.stateEvents[1].data.hasAssociations).toBe(true);
-                    }
-                    if (logger1.stateEvents[2]) {
-                        expect(logger1.stateEvents[2].data.hasAssociations).toBe(true);
-                    }
-                    expect(logger1.values.length).toBe(emittedValues.length * 2);
-                    for (let i = 0; i < emittedValues.length * 2; i += 2) {
-                        const value = logger1.values[i];
-                        const emittedIndex = emittedValues.findIndex(v => v === value);
-                        expect(emittedIndex).not.toBe(-1);
-                        if (emittedIndex !== -1) {
-                            emittedValues.splice(emittedIndex, 1);
-                        }
-                    }
-                });
-            });
-        }, TEST_TIMEOUT);
-
-        it("actor2 receives all values from both sources", (done) => {
-            // Register Monitor device with actor2
-            container3 = Container.resolve(components3, configuration3);
-
+        it("actors receive values depending on context", (done) => {
+            const ioContextController = container1.getController<mocks.MockIoContextController>("MockIoContextController");
             const actor1Controller = container2.getController<mocks.MockIoActorController>("MockIoActorController");
             const actor2Controller = container3.getController<mocks.MockIoActorController>("MockIoActorController");
+            const actor3Controller = container4.getController<mocks.MockIoActorController>("MockIoActorController");
             const sourceController = container1.getController<IoSourceController>("IoSourceController");
-            const logger1: mocks.IoActorLogger = { values: [], stateEvents: [] };
-            const logger2: mocks.IoActorLogger = { values: [], stateEvents: [] };
-            const emittedValues = [Math.random(), Math.random(), Math.random(), Math.random()];
+            const logger1 = new mocks.IoActorLogger();
+            const logger2 = new mocks.IoActorLogger();
+            const logger3 = new mocks.IoActorLogger();
+            const emittedValues1 = [Math.random(), Math.random(), Math.random()];
+            const emittedValues2 = [Math.random(), Math.random(), Math.random()];
+            const source1Associations: boolean[] = [];
+            const source2Associations: boolean[] = [];
+
+            sourceController.observeAssociation(source1)
+                .subscribe(isAssociated => source1Associations.push(isAssociated));
+            sourceController.observeAssociation(source2)
+                .subscribe(isAssociated => source2Associations.push(isAssociated));
 
             actor1Controller.logActor(actor1, logger1);
             actor2Controller.logActor(actor2, logger2);
+            actor3Controller.logActor(actor3, logger3);
 
-            delayAction(1000, undefined, () => {
-                for (const value of emittedValues) {
-                    sourceController.publish<number>(source1, value);
-                    sourceController.publish<number>(source2, value);
+            delayAction(500, undefined, () => {
+                ioContextController.discoverIoContext(ioContext.objectType);
+
+                for (let i = 0; i < emittedValues1.length; i++) {
+                    sourceController.publish<number>(source1, emittedValues1[i]);
+                    sourceController.publish<number>(source2, emittedValues2[i]);
                 }
 
-                delayAction(2000, undefined, () => {
-                    // actor1 should receive 2 Disassociate events for both sources
-                    expect(logger1.stateEvents.length).toBe(3);
-                    if (logger1.stateEvents[0]) {
-                        expect(logger1.stateEvents[0].data.hasAssociations).toBe(true);
-                    }
-                    if (logger1.stateEvents[1]) {
-                        expect(logger1.stateEvents[1].data.hasAssociations).toBe(false);
-                    }
-                    if (logger1.stateEvents[2]) {
-                        expect(logger1.stateEvents[2].data.hasAssociations).toBe(false);
-                    }
-
-                    // actor2 should receive 2 Associate events for both sources
-                    expect(logger2.stateEvents.length).toBe(3);
-                    if (logger2.stateEvents[0]) {
-                        expect(logger2.stateEvents[0].data.hasAssociations).toBe(false);
-                    }
-                    if (logger2.stateEvents[1]) {
-                        expect(logger2.stateEvents[1].data.hasAssociations).toBe(true);
-                    }
-                    if (logger2.stateEvents[2]) {
-                        expect(logger2.stateEvents[2].data.hasAssociations).toBe(true);
+                delayAction(500, undefined, () => {
+                    // actor1 receives all IO values in normal operating state
+                    expect(logger1.associations.length).toBe(2);    // including initial value (false, because deassociated)
+                    expect(logger1.associations[0]).toBe(false);
+                    expect(logger1.associations[1]).toBe(true);
+                    expect(logger1.values.length).toBe(emittedValues1.length + emittedValues2.length);
+                    for (let i = 0; i < logger1.values.length; i++) {
+                        expect(logger1.values[i]).toBe(i % 2 === 0 ?
+                            emittedValues1[Math.floor(i / 2)] :
+                            emittedValues2[Math.floor(i / 2)]);
                     }
 
-                    // actor1 should receive no IO values any more
-                    expect(logger1.values.length).toBe(0);
+                    // actor2 receives no IO values in normal operating state
+                    expect(logger2.associations.length).toBe(1);    // initial value (false, because deassociated)
+                    expect(logger2.associations[0]).toBe(false);
+                    expect(logger2.values.length).toBe(0);
 
-                    // actor2 should receive all IO values after switching context
-                    expect(logger2.values.length).toBe(emittedValues.length * 2);
-                    for (let i = 0; i < emittedValues.length * 2; i += 2) {
-                        const value = logger2.values[i];
-                        const emittedIndex = emittedValues.findIndex(v => v === value);
-                        expect(emittedIndex).not.toBe(-1);
-                        if (emittedIndex !== -1) {
-                            emittedValues.splice(emittedIndex, 1);
-                        }
-                    }
+                    // actor3 receives no IO values because its value type is incompatible
+                    expect(logger3.associations.length).toBe(1);    // initial value (false, because deassociated)
+                    expect(logger3.associations[0]).toBe(false);
+                    expect(logger3.values.length).toBe(0);
 
-                    // This will cause the final state change events (disassociation) on the sources
-                    container1.shutdown();
+                    // Now switch the context to emergency operation and publish the same IO values again
+                    logger1.reset();
+                    logger2.reset();
+                    logger3.reset();
+                    ioContextController.changeIoContext("emergency");
 
-                    delayAction(1000, done, () => {
-                        expect(source1Associations.length).toBe(5);
-                        if (source1Associations.length > 0) {
-                            expect(source1Associations[0]).toBe(false);
-                        }
-                        if (source1Associations.length > 1) {
-                            expect(source1Associations[1]).toBe(true);
-                        }
-                        if (source1Associations.length > 2) {
-                            expect(source1Associations[2]).toBe(false);
-                        }
-                        if (source1Associations.length > 3) {
-                            expect(source1Associations[3]).toBe(true);
-                        }
-                        if (source1Associations.length > 4) {
-                            expect(source1Associations[4]).toBe(false);
+                    delayAction(500, undefined, () => {
+
+                        for (let i = 0; i < emittedValues1.length; i++) {
+                            sourceController.publish<number>(source1, emittedValues1[i]);
+                            sourceController.publish<number>(source2, emittedValues2[i]);
                         }
 
-                        expect(source2Associations.length).toBe(5);
-                        if (source2Associations.length > 0) {
-                            expect(source2Associations[0]).toBe(false);
-                        }
-                        if (source2Associations.length > 1) {
-                            expect(source2Associations[1]).toBe(true);
-                        }
-                        if (source2Associations.length > 2) {
-                            expect(source2Associations[2]).toBe(false);
-                        }
-                        if (source2Associations.length > 3) {
-                            expect(source2Associations[3]).toBe(true);
-                        }
-                        if (source2Associations.length > 4) {
-                            expect(source2Associations[4]).toBe(false);
-                        }
+                        delayAction(500, undefined, () => {
 
-                        container2.shutdown();
-                        container3.shutdown();
-                        container4.shutdown();
+                            // actor1 receives no IO values in emergency operating state
+                            expect(logger1.associations.length).toBe(1);    // disassociated by context change
+                            expect(logger1.associations[0]).toBe(false);
+                            expect(logger1.values.length).toBe(0);
+
+                            // actor2 receives all IO values in emergency operating state
+                            expect(logger2.associations.length).toBe(1);    // associated by context change
+                            expect(logger2.associations[0]).toBe(true);
+                            expect(logger2.values.length).toBe(emittedValues1.length + emittedValues2.length);
+                            for (let i = 0; i < logger2.values.length; i++) {
+                                expect(logger2.values[i]).toBe(i % 2 === 0 ?
+                                    emittedValues1[Math.floor(i / 2)] :
+                                    emittedValues2[Math.floor(i / 2)]);
+                            }
+
+                            // actor3 receives no IO values because its value type is incompatible
+                            expect(logger3.associations.length).toBe(0);
+                            expect(logger3.values.length).toBe(0);
+
+                            logger1.reset();
+                            logger2.reset();
+                            logger3.reset();
+
+                            // This will cause the final state change events (disassociation) on the sources
+                            container1.shutdown();
+
+                            delayAction(500, undefined, () => {
+                                expect(source1Associations.length).toBe(5);
+                                expect(source1Associations[0]).toBe(false);     // initial
+                                expect(source1Associations[1]).toBe(true);      // associate with actor1
+                                expect(source1Associations[2]).toBe(false);     // deassociate with actor1
+                                expect(source1Associations[3]).toBe(true);      // associate with actor2
+                                expect(source1Associations[4]).toBe(false);     // deassociate with actor2
+
+                                expect(source2Associations.length).toBe(5);
+                                expect(source2Associations[0]).toBe(false);     // initial
+                                expect(source2Associations[1]).toBe(true);      // associate with actor1
+                                expect(source2Associations[2]).toBe(false);     // deassociate with actor1
+                                expect(source2Associations[3]).toBe(true);      // associate with actor2
+                                expect(source2Associations[4]).toBe(false);     // deassociate with actor2
+
+                                container2.shutdown();
+                                container3.shutdown();
+                                container4.shutdown();
+
+                                delayAction(500, done, () => {
+
+                                    expect(logger1.associations.length).toBe(0);    // not associated on shutdown
+                                    expect(logger2.associations.length).toBe(1);    // deassociated on shutdown
+                                    expect(logger2.associations[0]).toBe(false);
+                                    expect(logger3.associations.length).toBe(0);    // not associated on shutdown
+                                });
+                            });
+                        });
                     });
                 });
             });

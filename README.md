@@ -120,7 +120,7 @@ You can install the latest standard distribution package in your
 agent project as follows:
 
 ```sh
-npm install coaty
+npm install @coaty/core
 ```
 
 *Note*: The distribution package defines several optional dependency modules, including

@@ -10,10 +10,9 @@ import {
     Container,
     CoreType,
     CoreTypes,
-    Device,
     IoActor,
+    IoNode,
     IoSource,
-    User,
     Uuid,
 } from "..";
 import { IDisposable } from "../runtime/disposable";
@@ -70,12 +69,11 @@ export class CommunicationManager implements IDisposable {
     private _qos: 0 | 1 | 2;
     private _client: Client;
     private _isClientConnected: boolean;
-    private _associatedUser: User;
-    private _associatedDevice: Device;
+    private _ioNodes: IoNode[];
     private _isDisposed: boolean;
     private _deadvertiseIds: Uuid[];
-    private _associateSubscription: Subscription;
-    private _discoverDeviceSubscription: Subscription;
+    private _associateSubscriptions: Subscription[];
+    private _discoverIoNodesSubscription: Subscription;
     private _discoverIdentitySubscription: Subscription;
 
     // Represents the current communication state in an observable
@@ -94,11 +92,11 @@ export class CommunicationManager implements IDisposable {
     // (hashed by IO point ID)
     private _ioStateItems: Map<Uuid, IoStateItem>;
 
-    // Own IO sources with their associated topic, actors, and updateRate
+    // Own IO sources with associating route, actor ids, and updateRate
     // (hashed by IO source ID)
     private _ioSourceItems: Map<Uuid, [string, Uuid[], number]>;
 
-    // Own IO actors with associated sources (hashed by topic)
+    // Own IO actors with associated source ids (hashed by associating route)
     private _ioActorItems: Map<string, Map<Uuid, Uuid[]>>;
 
     // Own IO actors with their associated Observable for subscription
@@ -111,7 +109,7 @@ export class CommunicationManager implements IDisposable {
         payload: any,
         options: IClientPublishOptions,
         isAdvertiseIdentity: boolean,
-        isAdvertiseDevice: boolean,
+        isAdvertiseIoNode: boolean,
     }>;
     private _deferredSubscriptions: string[];
 
@@ -136,6 +134,9 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Gets the communication manager's current communication options.
+     *
+     * @remarks These options may change whenever this communication manager is
+     * restarted.
      */
     get options(): Readonly<CommunicationOptions> {
         return this._options;
@@ -150,6 +151,16 @@ export class CommunicationManager implements IDisposable {
      */
     get namespace() {
         return this._namespace;
+    }
+
+    /**
+     * Gets the IO node for the given IO context name, as configured in the
+     * configuration common options.
+     *
+     * Returns undefined if no IO node is configured for the context name.
+     */
+    getIoNodeByContext(contextName: string): Readonly<IoNode> {
+        return this._ioNodes.find(node => node.name === contextName);
     }
 
     /**
@@ -345,7 +356,7 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Observe incoming messages on raw MQTT subscription topics.
+     * Observe incoming messages on raw subscription topics.
      *
      * The observable returned by calling `observeRaw` emits messages as tuples
      * including the actual published topic and the payload. Payload is
@@ -353,8 +364,9 @@ export class CommunicationManager implements IDisposable {
      * by the application. Use the `toString` method on a payload to convert the
      * raw data to an UTF8 encoded string.
      *
-     * Used to interoperate with external MQTT clients that publish messages on
-     * raw (usually non-Coaty) topics.
+     * Use this method to interoperate with external systems that publish
+     * messages on external topics. Use this method together with `publishRaw()`
+     * to transfer binary data between Coaty agents.
      *
      * Note that the returned observable is *shared* among all raw topic
      * observers. This basically means that the observable will emit messages
@@ -374,30 +386,25 @@ export class CommunicationManager implements IDisposable {
      *    });
      * ```
      *
-     * @remarks
-     * Observing raw subscription topics does *not* suppress observation of
-     * non-raw communication event types by the communication manager: If at
-     * least one raw topic is observed, the communication manager first
-     * dispatches *any* incoming message to *all* raw message observers. Then,
-     * event dispatching continues as usual by handling all non-raw
-     * communication event types which are observed.
+     * @remarks Incoming non-raw Coaty events are *not* dispatched to raw
+     * observers.
      *
-     * The specified subscription topic must be a valid MQTT subscription topic.
-     * It must not contain the character `NULL (U+0000)`.
+     * @remarks The specified subscription topic must be a valid MQTT
+     * subscription topic. It must not contain the character `NULL (U+0000)`.
      *
-     * @param topicFilter the subscription topic
+     * @param topic the subscription topic
      * @returns an observable emitting any incoming messages as tuples
      * containing the actual topic and the payload as Uint8Array (Buffer in
      * Node.js)
      */
-    observeRaw(topicFilter: string): Observable<[string, Uint8Array]> {
-        if (typeof topicFilter !== "string" ||
-            topicFilter.length === 0 ||
-            topicFilter.indexOf("\u0000") !== -1) {
-            throw new TypeError(`${topicFilter} is not a valid subscription topic`);
+    observeRaw(topic: string): Observable<[string, Uint8Array]> {
+        if (typeof topic !== "string" ||
+            topic.length === 0 ||
+            topic.indexOf("\u0000") !== -1) {
+            throw new TypeError(`${topic} is not a valid subscription topic`);
         }
 
-        return this._observeRequest(CommunicationEventType.Raw, topicFilter) as Observable<any>;
+        return this._observeRequest(CommunicationEventType.Raw, topic) as Observable<any>;
     }
 
     /**
@@ -537,9 +544,8 @@ export class CommunicationManager implements IDisposable {
             this._publishClient(event, CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + objectType);
         }
 
-        // Ensure a Deadvertise event/last will is emitted for an advertised Identity or Device.
-        if ((coreType === "Identity" && objectType === CoreTypes.OBJECT_TYPE_IDENTITY) ||
-            (coreType === "Device" && objectType === CoreTypes.OBJECT_TYPE_DEVICE)) {
+        // Ensure a Deadvertise event/last will is emitted for an advertised Identity or IoNode.
+        if (coreType === "Identity" || coreType === "IoNode") {
             this._deadvertiseIds.find(id => id === event.data.object.objectId) ||
                 this._deadvertiseIds.push(event.data.object.objectId);
         }
@@ -565,7 +571,7 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Publish a value on the given topic. Used to interoperate 
-     * with external MQTT clients that subscribe on the given topic.
+     * with external clients that subscribe on the given topic.
      * 
      * The topic is an MQTT publication topic, i.e. a non-empty string 
      * that must not contain the following characters: `NULL (U+0000)`, 
@@ -583,38 +589,28 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Used by an IO router to associate or disassociate an IO source
-     * with an IO actor.
+     * Publish the given IO value sourced from the specified IO source.
      *
-     * @param event the Associate event to be published
-     */
-    publishAssociate(event: AssociateEvent): void {
-        this._publishClient(event);
-    }
-
-    /**
-     * Send the given IO value sourced from the specified IO source.
+     * No publication is performed if the IO source is currently not associated
+     * with any IO actor.
      *
-     * The value is silently discarded if the IO source is currently not
-     * associated with any IO actor.
+     * @param ioSource the IO source for publishing
+     * @param value a JSON compatible value to be published
      */
     publishIoValue(ioSource: IoSource, value: any) {
         this._publishIoValue(ioSource.objectId, value);
     }
 
     /**
-     * Called by an IO router to create a new topic for routing IO values of a
-     * given IO source to IO actors.
+     * Creates a new topic for routing IO values of the given IO source to
+     * associated IO actors.
      *
-     * The IO source uses this topic to publish IO values; an IO actor
-     * subscribes to this topic to receive the published values.
-     *
-     * The topic name created is based on the event type `IoValue`. It specifies
-     * the associated user and the given IO source ID in the corresponding topic
-     * levels. It is guaranteed to not contain wildcard tokens on any topic
-     * level.
+     * This method is called by IO routers to associate IO sources with IO
+     * actors. An IO source uses this topic to publish IO values; an associated
+     * IO actor subscribes to this topic to receive these values.
      *
      * @param ioSource the IO source object
+     * @returns a topic for submitting data from an IO source to IO actors
      */
     createIoValueTopic(ioSource: IoSource): string {
         return CommunicationTopic.createByLevels(
@@ -623,9 +619,21 @@ export class CommunicationManager implements IDisposable {
             CommunicationEventType.IoValue,
             undefined,
             ioSource.objectId,
-            this._associatedUser?.objectId,
             this.runtime.newUuid(),
         ).getTopicName();
+    }
+
+
+    /**
+     * Called by an IO router to associate or disassociate an IO source with an
+     * IO actor.
+     *
+     * @internal Used by framework internally. Do not call in application code.
+     *
+     * @param event the Associate event to be published
+     */
+    publishAssociate(event: AssociateEvent): void {
+        this._publishClient(event, event.eventTypeFilter);
     }
 
     /**
@@ -654,10 +662,23 @@ export class CommunicationManager implements IDisposable {
         }
         this._namespace = namespace;
 
-        // Capture state of associated user and device in case it might change 
-        // while the communication manager is being online.
-        this._associatedUser = CoreTypes.clone<User>(this.runtime.commonOptions?.associatedUser);
-        this._associatedDevice = CoreTypes.clone<Device>(this.runtime.commonOptions?.associatedDevice);
+        const ioNodesConfig = this.runtime.commonOptions?.ioContextNodes || {};
+        this._ioNodes = Object.keys(ioNodesConfig)
+            .map(contextName => {
+                const ioNodeConfig = ioNodesConfig[contextName];
+                return <IoNode>{
+                    name: contextName,
+                    coreType: "IoNode",
+                    objectType: CoreTypes.OBJECT_TYPE_IO_NODE,
+                    objectId: this.runtime.newUuid(),
+                    parentObjectId: this._container.identity.objectId,
+                    ioSources: ioNodeConfig.ioSources || [],
+                    ioActors: ioNodeConfig.ioActors || [],
+                    characteristics: ioNodeConfig.characteristics,
+                };
+            })
+            .filter(node => node.ioSources.length > 0 || node.ioActors.length > 0);
+
     }
 
     private _updateCommunicationState(newState: CommunicationState) {
@@ -688,10 +709,10 @@ export class CommunicationManager implements IDisposable {
         this._deadvertiseIds = [];
 
         this._observeAssociate();
-        this._observeDiscoverDevice();
+        this._observeDiscoverIoNodes();
         this._observeDiscoverIdentity();
 
-        const lastWill = this._advertiseIdentityOrDevice();
+        const lastWill = this._advertiseIdentityAndIoNodes();
 
         // Determine connection info and options for MQTT client
         const mqttClientOptions = this.options.mqttClientOptions;
@@ -714,7 +735,7 @@ export class CommunicationManager implements IDisposable {
         // Support for clean/persistent sessions in broker:
         // If you want to receive QOS 1 and 2 messages that were published while your client was offline, 
         // you need to connect with a unique clientId and set 'clean' to false (MQTT.js default is true).
-        mqttClientOpts.clean = mqttClientOpts.clean === undefined ? false : mqttClientOpts.clean;
+        mqttClientOpts.clean = mqttClientOpts.clean === undefined ? false : mqttClientOpts?.clean;
 
         // Do not support automatic resubscription/republication of topics on reconnection by MQTT.js v2
         // because communication manager provides its own implementation.
@@ -787,10 +808,10 @@ export class CommunicationManager implements IDisposable {
 
         this._unobserveObservedItems();
         this._unobserveAssociate();
-        this._unobserveDiscoverDevice();
+        this._unobserveDiscoverIoNodes();
         this._unobserveDiscoverIdentity();
 
-        this._deadvertiseIdentityOrDevice();
+        this._deadvertiseIdentityAndIoNodes();
 
         const client = this._client;
 
@@ -868,9 +889,9 @@ export class CommunicationManager implements IDisposable {
     private _onClientReconnect() {
         // Emitted when a reconnect starts.
 
-        // Ensure Advertise events for identity/device are published on
+        // Ensure Advertise events for identity/IO nodes are published on
         // reconnection (via deferredPublications).
-        this._advertiseIdentityOrDevice();
+        this._advertiseIdentityAndIoNodes();
 
         // console.log("CommunicationManager: reconnecting...");
     }
@@ -958,7 +979,6 @@ export class CommunicationManager implements IDisposable {
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
                     sourceId: topic.sourceId,
-                    eventUserId: topic.associationId,
                     data: JSON.parse(msgPayload),
                     eventRequest: item.request,
                 });
@@ -995,7 +1015,6 @@ export class CommunicationManager implements IDisposable {
                 const message = this._createEventInstance({
                     eventType: topic.eventType,
                     sourceId: topic.sourceId,
-                    eventUserId: topic.associationId,
                     data: JSON.parse(msgPayload),
                     eventTypeFilter: topic.eventTypeFilter,
                 });
@@ -1057,15 +1076,13 @@ export class CommunicationManager implements IDisposable {
                 instance = new AdvertiseEvent(AdvertiseEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Associate:
-                instance = new AssociateEvent(AssociateEventData.createFrom(event.data));
+                instance = new AssociateEvent(event.eventTypeFilter, AssociateEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Deadvertise:
                 instance = new DeadvertiseEvent(DeadvertiseEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Channel:
-                instance = new ChannelEvent(
-                    event.eventTypeFilter,
-                    ChannelEventData.createFrom(event.data));
+                instance = new ChannelEvent(event.eventTypeFilter, ChannelEventData.createFrom(event.data));
                 break;
             case CommunicationEventType.Discover:
                 instance = new DiscoverEvent(DiscoverEventData.createFrom(event.data));
@@ -1098,7 +1115,6 @@ export class CommunicationManager implements IDisposable {
         }
         // For inbound event, sourceId is given; for outbound event sourceId is the agent identity.
         instance.sourceId = event.sourceId || this._container.identity.objectId;
-        instance.eventUserId = event.eventUserId;
         if (event.eventRequest) {
             instance.eventRequest = event.eventRequest;
         }
@@ -1123,7 +1139,6 @@ export class CommunicationManager implements IDisposable {
                 eventType,
                 eventTypeFilter,
                 eventSourceId,
-                this._associatedUser?.objectId,
                 correlationId,
             );
             this._getPublisher(responseTopic.getTopicName(), eventData.toJsonObject())();
@@ -1137,17 +1152,14 @@ export class CommunicationManager implements IDisposable {
             eventType,
             eventTypeFilter,
             eventSourceId,
-            this._associatedUser?.objectId,
             CommunicationTopic.isOneWayEvent(eventType) ? undefined : this.runtime.newUuid(),
         );
 
-        event.eventUserId = this._associatedUser ? this._associatedUser.objectId : undefined;
-
-        // Ensure deferred advertisements of identity and associated device are always 
+        // Ensure deferred advertisements of identity and IO nodes are always
         // published before any other communication events.
         let shouldPublishDeferredFirst = false;
         let isAdvertiseIdentity = false;
-        let isAdvertiseDevice = false;
+        let isAdvertiseIoNode = false;
         if (eventType === CommunicationEventType.Advertise) {
             const object = (eventData as AdvertiseEventData).object;
             if (object.coreType === "Identity") {
@@ -1155,10 +1167,10 @@ export class CommunicationManager implements IDisposable {
                 if (object.objectId === this._container.identity.objectId) {
                     isAdvertiseIdentity = true;
                 }
-            } else if (object.coreType === "Device") {
+            } else if (object.coreType === "IoNode") {
                 shouldPublishDeferredFirst = true;
-                if (this._associatedDevice && object.objectId === this._associatedDevice.objectId) {
-                    isAdvertiseDevice = true;
+                if (this._ioNodes.some(group => group.objectId === object.objectId)) {
+                    isAdvertiseIoNode = true;
                 }
             }
         }
@@ -1170,7 +1182,7 @@ export class CommunicationManager implements IDisposable {
             false,
             shouldPublishDeferredFirst,
             isAdvertiseIdentity,
-            isAdvertiseDevice);
+            isAdvertiseIoNode);
         let responseType: CommunicationEventType;
 
         switch (eventType) {
@@ -1216,7 +1228,7 @@ export class CommunicationManager implements IDisposable {
         shouldRetain = false,
         publishDeferredFirst = false,
         isAdvertiseIdentity = false,
-        isAdvertiseDevice = false) {
+        isAdvertiseIoNode = false) {
         return () => {
             const payload = isDataRaw ? data : JSON.stringify(data);
             const pubOptions: IClientPublishOptions = { qos: this._qos, retain: shouldRetain };
@@ -1226,7 +1238,7 @@ export class CommunicationManager implements IDisposable {
                     payload,
                     options: pubOptions,
                     isAdvertiseIdentity,
-                    isAdvertiseDevice,
+                    isAdvertiseIoNode,
                 };
                 if (publishDeferredFirst) {
                     this._deferredPublications.unshift(msg);
@@ -1263,9 +1275,6 @@ export class CommunicationManager implements IDisposable {
                     this.options.shouldEnableCrossNamespacing ? undefined : this.namespace,
                     eventType,
                     eventTypeFilter,
-                    (eventType === CommunicationEventType.Associate) ?
-                        this._associatedUser?.objectId :
-                        undefined,
                     undefined);
             item = new ObservedRequestItem(topicFilter);
             this._observedRequests.set(eventTypeName, item);
@@ -1286,7 +1295,6 @@ export class CommunicationManager implements IDisposable {
             this.options.shouldEnableCrossNamespacing ? undefined : this.namespace,
             eventType,
             undefined,
-            undefined,
             correlationId,
         );
         const item = new ObservedResponseItem(topicFilter, correlationId, request, publisher, cleanup);
@@ -1304,13 +1312,20 @@ export class CommunicationManager implements IDisposable {
         this._deferredSubscriptions.push(topicFilter);
     }
 
-    private _unsubscribeClient(topicFilter: string) {
+    private _unsubscribeClient(topicFilters: string | string[]) {
+        const updateSubs = (topicFilter: string) => {
+            const i = this._deferredSubscriptions.findIndex(f => f === topicFilter);
+            if (i !== -1) {
+                this._deferredSubscriptions.splice(i, 1);
+            }
+        };
         if (this._isClientConnected) {
-            this._client.unsubscribe(topicFilter);
+            this._client.unsubscribe(topicFilters);
         }
-        const i = this._deferredSubscriptions.findIndex(f => f === topicFilter);
-        if (i > -1) {
-            this._deferredSubscriptions.splice(i, 1);
+        if (typeof topicFilters === "string") {
+            updateSubs(topicFilters);
+        } else {
+            topicFilters.forEach(f => updateSubs(f));
         }
     }
 
@@ -1328,20 +1343,16 @@ export class CommunicationManager implements IDisposable {
         this._deferredSubscriptions = [];
     }
 
-    private _advertiseIdentityOrDevice() {
-        // Advertise associated device once if existing.
-        // (cp. _observeDiscoverDevice)
-        if ((this.options.shouldAdvertiseDevice === undefined ||
-            this.options.shouldAdvertiseDevice === true) &&
-            this._associatedDevice) {
+    private _advertiseIdentityAndIoNodes() {
+        // Advertise IO nodes once (cp. _observeDiscoverIoNodes).
+        this._ioNodes.forEach(group => {
             // Republish only once on failed reconnection attempts.
-            if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseDevice)) {
-                this.publishAdvertise(AdvertiseEvent.withObject(this._associatedDevice));
+            if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseIoNode)) {
+                this.publishAdvertise(AdvertiseEvent.withObject(group));
             }
-        }
+        });
 
-        // Advertise identity once. 
-        // (cp. _observeDiscoverIdentity)
+        // Advertise identity once (cp. _observeDiscoverIdentity).
         // Republish only once on failed reconnection attempts.
         if (this._deferredPublications && !this._deferredPublications.find(pub => pub.isAdvertiseIdentity)) {
             this.publishAdvertise(AdvertiseEvent.withObject(this._container.identity));
@@ -1351,13 +1362,8 @@ export class CommunicationManager implements IDisposable {
             return undefined;
         }
 
-        // Return the last will message composed of Deadvertise events 
-        // for identity and/or device.
-        //
-        // Note that the associated user/device must not and thus cannot be
-        // changed while the communication manager is connected. Otherwise,
-        // the AssociatedUserId topic level and the device ID payload 
-        // cached in the last will at the broker would no longer be correct.
+        // Return the last will message composed of Deadvertise events for
+        // identity and IO nodes.
         return {
             topic: CommunicationTopic.createByLevels(
                 CommunicationManager.PROTOCOL_VERSION,
@@ -1365,7 +1371,6 @@ export class CommunicationManager implements IDisposable {
                 CommunicationEventType.Deadvertise,
                 undefined,
                 this._container.identity.objectId,
-                this._associatedUser?.objectId,
                 this.runtime.newUuid(),
             ).getTopicName(),
             payload: JSON.stringify(
@@ -1373,26 +1378,27 @@ export class CommunicationManager implements IDisposable {
         };
     }
 
-    private _deadvertiseIdentityOrDevice() {
+    private _deadvertiseIdentityAndIoNodes() {
         if (this._deadvertiseIds.length > 0) {
             this.publishDeadvertise(DeadvertiseEvent.withObjectIds(...this._deadvertiseIds));
         }
     }
 
-    private _tryDispatchAsIoValueMessage(topicName: string, payload: any): boolean {
+    private _tryDispatchAsIoValueMessage(topic: string, payload: any): boolean {
         let isDispatching = false;
         try {
-            const items = this._ioActorItems.get(topicName);
+            const items = this._ioActorItems.get(topic);
             if (items) {
                 items.forEach((sourceIds, actorId) => {
                     const ioValueItem = this._ioValueItems.get(actorId);
                     if (ioValueItem) {
-                        const actor: IoActor = this._associatedDevice.ioCapabilities
-                            .find(ioPoint => ioPoint.objectId === actorId) as IoActor;
-                        const value = actor.useRawIoValues ? payload : JSON.parse(payload.toString());
-                        isDispatching = true;
-                        ioValueItem.dispatchNext(value);
-                        isDispatching = false;
+                        const actor = this._findIoPointById(actorId) as IoActor;
+                        if (actor) {
+                            const value = actor.useRawIoValues ? payload : JSON.parse(payload.toString());
+                            isDispatching = true;
+                            ioValueItem.dispatchNext(value);
+                            isDispatching = false;
+                        }
                     }
                 });
                 return true;
@@ -1403,14 +1409,14 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            console.log(`CommunicationManager: failed to handle incoming IO value topic ${topicName}': ${error}`);
+            console.log(`CommunicationManager: failed to handle incoming IO value message for topic ${topic}': ${error}`);
 
             return true;
         }
     }
 
-    private _tryDispatchAsRawMessage(topicName: string, payload: any): boolean {
-        if (!CommunicationTopic.isRawTopic(topicName)) {
+    private _tryDispatchAsRawMessage(topic: string, payload: any): boolean {
+        if (!CommunicationTopic.isRawTopic(topic)) {
             return false;
         }
         let isDispatching = false;
@@ -1425,7 +1431,7 @@ export class CommunicationManager implements IDisposable {
                 isRawDispatch = true;
                 isDispatching = true;
                 // Dispatch raw data and the actual topic (parsing is up to the application)
-                item.dispatchNext(payload, topicName);
+                item.dispatchNext(payload, topic);
                 isDispatching = false;
             });
             return isRawDispatch;
@@ -1434,7 +1440,7 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            console.log(`CommunicationManager: failed to handle incoming Raw topic ${topicName}': ${error}`);
+            console.log(`CommunicationManager: failed to handle incoming Raw topic ${topic}': ${error}`);
 
             return true;
         }
@@ -1489,43 +1495,33 @@ export class CommunicationManager implements IDisposable {
     }
 
     private _observeAssociate() {
-        if (!this._associatedUser || !this._associatedDevice) {
-            return;
-        }
-
-        this._associateSubscription =
-            this._observeRequest(CommunicationEventType.Associate)
-                // No need to filter event on associated user ID since the 
-                // topic subscription already restricts on this ID
-                .subscribe(event => this._handleAssociate(event as AssociateEvent));
+        this._associateSubscriptions = this._ioNodes.map(group =>
+            this._observeRequest(CommunicationEventType.Associate, group.name)
+                .subscribe(event => this._handleAssociate(event as AssociateEvent)));
     }
 
     private _unobserveAssociate() {
-        this._associateSubscription?.unsubscribe();
-        this._associateSubscription = undefined;
+        this._associateSubscriptions?.forEach(sub => sub.unsubscribe());
+        this._associateSubscriptions = undefined;
     }
 
-    private _observeDiscoverDevice() {
-        if (!(this.options.shouldAdvertiseDevice === undefined ||
-            this.options.shouldAdvertiseDevice === true) ||
-            !this._associatedDevice) {
+    private _observeDiscoverIoNodes() {
+        if (this._ioNodes.length === 0) {
             return;
         }
 
-        this._discoverDeviceSubscription =
+        this._discoverIoNodesSubscription =
             this._observeRequest(CommunicationEventType.Discover)
                 .pipe(filter((event: DiscoverEvent) =>
                     (event.data.isDiscoveringTypes &&
-                        event.data.isCoreTypeCompatible("Device")) ||
-                    (event.data.isDiscoveringObjectId &&
-                        event.data.objectId === this._associatedDevice.objectId)))
+                        event.data.isCoreTypeCompatible("IoNode"))))
                 .subscribe((event: DiscoverEvent) =>
-                    event.resolve(ResolveEvent.withObject(this._associatedDevice)));
+                    this._ioNodes.forEach(g => event.resolve(ResolveEvent.withObject(g))));
     }
 
-    private _unobserveDiscoverDevice() {
-        this._discoverDeviceSubscription?.unsubscribe();
-        this._discoverDeviceSubscription = undefined;
+    private _unobserveDiscoverIoNodes() {
+        this._discoverIoNodesSubscription?.unsubscribe();
+        this._discoverIoNodesSubscription = undefined;
     }
 
     private _observeDiscoverIdentity() {
@@ -1545,39 +1541,50 @@ export class CommunicationManager implements IDisposable {
         this._discoverIdentitySubscription = undefined;
     }
 
+    private _findIoPointById(objectId: Uuid) {
+        for (const group of this._ioNodes) {
+            const source = group.ioSources.find(src => src.objectId === objectId);
+            if (source) {
+                return source;
+            }
+            const actor = group.ioActors.find(a => a.objectId === objectId);
+            if (actor) {
+                return actor;
+            }
+        }
+        return undefined;
+    }
+
     private _handleAssociate(event: AssociateEvent) {
         let isDispatching = false;
         try {
-            const ioSourceId = event.data.ioSource.objectId;
-            const ioActorId = event.data.ioActor.objectId;
-            const isIoSourceAssociated = this._associatedDevice.ioCapabilities
-                && this._associatedDevice.ioCapabilities
-                    .some(ioPoint => ioPoint.objectId === ioSourceId);
-            const isIoActorAssociated = this._associatedDevice.ioCapabilities
-                && this._associatedDevice.ioCapabilities
-                    .some(ioPoint => ioPoint.objectId === ioActorId);
+            const ioSourceId = event.data.ioSourceId;
+            const ioActorId = event.data.ioActorId;
+            const isIoSourceAssociated = this._findIoPointById(ioSourceId) !== undefined;
+            const isIoActorAssociated = this._findIoPointById(ioActorId) !== undefined;
 
             if (!isIoSourceAssociated && !isIoActorAssociated) {
                 return;
             }
 
-            const associatedTopic = event.data.associatedTopic;
+            const associatingRoute = event.data.associatingRoute;
 
-            if (associatedTopic !== undefined &&
-                !CommunicationTopic.isValidIoValueTopic(associatedTopic, CommunicationManager.PROTOCOL_VERSION)) {
-                console.log(`CommunicationManager: associated topic of incoming ${event.eventType} event is invalid: '${associatedTopic}'`);
+            if (associatingRoute !== undefined &&
+                !CommunicationTopic.isValidIoValueTopic(associatingRoute, CommunicationManager.PROTOCOL_VERSION)) {
+                // tslint:disable-next-line: max-line-length
+                console.log(`CommunicationManager: associating route of incoming ${event.eventType} event is invalid: '${associatingRoute}'`);
                 return;
             }
 
             // Update own IO source associations
             if (isIoSourceAssociated) {
-                this._updateIoSourceItems(ioSourceId, ioActorId, associatedTopic, event.data.updateRate);
+                this._updateIoSourceItems(ioSourceId, ioActorId, associatingRoute, event.data.updateRate);
             }
 
             // Update own IO actor associations
             if (isIoActorAssociated) {
-                if (associatedTopic !== undefined) {
-                    this._associateIoActorItems(ioSourceId, ioActorId, associatedTopic);
+                if (associatingRoute !== undefined) {
+                    this._associateIoActorItems(ioSourceId, ioActorId, associatingRoute);
                 } else {
                     this._disassociateIoActorItems(ioSourceId, ioActorId);
                 }
@@ -1599,8 +1606,8 @@ export class CommunicationManager implements IDisposable {
                 const item = this._ioStateItems.get(ioActorId);
                 if (item) {
                     let actorIds: Map<Uuid, Uuid[]>;
-                    if (associatedTopic !== undefined) {
-                        actorIds = this._ioActorItems.get(associatedTopic);
+                    if (associatingRoute !== undefined) {
+                        actorIds = this._ioActorItems.get(associatingRoute);
                     }
                     isDispatching = true;
                     item.dispatchNext(IoStateEvent.with(
@@ -1618,23 +1625,23 @@ export class CommunicationManager implements IDisposable {
         }
     }
 
-    private _updateIoSourceItems(ioSourceId: Uuid, ioActorId: Uuid, associatedTopic: string, updateRate: number) {
+    private _updateIoSourceItems(ioSourceId: Uuid, ioActorId: Uuid, associatingRoute: string, updateRate: number) {
         let items = this._ioSourceItems.get(ioSourceId);
-        if (associatedTopic !== undefined) {
+        if (associatingRoute !== undefined) {
             if (!items) {
-                items = [associatedTopic, [ioActorId], updateRate];
+                items = [associatingRoute, [ioActorId], updateRate];
                 this._ioSourceItems.set(ioSourceId, items);
             } else {
-                if (items[0] === associatedTopic) {
+                if (items[0] === associatingRoute) {
                     if (items[1].indexOf(ioActorId) === -1) {
                         items[1].push(ioActorId);
                     }
                 } else {
                     // Disassociate current IO actors due to a topic change.
-                    const oldTopic = items[0];
-                    items[0] = associatedTopic;
+                    const oldRoute = items[0];
+                    items[0] = associatingRoute;
                     items[1].forEach(actorId =>
-                        this._disassociateIoActorItems(ioSourceId, actorId, oldTopic));
+                        this._disassociateIoActorItems(ioSourceId, actorId, oldRoute));
                     items[1] = [ioActorId];
                 }
                 items[2] = updateRate;
@@ -1653,19 +1660,19 @@ export class CommunicationManager implements IDisposable {
         }
     }
 
-    private _associateIoActorItems(ioSourceId: Uuid, ioActorId: Uuid, associatedTopic: string) {
+    private _associateIoActorItems(ioSourceId: Uuid, ioActorId: Uuid, associatingRoute: string) {
         // Disassociate any association for the given IO source and IO actor.
-        this._disassociateIoActorItems(ioSourceId, ioActorId, undefined, associatedTopic);
+        this._disassociateIoActorItems(ioSourceId, ioActorId, undefined, associatingRoute);
 
-        let items = this._ioActorItems.get(associatedTopic);
+        let items = this._ioActorItems.get(associatingRoute);
         if (!items) {
             items = new Map<Uuid, Uuid[]>();
             items.set(ioActorId, [ioSourceId]);
-            this._ioActorItems.set(associatedTopic, items);
+            this._ioActorItems.set(associatingRoute, items);
 
-            // Issue subscription just once for each associated topic
+            // Issue subscription just once for each associated route
             // to avoid receiving multiple published IO events later.
-            this._subscribeClient(associatedTopic);
+            this._subscribeClient(associatingRoute);
         } else {
             const sourceIds = items.get(ioActorId);
             if (!sourceIds) {
@@ -1682,10 +1689,10 @@ export class CommunicationManager implements IDisposable {
         ioSourceId: Uuid,
         ioActorId: Uuid,
         forTopic?: string,
-        associatingTopic?: Uuid) {
-        const topicsToUnsubscribe: string[] = [];
-        const handler = (items: Map<Uuid, Uuid[]>, topic: string) => {
-            if (associatingTopic === topic) {
+        associatingRoute?: Uuid) {
+        const routesToUnsubscribe: string[] = [];
+        const handler = (items: Map<Uuid, Uuid[]>, route: string) => {
+            if (associatingRoute === route) {
                 return;
             }
             const sourceIds = items.get(ioActorId);
@@ -1698,7 +1705,7 @@ export class CommunicationManager implements IDisposable {
                     items.delete(ioActorId);
                 }
                 if (items.size === 0) {
-                    topicsToUnsubscribe.push(topic);
+                    routesToUnsubscribe.push(route);
                 }
             }
         };
@@ -1712,10 +1719,8 @@ export class CommunicationManager implements IDisposable {
             this._ioActorItems.forEach(handler);
         }
 
-        topicsToUnsubscribe.forEach(topic => {
-            this._ioActorItems.delete(topic);
-            this._unsubscribeClient(topic);
-        });
+        routesToUnsubscribe.forEach(route => this._ioActorItems.delete(route));
+        this._unsubscribeClient(routesToUnsubscribe);
     }
 
     private _cleanupIoState() {

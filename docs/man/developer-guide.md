@@ -194,7 +194,7 @@ npm comes with `Node.js` so you need to install it first.
 You can install the latest distribution package in your agent project as follows:
 
 ```sh
-npm install coaty
+npm install @coaty/core
 ```
 
 For detailed installation instructions, consult the
@@ -343,18 +343,14 @@ const configuration: Configuration = {
          // Common options shared among all container components
          agentIdentity: ... ,
          agentInfo: ... ,
-         associatedUser: ... ,
-         associatedDevice: ... ,
-         extra: { ... },
+         ...
     },
     communication: {
           // Options used for communication
-          brokerUrl: ... ,
-          mqttClientOptions: ... ,
           namespace: ...,
-          shouldEnableCrossNamespacing: ...,
+          brokerUrl: ... ,
           shouldAutoStart: ... ,
-          shouldAdvertiseDevice: ... ,
+          ...
     },
     controllers: {
         // Controller-specific configuration options
@@ -839,7 +835,7 @@ The base `CoatyObject` interface defines the following generic properties:
 
 ```ts
 interface CoatyObject {
-  coreType: "CoatyObject" | "User" | "Device" | ...;
+  coreType: "CoatyObject" | ...;
   objectType: string;
   name: string;
   objectId: Uuid;
@@ -878,8 +874,8 @@ The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
 Annotation objects can be modelled as children of target objects they are attached to.
 
-The optional `locationId` property refers to the UUID of the Location
-object that this object has been associated with.
+The optional `locationId` property refers to the UUID of the Location object
+that this object is associated with.
 
 The optional `isDeactivated` property marks an object that is no longer used. The
 concrete definition meaning of this property is defined by the Coaty application.
@@ -895,7 +891,7 @@ Simply extend one of the predefined object types of the framework and specify
 a canonical object type name for the new object:
 
 ```ts
-import { Task } from "@coaty/core";
+import { Task, User } from "@coaty/core";
 
 export const modelTypes = {
     OBJECT_TYPE_HELLO_WORLD_TASK: "com.helloworld.Task",
@@ -926,12 +922,20 @@ export enum HelloWorldTaskUrgency {
 A `HelloWorldTask` object can be created as follows (within a controller class):
 
 ```ts
+const taskIssuer: User = {
+    objectId: "464be2ed-bb1d-40b2-9943-944f3a2c5720",
+    coreType: "User",
+    objectType: CoreTypes.OBJECT_TYPE_USER,
+    name: "service@coaty.io",
+    names: { formatted: "HelloWorld Task Issuer" },
+};
+
 const task: HelloWorldTask = {
     objectId: this.runtime.newUuid(),
     objectType: modelTypes.OBJECT_TYPE_HELLO_WORLD_TASK,
     coreType: "Task",
     name: `Hello World Task`,
-    creatorId: this.runtime.commonOptions.associatedUser.objectId,
+    creatorId: taskIssuer.objectId,
     creationTimestamp: Date.now(),
     status: TaskStatus.Request,
     urgency: HelloWorldTaskUrgency.Critical,
@@ -941,7 +945,7 @@ const task: HelloWorldTask = {
 ## Communication event patterns
 
 By default, each Coaty container has a *Communication Manager* component that is
-registered implicitely with the container. It provides a set of predefined
+registered implicitely with the container. It provides an essential set of
 one-way and two-way communication event patterns to exchange object data in a
 decentralized Coaty application:
 
@@ -960,10 +964,8 @@ decentralized Coaty application:
   accomplishments by Complete events.
 * **Call - Return**  Request execution of a remote operation and receive results
   by Return events.
-* **Associate** Used by IO Router to dynamically associate/disassociate IO
-  sources with IO actors.
-* **IoValue** Send IO values from a publishing IO source to associated IO
-  actors.
+* **Raw** Used to publish and observe topic-specific application data in binary
+  format.
 
 Coaty not only provides *one-way* communication event patterns, such as
 Advertise and Channel, that support classic publish-subscribe interaction
@@ -1157,12 +1159,11 @@ well and don’t leak. A detailed explanation is given
 
 Use any of the `observeDiscover`, `observeQuery`, `observeUpdateWithCoreType`,
 `observeUpdateWithObjectType`, `observeCall`, `observeAdvertiseWithCoreType`,
-`observeAdvertiseWithObjectType`, `observeDeadvertise`, `observeChannel`, or
-`observeAssociate` methods to observe incoming request events in your agent. For
-`observeDiscover`, `observeQuery`, `observeUpdateWithCoreType`,
-`observeUpdateWithObjectType`, or `observeCall`, invoke the `resolve`,
-`retrieve`, `complete`, or `returnEvent` method on the received event object to
-send a response event.
+`observeAdvertiseWithObjectType`, `observeDeadvertise`, `observeChannel` methods
+to observe incoming request events in your agent. For `observeDiscover`,
+`observeQuery`, `observeUpdateWithCoreType`, `observeUpdateWithObjectType`, or
+`observeCall`, invoke the `resolve`, `retrieve`, `complete`, or `returnEvent`
+method on the received event object to send a response event.
 
 > Note that there is no guarantee that response events are ever delivered by the
 > Discover, Query, Update, and Call communication patterns. Depending on your system
@@ -1280,21 +1281,21 @@ this.communicationManager
 ```
 
 This concept is especially useful in combination with abnormal termination of an
-agent and the MQTT last will concept. On connection to the broker, the communication
-manager of a Coaty container sends a last will message consisting of a Deadvertise
-event with the object ID of its identity component and its associated device (if defined).
-Whenever the agent disconnects normally or abnormally, the broker publishes its last will
-message to all subscribers which observe Deadvertise events. For details, see this
-[section](#distributed-lifecycle-management).
+agent and the MQTT last will concept. On connection to the broker, the
+communication manager of a Coaty container sends a last will message consisting
+of a Deadvertise event with the object ID of its identity component. Whenever
+the agent disconnects normally or abnormally, the broker publishes its last will
+message to all subscribers which observe Deadvertise events. For details, see
+this [section](#distributed-lifecycle-management).
 
 Using this pattern, agents can detect the online/offline state of other Coaty
 agents and act accordingly. One typical use case is to set the parent object ID
 (or a custom property) of advertised application root objects originating from a
-specific Coaty agent to the identity ID (or associated device ID) of the agent's
-communication manager. In case this agent is disconnected, other agents can
-observe Deadvertise events and check whether one of the deadvertised object IDs
-correlates with the parent object ID (or custom property) of any application
-root object the agent is managing and invoke specific actions.
+specific Coaty agent to the identity ID of the agent's container. In case this
+agent is disconnected, other agents can observe Deadvertise events and check
+whether one of the deadvertised object IDs correlates with the parent object ID
+(or custom property) of any application root object the agent is managing and
+invoke specific actions.
 
 To ease programming this pattern, Coaty provides a convenience controller class
 named [`ObjectLifecycleController`](#object-lifecycle-controller). It keeps
@@ -1819,8 +1820,8 @@ this.communicationManager
     });
 ```
 
-> **Note**: Only incoming messages that are *not* Coaty communication events are
-> dispatched to the raw message observers.
+> **Note**: Only incoming messages that are *not* non-raw Coaty communication
+> events are dispatched to raw message observers.
 
 ### Distributed lifecycle management
 
@@ -1853,151 +1854,185 @@ application-specific Coaty object types.
 
 ## IO Routing
 
-The Coaty framework supports dynamic contextual routing of IO data from IO sources (i.e
-producers) to IO actors (i.e. consumers) for user-associated devices. IO sources
-publish `IoValue` events or external events. IO actors can receive such events by
-subscribing to the topics on which IO sources publish values. IO sources are
-*dynamically* associated with IO actors depending on the current context of the
-associated user. Backpressure strategies enable data transfer rate controlled
-publishing of data. Backpressure strategies are negotiated between IO source and IO
-actors.
+Coaty supports dynamic contextual routing of arbitrary data from *IO sources*
+(i.e producers) to *IO actors* (i.e. consumers). IO sources publish `IoValue`
+events that transfer data values of a certain value type to IO actors. An *IO
+router*, a specialized Coaty controller component, *dynamically* establishes
+routes between IO sources and IO actors based on context information.
+Backpressure strategies enable data transfer rate controlled publishing of IO
+values. Data transfer rates are negotiated between IO source and IO actors by
+the IO router to cope with IO values that are more rapidly produced than
+consumed.
+
+The IO routing concept defines the following components:
+
+* an *IO router* that manages routes for an associated IO context,
+* an *IO context* object representing the application-specific scope for routing,
+* distributed *IO node* objects, each consisting of a set of IO sources or
+  actors, and node-specific characteristics to be used by IO routers to control
+  routes.
+
+The following constraints apply to IO routing:
+
+* Each IO node defines IO sources or IO actors for exactly one IO context.
+* *Multiple* IO nodes for *different* IO contexts can be registered with a Coaty
+  agent by a configuration option.
+* Each IO router is associated with exactly one IO context.
+* An IO router is responsible for establishing routes between IO sources and
+  actors of all IO nodes which belong to its associated IO context.
+* An IO source can be associated with multiple IO actors.
+* An IO actor can be associated with multiple IO sources to receive all their
+  emitted values.
+* An IO source can only be associated with an IO actor if their value types are
+  compatible, i.e. if they produce/consume data in a common underlying data
+  format.
+* An IO router also controls the data transfer rate between an IO source and
+  its associated IO actors.
 
 ### IO Routing communication event flow
 
 The communication event flow of IO routing comprises the following steps:
 
-1. `Device` objects with their IO capabilities, i.e. IO sources and IO actors,
-  are advertised/deadvertised by the communication manager based on the
-  user-associated device object in the container configuration
-  (`CommonOptions.associatedDevice`).
+1. `IoNode` objects for specific IO contexts are advertised/deadvertised by the
+   communication manager when it starts/stops based on the IO node definitions
+   specified in the container configuration under
+   `CommonOptions.ioContextNodes`. These objects are also discoverable for other
+   agents by core type `IoContext`.
+2. The IO router observes advertised/discovered IO nodes belonging to its
+   associated IO context. On a context change, the router publishes Associate
+   events including the associating route and an effective data transfer rate
+   for each pair of IO source and IO actor which should be
+   associated/disassociated.
+3. Associate events are observed by the communication manager of any agent that
+   has registered IO nodes as described in step 1. It sets up or cuts down
+   publication routes for its IO sources and subscription routes for its IO
+   actors using the associating route specified with the Associate events.
+4. By calling `CommunicationManager.publishIoValue()` for a given IO source
+   `IoValue` events are submitted to currently associated IO actors using the
+   the route provided in the previous step. Likewise, by calling
+   `CommunicationManager.observeIoValue()` for a given IO actor these events can
+   be observed.
 
-2. The IO router associates/disassociates the currently advertised IO sources
-  and IO actors based on application-specific logic which usually considers the
-  user's context, such as user's role or profile, user's task flow, location, and
-  other environmental factors. On context changes, the IO router should change
-  associations accordingly.
-
-An IO source is associated/disassociated with an IO actor by publishing
-an Associate event. Since the associated topic is used for both
-publication and subscription, it must never contain wildcard tokens (i.e.
-`#` or `+`) on topic levels.
-
-Associated topics are generated by the IO router using the topic structure with
-an `IoValue` event type as described above. Associated topics published by
-external IO sources or subscribed to by external IO actors need not conform to
-this topic structure but can be of any valid MQTT topic shape.
-
-The payload data published by both external and internal IO sources
-must conform to the protocol specification, i.e. it must be specified as
-UTF-8 encoded strings in JSON format.
-
-Associations of IO sources with IO actors are constrained as follows:
-
-* An IO source can only be associated with an IO actor if their value types
-  are compatible, i.e. they produce/consume data in the same underlying data format.
-
-* Each pair of IO source and IO actor publishes/subscribes to exactly one
-  associated topic.
-
-* An IO source can be associated with different IO actors.
-
-* An IO actor can be associated with different IO sources. Values are
-  received on all the topic subscriptions for the associated IO sources.
-
-* An IO source publishes values on exactly one associated topic.
-
-* Different IO sources must not publish values on the same topic.
-  Otherwise, an IO actor could receive values from a non-associated source.
+> **Note**: IO values cannot only be routed between Coaty-defined IO sources and
+> actors, but also from external publishing sources to Coaty-defined IO actors
+> and from Coaty-defined IO sources to external subscribing actors. In this
+> case, the associating route is not created by an IO router, but defined by the
+> external source or actor component. For details, see property
+> `IoPoint.externalRoute`.
 
 ### IO Routing implementation
 
-IO routing functionality is provided in the `io` module.
+Core types for IO routing functionality is provided in the `@coaty/core` module.
+IO router classes and controllers for IO sources/IO actors are provided in the
+`@coaty/core/io-routing` module.
 
-Define IO sources and IO actors and register them as capabilities of the
-associated device:
+The following example defines a temperature measurement routing scenario with
+two temperature sensor sources and two actors with compatible data value types.
+The IO context for this scenario defines an operating state, either normal or
+emergency. In each state, exactly one of the two actors should consume IO values
+emitted by both sources.
+
+> **Note**: This example is fully implemented in the [Coaty JS unit tests on IO
+> routing](https://github.com/coatyio/coaty-js/blob/master/src/test/spec/io-routing.spec.ts).
 
 ```ts
-import { Configuration, CoreTypes, Device, DisplayType, IoActor, IoSource, IoSourceBackpressureStrategy, User } from "@coaty/core";
+import { Configuration, CoreTypes, IoActor, IoSource, IoSourceBackpressureStrategy } from "@coaty/core";
 
-// Common User for IO routing
-const user: User = {
+interface TemperatureIoContext extends IoContext {
+    operatingState: "normal" | "emergency";
+}
+
+// Common Context for IO routing
+const ioContext: TemperatureIoContext = {
+    name: "Temperature Measurement",
     objectId: "b61740a6-95d7-4d1a-8be5-53f3aa1e0b79",
-    coreType: "User",
-    objectType: CoreTypes.OBJECT_TYPE_USER,
-    name: "user@coaty.io",
-    names: { formatted: "User for IO routing" },
+    coreType: "IoContext",
+    objectType: "coaty.test.TemperatureIoContext",
+    operatingState: "normal",
 };
 
-// IO source definition
-const ioRobotControlSource: IoSource = {
-  name: "Robot Control Source",
-  objectId: "76e4ee99-12f5-4b51-ad0b-a09601c24c48",
-  objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
-  coreType: "IoSource",
-  valueType: "RobotControlValue",
-  updateStrategy: IoSourceBackpressureStrategy.Throttle,
-  updateRate: 100  // maximum possible drain rate (in ms)
+// Temperature Sensor Source 1
+const source1: IoSource = {
+    name: "Temperature Source 1",
+    coreType: "IoSource",
+    objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
+    objectId: "c547e5cd-ef99-4ccd-b109-fc472fc2d421",
+    valueType: "coaty.test.Temperature[Celsius]",
+    updateStrategy: IoSourceBackpressureStrategy.Throttle,
+    updateRate: 100,  // maximum possible drain rate (in ms)
 };
 
-// Device definition for Robot Control Source
-const watch: Device = {
-    objectId: "9f407e6a-0fa4-4bb0-90dd-bd740b2cdba9",
-    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-    coreType: "Device",
-    name: "Robot Control Watch",
-    displayType: DisplayType.Watch,
-    ioCapabilities: [ ioRobotControlSource ],
+// Temperature Sensor Source 2
+const source2: IoSource = {
+    name: "Temperature Source 2",
+    coreType: "IoSource",
+    objectType: CoreTypes.OBJECT_TYPE_IO_SOURCE,
+    objectId: "2e9949f7-a8ef-435b-88a9-527c0a9414c3",
+    valueType: "coaty.test.Temperature[Celsius]",
 };
 
-// IO actor definition
-const ioRobotControlActor: IoActor = {
-    name: "Robot Control Actor",
-    objectId: "6c9c399d-b522-405a-9776-f40e100fda61",
-    objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
+// Temperature Actor 1
+const actor1: IoActor = {
+    name: "Temperature Actor 1",
     coreType: "IoActor",
-    valueType: "RobotControlValue",
-    updateRate: 500   // desired rate for incoming values (in ms)
+    objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
+    objectId: "a731fc40-c0f8-486f-b5b6-b653c3cabaea",
+    valueType: "coaty.test.Temperature[Celsius]",
+    updateRate: 50,  // desired rate (in ms)
 };
 
-// Device definition for Robot Control Actor
-const robot: Device = {
-    objectId: "26c7e80e-92df-4181-8294-f2676c5dcf11",
-    objectType: CoreTypes.OBJECT_TYPE_DEVICE,
-    coreType: "Device",
-    name: "Robot",
-    displayType: DisplayType.None,
-    ioCapabilities: [ ioRobotControlActor ],
+// Temperature Actor 2
+const actor2: IoActor = {
+    name: "Temperature Actor 2",
+    coreType: "IoActor",
+    objectType: CoreTypes.OBJECT_TYPE_IO_ACTOR,
+    objectId: "a60a74f3-3d26-446f-a358-911867544944",
+    valueType: "coaty.test.Temperature[Celsius]",
 };
 
-// Configuration of Robot Control Source agent
-const configuration: Configuration = {
+// Configuration of agent 1 with an IO node for both IO sources
+const configuration1: Configuration = {
     common: {
-        associatedUser: user,
-        associatedDevice: watch,
-        ...
+        ioContextNodes: {
+            "Temperature Measurement": {
+                ioSources: [source1, source2],
+            },
+        },
     },
-    ...
 };
 
-// Configuration of Robot Control Actor agent
-const configuration: Configuration = {
+// Configuration of agent 2 with an IO node for actor 1
+const configuration2: Configuration = {
     common: {
-        associatedUser: user,
-        associatedDevice: robot,
-        ...
+        ioContextNodes: {
+            "Temperature Measurement": {
+                ioActors: [actor1],
+                characteristics: {
+                    isResponsibleForOperatingState: "normal",
+                },
+            },
+        },
     },
-    ...
 };
 
+// Configuration of agent 3 with an IO node for actor 2
+const configuration3: Configuration = {
+    common: {
+        ioContextNodes: {
+            "Temperature Measurement": {
+                ioActors: [actor2],
+                characteristics: {
+                    isResponsibleForOperatingState: "emergency",
+                },
+            },
+        },
+    },
+};
 ```
-
-Use the `BasicIoRouter` controller class to realize a basic routing algorithm
-where all compatible pairs of IO sources and IO actors are associated. An IO
-source and an IO actor are compatible if both define the same value type.
 
 Use the `RuleBasedIoRouter` controller class to realize rule-based routing of
 data from IO sources to IO actors. By defining application-specific routing
-rules you can associate IO sources with IO actors based on arbitrary user
+rules you can associate IO sources with IO actors based on arbitrary application
 context.
 
 ```ts
@@ -2011,50 +2046,85 @@ const components: Components = {
     },
 };
 
-// IO routing rule definition
+// Configuration of IO routing rule definitions for a rule-based IO router
 const configuration: Configuration = {
     ...
     controllers: {
-      RuleBasedIoRouter: {
-        rules: [
-          { name: "Route values from watches to robot devices within reach",
-            valueType: ioRobotControlSource.valueType,
-            condition:
-              (source, sourceDevice, actor, actorDevice, router) =>
-                sourceDevice.displayType === DisplayType.Watch &&
-                isWithinReach(sourceDevice, actorDevice)
-          } as IoAssociationRule,
-          ...
-        ]
-      }, ...
+        RuleBasedIoRouter: {
+            ioContext,
+            rules: [
+                {
+                    name: "Route temperature sources to normal actors if operating state is normal",
+                    valueType: "coaty.test.Temperature[Celsius]",
+                    condition: (source, sourceNode, actor, actorNode, context, router) =>
+                        actorNode.characteristics.isResponsibleForOperatingState === "normal" &&
+                        context["operatingState"] === "normal",
+                } as IoAssociationRule,
+                {
+                    name: "Route temperature sources to emergency actors if operating state is emergency",
+                    valueType: "coaty.test.Temperature[Celsius]",
+                    condition: (source, sourceNode, actor, actorNode, context, router) =>
+                        actorNode.characteristics.isResponsibleForOperatingState === "emergency" &&
+                        context["operatingState"] === "emergency",
+                } as IoAssociationRule,
+            ],
+        },
+    },
+};
 ```
 
-The Communication Manager supports methods to control IO routing by code in
-your agent project: Use `publishIoValue` to send IO value data for an IO source.
-Use `observeIoState` and `observeIoValue` to receive IO state changes and IO
-values for an IO actor.
+An IO router makes its IO context available by advertisement and for discovery
+(by core type, object type or object Id) and listens for Update-Complete events
+on its IO context. To trigger reevaluation of association rules by an IO router,
+simply publish an Update event for the discovered IO context object.
+
+```ts
+ioContext: TemperatureIoContext;
+
+// Discover temperature measurement context from IO router
+this.communicationManager
+    .publishDiscover(DiscoverEvent.withObjectType("coaty.test.TemperatureIoContext"))
+    .subscribe(resolve => {
+        this.ioContext = resolve.data.object as TemperatureIoContext;
+    });
+
+// Change context operating state to trigger rerouting from sources to emergency actors
+ioContext.operatingState = "emergency";
+this.communicationManager
+    .publishUpdate(UpdateEvent.withObject(ioContext))
+    .pipe(take(1))
+    .subscribe(complete => {
+        // Updated object is returned.
+        this.ioContext = complete.data.object as TemperatureIoContext;
+    });
+```
+
+The Communication Manager supports methods to control IO routing in your agent:
+Use `publishIoValue` to send IO value data for an IO source. Use
+`observeIoState` and `observeIoValue` to receive IO state changes and IO values
+for an IO actor.
 
 To further simplify management of IO sources and IO actors, the framework
 provides specific controller classes on top of these methods:
 
-* `IoSourceController`: Provides data transfer rate controlled publishing of
-  IO values for IO sources and monitoring of changes in the association state of
-  IO sources. This controller respects the backpressure strategy of an IO source
-  in order to cope with IO values that are more rapidly produced than specified
-  in the recommended update rate.
+* `IoSourceController`: Provides data transfer rate controlled publishing of IO
+  values for IO sources and monitoring of changes in the association state of IO
+  sources. This controller respects the backpressure strategy of an IO source in
+  order to cope with IO values that are more rapidly produced than specified in
+  the recommended update rate.
 
-* `IoActorController`: Provides convenience methods for observing IO values
-  and for monitoring changes in the association state of specific IO actors.
-  Note that this controller class caches the latest IO value received
-  for the given IO actor (using BehaviorSubjects). When subscribed, the current
-  value (or undefined if none exists yet) is emitted immediately.
-  Due to this behavior the cached value of the observable will also be emitted
-  after reassociation. If this is not desired use
-  `this.communicationManager.observeIoValue` instead. This method doesn't cache
-  any previously emitted value.
+* `IoActorController`: Provides convenience methods for observing IO values and
+  for monitoring changes in the association state of specific IO actors. Note
+  that this controller class caches the latest IO value received for the given
+  IO actor (using BehaviorSubjects). When subscribed, the current value (or
+  undefined if none exists yet) is emitted immediately. Due to this behavior the
+  cached value of the observable will also be emitted after reassociation. If
+  this is not desired use `this.communicationManager.observeIoValue` instead.
+  This method doesn't cache any previously emitted value.
 
 Take a look at these controllers in action in the Coaty [OPC UA connector
-example](https://github.com/coatyio/connector.opc-ua.js/tree/master/example).
+example](https://github.com/coatyio/connector.opc-ua.js/tree/master/example) or
+in the Coaty JS unit tests on IO routing.
 
 ## Unified Storage API - Query anywhere - Retrieve anywhere
 
