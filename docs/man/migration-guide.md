@@ -161,16 +161,18 @@ efficient:
 
 Upgrade to the new approach as follows:
 
+* If you call static creation methods of a communication event type, e.g.
+  `AdvertiseEvent.withObject()`, remove the first argument `eventSource`.
+* If you call communication event observation methods
+  `CommunicationManager.observeXXX()` remove the first argument `eventTarget`.
 * Stop using `CommunicationManager.identity` as this getter have been removed.
-  Instead, use `Container.identity` to access the container's identity object.
+  Instead, use `Container.identity` to access the container's identity object,
+  i.e. from within a controller use `this.container.identity`.
 * Stop configuring identity properties in `CommunicationOptions.identity` as
   this property has been removed. Instead, customize properties of the
   container's identity object in the new `CommonOptions.agentIdentity` property.
 * Stop using `CommunicationOptions.shouldAdvertiseIdentity` as this property has
   been removed.
-* Stop expecting `ObjectLifecycleController` or your custom controllers to track
-  the identity of controllers. Only identity of containers can be observed or
-  discovered.
 * Stop using `Controller.identity` as this getter have been removed. Use
   `Container.identity` instead.
 * Stop defining `Controller.initializeIdentity()` as this method has been
@@ -180,10 +182,9 @@ Upgrade to the new approach as follows:
 * Stop defining `Controller.onContainerResolved()` as this method has been
   removed. Perform these side effects in `Controller.onInit`, accessing the
   container by `Controller.container` getter.
-* If you call static creation methods of a communication event type, e.g.
-  `AdvertiseEvent.withObject()`, remove the first argument `eventSource`.
-* If you call communication event observation methods
-  `CommunicationManager.observeXXX()` remove the first argument `eventTarget`.
+* Stop expecting `ObjectLifecycleController` or your custom controllers to track
+  the identity of controllers. Only identity of containers can be observed or
+  discovered.
 
 If echo suppression of communication events is required for your custom
 controller, place it into its *own* container and *filter out* observed events
@@ -212,15 +213,13 @@ this.communicationManager.observeDiscover()
   For details, see section "Changes in IO routing".
 * Stop using `CommunicationOptions.useReadableTopics` as this property has been
   removed. This feature is no longer supported.
-
-### Changes in communication protocol and events
-
 * The MQTT topic structure has been optimized. Your application code is not
   affected by this change.
 * You can now specify the MQTT QoS level for all publications, subscriptions,
   and last will messages in `CommunicationOptions.mqttClientOptions`. The
   default level is 0.
-* You can now specify partial options for `CommunicationManager.restart()`.
+* You can now specify partial options, i.e. changed options only, for
+  `CommunicationManager.restart()`.
 * Take further actions after calling `CommunicationManager.restart()` not until
   the returned promise resolves.
 * A [namespacing
@@ -230,8 +229,8 @@ this.communicationManager.observeDiscover()
   `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events are
   only routed between agents within a common namespace. This feature is
   backward-compatible with Coaty 1.
-* `CommunicationManager.observeRaw()` no longer emits messages related to Coaty
-  communication patterns.
+
+#### Changes in Update event
 
 We abandon *partial* Update events in favor of full Update events where you can
 choose to observe Update events for a specific core type or object type,
@@ -250,6 +249,19 @@ ones interested in a specific type of object.
   `CommunicationManager.observeUpdateWithCoreType()` or
   `CommunicationManager.observeUpdateWithObjectType()`.
 
+#### Changes in Call event
+
+When observing Call events by `CommunicationManager.observeCall()` with a
+context argument specified, the logic of matching the context filter of an
+incoming Call event to the given context object has changed: A Call event is *no
+longer* emitted by the observable if context filter is *not* supplied *and*
+context object *is* specified.
+
+#### Changes in Raw event
+
+* `CommunicationManager.observeRaw()` no longer emits messages related to Coaty
+  communication patterns.
+
 ### Changes in Sensor Things
 
 * You can now call `SensorSourceController.findSensor(predicate)` to look up a
@@ -267,7 +279,7 @@ container components, like controllers.
   [`Components.dbAdapters`](https://coatyio.github.io/coaty-js/man/developer-guide/#persistent-storage-and-retrieval-of-coaty-objects)
   property. Avoid calling `DbAdapterFactory.registerAdapter()` explicitely.
 
-### Changes to IO routing
+### Changes in IO routing
 
 In Coaty 1, the scope of IO routing is restricted to a single user and its
 devices that define IO sources and actors. IO value events are only routed

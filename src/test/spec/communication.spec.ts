@@ -412,17 +412,20 @@ describe("Communication", () => {
             const logger: mocks.ReturnEventLogger = { eventData: {} };
 
             delayAction(500, undefined, () => {
-                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "green" }, contextFilter1, logger, "res11");
-                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "black" }, contextFilter1, logger, "res12");
-                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "red" }, contextFilter2, logger, "res13");
-                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, contextFilter1, logger, "res14");
-                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, undefined, logger, "res15");
-                callController.publishCallEvent("coaty.test.add", [42, 43], undefined, logger, "res2");
-                callController.publishCallEvent("coaty.test.add", [], undefined, logger, "res3");
-                callController.publishCallEvent("coaty.test.xyz", {}, undefined, logger, "res4");
+                // tslint:disable: max-line-length
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "green" }, contextFilter1, logger, "res11");    // match
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "black" }, contextFilter1, logger, "res12");    // match
+                callController.publishCallEvent("coaty.test.switchLight", { state: "on", color: "red" }, contextFilter2, logger, "res13");      // no match
+                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, contextFilter1, logger, "res14");                   // match
+                callController.publishCallEvent("coaty.test.switchLight", { state: "off" }, undefined, logger, "res15");                        // no match
+                callController.publishCallEvent("coaty.test.add", [42, 43], contextFilter1, logger, "res2");                                    // match
+                callController.publishCallEvent("coaty.test.add", [], contextFilter1, logger, "res3");                                          // match
+                callController.publishCallEvent("coaty.test.add", [42, 43], undefined, logger, "res4");                                         // no match
+                callController.publishCallEvent("coaty.test.xyz", {}, undefined, logger, "res5");                                               // no match
+                // tslint:enable: max-line-length
 
                 delayAction(1000, done, () => {
-                    const expectedResultCount = 6;
+                    const expectedResultCount = 5;
                     expect(Object.keys(logger.eventData).length).toBe(expectedResultCount);
 
                     expect(logger.eventData.res11.isError).toBe(false);
@@ -445,10 +448,7 @@ describe("Communication", () => {
                     expect(logger.eventData.res14.result).toEqual({ state: "off" });
                     expect(logger.eventData.res14.executionInfo).toEqual({ duration: 4711 });
 
-                    expect(logger.eventData.res15.isError).toBe(false);
-                    expect(logger.eventData.res15.error).toBeUndefined();
-                    expect(logger.eventData.res15.result).toEqual({ state: "off" });
-                    expect(logger.eventData.res15.executionInfo).toEqual({ duration: 4711 });
+                    expect(logger.eventData.res15).toBeUndefined();
 
                     expect(logger.eventData.res2.isError).toBe(false);
                     expect(logger.eventData.res2.error).toBeUndefined();
@@ -464,6 +464,8 @@ describe("Communication", () => {
                     expect(logger.eventData.res3.executionInfo).toEqual({ duration: 4712 });
 
                     expect(logger.eventData.res4).toBeUndefined();
+
+                    expect(logger.eventData.res5).toBeUndefined();
                 });
             });
         }, TEST_TIMEOUT);

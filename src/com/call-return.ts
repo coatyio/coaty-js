@@ -173,23 +173,32 @@ export class CallEventData extends CommunicationEventData {
 
     /**
      * @internal For internal use in framework only.
-     * 
-     * Determines whether the given context object matches the context filter of this event data,
-     * returning false if it does not match, true otherwise.
-     * 
-     * A match fails if and only if context filter and a context object are *both* specified and
-     * they do not match (checked by using `ObjectMatcher.matchesFilter`). In all other cases,
-     * the match is considered successfull.
-     * 
-     * Note that there is no need to use this operation in application code. When observing incoming Call events
-     * (via `CommunicationManager.observeCall`), the communication manager takes care to invoke this function
-     * automatically and to filter out events that do not match a given context.
-     * 
-     * @param context a CoatyObject to match against the context filter specified in event data (optional).
+     *
+     * Determines whether the given context object matches the context filter of
+     * this event data, returning false if it does not match, true otherwise.
+     *
+     * A match fails if:
+     * - context filter and context object are *both* specified and they do not
+     *   match (checked by using `ObjectMatcher.matchesFilter`), or 
+     * - context filter is *not* specified *and* context object *is* specified.
+     *
+     * In all other cases, the match is considered successfull.
+     *
+     * Note that there is no need to use this operation in application code.
+     * When observing incoming Call events (via
+     * `CommunicationManager.observeCall`), the communication manager takes care
+     * to invoke this function automatically and to filter out events that do
+     * not match a given context.
+     *
+     * @param context a CoatyObject to match against the context filter
+     * specified in event data (optional).
      */
     matchesFilter(context?: CoatyObject): boolean {
         if (this._filter !== undefined && context !== undefined) {
             return ObjectMatcher.matchesFilter(context, this._filter);
+        }
+        if (this._filter === undefined && context !== undefined) {
+            return false;
         }
         return true;
     }

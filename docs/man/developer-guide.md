@@ -1745,13 +1745,17 @@ definition extends the `ContextFilter` interface.
 On the remote end, a context object (any Coaty object) to be matched against the
 context filter of the incoming Call event data can be specified. It determines
 whether the Call event should be emitted or skipped by the observable. A Call
-event is skipped if and only if a context filter and a context object are *both*
-specified and they do not match (checked by using
-`ObjectMatcher.matchesFilter`). In all other cases, the Call event is emitted.
+event is *not* emitted by the observable if:
+
+* context filter and context object are *both* specified and they do not match
+  (checked by using `ObjectMatcher.matchesFilter`), or
+* context filter is *not* supplied *and* context object *is* specified.
+
+In all other cases, the Call event is emitted.
 
 > Tip: If your application needs to perform a more complex logic of context
 > matching (e.g. if the context cannot be described by a single Coaty object),
-> simply invoke `observeCall` without context parameter and realize your custom
+> simply invoke `observeCall` *without* context parameter and realize a custom
 > matching logic with an RxJS `filter` operator:
 >
 > ```js

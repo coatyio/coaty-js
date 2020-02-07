@@ -289,10 +289,17 @@ export class CommunicationManager implements IDisposable {
      *
      * The given context object is matched against the context filter specified
      * in incoming Call event data to determine whether the Call event should be
-     * emitted or skipped by the observable. A Call event is skipped if and only
-     * if a context filter and a context object are *both* specified and they do
-     * not match (checked by using `ObjectMatcher.matchesFilter`). In all other
-     * cases, the Call event is emitted.
+     * emitted or skipped by the observable.
+     *
+     * A Call event is *not* emitted by the observable if:
+     * - context filter and context object are *both* specified and they do not
+     *   match (checked by using `ObjectMatcher.matchesFilter`), or
+     * - context filter is *not* supplied *and* context object *is* specified.
+     *
+     * In all other cases, the Call event is emitted.
+     *
+     * @remarks You can also invoke `observeCall` *without* context parameter
+     * and realize a custom matching logic with an RxJS `filter` operator.
      *
      * @param operation the name of the operation to be invoked
      * @param context a context object to be matched against the Call event
