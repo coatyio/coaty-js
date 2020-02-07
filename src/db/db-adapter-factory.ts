@@ -35,17 +35,19 @@ export class DbAdapterFactory {
     }
 
     /**
+     * @internal For internal use in framework only.
+     * 
      * Create an adapter instance from the given connection info.
      * @param connectionInfo an object specifying connection details
      */
     static create(connectionInfo: DbConnectionInfo): IDbAdapter & IDbAdapterExtension {
-        const adapter = connectionInfo.adapter;
-        const adapterType: IDbAdapterConstructor = DbAdapterFactory.ADAPTERS[adapter];
+        const adapterName = connectionInfo.adapter;
+        const adapterType: IDbAdapterConstructor = DbAdapterFactory.ADAPTERS[adapterName];
 
         if (adapterType !== undefined) {
             return new adapterType(connectionInfo);
         }
 
-        throw new TypeError(`Cannot create DB adapter '${adapter}': adapter is not registered.`);
+        throw new TypeError(`Cannot create DB adapter '${adapterName}': adapter is not registered.`);
     }
 }

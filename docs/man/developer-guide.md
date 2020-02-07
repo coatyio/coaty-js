@@ -2211,16 +2211,10 @@ of the database configuration.
 
 ```ts
 import { Components } from "@coaty/core";
+import { DbAdapterFactory } from "@coaty/core/db";
 import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
-const components: Components = {
-    controller: {
-        ...
-    },
-    dbAdapters: {
-        "PostgresAdapter": PostgresAdapter,
-    },
-};
+DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 
 const container = Container.resolve(...);
 ```
@@ -2237,14 +2231,12 @@ A database context object is created with the connection information specified
 in the configuration:
 
 ```ts
-import { DbContext } from "@coaty/core/db";
-
 // Adapter type is registered with container components.
+import { DbContext } from "@coaty/core/db";
 const dbContext1 = new DbContext(this.runtime.databaseOptions["mydb1"]);
 
-import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
-
 // Alternative: Register adapter type on first use.
+import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 const dbContext2 = new DbContext(this.runtime.databaseOptions["mydb1"], PostgresAdapter);
 ```
 
@@ -2693,14 +2685,10 @@ class.
 Finally, the Postgres adapter must be registered before use:
 
 ```ts
+import { DbAdapterFactory } from "@coaty/core/db";
 import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
-const components: Components = {
-    ...
-    dbAdapters: {
-        PostgresAdapter,
-    },
-};
+DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 ```
 
 The Postgres adapter supports both SQL and NoSQL operations as well as extension
@@ -2726,13 +2714,11 @@ database user, and add collections) at program startup with the PostgreSQL adapt
 
 ```ts
 import { Components, Configuration } from "@coaty/core";
+import { DbAdapterFactory, DbContext } from "@coaty/core/db";
 import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 
 const components: Components = {
     ...
-    dbAdapters: {
-        PostgresAdapter,
-    },
 };
 
 const configuration: Configuration = {
@@ -2752,13 +2738,16 @@ const configuration: Configuration = {
     }
 };
 
-import { DbContext } from "@coaty/core/db";
+DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 
-const adminContext = new DbContext(this.runtime.databaseOptions["adminDb"]);
+const adminContext = new DbContext(configuration.databases["adminDb"]);
 
 // Set up a Postgres database by creating a database user and a database with
 // two collections named "mycollection1" and "mycollection2".
-adminContext.callExtension("initDatabase", this.runtime.databaseOptions["db"], ["mycollection1", "mycollection2"])
+adminContext.callExtension("initDatabase", configuration.databases["db"], ["mycollection1", "mycollection2"])
+    .then(() => {
+        container.resolve(components, configuration);
+    })
     .catch(error => console.log(error));
 ```
 
@@ -2795,16 +2784,9 @@ automatically created in-memory the first time you are creating a `DbContext` on
 The following example shows how to create and use a database with the `InMemoryAdapter`:
 
 ```ts
-import { Components, Configuration } from "@coaty/core";
-import { DbContext } from "@coaty/core/db";
+import { Configuration } from "@coaty/core";
+import { DbAdapterFactory, DbContext } from "@coaty/core/db";
 import { InMemoryAdapter } from "@coaty/core/db/adapter-in-memory";
-
-const components: Components = {
-    ...
-    dbAdapters: {
-        InMemoryAdapter,
-    },
-};
 
 const configuration: Configuration = {
     ...
@@ -2816,6 +2798,9 @@ const configuration: Configuration = {
     }
 };
 
+DbAdapterFactory.registerAdapter("InMemoryAdapter", InMemoryAdapter);
+
+// In your controller, create a DB context as follows
 const dbContext = new DbContext(this.runtime.databaseOptions["inMemoryDb"]);
 
 dbContext.addCollection("appusers")
@@ -2856,16 +2841,10 @@ To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { Components, Configuration } from "@coaty/core";
+import { Configuration } from "@coaty/core";
 import { DbLocalContext } from "@coaty/core/db";
 import { SqLiteNodeAdapter } from "@coaty/core/db/adapter-sqlite-node";
 
-const components: Components = {
-    ...
-    dbAdapters: {
-        SqLiteNodeAdapter,
-    },
-};
 
 const configuration: Configuration = {
     communication: {
@@ -2884,7 +2863,11 @@ const configuration: Configuration = {
     }
 };
 
-const dbContext = new DbLocalContext(connectionInfo);
+// Register adapter initially or
+DbAdapterFactory.registerAdapter("SqLiteNodeAdapter", SqLiteNodeAdapter);
+
+// In your controller, create a local database context as follows
+const dbContext = new DbLocalContext(this.runtime.databaseOptions["localdb"]);
 ```
 
 ### SQLite Cordova adapter
@@ -2931,16 +2914,9 @@ To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
 connection information and register the adapter before use:
 
 ```ts
-import { Components, Configuration } from "@coaty/core";
+import { Configuration } from "@coaty/core";
 import { DbLocalContext } from "@coaty/core/db";
 import { SqLiteCordovaAdapter } from "@coaty/core/db/adapter-sqlite-cordova";
-
-const components: Components = {
-    ...
-    dbAdapters: {
-        SqLiteCordovaAdapter,
-    },
-};
 
 const configuration: Configuration = {
     ...
@@ -2962,7 +2938,10 @@ const configuration: Configuration = {
     }
 };
 
-const dbContext = new DbLocalContext(connectionInfo);
+DbAdapterFactory.registerAdapter("SqLiteCordovaAdapter", SqLiteCordovaAdapter);
+
+// In your controller, create a DB context as follows
+const dbContext = new DbLocalContext(this.runtime.databaseOptions["localdb"]);
 ```
 
 ### Implement a custom database adapter
@@ -2980,13 +2959,6 @@ Note that the custom adapter class must be registered before use.
 import { Configuration } from "@coaty/core";
 import { MyCustomDatabaseAdapter } from "myapp/my-custom-adapter";
 
-const components: Components = {
-    ...
-    dbAdapters: {
-        MyCustomDatabaseAdapter,
-    },
-};
-
 const configuration: Configuration = {
     ...
     databases: {
@@ -3000,6 +2972,7 @@ const configuration: Configuration = {
     }
 };
 
+DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdapter);
 ```
 
 ### Convenience controllers

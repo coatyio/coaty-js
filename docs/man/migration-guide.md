@@ -270,15 +270,6 @@ context object *is* specified.
   are read-only. If you need to modify one, clone the object first (using
   `clone()` function in `@coaty/core`).
 
-### Changes in Database Adapters
-
-Registration of database adpaters has been simplified: You can register them as
-container components, like controllers.
-
-* Prefer registering adapters as container components by the new
-  [`Components.dbAdapters`](https://coatyio.github.io/coaty-js/man/developer-guide/#persistent-storage-and-retrieval-of-coaty-objects)
-  property. Avoid calling `DbAdapterFactory.registerAdapter()` explicitely.
-
 ### Changes in IO routing
 
 In Coaty 1, the scope of IO routing is restricted to a single user and its

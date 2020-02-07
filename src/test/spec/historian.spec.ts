@@ -11,7 +11,7 @@ import {
     Container,
     Snapshot,
 } from "../..";
-import { HistorianController } from "../../db";
+import { DbAdapterFactory, HistorianController } from "../../db";
 import { InMemoryAdapter } from "../../db/adapter-in-memory";
 
 import * as mocks from "./historian.mocks";
@@ -26,9 +26,6 @@ describe("Historian", () => {
         controllers: {
             MockSnapshotController: mocks.MockSnapshotController,
             HistorianController,
-        },
-        dbAdapters: {
-            InMemoryAdapter,
         },
     };
 
@@ -56,6 +53,9 @@ describe("Historian", () => {
             },
         },
     };
+
+    // Register database adapter before creating database contexts.
+    DbAdapterFactory.registerAdapter(ADAPTER_NAME, InMemoryAdapter);
 
     let container: Container;
     let snapshotController;

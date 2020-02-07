@@ -47,7 +47,4 @@ module.exports = {
     // Set to "console" for debugging
     logger: "none",
 
-    // Set to true for debugging (in combination wth logger: "console")
-    verbose: false,
-
 };

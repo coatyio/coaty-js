@@ -19,6 +19,7 @@ import {
 } from "../..";
 import {
     AggregateOp,
+    DbAdapterFactory,
     DbContext,
     DbJoinCondition,
     DbObjectFilter,
@@ -44,9 +45,6 @@ describe("In-Memory NoSQL Database Access", () => {
             DbTestObjectManagementController,
             MockQueryingController,
         },
-        dbAdapters: {
-            InMemoryAdapter,
-        },
     };
 
     const configuration: Configuration = {
@@ -61,6 +59,9 @@ describe("In-Memory NoSQL Database Access", () => {
             },
         },
     };
+
+    // Register database adapter before creating database contexts.
+    DbAdapterFactory.registerAdapter(ADAPTER_NAME, InMemoryAdapter);
 
     let container: Container;
     let connectionInfo: DbConnectionInfo;

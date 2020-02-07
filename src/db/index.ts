@@ -8,6 +8,7 @@
  */
 
 export * from "./db-adapter";
+export * from "./db-adapter-factory";
 export * from "./db-context";
 export * from "./db-local-context";
 export * from "./db-operations";

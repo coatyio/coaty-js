@@ -196,12 +196,9 @@ export interface DbConnectionInfo {
      * The name of the adapter used to interact with a specific database server.
      *
      * The name of the adapter specified here must be associated with a built-in
-     * or custom adapter type:
-     *
-     * * by specifying the adapter type in the container components under the
-     *   `dbAdapters` property (recommended),
-     * * by specifying the adapter type on first use when creating a new
-     *   `DbContext` or `DbLocalContext`.
+     * or custom adapter type by using the `DbAdapterFactory.registerAdapter`
+     * method or by specifying the adapter type on first use when creating a new
+     * `DbContext` or `DbLocalContext`.
      */
     adapter: string;
 
