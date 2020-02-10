@@ -222,23 +222,23 @@ export interface DbConnectionInfo {
 }
 
 /**
- * Returns a new Coaty container configuration object as a result of merging the two given
- * primary and secondary configurations.
+ * Returns a new Coaty container configuration object as a result of merging the
+ * two given (partial) primary and secondary configurations.
  *
- * For each sub-configuration object (common, communication, etc.) the value of a
- * property specified in primary overrides the value specified
- * in secondary. In other words, the value of a secondary sub-configuration
- * property is only taken if this property is not defined in primary.
- * Note that merging only considers direct properties on the subconfiguration
- * object level, not sub-levels thereof.
+ * For each sub-configuration object (common, communication, etc.) the value of
+ * a property specified in primary overrides the value specified in secondary.
+ * In other words, the value of a secondary sub-configuration property is only
+ * taken if this property is not defined in primary. Note that merging only
+ * considers direct properties on the subconfiguration object level, not
+ * sub-levels thereof.
  *
- * @param primary the primary configuration
- * @param secondary the secondary configuration to be merged
+ * @param primary the (partial) primary configuration
+ * @param secondary the (partial) secondary configuration to be merged
  */
 export function mergeConfigurations(
-    primary: Configuration,
-    secondary: Configuration): Configuration {
-    const result = {};
+    primary: Partial<Configuration>,
+    secondary: Partial<Configuration>): Configuration {
+    const result: Partial<Configuration> = {};
 
     Object.keys(primary).forEach(prop => {
         // Create shallow copy of sub-configuration properties
@@ -259,6 +259,10 @@ export function mergeConfigurations(
             });
         }
     });
+
+    if (result.communication === undefined) {
+        result.communication = {};
+    }
 
     return result as Configuration;
 }

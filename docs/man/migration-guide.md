@@ -75,9 +75,6 @@ Refactor import declarations of the following type references:
 * `DbConnectionInfo` - import from `@coaty/core`
 * `HistorianController` - import from `@coaty/core/db`
 
-> **Note**: All Coaty JS extensions are also publishing scoped packages within
-> the `@coaty/` scope.
-
 ### Deprecated functionality
 
 All features marked as deprecated in Coaty 1 have been removed:
@@ -98,6 +95,8 @@ Refactor the following definitions:
 
 ### Changes in `Configuration` options
 
+* The `mergeConfigurations` function now accepts *partial* primary or secondary
+  configuration parameters.
 * The `Configuration.common` property is now optional.
 * Move extra properties defined on `Configuration.common` into its new `extra`
   property.
