@@ -5,7 +5,6 @@ import {
     Container,
     ControllerOptions,
     CoreTypes,
-    Identity,
     Log,
     LogHost,
     LogLevel,
@@ -220,36 +219,15 @@ export abstract class Controller implements IController {
     }
 
     /**
-     * Initialize identity object properties for a concrete controller subclass
-     * based on the specified default identity object.
-     *
-     * Do not call this method in your application code, it is called by the
-     * framework. To retrieve the identity of a controller use
-     * its `identity` getter.
-     *
-     * You can overwrite this method to initalize the identity with a custom name
-     * or additional application-specific properties. Alternatively, you can 
-     * set or add custom property-value pairs by specifying them in the `identity`
-     * property of the controller configuration options `ControllerOptions`.
-     * If you specify identity properties in both ways, the ones specified
-     * in the configuration options take precedence.
-     *
-     * @param identity the default identity object for a controller instance
-     */
-    protected initializeIdentity(identity: Identity) {
-        /* tslint:disable:empty-block */
-        /* tslint:enable:empty-block */
-    }
-
-    /**
      * Whenever one of the controller's log methods (e.g. `logDebug`, `logInfo`,
      * `logWarning`, `logError`, `logFatal`) is called by application code, the
      * controller creates a Log object with appropriate property values and
      * passes it to this method before advertising it.
      *
      * You can override this method to additionally set certain properties (such
-     * as `LogHost.hostname`). Ensure that `super.extendLogObject` is called in
-     * your override. The base method does nothing.
+     * as `LogHost.hostname` or `Log.logLabels`). Ensure that
+     * `super.extendLogObject` is called in your override. The base method does
+     * nothing.
      *
      * @param log log object to be extended before being advertised
      */
@@ -260,10 +238,6 @@ export abstract class Controller implements IController {
 
     private _log(logLevel: LogLevel, message: string, tags: string[]) {
         const agentInfo = this.runtime.commonOptions?.agentInfo;
-        if (agentInfo) {
-            tags.splice(0, 0, agentInfo.packageInfo.name);
-        }
-
         let hostInfo: LogHost;
         let pid;
         let userAgent;
