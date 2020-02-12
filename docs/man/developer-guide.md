@@ -1131,21 +1131,32 @@ A similar coding pattern to easily unsubscribe from observables uses the RxJS
 ```ts
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { Controller } from "@coaty/core";
 
-const destroyed$ = new Subject();
+class MyController extends Controller {
 
-this.communicationManager.publishDiscover(...)
-    .pipe(
-        // After first emission on the given subject, stop processing and unsubscribe.
-        takeUntil(destroyed$),
-    )
-    .subscribe(
-        event => {
-            // Handle response events until destroyed subject emits.
-        });
+    private _stopped$ = new Subject();
 
-// Cancel processing of response events by emitting a value.
-destroyed$.next();
+    onCommunicationManagerStarting() {
+        super.onCommunicationManagerStarting();
+
+        this.communicationManager.publishDiscover(...)
+            .pipe(
+                // After first emission on the stopped subject, stop processing and unsubscribe.
+                takeUntil(this._stopped$),
+            )
+            .subscribe(event => {
+                // Handle response events until stopped subject emits.
+            });
+    }
+
+    onCommunicationManagerStopping() {
+        super.onCommunicationManagerStopping();
+
+        // Cancel processing of response events by emitting a value.
+        this._stopped$.next();
+    }
+}
 ```
 
 This pattern is especially useful if you want to unsubscribe from multiple
@@ -2277,10 +2288,10 @@ Promise chaining effectively serializes the database operations, invoking the
 next operation not until the previous one has completed successfully or with an
 error.
 
-For applying promise operations to a series of items, the framework provides
-a utility method `Async.inSeries` to chain promises in series
-(see section Utilities below). This method can be used to iterate over individual
-objects retrieved by a database operation such as `findObjects` and apply some
+For applying promise operations to a series of items, the framework provides a
+utility method `Async.inSeries` to chain promises in series (see section
+Utilities below). This method can be used to iterate over individual objects
+retrieved by a database operation such as `findObjects` and apply some
 asynchronous database operation on each one in series:
 
 ```ts
@@ -3006,32 +3017,31 @@ components or extend your custom controller class from this controller class.
 The following example shows how to keep track of agents whose identity is named
 `"LightAgent"`.
 
-This approach requires the lifecycle controller to be added to the container
-components under the name `ObjectLifecycleController`:
+This approach requires your custom controller class to inherit from the
+lifecycle controller class:
 
 ```ts
 import { Subscription } from "rxjs";
-import { Components, Container, Controller, ObjectLifecycleController } from "@coaty/core";
+import { Components, ObjectLifecycleController } from "@coaty/core";
 
 const components: Components = {
     controllers: {
-        ObjectLifecycleController,
-        ...
+        MyController,
     }
 };
 
-class MyController extends Controller {
+class MyController extends ObjectLifecycleController {
 
     private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-
-        const ctrl = this.container.getController<ObjectLifecycleController>("ObjectLifecycleController");
-        this._lifecycleSubscription = ctrl.
-            .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
+        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever light agents have been observed.
+                // Note that if the agent containing this controller is also a light agent,
+                // this controller also receives its own agent identity.
+                // You can easily filter it out by checking the object ID of a received identity.
                 console.log(info.added);     // newly advertised or discovered identities
                 console.log(info.changed);   // readvertised or rediscovered identities
                 console.log(info.removed);   // deadvertised identities
@@ -3046,20 +3056,30 @@ class MyController extends Controller {
 }
 ```
 
-This approach assumes your custom controller class inherits from the lifecycle
-controller class:
+This approach requires the lifecycle controller to be added to the container
+components under the key `ObjectLifecycleController`:
 
 ```ts
 import { Subscription } from "rxjs";
-import { ObjectLifecycleController } from "@coaty/core";
+import { Components, Controller, ObjectLifecycleController } from "@coaty/core";
 
-class MyController extends ObjectLifecycleController {
+const components: Components = {
+    controllers: {
+        ObjectLifecycleController,
+        MyController,
+    }
+};
+
+class MyController extends Controller {
 
     private _lifecycleSubscription: Subscription;
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
+
+        const ctrl = this.container.getController<ObjectLifecycleController>("ObjectLifecycleController");
+        this._lifecycleSubscription = ctrl.
+            .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever light agents have been observed.
                 // Note that if the agent containing this controller is also a light agent,
@@ -3326,7 +3346,7 @@ the above log methods is called. The controller first creates a `Log` object
 with appropriate property values and passes it to this method before advertising
 it. You can overwrite this method to additionally set certain properties (such
 as `Log.hostname` or `Log.logLabels`). For example, a Node.js agent could add
-the hostname to the `Log` object like this:
+the hostname and other host characteristics to the `Log` object like this:
 
 ```ts
 import { hostname } from "os";
@@ -3334,6 +3354,9 @@ import { Log } from "@coaty/core";
 
 protected extendLogObject(log: Log) {
     log.logHost.hostname = hostname;
+    log.logLabels = {
+        operatingState: this.operatingState,
+    };
 }
 ```
 
@@ -3354,9 +3377,11 @@ that are missing in the JavaScript ES5/ES6 standard.
 
 ### Asynchronous promise operations
 
-The `Async.inSeries` method applies an asynchronous operation against each
-value of an array of items in series (from left-to-right). You can break out
-of the iteration prematurely by resolving a `false` value from an operation:
+The `Async.inSeries` method applies an asynchronous operation against each value
+of an array of items in series (from left-to-right). You can break out of the
+iteration prematurely by resolving a `false` value from an operation. If an
+async operation is rejected, the promise returned by `inSeries` is rejected
+immediately (fail fast).
 
 ```ts
 import { Async } from "@coaty/core";
@@ -3369,9 +3394,9 @@ Async.inSeries(
                 console.log("run async operation #" + item);
                 resolve(item < 4 ? true : false);
             }, 1000);
-        }),
+        });
     })
-    .then(() => console.log("some async operations completed"))
+    .then(lastIndex => console.log(`last async operation performed on item index ${lastIndex}`))  // lastIndex should be 3
     .catch(error => console.log(error));
 ```
 

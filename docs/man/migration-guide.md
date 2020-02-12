@@ -86,6 +86,13 @@ All features marked as deprecated in Coaty 1 have been removed:
 * `Container.getRuntime()` - use `Container.runtime`
 * `Container.getCommunicationManager()` - use `Container.communicationManager`
 
+### Changes in `util` module
+
+* The `Async.inSeries()` function no longer returns a boolean promise that
+  indicates whether an async operation has terminated prematurely. Instead, the
+  promise resolves the index of the last item that the async operation has been
+  applied to successfully.
+
 ### Changes in `runtime-node` module
 
 Refactor the following definitions:
@@ -116,18 +123,18 @@ Refactor the following definitions:
 
 ### Changes in Coaty object types
 
-* Stop using `CoatyObject.assigneeUserId` as this property has been removed.
+* Rename core object type `Component` to `Identity`. This name better reflects
+  its intent to provide the unique identity of a Coaty agent.
+* Stop using `Config` as this core type has been removed. If needed, define an
+  equivalent object type in your application code.
 * Stop using `Device` as this object type has been removed. For details, see
   section "Changes in IO routing".
+* Stop using `CoatyObject.assigneeUserId` as this property has been removed.
 * Stop using `Task.workflowId` as this property has been removed. If needed,
   define an equivalent property in your custom task type.
 * Use new property `Task.assigneeObjectId` to reference an object, e.g. a user
   or machine, that this task is assigned to.
 * Change type of `Task.requirements` property to consist of key-value pairs.
-* Stop using `Config` as this core type has been removed. If needed, define an
-  equivalent object type in your application code.
-* Rename core object type `Component` to `Identity`. This name better reflects
-  its intent to provide the unique identity of a Coaty agent.
 * Optional property `logLabels` has been added to `Log` object type. Useful in
   providing multi-dimensional context-specific data along with a log.
 * Stop adding extra properties to `Log` object type directly. Add them to the
@@ -172,7 +179,7 @@ Upgrade to the new approach as follows:
   container's identity object in the new `CommonOptions.agentIdentity` property.
 * Stop using `CommunicationOptions.shouldAdvertiseIdentity` as this property has
   been removed.
-* Stop using `Controller.identity` as this getter have been removed. Use
+* Stop using `Controller.identity` as this getter has been removed. Use
   `Container.identity` instead.
 * Stop defining `Controller.initializeIdentity()` as this method has been
   removed.
@@ -200,16 +207,16 @@ this.communicationManager.observeDiscover()
 
 ### Changes in communication
 
-* Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
-  enum members have been removed. Use `OperatingState.Started` and
-  `OperatingState.Stopped` instead.
-* Rename `IoStateEvent.eventData` getter to `IoStateEvent.data`.
 * Rename `CommunicationEvent.eventData` getter to `CommunicationEvent.data`.
 * Rename `CommunicationEvent.eventSourceId` getter to `CommunicationEvent.sourceId`.
 * Stop using `CommunicationEvent.eventSource` as this getter has been removed.
   Use `CommunicationEvent.sourceId` instead.
 * Stop using `CommunicationEvent.eventUserId` as this getter has been removed.
   For details, see section "Changes in IO routing".
+* Rename `IoStateEvent.eventData` getter to `IoStateEvent.data`.
+* Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
+  enum members have been removed. Use `OperatingState.Started` and
+  `OperatingState.Stopped` instead.
 * Stop using `CommunicationOptions.useReadableTopics` as this property has been
   removed. This feature is no longer supported.
 * The MQTT topic structure has been optimized. Your application code is not

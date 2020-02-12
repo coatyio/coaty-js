@@ -11,7 +11,45 @@ describe("Utilities", () => {
 
     const TEST_TIMEOUT = 2000;
 
-    const asyncFunc = (item: number, previousValue?: number[]) => {
+    it("Async.inSeries with empty items", (done) => {
+        Async.inSeries([], () => Promise.resolve(true))
+            .then(lastIndex => {
+                expect(lastIndex).toBe(-1);
+                done();
+            })
+            .catch(error => failTest(error, done));
+    }, TEST_TIMEOUT);
+
+    it("Async.inSeries fails fast", (done) => {
+        Async.inSeries([1], () => Promise.reject(new Error("Fail fast")))
+            .then(lastIndex => {
+                failTest(new Error("test expected to fail fast"), done);
+            })
+            .catch(error => {
+                expect(error.message).toBe("Fail fast");
+                done();
+            });
+    }, TEST_TIMEOUT);
+
+    it("Async.inSeries executes all items", (done) => {
+        Async.inSeries([1, 2, 3, 4, 5], (item: number) => Promise.resolve(item))
+            .then(lastIndex => {
+                expect(lastIndex).toBe(4);
+                done();
+            })
+            .catch(error => failTest(error, done));
+    }, TEST_TIMEOUT);
+
+    it("Async.inSeries terminates prematurely", (done) => {
+        Async.inSeries([1, 2, 3, 4, 5], (item: number) => Promise.resolve(item < 4 ? true : false))
+            .then(lastIndex => {
+                expect(lastIndex).toBe(3);
+                done();
+            })
+            .catch(error => failTest(error, done));
+    }, TEST_TIMEOUT);
+
+    const asyncReduceFunc = (item: number, previousValue?: number[]) => {
         return new Promise<number[]>((resolve, reject) => {
             setTimeout(() => {
                 previousValue.push(item);
@@ -20,10 +58,10 @@ describe("Utilities", () => {
         });
     };
 
-    it("Async.reduce with an empty array", (done) => {
+    it("Async.reduce with empty items", (done) => {
         const items = [];
 
-        Async.reduce(items, asyncFunc, [])
+        Async.reduce(items, asyncReduceFunc, [])
             .then(value => {
                 expect(value.length).toBe(0);
                 done();
@@ -31,10 +69,10 @@ describe("Utilities", () => {
             .catch(error => failTest(error, done));
     }, TEST_TIMEOUT);
 
-    it("Async.reduce with a non-empty array", (done) => {
+    it("Async.reduce with non-empty items", (done) => {
         const items = [100, 300, 150, 50];
 
-        Async.reduce(items, asyncFunc, [])
+        Async.reduce(items, asyncReduceFunc, [])
             .then(value => {
                 value.forEach((val, i) => {
                     expect(val).toBe(items[i]);

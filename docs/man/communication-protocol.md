@@ -114,7 +114,7 @@ patterns to exchange data in a decentralized application:
 
 ## Topic Structure
 
-Any topic used in the framework comprises the following topic levels:
+Coaty defines its own topic structure that comprises the following topic levels:
 
 * **ProtocolName** - the name of the protocol, i.e. `coaty`.
 * **ProtocolVersion** - for versioning the communication protocol. The protocol

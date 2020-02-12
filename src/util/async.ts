@@ -6,25 +6,30 @@
 export class Async {
 
     /**
-     * The inSeries method applies an asynchronous operation against each
-     * value of an array of items in series (from left-to-right).
+     * This method applies an asynchronous operation against each value of an
+     * array of items in series (from left-to-right).
      *
-     * The operation function returns a promise that is resolved
-     * when the operation completes successfully and rejected when the operation fails.
-     * The resolved value should be `false` if the iteration should break, i.e. terminate
-     * prematurely without executing the remaining operations. If any other value
-     * is resolved the iteration continues.
+     * The async operation function returns a promise that is resolved when the
+     * operation completes successfully and rejected when the operation fails.
+     * The resolved value should be `false` if the iteration should break, i.e.
+     * terminate prematurely without executing the remaining operations. If any
+     * other value is resolved the iteration continues.
      *
-     * The inSeries method returns a promise that is resolved with a boolean value
-     * indicating whether the iteration has terminated prematurely (`false`) or not (`true`).
-     * If one of the async operations is rejected, the returned promise is rejected
-     * immediately and inSeries fails fast.
+     * The `inSeries ` method returns a promise that is resolved with the index
+     * of the last item that the async operation function has been applied to
+     * successfully. The index is `-1`, if an empty items array has been
+     * specified. If the index is less than that of the last element in the
+     * items array, operation has terminated prematurely after executing the
+     * item with the index returned.
+     *
+     * The returned promise is rejected immediately and `inSeries` fails fast,
+     * if any of the async operations is rejected.
      */
-    static inSeries<T>(items: T[], asyncFunc: (item: T, index?: number) => Promise<boolean | any>): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
+    static inSeries<T>(items: T[], asyncFunc: (item: T, index?: number) => Promise<boolean | any>): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
             const series = (index: number) => {
                 if (index === items.length) {
-                    resolve(true);
+                    resolve(index - 1);
                     return;
                 }
 
@@ -34,7 +39,7 @@ export class Async {
                 asyncFunc(items[index], index)
                     .then(didNotBreak => {
                         if (didNotBreak === false) {
-                            resolve(false);
+                            resolve(index);
                         } else {
                             series(index + 1);
                         }
@@ -48,16 +53,17 @@ export class Async {
 
     /**
      * The reduce method applies an asynchronous operation against an
-     * accumulator and each value of an array of items in series (from left-to-right)
-     * to reduce it to a single value.
+     * accumulator and each value of an array of items in series (from
+     * left-to-right) to reduce it to a single value.
      *
      * The operation function is applied in series to each item in the sequence.
-     * It returns a promise that is resolved when the operation completes successfully
-     * and rejected when the operation fails.
+     * It returns a promise that is resolved when the operation completes
+     * successfully and rejected when the operation fails.
      *
-     * The value that results from the reduction is resolved in the returned promise.
-     * If one of the async operations is rejected, the returned promise is rejected
-     * immediately with the value of the rejected promise and reduce fails fast.
+     * The value that results from the reduction is resolved in the returned
+     * promise. If one of the async operations is rejected, the returned promise
+     * is rejected immediately with the value of the rejected promise and reduce
+     * fails fast.
      */
     static reduce<T, R>(
         items: T[],
@@ -85,11 +91,11 @@ export class Async {
     }
 
     /**
-     * Returns a promise that rejects after the given number of milliseconds
-     * if the passed in promise doesn't resolve or reject in the meantime;
+     * Returns a promise that rejects after the given number of milliseconds if
+     * the passed in promise doesn't resolve or reject in the meantime;
      * otherwise the returned promise resolves or rejects with the passed in
      * promise. 
-     * 
+     *
      * @param timeoutMillis  number of milliseconds after which to reject
      * @param promise a promise
      */
