@@ -23,6 +23,7 @@ export * from "./controller/object-cache-controller";
 export * from "./controller/object-lifecycle-controller";
 
 export * from "./model/annotation";
+export * from "./model/identity";
 export * from "./model/io-context";
 export * from "./model/io-node";
 export * from "./model/io-point";

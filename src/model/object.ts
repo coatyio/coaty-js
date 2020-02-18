@@ -63,12 +63,3 @@ export interface CoatyObject {
      */
     isDeactivated?: boolean;
 }
-
-/**
- * Represents the unique identity of a Coaty container, as represented by its
- * communication manager.
- */
-export interface Identity extends CoatyObject {
-
-    coreType: "Identity";
-}
