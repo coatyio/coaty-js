@@ -38,13 +38,13 @@ export interface IController extends IDisposable {
 /**
  * Defines static constructor signature for controllers that implement the
  * IController interface. To be used for constructor dependency injection
- * in the Coaty container.
+ * in a Coaty container.
  */
 export type IControllerStatic<T extends IController> =
     new (container: Container, options: ControllerOptions, controllerName: string) => T;
 
 /**
- * The base controller class for object controllers and IO controllers. 
+ * The base controller class. 
  */
 export abstract class Controller implements IController {
 

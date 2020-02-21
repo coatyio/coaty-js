@@ -49,8 +49,8 @@ To update the build infrastructure of your application, follow these steps:
 ### Changes to package naming and import declarations
 
 Coaty 2 introduces a common npm package scope named `@coaty` for current and
-future framework projects of the Coaty JS platform. The Coaty 2 core framework
-is published in the scoped npm package named `@coaty/core`.
+future framework projects of the Coaty JS platform. The Coaty 2 framework is
+published in the npm package `@coaty/core`.
 
 Rewrite all import and require declarations `coaty/<modulename>` to use this
 scoped package as follows:
@@ -171,12 +171,12 @@ Upgrade to the new approach as follows:
   `AdvertiseEvent.withObject()`, remove the first argument `eventSource`.
 * If you call communication event observation methods
   `CommunicationManager.observeXXX()` remove the first argument `eventTarget`.
-* Stop using `CommunicationManager.identity` as this getter have been removed.
-  Instead, use `Container.identity` to access the container's identity object,
-  i.e. from within a controller use `this.container.identity`.
 * Stop configuring identity properties in `CommunicationOptions.identity` as
   this property has been removed. Instead, customize properties of the
   container's identity object in the new `CommonOptions.agentIdentity` property.
+* Stop using `CommunicationManager.identity` as this getter has been removed.
+  Instead, use `Container.identity` to access the container's identity object,
+  i.e. from within a controller use `this.container.identity`.
 * Stop using `CommunicationOptions.shouldAdvertiseIdentity` as this property has
   been removed.
 * Stop using `Controller.identity` as this getter has been removed. Use

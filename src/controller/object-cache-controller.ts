@@ -46,11 +46,12 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
     }
 
     /**
-     * Gets an observable that emits the first object resolved
-     * for the given object Id, then completes.
+     * Gets an observable that emits the first object resolved for the given
+     * object Id, then completes.
      *
      * @param objectId the object Id of the object to resolve
-     * @param shouldResolvePending whether to rediscover already pending resolutions
+     * @param shouldResolvePending true if an already pending resolution should be
+     * rediscovered; false otherwise (default)
      */
     resolveObject(objectId: Uuid, shouldResolvePending = false): Observable<T> {
         const object = this._objectCache.get(objectId);
@@ -85,10 +86,9 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
 
     /**
      * Sets a filter predicate on objects to be resolved.
-     * 
-     * To filter out specific objects or object types you should set
-     * an object filter once in the `OnInit`
-     * method of your custom controller.
+     *
+     * To filter out specific objects or object types you should set an object
+     * filter once in the `OnInit` method of your custom controller.
      */
     public set objectFilter(predicate: (obj: T) => boolean) {
         this._objectFilter = predicate;

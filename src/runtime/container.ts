@@ -137,7 +137,7 @@ export class Container {
     /**
      * Gets the identity object of this container.
      *
-     * The identity is can be initialized in the common configuration option
+     * The identity can be initialized in the common configuration option
      * `agentIdentity`.
      */
     get identity(): Readonly<Identity> {
@@ -270,6 +270,7 @@ export class Container {
         this._controllers = undefined;
         this._comManager = undefined;
         this._runtime = undefined;
+        this._identity = undefined;
     }
 
     private _operatingStateCallback(state: OperatingState, ctrl: IController) {

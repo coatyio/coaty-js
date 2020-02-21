@@ -72,10 +72,6 @@ export interface Log extends CoatyObject {
      * Tags are used to categorize or filter log output. Agents may introduce
      * specific tags, such as "service" or "app", usually defined at design
      * time.
-     *
-     * Log objects published by the framework itself always use the reserved tag
-     * named "coaty" as part of the `logTags` property. This tag should never be
-     * used by agent projects.
      */
     logTags?: string[];
 

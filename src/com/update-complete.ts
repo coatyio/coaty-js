@@ -48,7 +48,7 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
 export class UpdateEventData extends CommunicationEventData {
 
     /**
-     * The object the object with properties to be updated.
+     * The object with properties to be updated.
      */
     get object() {
         return this._object;

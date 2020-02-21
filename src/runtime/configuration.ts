@@ -66,9 +66,10 @@ export interface CommonOptions {
 
     /**
      * Agent information generated and injected into the configuration when the
-     * agent project is build (optional). To be used locally by an agent to
-     * access build and release information of the application for displaying,
-     * logging, etc.
+     * agent project is build (optional).
+     *
+     * To be used locally by an agent to access build and release information of
+     * the application for displaying, logging, etc.
      */
     agentInfo?: AgentInfo;
 

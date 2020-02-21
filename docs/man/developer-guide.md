@@ -562,24 +562,23 @@ The Angular project configuration in `angular.json` must be adjusted to integrat
 the custom webpack config file by using custom builders for the build and serve targets:
 
 ```json
-    "targets": {
+    "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "customWebpackConfig": {
                 "path": "./webpack.node-polyfills.config.js"
              },
-
-
+          ...
         "serve": {
-          "builder": "@angular-builders/dev-server:generic",
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          ...
 ```
 
-Finally, install the custom builders as development dependencies of your project:
+Finally, install the custom builder as development dependency of your project:
 
 ```sh
 npm install @angular-builders/custom-webpack --save-dev
-npm install @angular-builders/dev-server --save-dev
 ```
 
 ### Access Coaty container components
@@ -3320,10 +3319,7 @@ can also extend the `Log` object with custom property-value pairs.
 
 You can also specify log tags as an array of string values in the `Log.logTags`
 property. Tags are used to categorize or filter log output. Agents may introduce
-specific tags, such as "service" or "app", usually defined at design time. Note
-that log objects published by the framework itself always use the reserved tag
-named "coaty" as part of the `logTags` property. This tag name should never be
-used by your custom agents.
+specific tags, such as "service" or "app", usually defined at design time.
 
 You can also specify log labels as a set of key-value label pairs in the
 `logLabels` property. It can be used to add context-specific information to a
