@@ -742,7 +742,7 @@ export class CommunicationManager implements IDisposable {
         // Support for clean/persistent sessions in broker:
         // If you want to receive QOS 1 and 2 messages that were published while your client was offline, 
         // you need to connect with a unique clientId and set 'clean' to false (MQTT.js default is true).
-        mqttClientOpts.clean = mqttClientOpts.clean === undefined ? false : mqttClientOpts?.clean;
+        mqttClientOpts.clean = mqttClientOpts.clean === undefined ? true : mqttClientOpts?.clean;
 
         // Do not support automatic resubscription/republication of topics on reconnection by MQTT.js v2
         // because communication manager provides its own implementation.
@@ -1807,15 +1807,24 @@ abstract class SubscriberItem<T> {
     }
 
     dispatchNext(message: T, topic?: string) {
-        [...this._subscribers].forEach(s => s.next(topic ? [topic, message] : message));
+        // Ensure proper removal of subscribers that unsubscribe in callback.
+        for (let i = this._subscribers.length - 1; i >= 0; i--) {
+            this._subscribers[i].next(topic ? [topic, message] : message);
+        }
     }
 
     dispatchComplete() {
-        [...this._subscribers].forEach(s => s.complete());
+        // Ensure proper removal of subscribers that unsubscribe in callback.
+        for (let i = this._subscribers.length - 1; i >= 0; i--) {
+            this._subscribers[i].complete();
+        }
     }
 
     dispatchError(error: any) {
-        [...this._subscribers].forEach(s => s.error(error));
+        // Ensure proper removal of subscribers that unsubscribe in callback.
+        for (let i = this._subscribers.length - 1; i >= 0; i--) {
+            this._subscribers[i].error(error);
+        }
     }
 
     get subscriberCount() {
