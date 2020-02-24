@@ -43,6 +43,7 @@ export class CommunicationTopic {
     }
 
     static readonly PROTOCOL_NAME = "coaty";
+    static readonly PROTOCOL_NAME_PREFIX = CommunicationTopic.PROTOCOL_NAME + "/";
     static readonly EVENT_TYPE_FILTER_SEPARATOR = ":";
     static readonly EMPTY_TOPIC_LEVEL = "-";
 
@@ -242,7 +243,7 @@ export class CommunicationTopic {
      * @returns true if the given topic name is a raw topic; false otherwise
      */
     static isRawTopic(topicName: string) {
-        return !topicName.startsWith(this.PROTOCOL_NAME + "/");
+        return !topicName.startsWith(this.PROTOCOL_NAME_PREFIX);
     }
 
     /**
