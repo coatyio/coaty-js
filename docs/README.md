@@ -32,6 +32,14 @@ proposing a change):
 * Run `bundle exec jekyll serve` to start the preview server and point your
   browser to `localhost:4000/coaty-js/`.
 
+## Upgrade gem dependencies
+
+To a upgrade a gem dependency to a newer version (e.g. because of a security
+alert), add new gem version to `Gemfile` (e.g. `gem "nokogiri", ">= 1.10.8"`)
+and run `bundle update` on the dependency (e.g. `bundle update nokogiri`).
+
+To update all gem dependencies, run `bundle update`.
+
 ## GitHub Pages Theme
 
 The documentation website uses the [Primer theme](https://github.com/pages-themes/primer),
