@@ -948,12 +948,12 @@ registered implicitely with the container. It provides an essential set of
 one-way and two-way communication event patterns to exchange object data in a
 decentralized Coaty application:
 
-* **Advertise** an object: broadcast an object to parties interested in objects
+* **Advertise** an object: multicast an object to parties interested in objects
   of a specific core or object type.
 * **Deadvertise** an object by its unique ID: notify subscribers when capability
-  is no longer available; for abnormal disconnection of a client, last will
+  is no longer available; for abnormal disconnection of a party, last will
   concept of Coaty is implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in any type of objects
+* **Channel**: Multicast objects to parties interested in any kind of objects
   delivered through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external
   ID, internal ID, or object type, and receive responses by Resolve events.

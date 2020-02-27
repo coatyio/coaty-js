@@ -45,7 +45,6 @@ export class CommunicationTopic {
     static readonly PROTOCOL_NAME = "coaty";
     static readonly PROTOCOL_NAME_PREFIX = CommunicationTopic.PROTOCOL_NAME + "/";
     static readonly EVENT_TYPE_FILTER_SEPARATOR = ":";
-    static readonly EMPTY_TOPIC_LEVEL = "-";
 
     static EVENT_TYPE_TOPIC_LEVELS: { [level: string]: CommunicationEventType };
     static TOPIC_LEVELS_BY_EVENT_TYPE: string[];
@@ -95,7 +94,7 @@ export class CommunicationTopic {
         const isOneWayEvent = this.isOneWayEvent(eventType);
         if (isOneWayEvent) {
             if (corrId) {
-                throw new Error(`Communication topic has correlation id for ${eventTypeKey} event`);
+                throw new Error(`Communication topic has correlation id for one-way ${eventTypeKey} event`);
             }
             if ((eventType === CommunicationEventType.Advertise ||
                 eventType === CommunicationEventType.Channel ||
@@ -142,7 +141,7 @@ export class CommunicationTopic {
      * @param eventType an event type
      * @param eventTypeFilter a filter for an event type, or undefined
      * @param sourceId ID from which this event originates
-     * @param correlationId correlation ID for response message, or undefined
+     * @param correlationId correlation ID for two-way message or undefined
      */
     static createByLevels(
         version: number,

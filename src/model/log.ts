@@ -123,7 +123,7 @@ export interface LogHost {
     hostname?: string;
 
     /**
-     * Hostname of the application that generates a log record (optional).
+     * User agent of the application that generates a log record (optional).
      * May be specified by browser or cordova applications.
      */
     userAgent?: string;

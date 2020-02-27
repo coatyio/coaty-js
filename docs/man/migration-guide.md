@@ -222,8 +222,8 @@ this.communicationManager.observeDiscover()
 * The MQTT topic structure has been optimized. Your application code is not
   affected by this change.
 * You can now specify the MQTT QoS level for all publications, subscriptions,
-  and last will messages in `CommunicationOptions.mqttClientOptions`. The
-  default level is 0.
+  and last will messages in `CommunicationOptions.mqttClientOptions.qos`. The
+  default and recommended QoS level is 0.
 * You can now specify partial options, i.e. changed options only, for
   `CommunicationManager.restart()`.
 * Take further actions after calling `CommunicationManager.restart()` not until
@@ -265,7 +265,7 @@ context object *is* specified.
 
 #### Changes in Raw event
 
-* `CommunicationManager.observeRaw()` no longer emits messages related to Coaty
+* `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
   communication patterns.
 
 ### Changes in Sensor Things

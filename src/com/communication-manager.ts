@@ -1461,7 +1461,7 @@ export class CommunicationManager implements IDisposable {
         // Optimization: in case core objects should be observed by their object
         // type, we do not subscribe on the object type filter but on the core
         // type filter instead, filtering out objects that do not satisfy the
-        // core object type. (see `publishAdvertise`).
+        // core object type (see `publishAdvertise`).
         if (objectType) {
             const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
             if (objectCoreType) {
@@ -1485,7 +1485,7 @@ export class CommunicationManager implements IDisposable {
         // Optimization: in case core objects should be observed by their object
         // type, we do not subscribe on the object type filter but on the core
         // type filter instead, filtering out objects that do not satisfy the
-        // core object type. (see `publishUpdate`).
+        // core object type (see `publishUpdate`).
         if (objectType) {
             const objectCoreType = CoreTypes.getCoreTypeFor(objectType);
             if (objectCoreType) {

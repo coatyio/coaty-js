@@ -46,7 +46,8 @@ Version 3.1.1.
 
 For publishing messages, subscribing to topics, and for last will messages,
 Coaty should support any MQTT Quality of Service level: QoS 0, QoS 1, or QoS 2.
-If not specified by a Coaty application, the default QoS level should be 0.
+If not specified by a Coaty application, the default and recommended QoS level
+should be 0.
 
 ## Message Topics and Payloads
 
@@ -89,12 +90,12 @@ the payload, as well as some bytes of header data.
 Coaty provides an essential set of one-way and two-way communication event
 patterns to exchange data in a decentralized application:
 
-* **Advertise** an object: broadcast an object to parties interested in objects
+* **Advertise** an object: multicast an object to parties interested in objects
   of a specific core or object type.
 * **Deadvertise** an object by its unique ID: notify subscribers when capability
   is no longer available; for abnormal disconnection of a party, last will
   concept of Coaty is implemented by sending this event.
-* **Channel** Broadcast objects to parties interested in any kind of objects
+* **Channel**: Multicast objects to parties interested in any kind of objects
   delivered through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external
   ID, internal ID, or object type, and receive responses by Resolve events.
