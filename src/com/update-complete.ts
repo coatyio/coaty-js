@@ -2,6 +2,7 @@
 
 import { CoatyObject, CoreTypes } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationTopic } from "./communication-topic";
 
 /**
  * Update event.
@@ -18,6 +19,26 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
      * @param event a Complete event
      */
     complete: (event: CompleteEvent) => void;
+
+    /**
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     *
+     * Create an Update event instance.
+     *
+     * The `objectType` of the object specified in the given event data must be
+     * a non-empty string that does not contain the following characters: `NULL
+     * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
+     *
+     * @param eventData data associated with this Update event
+     */
+    constructor(eventData: UpdateEventData) {
+        super(eventData);
+
+        if (!CommunicationTopic.isValidTopicLevel(eventData.object.objectType)) {
+            throw new TypeError(`in UpdateEvent: invalid objectType ${eventData.object.objectType}`);
+        }
+    }
 
     /**
      * Create an UpdateEvent instance for the given object.

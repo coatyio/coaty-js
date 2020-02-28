@@ -5,6 +5,7 @@
  */
 
 import {
+    AdvertiseEvent,
     ChannelEvent,
     CoatyObject,
     CommunicationManager,
@@ -353,9 +354,43 @@ describe("Communication", () => {
             });
         }, TEST_TIMEOUT);
 
+        it("throws on invalid Update event objectType", () => {
+            expect(() => UpdateEvent.withObject(
+                {
+                    objectId: container2.runtime.newUuid(),
+                    objectType: "foo+/",
+                    coreType: "CoatyObject",
+                    name: "invalid",
+                }))
+                .toThrow();
+        });
+
+        it("throws on invalid observeUpdateWithObjectType", () => {
+            expect(() => container1.communicationManager
+                    .observeUpdateWithObjectType("foo+/"))
+                .toThrow();
+        });
+
+        it("throws on invalid Advertise event objectType", () => {
+            expect(() => AdvertiseEvent.withObject(
+                {
+                    objectId: container2.runtime.newUuid(),
+                    objectType: "foo+/",
+                    coreType: "CoatyObject",
+                    name: "invalid",
+                }))
+                .toThrow();
+        });
+
+        it("throws on invalid observeAdvertiseWithObjectType", () => {
+            expect(() => container1.communicationManager
+                    .observeAdvertiseWithObjectType("foo+/"))
+                .toThrow();
+        });
+
         it("throws on invalid Channel event identifier", () => {
             expect(() => ChannelEvent.withObject(
-                "/foo/+/",
+                "foo+/",
                 {
                     objectId: container2.runtime.newUuid(),
                     objectType: CoreTypes.OBJECT_TYPE_OBJECT,

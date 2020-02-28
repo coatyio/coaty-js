@@ -2,11 +2,36 @@
 
 import { CoatyObject, CoreTypes } from "..";
 import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationTopic } from "./communication-topic";
 
 /**
  * Advertise event.
  */
 export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
+
+    get eventType() {
+        return CommunicationEventType.Advertise;
+    }
+
+    /**
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     *
+     * Create an Advertise event instance.
+     *
+     * The `objectType` of the object specified in the given event data must be
+     * a non-empty string that does not contain the following characters: `NULL
+     * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
+     *
+     * @param eventData data associated with this Advertise event
+     */
+    constructor(eventData: AdvertiseEventData) {
+        super(eventData);
+
+        if (!CommunicationTopic.isValidTopicLevel(eventData.object.objectType)) {
+            throw new TypeError(`in AdvertiseEvent: invalid objectType ${eventData.object.objectType}`);
+        }
+    }
 
     /**
      * Create an AdvertiseEvent instance for advertising the given object.
@@ -16,10 +41,6 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
      */
     static withObject(object: CoatyObject, privateData?: any) {
         return new AdvertiseEvent(new AdvertiseEventData(object, privateData));
-    }
-
-    get eventType() {
-        return CommunicationEventType.Advertise;
     }
 }
 

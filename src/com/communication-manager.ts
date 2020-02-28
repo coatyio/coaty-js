@@ -272,9 +272,14 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe Update events for the given object type.
+     * 
+     * The given object type must be a non-empty string that does not contain
+     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
+     * (U+002F)`.
      *
      * @param objectType object type of objects to be observed
      * @returns an observable emitting incoming Update events
+     * @throws if given objectType is not in a valid format
      */
     observeUpdateWithObjectType(objectType: string): Observable<UpdateEvent> {
         return this._observeUpdate(undefined, objectType);
@@ -328,8 +333,13 @@ export class CommunicationManager implements IDisposable {
     /**
      * Observe Advertise events for the given object type.
      *
+     * The given object type must be a non-empty string that does not contain
+     * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
+     * (U+002F)`.
+     *
      * @param objectType object type of objects to be observed.
      * @returns an observable emitting incoming Advertise events
+     * @throws if given objectType is not in a valid format
      */
     observeAdvertiseWithObjectType(objectType: string): Observable<AdvertiseEvent> {
         return this._observeAdvertise(undefined, objectType);
@@ -354,6 +364,7 @@ export class CommunicationManager implements IDisposable {
      *
      * @param channelId a channel identifier
      * @returns an observable emitting incoming Channel events
+     * @throws if given channelId is not in a valid format
      */
     observeChannel(channelId: string): Observable<ChannelEvent> {
         if (!CommunicationTopic.isValidTopicLevel(channelId)) {
@@ -1458,6 +1469,10 @@ export class CommunicationManager implements IDisposable {
             throw new TypeError(`${coreType} is not a CoreType`);
         }
 
+        if (objectType && !CommunicationTopic.isValidTopicLevel(objectType)) {
+            throw new TypeError(`${objectType} is not a valid object type`);
+        }
+
         // Optimization: in case core objects should be observed by their object
         // type, we do not subscribe on the object type filter but on the core
         // type filter instead, filtering out objects that do not satisfy the
@@ -1480,6 +1495,10 @@ export class CommunicationManager implements IDisposable {
     private _observeUpdate(coreType?: CoreType, objectType?: string) {
         if (coreType && !CoreTypes.isCoreType(coreType)) {
             throw new TypeError(`${coreType} is not a CoreType`);
+        }
+
+        if (objectType && !CommunicationTopic.isValidTopicLevel(objectType)) {
+            throw new TypeError(`${objectType} is not a valid object type`);
         }
 
         // Optimization: in case core objects should be observed by their object
