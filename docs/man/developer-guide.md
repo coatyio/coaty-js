@@ -766,8 +766,8 @@ container.communicationManager.observeAdvertiseWithObjectType(...)
 
 The Coaty framework provides an opinionated set of core object types to be used
 or extended by Coaty applications. These Coaty objects are the subject of
-communication between Coaty agents. The core object type hierarchy is defined in
-the `@coaty/core` module and looks as follows:
+communication between Coaty agents. The core type hierarchy is defined in the
+`@coaty/core` module and looks as follows:
 
 ```
 CoatyObject
@@ -1013,18 +1013,20 @@ is 0).
 
 ### Starting and stopping communication
 
-Use the `CommunicationManager.start` method to connect to the communication
-infrastructure. Note that the Communication Manager automatically connects after
-the container is resolved if the communication option `shouldAutoStart` is set
-to `true` (opt-in). The communication manager automatically tries to reconnect
-periodically whenever the communication connection is lost.
+Use the `CommunicationManager.start` method to connect to the underlying
+communication infrastructure. Note that the Communication Manager automatically
+starts after the container is resolved if the communication option
+`shouldAutoStart` is set to `true` (opt-in). While started, the communication
+manager automatically tries to reconnect periodically whenever the communication
+connection is lost.
 
 Use the `CommunicationManager.restart` method to re-establish communication with
 new communication options.
 
-Use the `CommunicationManager.stop` method to disconnect from the communication
-infrastructure. Afterwards, events are no longer dispatched and emitted. You can
-start the Communication Manager sometime later using the `start` method.
+Use the `CommunicationManager.stop` method to permanently disconnect from the
+underlying communication infrastructure. Afterwards, events are no longer
+dispatched and emitted. You can start the Communication Manager sometime later
+using the `start` method.
 
 Whenever the operating state of the Communication Manager changes by invoking
 one of the above method calls all the controllers of the container are notified
@@ -1043,9 +1045,10 @@ from within the `platformReady` callback on the Ionic root component or from
 within any Ionic Component Page.
 
 Use the `CommunicationManager.observeCommunicationState` method to observe
-communication state changes of the underlying MQTT connection (i.e. online or offline).
-Usage of this feature is further simplified by a convenience controller class
-named [`ConnectionStateController`](#connection-state-controller).
+communication state changes of the underlying MQTT connection (i.e. online or
+offline). Usage of this feature is further simplified by the convenience method
+`NodeUtils.logCommunicationState` and by a convenience controller class named
+[`ConnectionStateController`](#connection-state-controller).
 
 ### Publishing events
 

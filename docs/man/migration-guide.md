@@ -15,20 +15,16 @@ Coaty 2 incorporates experience and feedback gathered with Coaty 1. It pursues
 the main goal to streamline the framework API, to get rid of unused and
 deprecated functionality, and to prepare for future extensions.
 
-Coaty 2 introduces "communication bindings", a mechanism to make Coaty's
-underlying publish-subscribe messaging protocol interchangeable, while keeping
-the set of communication event patterns.
-
-Among other refactorings, Coaty 2 carries breaking changes regarding package
+Among other refactorings, Coaty JS 2 carries breaking changes regarding package
 naming and import declarations, object types, distributed lifecycle management,
-IO routing, and the communication protocol. Therefore, Coaty 2 applications are
-no longer backward-compatible and interoperable with Coaty 1 applications.
+IO routing, and the communication protocol while keeping the essential set of
+communication event patterns. Therefore, Coaty 2 applications are no longer
+backward-compatible and interoperable with Coaty 1 applications.
 
-Coaty 1 is still available on npm package `coaty@1.x.y`. Coaty 2 is deployed
-separately on scoped npm package `@coaty/core@2.x.y`.
+Coaty JS 1 is still available on npm package `coaty@1.x.y`. Coaty JS 2 is
+deployed separately on scoped npm package `@coaty/core@2.x.y`.
 
-To update to Coaty 2, follow the migration steps described in the following
-sections.
+To update to Coaty JS 2, follow the migration steps described next.
 
 ### Before migrating
 
@@ -214,9 +210,9 @@ this.communicationManager.observeDiscover()
 * Stop using `CommunicationEvent.eventUserId` as this getter has been removed.
   For details, see section "Changes in IO routing".
 * Rename `IoStateEvent.eventData` getter to `IoStateEvent.data`.
-* Stop using `OperatingState.Starting` and `OperatingState.Stopping` as these
-  enum members have been removed. Use `OperatingState.Started` and
-  `OperatingState.Stopped` instead.
+* Stop using `OperatingState.Initial`, `OperatingState.Starting` and
+  `OperatingState.Stopping` as these enum members have been removed. Use
+  `OperatingState.Started` and `OperatingState.Stopped` instead.
 * Stop using `CommunicationOptions.useReadableTopics` as this property has been
   removed. This feature is no longer supported.
 * The MQTT topic structure has been optimized. Your application code is not
@@ -233,8 +229,7 @@ this.communicationManager.observeDiscover()
   has been added to isolate different Coaty applications (see
   `CommunicationOptions.namespace` and
   `CommunicationOptions.shouldEnableCrossNamespacing`). Communication events are
-  only routed between agents within a common namespace. This feature is
-  backward-compatible with Coaty 1.
+  only routed between agents within a common namespace.
 
 #### Changes in Update event
 

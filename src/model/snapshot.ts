@@ -21,7 +21,7 @@ export interface Snapshot extends CoatyObject {
     creationTimestamp: number;
 
     /**
-     * UUID of controller which created this snapshot.
+     * UUID of creator of this snapshot.
      */
     creatorId: Uuid;
 
@@ -32,7 +32,7 @@ export interface Snapshot extends CoatyObject {
     tags?: string[];
 
     /**
-     * Deep copy of the object and its state stored in this snapshot. 
+     * The Coaty object captured by this snapshot. 
      */
     object: CoatyObject;
 }

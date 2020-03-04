@@ -221,10 +221,11 @@ describe("Communication", () => {
                 objectType: "coaty.test.MockObject",
             };
             const obs = container2.communicationManager.publishUpdate(UpdateEvent.withObject(myFooObject));
+            const obs1 = container2.communicationManager.publishUpdate(UpdateEvent.withObject(myFooObject));
             let completedObject: CoatyObject;
             const subscription = obs.subscribe(event => completedObject = event.data.object);
 
-            delayAction(responseDelay, done, () => {
+            delayAction(responseDelay, null, () => {
                 subscription.unsubscribe();
                 obs.subscribe(
                     event => { isResubOkay = true; },
@@ -233,6 +234,13 @@ describe("Communication", () => {
                 expect(completedObject).toEqual(myFooObject);
                 expect(isResubOkay).toBeFalsy();
                 expect(isResubError).toBeTruthy();
+
+                const subscription1 = obs1.subscribe(event => completedObject = event.data.object);
+
+                delayAction(responseDelay, done, () => {
+                    subscription1.unsubscribe();
+                    expect(completedObject).toEqual(myFooObject);
+                });
             });
         }, TEST_TIMEOUT);
 
@@ -367,7 +375,7 @@ describe("Communication", () => {
 
         it("throws on invalid observeUpdateWithObjectType", () => {
             expect(() => container1.communicationManager
-                    .observeUpdateWithObjectType("foo+/"))
+                .observeUpdateWithObjectType("foo+/"))
                 .toThrow();
         });
 
@@ -384,7 +392,7 @@ describe("Communication", () => {
 
         it("throws on invalid observeAdvertiseWithObjectType", () => {
             expect(() => container1.communicationManager
-                    .observeAdvertiseWithObjectType("foo+/"))
+                .observeAdvertiseWithObjectType("foo+/"))
                 .toThrow();
         });
 

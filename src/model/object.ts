@@ -16,11 +16,18 @@ export interface CoatyObject {
 
     /** 
      * The concrete type name of the object.
-     * The name should be in a canonical form following the naming 
-     * convention for Java packages to avoid name collisions.
-     * All framework core types use the form
-     * `coaty.<InterfaceName>`, e.g.
-     * `coaty.CoatyObject` (see constants in `CoreTypes` class).
+     *
+     * The name should be in a canonical form following the naming convention
+     * for Java packages to avoid name collisions. All framework core types use
+     * the form `coaty.<InterfaceName>`, e.g. `coaty.CoatyObject` (see constants
+     * in `CoreTypes` class).
+     *
+     * @remarks Object type names should be made up of characters in the range 0
+     * to 9, a to z, A to Z, and dot (.).
+     *
+     * @remarks All object types starting with `coaty.` are reserved for use by
+     * the Coaty framework and must not be used by applications to define custom
+     * object types.
      */
     objectType: string;
 
