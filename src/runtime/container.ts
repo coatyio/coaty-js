@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Subscription } from "rxjs";
-import { first } from "rxjs/operators";
+import { filter, first } from "rxjs/operators";
 
 import { CommunicationManager, Controller, CoreTypes, Identity, OperatingState } from "..";
 import { IController, IControllerStatic } from "../controller/controller";
@@ -239,6 +239,8 @@ export class Container {
 
         // Observe operating state and dispatch to registered controllers
         this._operatingStateSubscription = comManager.observeOperatingState()
+            // Do not dispatch initial `Stopped` state.
+            .pipe(filter((state, index) => index > 0 || state !== OperatingState.Stopped))
             .subscribe(state =>
                 this._controllers?.forEach(ctrl => this._operatingStateCallback(state, ctrl[0])));
 
@@ -261,7 +263,8 @@ export class Container {
     }
 
     private _releaseComponents() {
-        // Dispose Communication Manager first to trigger operating state changes
+        // Dispose Communication Manager first to trigger operating state
+        // changes before _operatingStateSubscription is unsubscribed.
         this._comManager.onDispose();
         this._controllers.forEach(ctrl => ctrl[0].onDispose());
 

@@ -30,20 +30,27 @@ import { QueryEvent, QueryEventData, RetrieveEvent, RetrieveEventData } from "./
 import { CompleteEvent, CompleteEventData, UpdateEvent, UpdateEventData } from "./update-complete";
 
 /**
- * Defines all communication states of the Communication Manager.
+ * Indicates the connectivity state of a Communication Manager.
  */
 export enum CommunicationState {
+
+    /** Disconnected */
     Offline,
+
+    /** Connected */
     Online,
 }
 
 /**
- * Defines all operating states of the Communication Manager.
+ * Indicates the current operating state of a Communication Manager.
  */
 export enum OperatingState {
-    Initial,
-    Started,
+
+    /** Indicates the communication manager is stopped or initialized. */
     Stopped,
+
+    /** Indicates the communication manager is started. */
+    Started,
 }
 
 /**
@@ -121,7 +128,7 @@ export class CommunicationManager implements IDisposable {
         this._initOptions(options);
         this._isDisposed = false;
         this._state = new BehaviorSubject(CommunicationState.Offline);
-        this._operatingState = new BehaviorSubject(OperatingState.Initial);
+        this._operatingState = new BehaviorSubject(OperatingState.Stopped);
         this._initClient();
     }
 
@@ -838,11 +845,15 @@ export class CommunicationManager implements IDisposable {
         this._initClient();
         this._client = undefined;
 
+        // Update operating state before asynchrounously ending client so that
+        // onCommunicationManagerStopping calls are properly dispatched to
+        // controllers by container.
+        this._updateOperatingState(OperatingState.Stopped);
+
         // Note: if force is set to true, the client doesn't 
         // disconnect properly from the broker. It closes the socket
         // immediately, so that the broker publishes client's last will.
         client.end(false, () => {
-            this._updateOperatingState(OperatingState.Stopped);
             callback && callback();
         });
     }
