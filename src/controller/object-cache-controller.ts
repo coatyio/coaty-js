@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Observable, of, Subscription } from "rxjs";
+import { Observable, of } from "rxjs";
 import { filter, first, map } from "rxjs/operators";
 
 import { CoatyObject, CoreType, DiscoverEvent, Uuid } from "..";
@@ -21,7 +21,6 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
     private _pendingRequests: Map<Uuid, Observable<T>>;
     private _coreType: CoreType;
     private _objectFilter: (obj: T) => boolean;
-    private _advertiseSubscription: Subscription;
 
     onInit() {
         super.onInit();
@@ -37,12 +36,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
 
         this._objectCache.clear();
         this._pendingRequests.clear();
-        this._advertiseSubscription = this._observeObjectAdvertisements();
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        this._advertiseSubscription?.unsubscribe();
+        this._observeObjectAdvertisements();
     }
 
     /**
@@ -114,7 +108,7 @@ export abstract class ObjectCacheController<T extends CoatyObject> extends Contr
     }
 
     private _observeObjectAdvertisements() {
-        return this.communicationManager
+        this.communicationManager
             .observeAdvertiseWithCoreType(this.coreType)
             .pipe(filter(event => this._objectCache.has(event.data.object.objectId)))
             .subscribe(event => {

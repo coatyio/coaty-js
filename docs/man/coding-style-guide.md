@@ -297,16 +297,13 @@ strictly follow the coding principles listed below:
   component is destroyed by implementing the `OnDestroy` interface or the Ionic
   `ionViewWillUnload` method. As an alternative you can use observables in
   Angular data binding expressions in combination with the `async` pipe which
-  subscribes and unsubscribes automatically. In your application-specific
-  controllers usually you should subscribe in the
-  `onCommunicationManagerStarting` hook method and unsubcribe in the
-  `onCommunicationManagerStopping` hook method.
+  subscribes and unsubscribes automatically.
 
 * Prefer implicit, imperative complete notifications over explicitly
   unsubscribing your RxJS observables. Complete subjects and observables if no
   longer used so that subscriptions are automatically unsubscribed to avoid
   memory leaks. Operators that complete implicitely include `take`, `takeUntil`,
-  `first`, etc.
+  etc.
 
 * Avoid using the RxJS `share` operator in combination with source observables
   that are realized as *behavior subjects*. Only the first subscriber of the

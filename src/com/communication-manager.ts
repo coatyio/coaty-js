@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Client, connect, IClientPublishOptions } from "mqtt";
-import { BehaviorSubject, merge, Observable, Subscriber, Subscription } from "rxjs";
+import { BehaviorSubject, merge, Observable, Subscriber } from "rxjs";
 import { filter } from "rxjs/operators";
 
 import {
@@ -79,9 +79,6 @@ export class CommunicationManager implements IDisposable {
     private _ioNodes: IoNode[];
     private _isDisposed: boolean;
     private _deadvertiseIds: Uuid[];
-    private _associateSubscriptions: Subscription[];
-    private _discoverIoNodesSubscription: Subscription;
-    private _discoverIdentitySubscription: Subscription;
 
     // Represents the current communication state in an observable
     private _state: BehaviorSubject<CommunicationState>;
@@ -251,6 +248,10 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe Discover events.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @returns an observable emitting incoming Discover events
      */
@@ -260,6 +261,10 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe Query events.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @returns an observable emitting incoming Query events
      */
@@ -269,6 +274,10 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe Update events for the given core type.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @param coreType core type of objects to be observed.
      * @returns an observable emitting incoming Update events
@@ -283,6 +292,10 @@ export class CommunicationManager implements IDisposable {
      * The given object type must be a non-empty string that does not contain
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
      * (U+002F)`.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @param objectType object type of objects to be observed
      * @returns an observable emitting incoming Update events
@@ -309,6 +322,10 @@ export class CommunicationManager implements IDisposable {
      * - context filter is *not* supplied *and* context object *is* specified.
      *
      * In all other cases, the Call event is emitted.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @remarks You can also invoke `observeCall` *without* context parameter
      * and realize a custom matching logic with an RxJS `filter` operator.
@@ -331,6 +348,10 @@ export class CommunicationManager implements IDisposable {
     /**
      * Observe Advertise events for the given core type.
      *
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
+     *
      * @param coreType core type of objects to be observed.
      * @returns an observable emitting incoming Advertise events
      */
@@ -344,6 +365,10 @@ export class CommunicationManager implements IDisposable {
      * The given object type must be a non-empty string that does not contain
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
      * (U+002F)`.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @param objectType object type of objects to be observed.
      * @returns an observable emitting incoming Advertise events
@@ -355,6 +380,10 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe Deadvertise events.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @param eventTarget target for which Deadvertise events should be emitted
      * @returns an observable emitting incoming Deadvertise events
@@ -369,6 +398,10 @@ export class CommunicationManager implements IDisposable {
      * The channel identifier must be a non-empty string that does not contain
      * the following characters: `NULL (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/
      * (U+002F)`.
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @param channelId a channel identifier
      * @returns an observable emitting incoming Channel events
@@ -411,6 +444,10 @@ export class CommunicationManager implements IDisposable {
      *        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
      *    });
      * ```
+     * 
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @remarks Incoming non-raw Coaty events are *not* dispatched to raw
      * observers.
@@ -436,10 +473,14 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Observe IO state events for the given IO source or actor. 
+     * Observe IO state events for the given IO source or actor.
      *
      * When subscribed the subject immediately emits the current association
      * state.
+     * 
+     * Subscriptions to the returned subject are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @returns a subject emitting IO state events for the given IO source or
      * actor
@@ -450,6 +491,10 @@ export class CommunicationManager implements IDisposable {
 
     /**
      * Observe IO values for the given IO actor.
+     *
+     * Subscriptions to the returned observable are **automatically
+     * unsubscribed** when the communication manager is stopped, in order to
+     * release system resources and to avoid memory leaks.
      *
      * @returns an observable emitting incoming values for the IO actor
      */
@@ -463,11 +508,13 @@ export class CommunicationManager implements IDisposable {
      * Note that the Discover event is lazily published when the first observer
      * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event, a subscriber
-     * should unsubscribe when the observable is no longer needed to release
-     * system resources and to avoid memory leaks. After all initial subscribers
-     * have unsubscribed no more response events will be emitted on the
-     * observable and an error will be thrown on resubscription.
+     * After all initial subscribers have unsubscribed no more response events
+     * will be emitted on the observable and an error will be emitted on
+     * resubscription.
+     *
+     * Subscriptions to the observable are **automatically unsubscribed** when
+     * the communication manager is stopped, in order to release system
+     * resources and to avoid memory leaks.
      *
      * @param event the Discover event to be published
      * @returns an observable on which associated Resolve events are emitted
@@ -482,11 +529,13 @@ export class CommunicationManager implements IDisposable {
      * Note that the Query event is lazily published when the first observer
      * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event, a subscriber
-     * should unsubscribe when the observable is no longer needed to release
-     * system resources and to avoid memory leaks. After all initial subscribers
-     * have unsubscribed no more response events will be emitted on the
-     * observable and an error will be thrown on resubscription.
+     * After all initial subscribers have unsubscribed no more response events
+     * will be emitted on the observable and an error will be emitted on
+     * resubscription.
+     *
+     * Subscriptions to the observable are **automatically unsubscribed** when
+     * the communication manager is stopped, in order to release system
+     * resources and to avoid memory leaks.
      *
      * @param event the Query event to be published
      * @returns an observable on which associated Retrieve events are emitted
@@ -502,11 +551,13 @@ export class CommunicationManager implements IDisposable {
      * Note that the Update event is lazily published when the first observer
      * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event, a subscriber
-     * should unsubscribe when the observable is no longer needed to release
-     * system resources and to avoid memory leaks. After all initial subscribers
-     * have unsubscribed no more response events will be emitted on the
-     * observable and an error will be thrown on resubscription.
+     * After all initial subscribers have unsubscribed no more response events
+     * will be emitted on the observable and an error will be emitted on
+     * resubscription.
+     *
+     * Subscriptions to the observable are **automatically unsubscribed** when
+     * the communication manager is stopped, in order to release system
+     * resources and to avoid memory leaks.
      *
      * @param event the Update event to be published
      * @returns an observable of associated Complete events
@@ -538,11 +589,13 @@ export class CommunicationManager implements IDisposable {
      * Note that the Call event is lazily published when the first observer
      * subscribes to the observable.
      *
-     * Since the observable never emits a completed or error event, a subscriber
-     * should unsubscribe when the observable is no longer needed to release
-     * system resources and to avoid memory leaks. After all initial subscribers
-     * have unsubscribed no more response events will be emitted on the
-     * observable and an error will be thrown on resubscription.
+     * After all initial subscribers have unsubscribed no more response events
+     * will be emitted on the observable and an error will be emitted on
+     * resubscription.
+     *
+     * Subscriptions to the observable are **automatically unsubscribed** when
+     * the communication manager is stopped, in order to release system
+     * resources and to avoid memory leaks.
      *
      * @param event the Call event to be published
      * @returns an observable of associated Return events
@@ -834,12 +887,7 @@ export class CommunicationManager implements IDisposable {
         }
 
         this._cleanupIoState();
-
         this._unobserveObservedItems();
-        this._unobserveAssociate();
-        this._unobserveDiscoverIoNodes();
-        this._unobserveDiscoverIdentity();
-
         this._deadvertiseIdentityAndIoNodes();
 
         const client = this._client;
@@ -1366,9 +1414,13 @@ export class CommunicationManager implements IDisposable {
         if (this._isClientConnected) {
             this._observedRequests.forEach(item => {
                 this._client.unsubscribe(item.topicFilter);
+                // Ensure Observable subscriptions are unsubscribed automatically.
+                item.dispatchComplete();
             });
             this._observedResponses.forEach(item => {
                 this._client.unsubscribe(item.topicFilter);
+                // Ensure Observable subscriptions are unsubscribed automatically.
+                item.dispatchComplete();
             });
         }
         this._observedRequests.clear();
@@ -1536,14 +1588,9 @@ export class CommunicationManager implements IDisposable {
     }
 
     private _observeAssociate() {
-        this._associateSubscriptions = this._ioNodes.map(group =>
+        this._ioNodes.forEach(group =>
             this._observeRequest(CommunicationEventType.Associate, group.name)
                 .subscribe(event => this._handleAssociate(event as AssociateEvent)));
-    }
-
-    private _unobserveAssociate() {
-        this._associateSubscriptions?.forEach(sub => sub.unsubscribe());
-        this._associateSubscriptions = undefined;
     }
 
     private _observeDiscoverIoNodes() {
@@ -1551,35 +1598,23 @@ export class CommunicationManager implements IDisposable {
             return;
         }
 
-        this._discoverIoNodesSubscription =
-            this._observeRequest(CommunicationEventType.Discover)
-                .pipe(filter((event: DiscoverEvent) =>
-                    (event.data.isDiscoveringTypes &&
-                        event.data.isCoreTypeCompatible("IoNode"))))
-                .subscribe((event: DiscoverEvent) =>
-                    this._ioNodes.forEach(g => event.resolve(ResolveEvent.withObject(g))));
-    }
-
-    private _unobserveDiscoverIoNodes() {
-        this._discoverIoNodesSubscription?.unsubscribe();
-        this._discoverIoNodesSubscription = undefined;
+        this._observeRequest(CommunicationEventType.Discover)
+            .pipe(filter((event: DiscoverEvent) =>
+                (event.data.isDiscoveringTypes &&
+                    event.data.isCoreTypeCompatible("IoNode"))))
+            .subscribe((event: DiscoverEvent) =>
+                this._ioNodes.forEach(g => event.resolve(ResolveEvent.withObject(g))));
     }
 
     private _observeDiscoverIdentity() {
-        this._discoverIdentitySubscription =
-            this._observeRequest(CommunicationEventType.Discover)
-                .pipe(filter((event: DiscoverEvent) =>
-                    (event.data.isDiscoveringTypes &&
-                        event.data.isCoreTypeCompatible("Identity")) ||
-                    (event.data.isDiscoveringObjectId &&
-                        event.data.objectId === this._container.identity.objectId)))
-                .subscribe((event: DiscoverEvent) =>
-                    event.resolve(ResolveEvent.withObject(this._container.identity)));
-    }
-
-    private _unobserveDiscoverIdentity() {
-        this._discoverIdentitySubscription?.unsubscribe();
-        this._discoverIdentitySubscription = undefined;
+        this._observeRequest(CommunicationEventType.Discover)
+            .pipe(filter((event: DiscoverEvent) =>
+                (event.data.isDiscoveringTypes &&
+                    event.data.isCoreTypeCompatible("Identity")) ||
+                (event.data.isDiscoveringObjectId &&
+                    event.data.objectId === this._container.identity.objectId)))
+            .subscribe((event: DiscoverEvent) =>
+                event.resolve(ResolveEvent.withObject(this._container.identity)));
     }
 
     private _findIoPointById(objectId: Uuid) {
@@ -1765,28 +1800,32 @@ export class CommunicationManager implements IDisposable {
     }
 
     private _cleanupIoState() {
-        let isDispatching = false;
-        try {
-            // Dispatch IO state events to all IO state observers
-            this._ioStateItems.forEach((item, pointId) => {
-                isDispatching = true;
+        // Dispatch IO state events to all IO state observers
+        this._ioStateItems.forEach((item, pointId) => {
+            try {
                 item.dispatchNext(IoStateEvent.with(false, undefined));
-                isDispatching = false;
-            });
-
-            // Unsubscribe all association topics subscribed for IO actors
-            this._ioActorItems.forEach((actorIds, topic) => {
-                if (this._isClientConnected) {
-                    this._client.unsubscribe(topic);
-                }
-            });
-        } catch (error) {
-            if (isDispatching) {
-                throw error;
+                // Ensure subscriptions on IO state observable are unsubscribed automatically
+                item.dispatchComplete();
+            } catch {
+                // Ignore errors thrown in callbacks
             }
+        });
 
-            console.log(`CommunicationManager: failed to cleanup IO state: ${error}`);
-        }
+        // Unsubscribe all association topics subscribed for IO actors
+        this._ioActorItems.forEach((actorIds, topic) => {
+            if (this._isClientConnected) {
+                this._client.unsubscribe(topic);
+            }
+        });
+
+        // Ensure subscriptions on IO value item observables are unsubscribed automatically
+        this._ioValueItems.forEach(item => {
+            try {
+                item.dispatchComplete();
+            } catch {
+                // Ignore errors thrown in callbacks
+            }
+        });
     }
 
     private _observeIoState(ioPointId: Uuid): BehaviorSubject<IoStateEvent> {

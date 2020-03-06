@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Observable, Subscription } from "rxjs";
+import { Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
 
 import {
@@ -48,8 +48,6 @@ export class HistorianController extends Controller {
     private static readonly _LOG_TAG_DB = "db";
 
     private _dbCtxPromise: Promise<DbContext>;
-    private _querySubscription: Subscription;
-    private _advertiseSubscription: Subscription;
 
     onInit() {
         super.onInit();
@@ -58,18 +56,12 @@ export class HistorianController extends Controller {
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
         if (this.options["shouldReplyToQueries"]) {
-            this._querySubscription = this._observeQueries();
+            this._observeQueries();
         }
         if (this.options["shouldPersistObservedSnapshots"]) {
-            this._advertiseSubscription = this._observeAdvertise();
+            this._observeAdvertise();
         }
 
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        this._querySubscription?.unsubscribe();
-        this._advertiseSubscription?.unsubscribe();
     }
 
     /**

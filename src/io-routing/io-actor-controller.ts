@@ -1,13 +1,11 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 
 import { Controller, IoActor, IoStateEvent, Uuid } from "..";
 
 type IoActorItems = [
     IoActor,
-    Subscription,
-    Subscription,
     BehaviorSubject<boolean>,
     BehaviorSubject<any>
 ];
@@ -37,9 +35,7 @@ export class IoActorController extends Controller {
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
 
-        // The current observable for IO state is no longer served by the 
-        // communication manager so it can be unsubscribed.
-        this._deregisterAll();
+        // IO state and IO value subscriptions are automatically unsubscribed.
     }
 
     /**
@@ -53,11 +49,15 @@ export class IoActorController extends Controller {
      * `this.communicationManager.observeIoValue` instead. This method doesn't
      * cache any previously emitted value.
      *
+     * @remarks Note that subscriptions on the observable returned **must** be
+     * manually unsubscribed by the application; they are not automatically
+     * unsubscribed when communication manager is stopped.
+     *
      * @param actor an IO actor object
      * @returns an observable emitting IO values for the given actor
      */
     observeIoValue<T>(actor: IoActor): Observable<T> {
-        const [, , , , valueSubject] = this._ensureRegistered<T>(actor);
+        const [, , valueSubject] = this._ensureRegistered<T>(actor);
         return valueSubject.asObservable();
     }
 
@@ -69,7 +69,7 @@ export class IoActorController extends Controller {
      * @returns the latest IO value for the given actor if one exists
      */
     getIoValue<T>(actor: IoActor): T {
-        const [, , , , valueSubject] = this._ensureRegistered<T>(actor);
+        const [, , valueSubject] = this._ensureRegistered<T>(actor);
         return valueSubject.value;
     }
 
@@ -79,11 +79,15 @@ export class IoActorController extends Controller {
      * true when the first association is made and false, when the last
      * association becomes disassociated.
      * When subscribed, the current association state is emitted immediately.
+     * 
+     * @remarks Note that subscriptions on the observable returned **must** be
+     * manually unsubscribed by the application; they are not automatically
+     * unsubscribed when communication manager is stopped.
      *
      * @param actor an IO actor object
      */
     observeAssociation<T>(actor: IoActor): Observable<boolean> {
-        const [, , , association] = this._ensureRegistered<T>(actor);
+        const [, association] = this._ensureRegistered<T>(actor);
         return association.asObservable();
     }
 
@@ -91,7 +95,7 @@ export class IoActorController extends Controller {
      * Determines whether the given IO actor is currently associated.
      */
     isAssociated<T>(actor: IoActor): boolean {
-        const [, , , association] = this._ensureRegistered<T>(actor);
+        const [, association] = this._ensureRegistered<T>(actor);
         return association.value;
     }
 
@@ -100,20 +104,11 @@ export class IoActorController extends Controller {
             const actor = item[0];
             const ioState = this.communicationManager.observeIoState(actor);
             const ioValue = this.communicationManager.observeIoValue(actor);
-            item[1] = ioState.subscribe(event => this._onIoStateChanged(actor.objectId, event));
-            item[2] = ioValue.subscribe(value => this._onIoValueChanged(actor.objectId, value));
+            ioState.subscribe(event => this._onIoStateChanged(actor.objectId, event));
+            ioValue.subscribe(value => this._onIoValueChanged(actor.objectId, value));
 
             // Keep subject that may be in use by the application code.
-            item[3].next(ioState.value.data.hasAssociations);
-        });
-    }
-
-    private _deregisterAll() {
-        this._actorItems.forEach(item => {
-            item[1]?.unsubscribe();
-            item[1] = undefined;
-            item[2]?.unsubscribe();
-            item[2] = undefined;
+            item[1].next(ioState.value.data.hasAssociations);
         });
     }
 
@@ -123,10 +118,10 @@ export class IoActorController extends Controller {
         if (!item) {
             const ioState = this.communicationManager.observeIoState(actor);
             const ioValue = this.communicationManager.observeIoValue(actor);
+            ioState.subscribe(event => this._onIoStateChanged(actorId, event));
+            ioValue.subscribe(value => this._onIoValueChanged(actorId, value));
             item = [
                 actor,
-                ioState.subscribe(event => this._onIoStateChanged(actorId, event)),
-                ioValue.subscribe(value => this._onIoValueChanged(actorId, value)),
                 new BehaviorSubject<boolean>(ioState.value.data.hasAssociations),
                 new BehaviorSubject<T>(undefined),
             ];
@@ -142,8 +137,8 @@ export class IoActorController extends Controller {
             return;
         }
 
-        if (item[3].value !== event.data.hasAssociations) {
-            item[3].next(event.data.hasAssociations);
+        if (item[1].value !== event.data.hasAssociations) {
+            item[1].next(event.data.hasAssociations);
         }
     }
 
@@ -154,7 +149,7 @@ export class IoActorController extends Controller {
             return;
         }
 
-        item[4].next(value);
+        item[2].next(value);
     }
 
 }

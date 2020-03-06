@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Subscription } from "rxjs";
-import { filter, first } from "rxjs/operators";
+import { filter, take } from "rxjs/operators";
 
 import { CommunicationManager, Controller, CoreTypes, Identity, OperatingState } from "..";
 import { IController, IControllerStatic } from "../controller/controller";
@@ -124,7 +124,7 @@ export class Container {
             ctrl.onInit();
             // Immediately dispatch the current communication state if needed.
             this._comManager.observeOperatingState()
-                .pipe(first())
+                .pipe(take(1))
                 .subscribe(opState => {
                     if (opState === OperatingState.Started) {
                         this._operatingStateCallback(OperatingState.Started, ctrl);

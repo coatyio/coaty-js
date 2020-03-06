@@ -604,7 +604,7 @@ allocated system resources:
 container.shutdown();
 ```
 
-The shutdown method first shuts down all container controllers by invoking the
+The shutdown method shuts down all container controllers by invoking the
 component's `onDispose` method (in arbitrary order). Finally, the Communication
 Manager's `onDispose` method is called which unsubscribes all subscriptions and
 disconnects the agent from the communication infrastructure.
@@ -644,38 +644,33 @@ The following template shows how to set up the basic structure of a custom
 controller class:
 
 ```ts
-import { Subscription } from "rxjs";
 import { map } from "rxjs/operators";
 
 import { Controller, CoreTypes, Task } from "@coaty/core";
 
 export class SupportTaskController extends Controller {
 
-    private _advertiseTaskSubscription: Subscription;
-
     onInit() {
         super.onInit();
 
-        // Define your initializations here
-        this._advertiseTaskSubscription = undefined;
+        // Define application-specific initializations here.
     }
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
 
-        // Set up subscriptions for incoming events here
-        this._advertiseTaskSubscription = this._observeAdvertiseTask();
+        // Set up observations for incoming events here.
+        this._observeAdvertiseTask();
     }
 
     onCommunicationManagerStopping() {
         super.onCommunicationManagerStopping();
 
-        // Clean up subscriptions for incoming events here
-        this._advertiseTaskSubscription?.unsubscribe();
+        // Define application-specific cleanup tasks here.
     }
 
     private _observeAdvertiseTask() {
-        return this.communicationManager.observeAdvertiseWithObjectType("com.helloworld.SupportTask")
+        this.communicationManager.observeAdvertiseWithObjectType("com.helloworld.SupportTask")
             .pipe(map(event => event.data.object as SupportTask))
             .subscribe(task => {
                 // Do something whenever a support task object is advertised
@@ -710,9 +705,11 @@ onCommunicationManagerStarting()
 onCommunicationManagerStopping()
 ```
 
-Usually, in the starting method, RxJS subscriptions for incoming communication
-events are set up; whereas in the stopping method these subscriptions should be
-unsubscribed.
+Usually, in the starting method, observers for incoming communication events are
+set up; whereas in the stopping method you should perform application-specific
+cleanup actions. Note that here you don't need to unsubscribe RxJS Observable
+subscriptions returned by the Communication Manager, as this is done
+automatically.
 
 > Ensure you always call the corresponding super method in your overridden method.
 
@@ -1001,9 +998,9 @@ publish-subscribe messaging with an MQTT message broker. Events are passed to
 Coaty controllers by following the Reactive Programming paradigm using RxJS
 observables.
 
-The Communication Manager provides features to transparently control the underlying
-publish-subscribe communication layer, including auto-reconnect, automatic re-subscription
-upon connection, and queued offline publishing.
+The Communication Manager provides features to transparently control the
+underlying publish-subscribe communication layer, including auto-reconnect,
+automatic re-subscription upon connection, and queued offline publishing.
 
 When initializing the Communication Manager you can customize characteristics of
 the underlying MQTT client library in the configuration property
@@ -1107,26 +1104,29 @@ emit all the Return events which are direct responses to the published request.
 
 > Note that all publish methods for request-response event patterns, i.e.
 > `publishDiscover`, `publishUpdate`, `publishQuery`, and `publishCall` publish
-> the specified event **lazily**, i.e **not until** the first observer subscribes
-> to the observable returned by the method. In this way race conditions on the
-> response event can be avoided. Since the observable never emits a completed
-> event, a subscriber should *unsubscribe* when the observable is no
-> longer needed to release system resources and to avoid memory leaks.
-> After all initial subscribers have unsubscribed no more response events
-> will be emitted on the observable. Instead, errors will be emitted to all
-> subsequent resubscriptions.
+> the specified event **lazily**, i.e **not until** the first observer
+> subscribes to the observable returned by the method. In this way race
+> conditions on the response event can be avoided. After all initial subscribers
+> have unsubscribed no more response events will be emitted on the observable.
+> Instead, errors will be emitted to all subsequent resubscribers.
 
-For example, you can unsubscribe automatically after the expected response
-event is received by using the RxJS `first` operator like the following:
+Note that RxJS subscriptions of Observables returned by request-response publish
+methods are **automatically disposed** when the communication manager is
+stopped, in order to release system resources and to avoid memory leaks. It is
+therefore recommended to set up all these publish methods anew in the
+controller's `onCommunicationManagerStarting()` method.
+
+However, you should still unsubscribe *as early as* possible, i.e. as soon as
+the expected response event(s) have been received; e.g. by using the RxJS `take`
+or `timeout` operators like the following:
 
 ```ts
-import { first, timeout } from "rxjs/operators";
+import { take, timeout } from "rxjs/operators";
 
 this.communicationManager.publishDiscover(...)
     .pipe(
         // Unsubscribe automatically after first response event arrives.
-        // Could also use the 'take' operator: take(1).
-        first(),
+        take(1),
 
         // Issue an error notification if no response is emitted within 2000ms.
         timeout(2000)
@@ -1140,8 +1140,9 @@ this.communicationManager.publishDiscover(...)
         });
 ```
 
-A similar coding pattern to easily unsubscribe from observables uses the RxJS
-`takeUntil` operator with an RxJS `Subject` like the following:
+A similar coding pattern to manually unsubscribe from observables that are no
+longer needed uses the RxJS `takeUntil` operator with an RxJS `Subject` like the
+following:
 
 ```ts
 import { Subject } from "rxjs";
@@ -1162,14 +1163,19 @@ class MyController extends Controller {
             )
             .subscribe(event => {
                 // Handle response events until stopped subject emits.
+                this.handleResponseEvent(event);
             });
     }
 
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
+    handleResponseEvent(event: ResolveEvent) {
 
-        // Cancel processing of response events by emitting a value.
-        this._stopped$.next();
+        // Process the received event data...
+
+        if (shouldFinishProcessing) {
+            // Cancel processing of response events by emitting a value.
+            this._stopped$.next();
+            this._stopped$.complete();
+        }
     }
 }
 ```
@@ -1191,12 +1197,19 @@ to observe incoming request events in your agent. For `observeDiscover`,
 `observeCall`, invoke the `resolve`, `retrieve`, `complete`, or `returnEvent`
 method on the received event object to send a response event.
 
-> Note that there is no guarantee that response events are ever delivered by the
-> Discover, Query, Update, and Call communication patterns. Depending on your system
-> design and context such a communication pattern might return no responses at all
-> or not within a certain time interval. In your agent project, you should handle these
-> cases by chaining a timeout handler to the observable returned by the observe
-> method (see code examples in the next sections).
+Note that there is no guarantee that response events are ever delivered by the
+Discover, Query, Update, and Call communication patterns. Depending on your
+system design and context such a communication pattern might return no responses
+at all or not within a certain time interval. In your agent project, you should
+handle these cases by chaining a timeout handler to the observable returned by
+the observe method (see code examples in the next sections).
+
+Note that RxJS subscriptions of Observables returned by
+`CommunicationManager.observe...()` methods are **automatically disposed** when
+the communication manager is stopped, in order to release system resources and
+to avoid memory leaks. It is therefore recommended to set up all these
+observation requests anew in the controller's `onCommunicationManagerStarting()`
+method.
 
 ### Deferred publication and subscription of events
 
@@ -1212,13 +1225,6 @@ deferred, i.e. not reapplied after a reconnect.
 
 If you stop the Communication Manager by executing its `stop` method, all
 deferred publications and subscriptions will be discarded.
-
-> In your controller classes we recommend to subscribe to Observables returned
-> by observe methods and by two-way publish methods when the Communication
-> Manager is (re)starting and unsubscribe from them *as soon as* they are no
-> longer needed, latest when the Communication Manager is stopping. Use the
-> controller lifecycle methods `onCommunicationManagerStarted` and
-> `onCommunicationManagerStopped` to implement this subscription pattern.
 
 ### Namespacing
 
@@ -1418,7 +1424,7 @@ For example, by scanning the QR Code of a physical asset, which encodes its exte
 the Discover event can resolve the Coaty object representation of this asset.
 
 ```ts
-import { filter, first, map, timeout } from "rxjs/operators";
+import { filter, map, take, timeout } from "rxjs/operators";
 
 // QR Code of asset
 const externalId = "42424242";
@@ -1427,7 +1433,7 @@ const externalId = "42424242";
 this.communicationManager
     .publishDiscover(DiscoverEvent.withExternalId(externalId))
     .pipe(
-        first(),
+        take(1),
         map(event => event.data.object),
         timeout(5000)
     )
@@ -3036,7 +3042,6 @@ This approach requires your custom controller class to inherit from the
 lifecycle controller class:
 
 ```ts
-import { Subscription } from "rxjs";
 import { Components, ObjectLifecycleController } from "@coaty/core";
 
 const components: Components = {
@@ -3047,11 +3052,9 @@ const components: Components = {
 
 class MyController extends ObjectLifecycleController {
 
-    private _lifecycleSubscription: Subscription;
-
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
+        this.observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever light agents have been observed.
                 // Note that if the agent containing this controller is also a light agent,
@@ -3062,12 +3065,6 @@ class MyController extends ObjectLifecycleController {
                 console.log(info.removed);   // deadvertised identities
             });
     }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        // Stop observing lifecycle info of light agents.
-        this._lifecycleSubscription?.unsubscribe();
-    }
 }
 ```
 
@@ -3075,7 +3072,6 @@ This approach requires the lifecycle controller to be added to the container
 components under the key `ObjectLifecycleController`:
 
 ```ts
-import { Subscription } from "rxjs";
 import { Components, Controller, ObjectLifecycleController } from "@coaty/core";
 
 const components: Components = {
@@ -3087,13 +3083,11 @@ const components: Components = {
 
 class MyController extends Controller {
 
-    private _lifecycleSubscription: Subscription;
-
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
 
         const ctrl = this.container.getController<ObjectLifecycleController>("ObjectLifecycleController");
-        this._lifecycleSubscription = ctrl.
+        ctrl.
             .observeObjectLifecycleInfoByCoreType("Identity", obj => obj.name === "LightAgent")
             .subscribe(info => {
                 // Called whenever light agents have been observed.
@@ -3104,12 +3098,6 @@ class MyController extends Controller {
                 console.log(info.changed);   // readvertised or rediscovered identities
                 console.log(info.removed);   // deadvertised identities
             });
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        // Stop observing lifecycle info of light agents.
-        this._lifecycleSubscription?.unsubscribe();
     }
 }
 ```
@@ -3135,14 +3123,11 @@ making it discoverable. Note that when the communication manager is stopped the
 custom object is automatically deadvertised by the framework.
 
 ```ts
-import { Subscription } from "rxjs";
 import { ObjectLifecycleController } from "@coaty/core";
 
 class CustomObjectAdvertisingController extends ObjectLifecycleController {
 
     myCustomObject: CoatyObject;
-
-    private _myCustomObjectLifecycleSubscription: Subscription;
 
     onInit() {
         this.myCustomObject = {
@@ -3155,14 +3140,7 @@ class CustomObjectAdvertisingController extends ObjectLifecycleController {
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        this._myCustomObjectLifecycleSubscription = this.advertiseDiscoverableObject(this.myCustomObject);
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        // Stop observing/resolving Discover events for the custom object that has
-        // been set up in advertiseDiscoverableObject.
-        this._myCustomObjectLifecycleSubscription?.unsubscribe();
+        this.advertiseDiscoverableObject(this.myCustomObject);
     }
 }
 ```
@@ -3174,23 +3152,15 @@ by the first controller:
 
 class CustomObjectTrackingController extends ObjectLifecycleController {
 
-    private _lifecycleSubscription: Subscription;
-
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
-        this._lifecycleSubscription = this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
+        this.observeObjectLifecycleInfoByObjectType("com.example.MyCustomObject")
             .subscribe(info => {
                 // Called whenever custom lifecycle objects of type "com.example.MyCustomObject" have changed.
                 console.log(info.added);     // newly advertised or discovered objects
                 console.log(info.changed);   // readvertised or rediscovered objects
                 console.log(info.removed);   // deadvertised objects
             });
-    }
-
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        // Stop observing lifecycle info for custom objects of type "com.example.MyCustomObject".
-        this._lifecycleSubscription?.unsubscribe();
     }
 }
 ```

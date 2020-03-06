@@ -80,6 +80,9 @@ export class ObjectLifecycleController extends Controller {
      * If the predicate function returns `true`, the object is being tracked;
      * otherwise the object is not tracked. If no predicate is specified, all
      * objects corresponding to the given core type are tracked.
+     * 
+     * @remarks Subscriptions to the returned observable are automatically
+     * unsubscribed when the communication manager is stopped.
      *
      * @param coreType the core type of objects to be tracked
      * @param objectFilter a predicate for filtering objects to be tracked
@@ -102,6 +105,9 @@ export class ObjectLifecycleController extends Controller {
      * If the predicate function returns `true`, the object is being tracked;
      * otherwise the object is not tracked. If no predicate is specified, all
      * objects corresponding to the given core type are tracked.
+     *
+     * @remarks Subscriptions to the returned observable are automatically
+     * unsubscribed when the communication manager is stopped.
      *
      * @param objectType the object type of objects to be tracked
      * @param objectFilter a predicate for filtering objects to be tracked
@@ -129,9 +135,8 @@ export class ObjectLifecycleController extends Controller {
      *
      * The returned subscription should be unsubscribed when the object is
      * deadvertised explicitely in your application code (see method
-     * `deadvertiseDiscoverableObject`) or at the latest when the communication
-     * manager is stopped (i.e. in the controller lifecycle method
-     * `onCommunicationManagerStopping`).
+     * `deadvertiseDiscoverableObject`). It will be automatically unsubscribed
+     * when the communication manager is stopped.
      *
      * @param object a CoatyObject that is advertised and discoverable
      * @param shouldSetParentObjectId determines whether the parent object ID of

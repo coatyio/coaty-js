@@ -1,7 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Subject } from "rxjs";
-import { filter, takeUntil } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 
 import {
     AdvertiseEvent,
@@ -46,7 +45,6 @@ export abstract class IoRouter extends Controller {
     private _ioContext: IoContext;
     private _managedIoNodes: Map<Uuid, IoNode>;
     private _sourceRoutes: Map<Uuid, string>;
-    private _unsubscribeSubject$ = new Subject();
 
     onInit() {
         super.onInit();
@@ -90,7 +88,6 @@ export abstract class IoRouter extends Controller {
         // associations in the `onStopped` method.
         this.onStopped();
 
-        this._unsubscribeSubject$.next();
         this._managedIoNodes.clear();
         this._sourceRoutes.clear();
     }
@@ -237,7 +234,6 @@ export abstract class IoRouter extends Controller {
         this.communicationManager
             .observeAdvertiseWithCoreType("IoNode")
             .pipe(
-                takeUntil(this._unsubscribeSubject$),
                 filter(event => event.data.object !== undefined && event.data.object.name === this._ioContext.name))
             .subscribe(event => {
                 this._ioNodeAdvertised(event.data.object as IoNode);
@@ -247,7 +243,6 @@ export abstract class IoRouter extends Controller {
     private _observeDeadvertisedIoNodes() {
         this.communicationManager
             .observeDeadvertise()
-            .pipe(takeUntil(this._unsubscribeSubject$))
             .subscribe(event => this._ioNodesDeadvertised(event.data.objectIds));
     }
 
@@ -292,7 +287,6 @@ export abstract class IoRouter extends Controller {
         this.communicationManager.publishDiscover(
             DiscoverEvent.withCoreTypes(["IoNode"]))
             .pipe(
-                takeUntil(this._unsubscribeSubject$),
                 filter(event => event.data.object !== undefined && event.data.object.name === this._ioContext.name))
             .subscribe(event => {
                 this._ioNodeAdvertised(event.data.object as IoNode);
@@ -303,7 +297,6 @@ export abstract class IoRouter extends Controller {
         this.communicationManager
             .observeDiscover()
             .pipe(
-                takeUntil(this._unsubscribeSubject$),
                 filter(event =>
                     (event.data.isDiscoveringTypes &&
                         event.data.isCoreTypeCompatible(this._ioContext.coreType)) ||
@@ -320,7 +313,6 @@ export abstract class IoRouter extends Controller {
         this.communicationManager
             .observeUpdateWithCoreType(this._ioContext.coreType)
             .pipe(
-                takeUntil(this._unsubscribeSubject$),
                 filter(update => update.data.object.objectId === this._ioContext.objectId),
             )
             .subscribe(update => {

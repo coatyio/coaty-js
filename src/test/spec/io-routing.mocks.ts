@@ -1,7 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Subject } from "rxjs";
-import { take, takeUntil } from "rxjs/operators";
+import { take } from "rxjs/operators";
 
 import { Controller, DiscoverEvent, IoActor, IoContext, UpdateEvent } from "../..";
 import { IoActorController } from "../../io-routing";
@@ -41,23 +40,14 @@ export class MockIoActorController extends IoActorController {
 export class MockIoContextController extends Controller {
 
     private _ioContext: IoContext;
-    private _unsubscribeSubject$ = new Subject();
 
     onCommunicationManagerStarting() {
         super.onCommunicationManagerStarting();
 
     }
 
-    onCommunicationManagerStopping() {
-        super.onCommunicationManagerStopping();
-        this._unsubscribeSubject$.next();
-    }
-
     discoverIoContext(objectType: string) {
         this.communicationManager.publishDiscover(DiscoverEvent.withObjectTypes([objectType]))
-            .pipe(
-                takeUntil(this._unsubscribeSubject$),
-            )
             .subscribe(resolve => {
                 this._ioContext = resolve.data.object as IoContext;
             });
@@ -69,7 +59,6 @@ export class MockIoContextController extends Controller {
             .publishUpdate(UpdateEvent.withObject(this._ioContext))
             .pipe(
                 take(1),
-                takeUntil(this._unsubscribeSubject$),
             )
             .subscribe(complete => {
                 this._ioContext = complete.data.object as IoContext;

@@ -138,6 +138,18 @@ Refactor the following definitions:
 * Stop adding extra properties to `LogHost` objects directly. Extend the
   `LogHost` interface to provide them.
 
+### Changes in subscription management
+
+In Coaty 2, you no longer need to care about *unsubscribing* RxJS subscriptions
+of Observables returned by `CommunicationManager.observe...()` and
+`CommunicationManager.publish...()` methods when the communication manager is
+stopped. These subscriptions are now **automatically disposed**, in order to
+release system resources and to avoid memory leaks.
+
+* Stop invoking `unsubscribe()` method calls for these subscriptions in the
+   `Controller.onCommunicationManagerStopping()` method, as they are now
+   unsubscribed automatically.
+
 ### Changes in distributed lifecycle management
 
 To realize distributed lifecycle management for Coaty agents in Coaty 1,
