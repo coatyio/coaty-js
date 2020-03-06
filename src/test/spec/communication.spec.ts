@@ -32,7 +32,7 @@ import { delayAction, Spy, UUID_REGEX } from "./utils";
 
 describe("Communication", () => {
 
-    describe("Communication Topic", () => {
+    describe("Communication Topics", () => {
 
         const version = CommunicationManager.PROTOCOL_VERSION;
         const namespace = "-";
@@ -119,6 +119,33 @@ describe("Communication", () => {
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/${correlationId}`);
         });
 
+    });
+
+    describe("Raw Topics", () => {
+        it("raw topics match topic filters", () => {
+            expect(CommunicationTopic.matches("/", "/")).toBeTrue();
+            expect(CommunicationTopic.matches("/", "+/")).toBeTrue();
+            expect(CommunicationTopic.matches("/", "/+")).toBeTrue();
+            expect(CommunicationTopic.matches("/", "+/+")).toBeTrue();
+            expect(CommunicationTopic.matches("/a/", "/+/")).toBeTrue();
+            expect(CommunicationTopic.matches("//", "/+/")).toBeTrue();
+            expect(CommunicationTopic.matches("/", "/#")).toBeTrue();
+            expect(CommunicationTopic.matches("/aaa/b", "/#")).toBeTrue();
+            expect(CommunicationTopic.matches("a/", "/#")).toBeFalse();
+            expect(CommunicationTopic.matches("", "#")).toBeFalse();
+            expect(CommunicationTopic.matches("", "")).toBeFalse();
+            expect(CommunicationTopic.matches("sport/tennis/player1", "sport/tennis/player1/#")).toBeTrue();
+            expect(CommunicationTopic.matches("sport/tennis/player1/ranking", "sport/tennis/player1/#")).toBeTrue();
+            expect(CommunicationTopic.matches("sport/tennis/player1/score/wim", "sport/tennis/player1/#")).toBeTrue();
+            expect(CommunicationTopic.matches("sport", "sport/#")).toBeTrue();
+            expect(CommunicationTopic.matches("a/b", "#")).toBeTrue();
+            expect(CommunicationTopic.matches("/a", "#")).toBeTrue();
+            expect(CommunicationTopic.matches("/", "#")).toBeTrue();
+            expect(CommunicationTopic.matches("sport/tennis/player1", "sport/tennis/+")).toBeTrue();
+            expect(CommunicationTopic.matches("sport/tennis/player1/ranking", "sport/tennis/+")).toBeFalse();
+            expect(CommunicationTopic.matches("sport", "sport/+")).toBeFalse();
+            expect(CommunicationTopic.matches("sport/", "sport/+")).toBeTrue();
+        });
     });
 
     describe("Event Patterns", () => {
@@ -545,8 +572,8 @@ describe("Communication", () => {
             /* tslint:disable-next-line:max-line-length */
             const topic2 = `${CommunicationTopic.PROTOCOL_NAME}/foo/bar/baz`;
 
-            deviceController.watchForRawEvents(logger1, topicFilter1, topicFilter1);
-            deviceController.watchForRawEvents(logger2, topicFilter2, topic2);
+            deviceController.watchForRawEvents(logger1, topicFilter1);
+            deviceController.watchForRawEvents(logger2, topicFilter2);
 
             delayAction(500, undefined, () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController1")

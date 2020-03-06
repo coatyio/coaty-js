@@ -415,7 +415,7 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Observe incoming messages on a raw subscription topic.
+     * Observe matching incoming messages on a raw subscription topic.
      *
      * The observable returned by calling `observeRaw` emits messages as tuples
      * including the actual published topic and the payload. Payload is
@@ -427,24 +427,6 @@ export class CommunicationManager implements IDisposable {
      * messages on external topics. Use this method together with `publishRaw()`
      * to transfer binary data between Coaty agents.
      *
-     * Note that the returned observable is *shared* among all raw topic
-     * observers. This basically means that the observable will emit messages
-     * for *all* observed raw subscription topics, not only for the one
-     * specified in a single method call. Thus, you should always pipe the
-     * observable through an RxJS `filter` operator to filter out the messages
-     * associated with the given subscription topic.
-     *
-     * ```ts
-     * import { filter } from "rxjs/operators";
-     *
-     * this.communicationManager
-     *    .observeRaw("$SYS/#")
-     *    .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
-     *    .subscribe(([topic, payload]) => {
-     *        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
-     *    });
-     * ```
-     * 
      * Subscriptions to the returned observable are **automatically
      * unsubscribed** when the communication manager is stopped, in order to
      * release system resources and to avoid memory leaks.
@@ -457,7 +439,7 @@ export class CommunicationManager implements IDisposable {
      * character `NULL (U+0000)`.
      *
      * @param topic the subscription topic
-     * @returns an observable emitting any incoming messages as tuples
+     * @returns an observable emitting any matching incoming messages as tuples
      * containing the actual topic and the payload as Uint8Array (Buffer in
      * Node.js)
      * @throws if given subscription topic is not in a valid format
@@ -1514,10 +1496,12 @@ export class CommunicationManager implements IDisposable {
                     return;
                 }
                 isRawDispatch = true;
-                isDispatching = true;
-                // Dispatch raw data and the actual topic (parsing is up to the application)
-                item.dispatchNext(payload, topic);
-                isDispatching = false;
+                if (CommunicationTopic.matches(topic, item.topicFilter)) {
+                    isDispatching = true;
+                    // Dispatch raw data and the actual topic (parsing is up to the application)
+                    item.dispatchNext(payload, topic);
+                    isDispatching = false;
+                }
             });
             return isRawDispatch;
         } catch (error) {
@@ -1525,7 +1509,7 @@ export class CommunicationManager implements IDisposable {
                 throw error;
             }
 
-            console.log(`CommunicationManager: failed to handle incoming Raw topic ${topic}': ${error}`);
+            console.log(`CommunicationManager: failed to handle incoming raw topic ${topic}': ${error}`);
 
             return true;
         }

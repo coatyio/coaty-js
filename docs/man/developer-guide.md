@@ -1831,33 +1831,16 @@ a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
 `Uint8Array` (`Buffer` in Node.js), and an optional flag indicating whether the
 published message should be retained.
 
-Likewise, use `observeRaw` to observe incoming messages on raw MQTT subscription
-topics. The observable returned by calling `observeRaw` emits messages as tuples
-including the actual published topic and the payload. Payload is represented as
-`Uint8Array` (`Buffer` in Node.js) and needs to be parsed by the application.
-Use the `toString` method on a payload to convert the raw data to an UTF8
-encoded string.
-
-Note that the observable returned by `observeRaw` is *shared* among all raw
-topic observers. This basically means that the observable will emit messages for
-*all* observed raw subscription topics, not only for the one specified in a
-single method call. Thus, you should always pipe the observable through an RxJS
-`filter` operator to filter out the messages associated with the given
-subscription topic:
-
-```ts
-import { filter } from "rxjs/operators";
-
-this.communicationManager
-    .observeRaw("$SYS/#")
-    .pipe(filter(([topic,]) => topic.startsWith("$SYS/")))
-    .subscribe(([topic, payload]) => {
-        console.log(`Received topic ${topic} with payload ${payload.toString()}`);
-    });
-```
+Likewise, use `observeRaw` to observe matching incoming messages on raw MQTT
+subscription topics. The observable returned by calling `observeRaw` emits
+messages as tuples including the actual published topic and the payload. Payload
+is represented as `Uint8Array` (`Buffer` in Node.js) and needs to be parsed by
+the application. Use the `toString` method on a payload to convert the raw data
+to an UTF8 encoded string.
 
 > **Note**: Only incoming messages that are *not* non-raw Coaty communication
-> events are dispatched to raw message observers.
+> events are dispatched to raw message observers. If you observe raw topics that
+> start with `coaty/`, matching incoming messages will never be emitted.
 
 ### Distributed lifecycle management
 

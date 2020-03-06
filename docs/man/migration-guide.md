@@ -272,8 +272,12 @@ context object *is* specified.
 
 #### Changes in Raw event
 
+* `CommunicationManager.observeRaw()` no longer emits messages that do *not*
+  match the specified subscription topic filter. Remove the RxJS `filter`
+  operator in the Observable pipe as filtering is is no longer needed.
 * `CommunicationManager.observeRaw()` no longer emits messages for non-raw Coaty
-  communication patterns.
+  communication event patterns. If you observe raw topics that start with
+  `coaty/`, matching incoming messages will never be emitted.
 
 ### Changes in Sensor Things
 

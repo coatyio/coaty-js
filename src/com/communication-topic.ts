@@ -269,6 +269,60 @@ export class CommunicationTopic {
             name.indexOf("+") === -1;
     }
 
+    /**
+     * Determines whether the given MQTT topic matches given MQTT topic filter.
+     *
+     * @remarks Matching assumes that both topic and filter are valid according
+     * to the MQTT 3.1.1 specification. Otherwise, the result is not defined.
+     *
+     * @param topic a valid MQTT topic name
+     * @param filter a valid MQTT topic filter
+     * @returns true if topic matches filter; otherwise false
+     */
+    static matches(topic: string, filter: string) {
+        if (!topic || !filter) {
+            return false;
+        }
+
+        const SEPARATOR = "/";
+        const SINGLE_WILDCARD = "+";
+        const MULTI_WILDCARD = "#";
+
+        const patternLevels = filter.split(SEPARATOR);
+        const topicLevels = topic.split(SEPARATOR);
+
+        const patternLength = patternLevels.length;
+        const topicLength = topicLevels.length;
+        const lastIndex = patternLength - 1;
+
+        for (let i = 0; i <= lastIndex; i++) {
+            const currentPattern = patternLevels[i];
+            const currentTopic = topicLevels[i];
+
+            if (!currentTopic && !currentPattern) {
+                continue;
+            }
+
+            if (!currentTopic && currentPattern === SINGLE_WILDCARD) {
+                continue;
+            }
+
+            if (!currentTopic && currentPattern !== MULTI_WILDCARD) {
+                return false;
+            }
+
+            if (currentPattern === MULTI_WILDCARD) {
+                return i === lastIndex;
+            }
+
+            if (currentPattern !== SINGLE_WILDCARD && currentPattern !== currentTopic) {
+                return false;
+            }
+        }
+
+        return patternLength === topicLength;
+    }
+
     private static _isValidMqttTopicWithoutWildcards(topic: string): boolean {
         if (!topic || this._getUtf8BytesCount(topic) > 65535) {
             return false;

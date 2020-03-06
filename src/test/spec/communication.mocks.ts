@@ -90,11 +90,9 @@ export class MockDeviceController extends Controller {
             });
     }
 
-    watchForRawEvents(logger: RawEventLogger, topicFilter: string, topicPrefix: string) {
+    watchForRawEvents(logger: RawEventLogger, topicFilter: string) {
         this.communicationManager
             .observeRaw(topicFilter)
-            // Note that all published raw messages are dispatched on all raw observables!
-            .pipe(filter(([topic]) => topic.startsWith(topicPrefix)))
             .subscribe(([topic, payload]) => {
                 logger.count++;
                 // Raw values are emitted as tuples of topic name and Uint8Array/Buffer payload
