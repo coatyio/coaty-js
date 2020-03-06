@@ -31,6 +31,7 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
      * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
      *
      * @param eventData data associated with this Update event
+     * @throws if object type of given object is not in a valid format
      */
     constructor(eventData: UpdateEventData) {
         super(eventData);
@@ -44,6 +45,7 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
      * Create an UpdateEvent instance for the given object.
      * 
      * @param object the object with properties to be updated
+     * @throws if object type of given object is not in a valid format
      */
     static withObject(object: CoatyObject) {
         return new UpdateEvent(new UpdateEventData(object));

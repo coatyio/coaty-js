@@ -34,6 +34,7 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * 
      * @param channelId the channel identifier of this Channel event
      * @param eventData data associated with this Channel event
+     * @throws if channel identifier is not in a valid format
      */
     constructor(
         channelId: string,
@@ -52,6 +53,7 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * 
      * @param object the object to be channelized
      * @param privateData application-specific options (optional)
+     * @throws if channel identifier is not in a valid format
      */
     static withObject(channelId: string, object: CoatyObject, privateData?: any) {
         return new ChannelEvent(channelId, new ChannelEventData(object, undefined, privateData));
@@ -62,6 +64,7 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
      * 
      * @param objects the objects to be channelized
      * @param privateData application-specific options (optional)
+     * @throws if channel identifier is not in a valid format
      */
     static withObjects(channelId: string, objects: CoatyObject[], privateData?: any) {
         return new ChannelEvent(channelId, new ChannelEventData(undefined, objects, privateData));

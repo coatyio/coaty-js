@@ -81,9 +81,8 @@ the payload, as well as some bytes of header data.
 
 > To debug MQTT messages published by a Coaty agent, you can use any MQTT client
 > and subscribe to the `coaty/#` topic. We recommend [MQTT
-> Explorer](https://mqtt-explorer.com/) or
-> [mqtt-spy](https://kamilfb.github.io/mqtt-spy/), both cross-platform clients
-> provide graphical user interfaces for message inspection.
+> Explorer](https://mqtt-explorer.com/), a cross-platform client with a
+> graphical user interface for structured topic inspection.
 
 ## Events and Event Patterns
 

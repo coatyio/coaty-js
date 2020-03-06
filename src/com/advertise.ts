@@ -24,6 +24,7 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
      * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
      *
      * @param eventData data associated with this Advertise event
+     * @throws if object type of given object is not in a valid format
      */
     constructor(eventData: AdvertiseEventData) {
         super(eventData);
@@ -38,6 +39,7 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
      * 
      * @param object the object to be advertised
      * @param privateData application-specific options (optional)
+     * @throws if object type of given object is not in a valid format
      */
     static withObject(object: CoatyObject, privateData?: any) {
         return new AdvertiseEvent(new AdvertiseEventData(object, privateData));

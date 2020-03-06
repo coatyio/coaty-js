@@ -150,9 +150,9 @@ events published by a controller could never be observed by itself.
 In Coaty 2, distributed lifecycle management has been simplified and made more
 efficient:
 
-* The agent container is assigned a unique identity object to be shared by all
-  controllers and the communication manager. Controllers and the communication
-  manager no longer own separate identities.
+* The agent container is assigned a unique identity object to be accessible by
+  all controllers and the communication manager. Controllers and the
+  communication manager no longer own separate identities.
 * The container's identity is *always* advertised and discoverable to support
   distributed lifecycle management. You can no longer disable this behavior.
 * When publishing or observing communication events, an identity object no

@@ -51,7 +51,7 @@ export abstract class Controller implements IController {
     /**
      * @internal For internal use in framework only.
      *
-     * Never instantiate Controller objects in your application, they are
+     * Never instantiate Controller objects in your application; they are
      * created automatically by dependency injection.
      */
     constructor(

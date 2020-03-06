@@ -318,6 +318,7 @@ export class CommunicationManager implements IDisposable {
      * data's context filter (optional)
      * @returns an observable emitting incoming Call events whose context filter
      * matches the given context
+     * @throws if given operation name is not in a valid format
      */
     observeCall(operation: string, context?: CoatyObject): Observable<CallEvent> {
         if (!CommunicationTopic.isValidTopicLevel(operation)) {
@@ -381,7 +382,7 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Observe incoming messages on raw subscription topics.
+     * Observe incoming messages on a raw subscription topic.
      *
      * The observable returned by calling `observeRaw` emits messages as tuples
      * including the actual published topic and the payload. Payload is
@@ -415,12 +416,14 @@ export class CommunicationManager implements IDisposable {
      * observers.
      *
      * @remarks The specified subscription topic must be a valid MQTT
-     * subscription topic. It must not contain the character `NULL (U+0000)`.
+     * subscription topic. It must be non-empty and must not contain the
+     * character `NULL (U+0000)`.
      *
      * @param topic the subscription topic
      * @returns an observable emitting any incoming messages as tuples
      * containing the actual topic and the payload as Uint8Array (Buffer in
      * Node.js)
+     * @throws if given subscription topic is not in a valid format
      */
     observeRaw(topic: string): Observable<[string, Uint8Array]> {
         if (typeof topic !== "string" ||
@@ -605,6 +608,7 @@ export class CommunicationManager implements IDisposable {
      * @param topic the topic on which to publish the given payload
      * @param value a payload string or Uint8Array (Buffer in Node.js) to be published on the given topic
      * @param shouldRetain whether to publish a retained message (default false)
+     * @throws if given topic is not in a valid format
      */
     publishRaw(topic: string, value: string | Uint8Array, shouldRetain = false) {
         if (!CommunicationTopic.isValidPublicationTopic(topic)) {
@@ -1925,7 +1929,7 @@ class ObservedResponseItem extends SubscriberItem<CommunicationEvent<Communicati
                 this.publisher && this.publisher();
             }
 
-            // Called when a subscription is unsubscribed
+            // Called when the subscriber is unsubscribed
             return () => {
                 this.remove(subscriber);
 

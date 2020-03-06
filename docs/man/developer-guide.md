@@ -1091,6 +1091,19 @@ emit all the Return events which are direct responses to the published request.
 > Note that by design, there is no echo suppression of communication events. The
 > communication manager dispatches any incoming event to every controller that
 > *observes* it, even if the controller published this event itself.
+> 
+> If echo suppression of communication events is required for your custom
+> controller, place it into its *own* container and *filter out* observed events
+> whose event source ID equals the object ID of the container's identity, like
+> this:
+>
+> ```ts
+> this.communicationManager.observeDiscover()
+>     .pipe(filter(event => event.sourceId !== this.container.identity.objectId))
+>     .subscribe(event => {
+>         // Handle non-echo events only.
+>     });
+> ```
 
 > Note that all publish methods for request-response event patterns, i.e.
 > `publishDiscover`, `publishUpdate`, `publishQuery`, and `publishCall` publish
@@ -1200,12 +1213,12 @@ deferred, i.e. not reapplied after a reconnect.
 If you stop the Communication Manager by executing its `stop` method, all
 deferred publications and subscriptions will be discarded.
 
-> In your controller classes we recommend to subscribe to observe methods when
-> the Communication Manager is (re)starting and unsubscribe from observe methods
-> *as soon as* they are no longer needed, latest when the Communication Manager
-> is stopping. Use the controller lifecycle methods
-> `onCommunicationManagerStarted` and `onCommunicationManagerStopped` to
-> implement this subscription pattern.
+> In your controller classes we recommend to subscribe to Observables returned
+> by observe methods and by two-way publish methods when the Communication
+> Manager is (re)starting and unsubscribe from them *as soon as* they are no
+> longer needed, latest when the Communication Manager is stopping. Use the
+> controller lifecycle methods `onCommunicationManagerStarted` and
+> `onCommunicationManagerStopped` to implement this subscription pattern.
 
 ### Namespacing
 

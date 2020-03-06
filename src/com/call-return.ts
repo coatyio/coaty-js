@@ -41,6 +41,7 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
      * 
      * @param operation the operation name of this Call event
      * @param eventData data associated with this Call event
+     * @throws if operation name is not in a valid format
      */
     constructor(
         operation: string,
@@ -74,6 +75,7 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
      * invocation of the operation (optional)
      * @param filter a context filter that must match a given context object at
      * the remote end (optional)
+     * @throws if operation name is not in a valid format
      */
     static with(operation: string, parameters?: any[] | { [key: string]: any; }, filter?: ContextFilter) {
         return new CallEvent(operation, new CallEventData(parameters, filter));
