@@ -270,7 +270,7 @@ export class CommunicationTopic {
     }
 
     /**
-     * Determines whether the given MQTT topic matches given MQTT topic filter.
+     * Determines whether the given MQTT topic matches the given MQTT topic filter.
      *
      * @remarks Matching assumes that both topic and filter are valid according
      * to the MQTT 3.1.1 specification. Otherwise, the result is not defined.
@@ -296,26 +296,26 @@ export class CommunicationTopic {
         const lastIndex = patternLength - 1;
 
         for (let i = 0; i <= lastIndex; i++) {
-            const currentPattern = patternLevels[i];
-            const currentTopic = topicLevels[i];
+            const currentPatternLevel = patternLevels[i];
+            const currentLevel = topicLevels[i];
 
-            if (!currentTopic && !currentPattern) {
+            if (!currentLevel && !currentPatternLevel) {
                 continue;
             }
 
-            if (!currentTopic && currentPattern === SINGLE_WILDCARD) {
+            if (!currentLevel && currentPatternLevel === SINGLE_WILDCARD) {
                 continue;
             }
 
-            if (!currentTopic && currentPattern !== MULTI_WILDCARD) {
+            if (!currentLevel && currentPatternLevel !== MULTI_WILDCARD) {
                 return false;
             }
 
-            if (currentPattern === MULTI_WILDCARD) {
+            if (currentPatternLevel === MULTI_WILDCARD) {
                 return i === lastIndex;
             }
 
-            if (currentPattern !== SINGLE_WILDCARD && currentPattern !== currentTopic) {
+            if (currentPatternLevel !== SINGLE_WILDCARD && currentPatternLevel !== currentLevel) {
                 return false;
             }
         }

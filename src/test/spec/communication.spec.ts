@@ -119,9 +119,6 @@ describe("Communication", () => {
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/${correlationId}`);
         });
 
-    });
-
-    describe("Raw Topics", () => {
         it("raw topics match topic filters", () => {
             expect(CommunicationTopic.matches("/", "/")).toBeTrue();
             expect(CommunicationTopic.matches("/", "+/")).toBeTrue();
@@ -146,6 +143,7 @@ describe("Communication", () => {
             expect(CommunicationTopic.matches("sport", "sport/+")).toBeFalse();
             expect(CommunicationTopic.matches("sport/", "sport/+")).toBeTrue();
         });
+
     });
 
     describe("Event Patterns", () => {
