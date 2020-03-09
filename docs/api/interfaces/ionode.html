@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Config | @coaty/core - v2.0.0</title>
+	<title>IoNode | @coaty/core - v2.0.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="config.html">Config</a>
+					<a href="ionode.html">IoNode</a>
 				</li>
 			</ul>
-			<h1>Interface Config</h1>
+			<h1>Interface IoNode</h1>
 		</div>
 	</div>
 </header>
@@ -67,9 +67,11 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Used to advertise configuration changes to interested Coaty
-						container components.</p>
+						<p>Represents an IO node with IO sources and IO actors for IO routing.</p>
 					</div>
+					<p>The name of an IO node equals the name of the IO context it is associated
+						with. An IO node also contains node-specific characteristics used by IO
+					routers to manage routes.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -79,7 +81,7 @@
 						<a href="coatyobject.html" class="tsd-signature-type">CoatyObject</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">Config</span>
+								<span class="target">IoNode</span>
 							</li>
 						</ul>
 					</li>
@@ -92,18 +94,17 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#assigneeuserid" class="tsd-kind-icon">assignee<wbr>User<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="config.html#associateduser" class="tsd-kind-icon">associated<wbr>User</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external"><a href="config.html#coretype" class="tsd-kind-icon">core<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#externalid" class="tsd-kind-icon">external<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#isdeactivated" class="tsd-kind-icon">is<wbr>Deactivated</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#locationid" class="tsd-kind-icon">location<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#objectid" class="tsd-kind-icon">object<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#objecttype" class="tsd-kind-icon">object<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="config.html#parentobjectid" class="tsd-kind-icon">parent<wbr>Object<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="config.html#shouldassociateuser" class="tsd-kind-icon">should<wbr>Associate<wbr>User</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="config.html#targetid" class="tsd-kind-icon">target<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="ionode.html#characteristics" class="tsd-kind-icon">characteristics</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external"><a href="ionode.html#coretype" class="tsd-kind-icon">core<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#externalid" class="tsd-kind-icon">external<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="ionode.html#ioactors" class="tsd-kind-icon">io<wbr>Actors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="ionode.html#iosources" class="tsd-kind-icon">io<wbr>Sources</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#isdeactivated" class="tsd-kind-icon">is<wbr>Deactivated</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#locationid" class="tsd-kind-icon">location<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external"><a href="ionode.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#objectid" class="tsd-kind-icon">object<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#objecttype" class="tsd-kind-icon">object<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ionode.html#parentobjectid" class="tsd-kind-icon">parent<wbr>Object<wbr>Id</a></li>
 							</ul>
 						</section>
 					</div>
@@ -111,47 +112,38 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-					<a name="assigneeuserid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> assignee<wbr>User<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">assignee<wbr>User<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#assigneeuserid">assigneeUserId</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L52">src/model/object.ts:52</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Unique ID of user whom this object has been assigned to (optional)</p>
-						</div>
-					</div>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="associateduser" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> associated<wbr>User</h3>
-					<div class="tsd-signature tsd-kind-icon">associated<wbr>User<span class="tsd-signature-symbol">:</span> <a href="user.html" class="tsd-signature-type">User</a></div>
+					<a name="characteristics" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> characteristics</h3>
+					<div class="tsd-signature tsd-kind-icon">characteristics<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L105">src/model/object.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/io-node.ts#L37">src/model/io-node.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The user that should be associated with the runtime (optional).
-								The value is only interpreted if the value of <code>shouldAssociateUser</code>
-							property is true.</p>
+							<p>Node-specific characteristics defined by application (optional).</p>
 						</div>
+						<p>Can be used by IO routers to manage routes.</p>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
 					<a name="coretype" class="tsd-anchor"></a>
 					<h3>core<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">core<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Config"</span></div>
+					<div class="tsd-signature tsd-kind-icon">core<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"IoNode"</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#coretype">coreType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L88">src/model/object.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/io-node.ts#L15">src/model/io-node.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -162,12 +154,42 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#externalid">externalId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L57">src/model/object.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L58">src/model/object.ts:58</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>External ID associated with this object (optional)</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="ioactors" class="tsd-anchor"></a>
+					<h3>io<wbr>Actors</h3>
+					<div class="tsd-signature tsd-kind-icon">io<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="ioactor.html" class="tsd-signature-type">IoActor</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/io-node.ts#L30">src/model/io-node.ts:30</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The IO actors belonging to this IO node.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="iosources" class="tsd-anchor"></a>
+					<h3>io<wbr>Sources</h3>
+					<div class="tsd-signature tsd-kind-icon">io<wbr>Sources<span class="tsd-signature-symbol">:</span> <a href="iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/io-node.ts#L25">src/model/io-node.ts:25</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The IO sources belonging wto this IO node.</p>
 						</div>
 					</div>
 				</section>
@@ -178,7 +200,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#isdeactivated">isDeactivated</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L70">src/model/object.ts:70</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L71">src/model/object.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -196,7 +218,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#locationid">locationId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L63">src/model/object.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L64">src/model/object.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -206,19 +228,19 @@
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#name">name</a></p>
+						<p>Overrides <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L42">src/model/object.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/io-node.ts#L20">src/model/io-node.ts:20</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The name/description of the object</p>
+							<p>The name of the IO context, that this IO node is associated with.</p>
 						</div>
 					</div>
 				</section>
@@ -229,7 +251,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#objectid">objectId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L37">src/model/object.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L43">src/model/object.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -245,18 +267,28 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#objecttype">objectType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L26">src/model/object.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L32">src/model/object.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The concrete type name of the object.
-								The name should be in a canonical form following the naming
-								convention for Java packages to avoid name collisions.
-								All framework core types use the form
-								<code>coaty.&lt;InterfaceName&gt;</code>, e.g.
-							<code>coaty.CoatyObject</code> (see constants in <code>CoreTypes</code> class).</p>
+							<p>The concrete type name of the object.</p>
 						</div>
+						<p>The name should be in a canonical form following the naming convention
+							for Java packages to avoid name collisions. All framework core types use
+							the form <code>coaty.&lt;InterfaceName&gt;</code>, e.g. <code>coaty.CoatyObject</code> (see constants
+						in <code>CoreTypes</code> class).</p>
+						<dl class="tsd-comment-tags">
+							<dt>remarks</dt>
+							<dd><p>Object type names should be made up of characters in the range 0
+								to 9, a to z, A to Z, and dot (.).</p>
+							</dd>
+							<dt>remarks</dt>
+							<dd><p>All object types starting with <code>coaty.</code> are reserved for use by
+									the Coaty framework and must not be used by applications to define custom
+								object types.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
@@ -266,42 +298,12 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#parentobjectid">parentObjectId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L47">src/model/object.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ea0b36d/src/model/object.ts#L53">src/model/object.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Unique ID of parent/superordinate object (optional)</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="shouldassociateuser" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> should<wbr>Associate<wbr>User</h3>
-					<div class="tsd-signature tsd-kind-icon">should<wbr>Associate<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L98">src/model/object.ts:98</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether to associate a user with the runtime (optional)</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="targetid" class="tsd-anchor"></a>
-					<h3>target<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">target<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/ef2b90e/src/model/object.ts#L93">src/model/object.ts:93</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The object ID of the target object of this configuration</p>
 						</div>
 					</div>
 				</section>
@@ -320,43 +322,40 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="config.html" class="tsd-kind-icon">Config</a>
+						<a href="ionode.html" class="tsd-kind-icon">Io<wbr>Node</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#assigneeuserid" class="tsd-kind-icon">assignee<wbr>User<wbr>Id</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="config.html#associateduser" class="tsd-kind-icon">associated<wbr>User</a>
+								<a href="ionode.html#characteristics" class="tsd-kind-icon">characteristics</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
-								<a href="config.html#coretype" class="tsd-kind-icon">core<wbr>Type</a>
+								<a href="ionode.html#coretype" class="tsd-kind-icon">core<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#externalid" class="tsd-kind-icon">external<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#isdeactivated" class="tsd-kind-icon">is<wbr>Deactivated</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#locationid" class="tsd-kind-icon">location<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#objectid" class="tsd-kind-icon">object<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#objecttype" class="tsd-kind-icon">object<wbr>Type</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-								<a href="config.html#parentobjectid" class="tsd-kind-icon">parent<wbr>Object<wbr>Id</a>
+								<a href="ionode.html#externalid" class="tsd-kind-icon">external<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="config.html#shouldassociateuser" class="tsd-kind-icon">should<wbr>Associate<wbr>User</a>
+								<a href="ionode.html#ioactors" class="tsd-kind-icon">io<wbr>Actors</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="config.html#targetid" class="tsd-kind-icon">target<wbr>Id</a>
+								<a href="ionode.html#iosources" class="tsd-kind-icon">io<wbr>Sources</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="ionode.html#isdeactivated" class="tsd-kind-icon">is<wbr>Deactivated</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="ionode.html#locationid" class="tsd-kind-icon">location<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-external">
+								<a href="ionode.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="ionode.html#objectid" class="tsd-kind-icon">object<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="ionode.html#objecttype" class="tsd-kind-icon">object<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="ionode.html#parentobjectid" class="tsd-kind-icon">parent<wbr>Object<wbr>Id</a>
 							</li>
 						</ul>
 					</li>

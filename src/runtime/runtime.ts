@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import * as newuuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
 import { Uuid } from "..";
 
@@ -76,7 +76,7 @@ export class Runtime {
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
     private static FRAMEWORK_PACKAGE_VERSION = "2.0.0";
-    private static FRAMEWORK_BUILD_DATE = 1583578451035;
+    private static FRAMEWORK_BUILD_DATE = 1583756113105;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */
@@ -98,13 +98,13 @@ export class Runtime {
      * Returns a newly generated UUID v4.
      */
     static newUuid() {
-        return newuuidv4();
+        return uuidv4();
     }
 
     /**
      * Returns a newly generated UUID v4.
      */
     newUuid(): Uuid {
-        return newuuidv4();
+        return uuidv4();
     }
 }

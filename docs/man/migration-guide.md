@@ -12,8 +12,8 @@ Coaty JS application to a new release.
 ## Coaty 1 -> Coaty 2
 
 Coaty 2 incorporates experience and feedback gathered with Coaty 1. It pursues
-the main goal to streamline the framework API, to get rid of unused and
-deprecated functionality, and to prepare for future extensions.
+the main goal to streamline and simplify the framework API, to get rid of unused
+and deprecated functionality, and to prepare for future extensions.
 
 Among other refactorings, Coaty JS 2 carries breaking changes regarding package
 naming and import declarations, object types, distributed lifecycle management,

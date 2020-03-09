@@ -1,5 +1,70 @@
 # Changelog
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/coatyio/coaty-js/compare/v1.11.1...v2.0.0) (2020-03-09)
+
+This major Coaty 2 release incorporates experience and feedback gathered with Coaty 1. It pursues the main goal to streamline and simplify the framework API, to get rid of unused and deprecated functionality, and to prepare for future extensions. To upgrade your Coaty JS v1 projects, follow the instructions in the [migration guide](https://coatyio.github.io/coaty-js/man/migration-guide/).
+
+### Bug Fixes
+
+* **communication:** do not automatically deadvertise application-specific subtypes of Identity and Device objects ([4312bd7](https://github.com/coatyio/coaty-js/commit/4312bd78ed660b5ec2c7de47eb86f8f0337a6b86))
+* **communication:** invoke `Controller.onCommunicationManagerStopping()` whenever the container is shut down ([1f5c4a7](https://github.com/coatyio/coaty-js/commit/1f5c4a7a72e5c16943afebae962fd7aa131b8f3e))
+
+### Features
+
+* change in `runtime-node` module ([ef2b90e](https://github.com/coatyio/coaty-js/commit/ef2b90e5494ac863398c9c60a675f509392ea5d0))
+* **communication:** add namespacing concept to isolate different Coaty applications ([472cae9](https://github.com/coatyio/coaty-js/commit/472cae9941959d80bf32c8aeb9c12cfb2c9bab88))
+* change package naming and import declarations for Coaty 2 ([4d83c8e](https://github.com/coatyio/coaty-js/commit/4d83c8e723ac57d34f6a1f98192385452d67ed3f))
+* **CoatyObject:** remove property `CoatyObject.assigneeUserId` ([f9fcac2](https://github.com/coatyio/coaty-js/commit/f9fcac26e158e58a6d18cf486340dbeeb5046eef))
+* **communication:** abandon support for partial Update events ([9c942af](https://github.com/coatyio/coaty-js/commit/9c942af3fbd9ca989575c7739b520890aed224a3))
+* **communication:** add configuration option to specify an MQTT QoS level for communication ([e244be7](https://github.com/coatyio/coaty-js/commit/e244be74a8db47f0187c7ac9a7ef4e9abcc2a70c))
+* **communication:** no longer emit Call event with `CommunicationManager.observeCall` if context filter is *not* supplied *and* context object *is* specified ([b22b892](https://github.com/coatyio/coaty-js/commit/b22b892e5d52e0b0465fdd748538342160abd028))
+* **communication:** only *matching* incoming raw messages are dispatched to `CommunicationManager.observeRaw()` ([3b9b4bd](https://github.com/coatyio/coaty-js/commit/3b9b4bdce50e3e64aab5de36d8d827acf20d65c3))
+* **communication:** optimize MQTT topic structure; application code not affected by this change ([36b9b75](https://github.com/coatyio/coaty-js/commit/36b9b75c2c72ce886e1dbbe053d16e12758d3bb6))
+* **communication:** optimized raw message handling with `CommunicationManager.observeRaw` ([090c38d](https://github.com/coatyio/coaty-js/commit/090c38d2c169bb8d50a014c6879cce51a36a69e1))
+* **communication:** remove `CommunicationOptions.useReadableTopics` ([637bcb3](https://github.com/coatyio/coaty-js/commit/637bcb370653af90a2e4ed31ac3e73a453fdacb4))
+* **communication:** simplify distributed lifecycle management ([bbac21a](https://github.com/coatyio/coaty-js/commit/bbac21ab4304196495de55ede3e8ffec7f5a4397))
+* **communication:** support partial options for `CommunicationManager.restart(); returns promise resolving on completion ([b1878d7](https://github.com/coatyio/coaty-js/commit/b1878d70ddd6eb8101a298cebe982ec8888facfd))
+* **communication:** unsubscribe observables returned by publish and observe event methods automatically when communication manager is stopped ([62628cd](https://github.com/coatyio/coaty-js/commit/62628cda16859fbaccac6fa6048aba0d8466de12))
+* **communication:** validate object type for Advertise and Update events ([69ff3fe](https://github.com/coatyio/coaty-js/commit/69ff3fe8946ef37bd75d2be10187b22b67715955))
+* **Component:** rename core object type `Component` to `Identity` ([c59389b](https://github.com/coatyio/coaty-js/commit/c59389b0fb2c568bf35f2a745c4a53db3cb21198))
+* **Config:** remove object type `Config` ([026afde](https://github.com/coatyio/coaty-js/commit/026afde77a5c5e229351affbc922c5e3ee341e43))
+* **configuration:** change signature of `mergeConfigurations` function to accept *partial* primary or secondary configuration parameters. ([42ac724](https://github.com/coatyio/coaty-js/commit/42ac7243ca6114c0818e6d85a325a7a249e34771))
+* **configuration:** rename `Runtime.options` to `Runtime.commonOptions` and make `Configuration.common` optional ([a798738](https://github.com/coatyio/coaty-js/commit/a798738cd9be5eecda2246c5ccd1ae606d14a566))
+* **deprecated:** remove functionality marked as deprecated in Coaty v1 ([552199f](https://github.com/coatyio/coaty-js/commit/552199f3a51c65292cd351817aea3d7830c4a3f0))
+* **events:** rename public `CommunicationEvent` and `IoStateEvent` getters ([ff3148a](https://github.com/coatyio/coaty-js/commit/ff3148af1be2bbe0332e814953d666e77cad0ec4))
+* **io-routing:** redesign IO routing by generalizing and broadening the scope of routing ([4c9aadc](https://github.com/coatyio/coaty-js/commit/4c9aadc84bdf1e832413a6bcd1d04a862744499f))
+* **Log:** add optional property `Log.logLabels` to provide multi-dimensional context-specific data along with a log ([7521c39](https://github.com/coatyio/coaty-js/commit/7521c394e99f44fb31096e009507cc1f04b5657d))
+* **object types:** remove `Task.workflowId`; add `Task.assigneeObjectId`, change value type of `Task.requirements` ([ff8e32a](https://github.com/coatyio/coaty-js/commit/ff8e32a234eb446a36fd2ec035cb92dff3587653))
+* **sensor-things:** add `SensorSourceController.findSensor()` to look up a registered sensor by predicate ([b085661](https://github.com/coatyio/coaty-js/commit/b085661b77aab59cb6036ac7f15b3f601d8e1e60))
+* make access to container identity and configuration options readonly ([3a4e6f1](https://github.com/coatyio/coaty-js/commit/3a4e6f12cb33a793cccf2af443353e7d669ec3c4))
+* **sensor-things:** make Sensor objects emitted by `SourceCodeController.registeredSensorsChangeInfo$` read-only ([78da6ba](https://github.com/coatyio/coaty-js/commit/78da6ba3b347f3b79fd7ee52e21f1acca3219af4))
+* **util:** resolve promise returned by `Async.inSeries` function to the last item index executed instead of a boolean indicating premature termination ([ea2b9ea](https://github.com/coatyio/coaty-js/commit/ea2b9eae7de061a1de8ea492cd5f6935acc2facd))
+
+### Performance Improvements
+
+* **communication:** optimize dispatching of incoming response events ([bac3451](https://github.com/coatyio/coaty-js/commit/bac3451772e46a4ae6cc56a39bfd56788c56c70f))
+
+### BREAKING CHANGES
+
+* **util:** promise returned by `Async.inSeries` function resolves to the last item index executed instead of a boolean indicating premature termination
+* use scoped npm package named `@coaty/core` with revised module structure
+* **io-routing:** migrate to the new IO routing concept as described in [Coaty JS Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/)
+* **communication:** abandon partial Update events in favor of full Update events to observe a specific core or object type
+* **object types:** stop using `Task.workflowId` as this property has been removed. If needed, define an equivalent property in your custom task type. Use new property `Task.assigneeObjectId` to reference an object, e.g. a user or machine, that this task is assigned to. Change type of `Task.requirements` property to consist of key-value pairs.
+* **sensor-things:** Sensor objects emitted by `SourceCodeController.registeredSensorsChangeInfo$` are read-only. If you need to manipulate one, clone the object first (using `clone()` function in `@coaty/core`).
+* **communication:** Coaty communication events are no longer dispatched to raw message handlers
+* **communication:** remove `CommunicationOptions.useReadableTopics` because this feature is no longer supported
+* **communication:** observed Call events are no longer emitted if a context filter is *not* supplied *and* a context object *is* specified
+* **communication:** refactor distributed lifecycle management as described in migration guide section "Changes in distributed lifecycle management"
+* **Component:** rename core object type `Component` to `Identity`
+* **CoatyObject:** remove property `CoatyObject.assigneeUserId`; if needed add it to a custom object type
+* **Config:** remove object type `Config`: if needed, define an equivalent object type in your application code
+* **configuration:** rename `Runtime.options` to `Runtime.commonOptions`
+* **deprecated:** deprecated members have been removed, use replacements instead
+* functions `provideConfiguration` and `provideConfigurationAsync` moved to `NodeUtils` class
+* **events:** rename public `CommunicationEvent` and `IoStateEvent` getters
+
 <a name="1.11.1"></a>
 ## [1.11.1](https://github.com/coatyio/coaty-js/compare/v1.11.0...v1.11.1) (2020-01-02)
 
