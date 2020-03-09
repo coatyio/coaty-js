@@ -3,9 +3,7 @@
 import { Pool, PoolClient, PoolConfig, QueryResult, types } from "pg";
 import { parse } from "pg-connection-string";
 
-import * as newuuidv4 from "uuid/v4";
-
-import { Async, CoatyObject, DbConnectionInfo, filterOp, ObjectFilterOperator, ObjectMatcher, Uuid } from "../..";
+import { Async, CoatyObject, DbConnectionInfo, filterOp, ObjectFilterOperator, ObjectMatcher, Runtime, Uuid } from "../..";
 import { DbAdapterBase } from "../db-adapter";
 import { DbContext } from "../db-context";
 import {
@@ -1173,7 +1171,7 @@ class PooledClient implements IQueryable {
         // The problem is that we cannot detect reliably whether all
         // values of a cursor query have been fetched in case of a
         // premature break.
-        const cursor = asIdentifier(newuuidv4());
+        const cursor = asIdentifier(Runtime.newUuid());
 
         // Cursor declaration and execution must be inside a transaction block
         const txQuery = this.isTransactionClient ? Promise.resolve({} as QueryResult) : this._client.query("BEGIN");
