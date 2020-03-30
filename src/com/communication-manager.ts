@@ -874,7 +874,7 @@ export class CommunicationManager implements IDisposable {
 
         const client = this._client;
 
-        // Immediately invalidate the current client instance
+        // Immediately invalidate the current client instance.
         this._isClientConnected = false;
         this._initClient();
         this._client = undefined;
@@ -888,6 +888,8 @@ export class CommunicationManager implements IDisposable {
         // disconnect properly from the broker. It closes the socket
         // immediately, so that the broker publishes client's last will.
         client.end(false, () => {
+            // Clean up all event listeners on disposed client instance.
+            client.removeAllListeners();
             callback && callback();
         });
     }
