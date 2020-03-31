@@ -1231,9 +1231,9 @@ deferred publications and subscriptions will be discarded.
 To separate the communication traffic of different Coaty applications running in
 the same networking infrastructure (e.g. on the same MQTT broker), Coaty adds a
 namespacing mechanism. Communication events are only routed between agents
-within a common namespace.
+within a common communication namespace.
 
-You can specify an optional namespace string in the communication options
+You should specify a namespace string in the communication options
 (`CommunicationOptions.namespace`). If not specified (default) or empty, the
 agent is assigned a default namespace named "-".
 
@@ -1244,8 +1244,8 @@ regardless of namespace (see
 `CommunicationOptions.shouldEnableCrossNamespacing`). By default, this option is
 not enabled.
 
-> Note that namespacing is not supported for Raw events and IO value events with
-> external routes.
+> Note that communication namespacing is not supported for Raw events and IO
+> value events with external routes.
 
 ### Advertise event pattern - an example
 

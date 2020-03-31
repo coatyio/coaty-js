@@ -90,7 +90,7 @@ export interface CommunicationOptions {
      * Namespace used to isolate different Coaty applications (optional).
      *
      * Communication events are only routed between agents within a common
-     * namespace.
+     * communication namespace.
      *
      * A namespace string must not contain the following characters: `NULL
      * (U+0000)`, `# (U+0023)`, `+ (U+002B)`, `/ (U+002F)`.
