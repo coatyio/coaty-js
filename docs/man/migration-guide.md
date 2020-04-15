@@ -193,9 +193,10 @@ Upgrade to the new approach as follows:
   removed.
 * Stop using `ControllerOptions.shouldAdvertiseIdentity` as this property has
   been removed.
-* Stop defining `Controller.onContainerResolved()` as this method has been
-  removed. Perform these side effects in `Controller.onInit`, accessing the
-  container by `Controller.container` getter.
+* Remove all occurrences of and stop defining `Controller.onContainerResolved()`
+  as this method will no longer be called and used by the framework. Move the
+  code of this method into `Controller.onInit`, accessing the container by
+  `Controller.container` getter.
 * Stop expecting `ObjectLifecycleController` or your custom controllers to track
   the identity of controllers. Only identity of containers can be observed or
   discovered.
