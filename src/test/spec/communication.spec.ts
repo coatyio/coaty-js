@@ -815,7 +815,7 @@ describe("Communication", () => {
                 eventData: [],
             };
 
-            container1.communicationManager.restart({ shouldEnableCrossNamespacing: true })
+            container1.communicationManager.start({ shouldEnableCrossNamespacing: true })
                 .then(() => {
                     // Observes both core type and object type, so two events are received.
                     deviceController.watchForAdvertiseEvents(logger);

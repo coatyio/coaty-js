@@ -1010,15 +1010,15 @@ is 0).
 
 ### Starting and stopping communication
 
-Use the `CommunicationManager.start` method to connect to the underlying
+Use the `CommunicationManager.start()` method to connect to the underlying
 communication infrastructure. Note that the Communication Manager automatically
 starts after the container is resolved if the communication option
 `shouldAutoStart` is set to `true` (opt-in). While started, the communication
 manager automatically tries to reconnect periodically whenever the communication
 connection is lost.
 
-Use the `CommunicationManager.restart` method to re-establish communication with
-new communication options.
+Use the `CommunicationManager.start(options)` method to re-establish
+communication with new communication options.
 
 Use the `CommunicationManager.stop` method to permanently disconnect from the
 underlying communication infrastructure. Afterwards, events are no longer
@@ -3640,26 +3640,27 @@ import { MulticastDnsDiscovery, NodeUtils } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.findMqttBrokerService()
     .then(srv => {
-        container.communicationManager.options.brokerUrl = `mqtt://${srv.host}:${srv.port}`;
-        container.communicationManager.start();
+        container.communicationManager.start({
+            brokerUrl: `mqtt://${srv.host}:${srv.port}`,
+        });
     })
     .catch(error => {
-        NodeUtils.logError(error, "Couldn't discover Coaty broker:");
+        NodeUtils.logError(error, "Couldn't discover broker:");
         process.exit(1);
     });
 
-// On startup discover WAMP router URL and realm and start communication manager.
+// On startup discover WAMP router URL and start communication manager.
 
 import { MulticastDnsDiscovery, NodeUtils } from "@coaty/core/runtime-node";
 
 MulticastDnsDiscovery.findWampRouterService()
     .then(srv => {
-        container.communicationManager.options.routerUrl = `ws://${srv.host}:${srv.port}${srv.txt.path}`;
-        container.communicationManager.options.realm = srv.txt.realm;
-        container.communicationManager.start();
+        container.communicationManager.start({
+            routerUrl: `ws://${srv.host}:${srv.port}${srv.txt.path}`,
+        });
     })
     .catch(error => {
-        NodeUtils.logError(error, "Couldn't discover Coaty router:");
+        NodeUtils.logError(error, "Couldn't discover router:");
         process.exit(1);
     });
 ```

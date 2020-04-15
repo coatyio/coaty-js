@@ -168,18 +168,48 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Starts this communication manager with the communication options
-     * specified in the configuration. This is a noop if the communication
-     * manager has already been started.
+     * Starts or restarts this communication manager with communication options
+     * specified in the configuration and in the optional `options` parameter.
+     *
+     * If no options are given, this operation does nothing if the communication
+     * manager is already in `Started` operating state; otherwise, i.e. in
+     * `Stopped` state, the communication manager is started with the
+     * communication options specified in the container configuration.
+     *
+     * If partial options are given, the communication manager is stopped if in
+     * `Started` operating state. Afterwards, it is started (again) with the
+     * given partial options merged with the communication options specified in
+     * the container configuration. Partial options override configuration
+     * options. This is useful if you want to re-establish communication after
+     * changing communication options on the fly.
+     *
+     * Note that further actions, like publishing or observing events, should
+     * only be taken *after* the returned promise resolves.
+     *
+     * @param options new communication options to be used for a (re)start
+     *   (optional)
+     * @returns a promise that is resolved when start-up has been completed.
      */
-    start() {
-        if (!this._client) {
-            this._initOptions();
-            this._startClient();
+    start(options?: Partial<CommunicationOptions>): Promise<any> {
+        if (!options) {
+            if (!this._client) {
+                this._initOptions();
+                this._startClient();
+            }
+            return Promise.resolve();
         }
+        return new Promise<any>(resolve => {
+            this._endClient(() => {
+                this._initOptions(options);
+                this._startClient();
+                resolve();
+            });
+        });
     }
 
     /**
+     * @deprecated since 2.0.1. Use `start(options?)` instead.
+     * 
      * Restarts this communication manager using the given options.
      *
      * Useful if you want to re-establish communication after changing

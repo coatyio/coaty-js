@@ -77,6 +77,7 @@ All features marked as deprecated in Coaty 1 have been removed:
 
 * `CommunicationManager.observeAdvertise()` - use either
   `observeAdvertiseWithCoreType()` or `observeAdvertiseWithObjectType()`
+* `CommunicationManager.restart()` - use `CommunicationManager.start()`
 * `CommunicationOptions.brokerOptions` - use
   `CommunicationOptions.mqttClientOptions`
 * `Container.getRuntime()` - use `Container.runtime`
@@ -233,9 +234,10 @@ this.communicationManager.observeDiscover()
 * You can now specify the MQTT QoS level for all publications, subscriptions,
   and last will messages in `CommunicationOptions.mqttClientOptions.qos`. The
   default and recommended QoS level is 0.
-* You can now specify partial options, i.e. changed options only, for
-  `CommunicationManager.restart()`.
-* Take further actions after calling `CommunicationManager.restart()` not until
+* As `CommunicationManager.options` is now read-only, you can specify optional
+  partial options in `CommunicationManager.start(options?)` which override
+  communication options in the configuration.
+* Take further actions after calling `CommunicationManager.start()` not until
   the returned promise resolves.
 * A [namespacing
   concept](https://coatyio.github.io/coaty-js/man/developer-guide/#namespacing)
