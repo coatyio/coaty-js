@@ -107,7 +107,7 @@ export class CommunicationManager implements IDisposable {
     // (hashed by IO actor ID)
     private _ioValueItems: Map<Uuid, AnyValueItem>;
 
-    // Support deferred pub/sub on client (re)connection
+    // Support deferred pub/sub on client (re)connection and on draining events
     private _deferredPublications: Array<{
         topic: string,
         payload: any,
@@ -116,6 +116,8 @@ export class CommunicationManager implements IDisposable {
         isAdvertiseIoNode: boolean,
     }>;
     private _deferredSubscriptions: string[];
+
+    private _isPublishingDeferred: boolean;
 
     /**
      * @internal - For use in framework only.
@@ -794,6 +796,7 @@ export class CommunicationManager implements IDisposable {
         this._ioValueItems = new Map<Uuid, AnyValueItem>();
         this._ioSourceItems = new Map<Uuid, [string, Uuid[], number]>();
         this._ioActorItems = new Map<string, Map<Uuid, Uuid[]>>();
+        this._isPublishingDeferred = false;
         this._deferredPublications = [];
         this._deferredSubscriptions = [];
         this._deadvertiseIds = [];
@@ -842,7 +845,7 @@ export class CommunicationManager implements IDisposable {
 
         const client = connect(brokerUrl, mqttClientOpts);
 
-        // Assign client so that `_onClientConnect` handler can access it.
+        // Assign client so that `_onClientConnected` handler can access it.
         this._client = client;
 
         this._updateOperatingState(OperatingState.Started);
@@ -963,18 +966,7 @@ export class CommunicationManager implements IDisposable {
 
         // Apply all deferred offline publications and clear them if
         // successfully published.
-        if (this._deferredPublications) {
-            const deferred = [...this._deferredPublications];
-            this._deferredPublications = [];
-            deferred.forEach((pub, index) =>
-                this._client.publish(pub.topic, pub.payload, pub.options, err => {
-                    // If client is disconnected or disconnecting, keep this
-                    // publication cached.
-                    if (err) {
-                        this._deferredPublications.push(pub);
-                    }
-                }));
-        }
+        this._triggerPublishDeferred();
 
         // Emitted on successful (re)connection.
         this._updateCommunicationState(CommunicationState.Online);
@@ -1342,19 +1334,41 @@ export class CommunicationManager implements IDisposable {
                     this._deferredPublications.push(msg);
                 }
             };
-            if (this._client) {
-                this._client.publish(topicName, payload, pubOptions, err => {
-                    // If publication fails because client is disconnecting or
-                    // disconnected, add message to publication cache to be
-                    // published later on reconnect.
-                    if (err) {
-                        deferPublication();
-                    }
-                });
-            } else {
-                deferPublication();
-            }
+            // Always queue publication so as to keep relative ordering of
+            // publications even if publication fails for one of them.
+            deferPublication();
+            this._triggerPublishDeferred();
         };
+    }
+
+    private _triggerPublishDeferred() {
+        if (this._isPublishingDeferred) {
+            return;
+        }
+        this._isPublishingDeferred = true;
+        this._publishDeferred();
+    }
+
+    private _publishDeferred() {
+        // Try to publish each pending publication draining them in the order
+        // they were queued.
+        if (!this._client || !this._deferredPublications || this._deferredPublications.length === 0) {
+            this._isPublishingDeferred = false;
+            return;
+        }
+
+        const next = this._deferredPublications[0];
+
+        this._client.publish(next.topic, next.payload, next.options, err => {
+            if (err) {
+                // If client is disconnected or disconnecting, keep this
+                // publication and all other pending ones queued.
+                this._isPublishingDeferred = false;
+            } else {
+                this._deferredPublications.shift();
+                this._publishDeferred();
+            }
+        });
     }
 
     private _observeRequest(

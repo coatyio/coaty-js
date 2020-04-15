@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/coatyio/coaty-js/compare/v2.0.0...v2.0.1) (2020-04-15)
+
+This patch release fixes two issues related to the Communication Manager.
+
+### Bug Fixes
+
+* **communication:** as `CommunicationManager.options` is read-only, use `CommunicationManager.start(options)` to (re)start with new communication options that override communication options in the configuration ([4aee1fb](https://github.com/coatyio/coaty-js/commit/4aee1fbddc6faf236ad4dc73a5ab415d660da821))
+* **communication:** clean up MQTT.JS event listeners on client end ([9139159](https://github.com/coatyio/coaty-js/commit/913915978a5a862a4d95012ce22462fa087cea16))
+* **communication:** fix race condition causing sporadic crash when starting communication manager ([46a9df6](https://github.com/coatyio/coaty-js/commit/46a9df607837ed7eab800382f8635bfe749df6bd))
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/coatyio/coaty-js/compare/v1.11.1...v2.0.0) (2020-03-09)
 
