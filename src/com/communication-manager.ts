@@ -812,6 +812,11 @@ export class CommunicationManager implements IDisposable {
 
         const client = connect(brokerUrl, mqttClientOpts);
 
+        // Assign client so that `_onClientConnect` handler can access it.
+        this._client = client;
+
+        this._updateOperatingState(OperatingState.Started);
+
         client.on("connect", (connack) => {
             // Emitted on successful (re)connection.
             this._isClientConnected = true;
@@ -844,10 +849,6 @@ export class CommunicationManager implements IDisposable {
             // Emitted when the client receives a publish packet.
             this._onClientMessage(topic, payload);
         });
-
-        this._client = client;
-
-        this._updateOperatingState(OperatingState.Started);
     }
 
     private _getBrokerUrl(url: string, options: any) {
@@ -877,7 +878,6 @@ export class CommunicationManager implements IDisposable {
         // Immediately invalidate the current client instance.
         this._isClientConnected = false;
         this._initClient();
-        this._client = undefined;
 
         // Update operating state before asynchrounously ending client so that
         // onCommunicationManagerStopping calls are properly dispatched to
@@ -890,6 +890,7 @@ export class CommunicationManager implements IDisposable {
         client.end(false, () => {
             // Clean up all event listeners on disposed client instance.
             client.removeAllListeners();
+            this._client = undefined;
             callback && callback();
         });
     }
