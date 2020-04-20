@@ -27,6 +27,7 @@ import { DeadvertiseEvent, DeadvertiseEventData } from "./deadvertise";
 import { DiscoverEvent, DiscoverEventData, ResolveEvent, ResolveEventData } from "./discover-resolve";
 import { IoStateEvent } from "./io-state";
 import { QueryEvent, QueryEventData, RetrieveEvent, RetrieveEventData } from "./query-retrieve";
+import { RawEvent } from "./raw";
 import { CompleteEvent, CompleteEventData, UpdateEvent, UpdateEventData } from "./update-complete";
 
 /**
@@ -665,8 +666,23 @@ export class CommunicationManager implements IDisposable {
     }
 
     /**
-     * Publish a value on the given topic. Used to interoperate 
-     * with external clients that subscribe on the given topic.
+     * Publish a raw payload on a given topic. Used to interoperate with
+     * external clients that subscribe on the given topic.
+     *
+     * The topic is an MQTT publication topic, i.e. a non-empty string that must
+     * not contain the following characters: `NULL (U+0000)`, `# (U+0023)`, `+
+     * (U+002B)`.
+     *
+     * @param event the Raw event to be published.
+     * @throws if given topic is not in a valid format
+     */
+    publishRaw(event: RawEvent): void;
+
+    /**
+     * @deprecated since 2.1.0. Use `publishRaw(event: RawEvent)` instead.
+     *  
+     * Publish a raw payload on a given topic. Used to interoperate with
+     * external clients that subscribe on the given topic.
      * 
      * The topic is an MQTT publication topic, i.e. a non-empty string 
      * that must not contain the following characters: `NULL (U+0000)`, 
@@ -677,11 +693,16 @@ export class CommunicationManager implements IDisposable {
      * @param shouldRetain whether to publish a retained message (default false)
      * @throws if given topic is not in a valid format
      */
-    publishRaw(topic: string, value: string | Uint8Array, shouldRetain = false) {
-        if (!CommunicationTopic.isValidPublicationTopic(topic)) {
-            throw new TypeError(`${topic} is not a valid publication topic`);
+    publishRaw(topic: string, value: string | Uint8Array, shouldRetain: boolean): void;
+
+    publishRaw(topicOrEvent: string | RawEvent, value?: string | Uint8Array, shouldRetain?: boolean) {
+        if (typeof topicOrEvent === "string") {
+            topicOrEvent = RawEvent.withTopicAndPayload(topicOrEvent, value, { shouldRetain: shouldRetain || false });
         }
-        this._getPublisher(topic, value, true, shouldRetain)();
+        if (!CommunicationTopic.isValidPublicationTopic(topicOrEvent.topic)) {
+            throw new TypeError(`${topicOrEvent.topic} is not a valid publication topic`);
+        }
+        this._getPublisher(topicOrEvent.topic, topicOrEvent.data.payload, true, topicOrEvent.options.shouldRetain)();
     }
 
     /**
