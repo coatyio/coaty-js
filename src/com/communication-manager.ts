@@ -711,10 +711,13 @@ export class CommunicationManager implements IDisposable {
      * No publication is performed if the IO source is currently not associated
      * with any IO actor.
      *
+     * The IO value can be either JSON compatible or in binary format as an
+     * Uint8Array (or Buffer in Node.js, a subclass thereof).
+     *
      * @param ioSource the IO source for publishing
-     * @param value a JSON compatible value to be published
+     * @param value a JSON compatible or binary value to be published
      */
-    publishIoValue(ioSource: IoSource, value: any) {
+    publishIoValue(ioSource: IoSource, value: any | Uint8Array) {
         this._publishIoValue(ioSource.objectId, value);
     }
 
@@ -1915,10 +1918,10 @@ export class CommunicationManager implements IDisposable {
         return item.observable;
     }
 
-    private _publishIoValue(ioSourceId: Uuid, value: any) {
+    private _publishIoValue(ioSourceId: Uuid, value: any | Uint8Array) {
         const items = this._ioSourceItems.get(ioSourceId);
         if (items) {
-            this._getPublisher(items[0], value)();
+            this._getPublisher(items[0], value, value instanceof Uint8Array)();
         }
     }
 
