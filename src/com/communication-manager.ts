@@ -507,13 +507,17 @@ export class CommunicationManager implements IDisposable {
     /**
      * Observe IO values for the given IO actor.
      *
+     * Depending on the data format specification of the IO actor
+     * (`IoActor.useRawIoValues`), values emitted by the observable are either
+     * raw binary (UInt8Array, or Buffer in Node.js) or decoded as JSON objects.
+     *
      * Subscriptions to the returned observable are **automatically
      * unsubscribed** when the communication manager is stopped, in order to
      * release system resources and to avoid memory leaks.
      *
      * @returns an observable emitting incoming values for the IO actor
      */
-    observeIoValue(ioActor: IoActor): Observable<any> {
+    observeIoValue(ioActor: IoActor): Observable<any | Uint8Array> {
         return this._observeIoValue(ioActor.objectId);
     }
 
@@ -711,14 +715,26 @@ export class CommunicationManager implements IDisposable {
      * No publication is performed if the IO source is currently not associated
      * with any IO actor.
      *
-     * The IO value can be either JSON compatible or in binary format as an
-     * Uint8Array (or Buffer in Node.js, a subclass thereof).
+     * The IO value can be either JSON compatible or in binary format as a
+     * Uint8Array (or Buffer in Node.js, a subclass thereof). The data format of
+     * the given IO value **must** conform to the `useRawIoValues` property of
+     * the given IO source. That means, if this property is set to true, the
+     * given value must be in binary format; if this property is set to false,
+     * the value must be a JSON encodable object. If this constraint is
+     * violated, an error is thrown.
      *
      * @param ioSource the IO source for publishing
      * @param value a JSON compatible or binary value to be published
+     * @throws if the given value data format does not comply with the
+     * `IoSource.useRawIoValues` option
      */
     publishIoValue(ioSource: IoSource, value: any | Uint8Array) {
-        this._publishIoValue(ioSource.objectId, value);
+        const isValueRaw = value instanceof Uint8Array;
+        if (isValueRaw && !ioSource.useRawIoValues ||
+            !isValueRaw && ioSource.useRawIoValues) {
+            throw new Error("IO value data format of given IO source is not compatible with given value");
+        }
+        this._publishIoValue(ioSource.objectId, value, isValueRaw);
     }
 
     /**
@@ -1909,7 +1925,7 @@ export class CommunicationManager implements IDisposable {
         return item.subject;
     }
 
-    private _observeIoValue(ioActorId: Uuid): Observable<any> {
+    private _observeIoValue(ioActorId: Uuid): Observable<any | Uint8Array> {
         let item = this._ioValueItems.get(ioActorId);
         if (!item) {
             item = new AnyValueItem();
@@ -1918,10 +1934,10 @@ export class CommunicationManager implements IDisposable {
         return item.observable;
     }
 
-    private _publishIoValue(ioSourceId: Uuid, value: any | Uint8Array) {
+    private _publishIoValue(ioSourceId: Uuid, value: any | Uint8Array, isValueRaw: boolean) {
         const items = this._ioSourceItems.get(ioSourceId);
         if (items) {
-            this._getPublisher(items[0], value, value instanceof Uint8Array)();
+            this._getPublisher(items[0], value, isValueRaw)();
         }
     }
 

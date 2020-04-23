@@ -9,7 +9,7 @@ import { RuleBasedIoRouter } from "./rule-based-io-router";
  * This class implements a basic routing algorithm where *all* compatible pairs
  * of IO sources and IO actors are associated, not taking any other context
  * information into account. An IO source and an IO actor are compatible if both
- * define equal value types.
+ * define equal value types in equal data formats.
  *
  * Note that this router makes its IO context available by advertising and for
  * discovery (by core type, object type, or object Id) and listens for

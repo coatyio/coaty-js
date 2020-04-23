@@ -706,12 +706,14 @@ topic shape that doesn't start with `<ProtocolName>/`.
 ### Payload for IoValue Event
 
 For Coaty-defined IO sources, an IoValue event is published to submit IO values
-to associated IO actors. Such events accept any valid UTF-8 encoded string in
-JSON format as payload.
+to associated IO actors. Such events either accept a valid UTF-8 encoded string
+in JSON format or a binary byte array as payload. In the latter case, decoding is
+left to the application logic of the receiving IO actor.
 
-Optionally, the payload published by an **external** IO source can be specified
-as raw data, i.e. arbitrary binary data (byte array). Decoding is left to the
-application logic of the receiving IO actor.
+Likewise, the payload published by an **external** IO source can be either
+specified as an UTF-8 encoded string in JSON format or as binary data (byte
+array). In the latter case, decoding is left to the application logic of the
+receiving IO actor.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a

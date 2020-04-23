@@ -427,13 +427,15 @@ export class CoreTypes {
             typeof obj.valueType === "string" &&
             obj.valueType.length > 0 &&
             (obj.externalRoute === undefined ||
-            typeof obj.externalRoute === "string") &&
+                typeof obj.externalRoute === "string") &&
             (obj.updateRate === undefined ||
                 (typeof obj.updateRate === "number" &&
                     obj.updateRate >= 0)) &&
             (obj.updateStrategy === undefined ||
                 (typeof obj.updateStrategy === "number" &&
-                    IoSourceBackpressureStrategy[obj.updateStrategy] !== undefined));
+                    IoSourceBackpressureStrategy[obj.updateStrategy] !== undefined)) &&
+            (obj.useRawIoValues === undefined ||
+                typeof obj.useRawIoValues === "boolean");
     }
 
     private static _isIoActor(obj: any) {
@@ -442,7 +444,7 @@ export class CoreTypes {
             typeof obj.valueType === "string" &&
             obj.valueType.length > 0 &&
             (obj.externalRoute === undefined ||
-            typeof obj.externalRoute === "string") &&
+                typeof obj.externalRoute === "string") &&
             (obj.updateRate === undefined ||
                 (typeof obj.updateRate === "number" &&
                     obj.updateRate >= 0)) &&

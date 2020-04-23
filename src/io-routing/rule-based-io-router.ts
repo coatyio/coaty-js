@@ -18,8 +18,9 @@ import { IoRouter } from "./io-router";
  * IO sources and IO actors with a given value type.
  *
  * By default, an IO source and an IO actor are compatible if both define equal
- * value types. You can define your own custom compatibility check on value
- * types in a subclass by overriding the `areValueTypesCompatible` method.
+ * value types in equal data formats. You can define your own custom
+ * compatibility check on value types in a subclass by overriding the
+ * `areValueTypesCompatible` method.
  *
  * Note that this router makes its IO context available by advertising and for
  * discovery (by core type, object type, or object Id) and listens for

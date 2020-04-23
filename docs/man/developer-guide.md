@@ -1828,15 +1828,15 @@ MQTT. It can publish and subscribe to external, so-called "raw" MQTT messages.
 
 To enable interoperation with external MQTT clients, use `publishRaw` to publish
 a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
-`Uint8Array` (`Buffer` in Node.js), and an optional flag indicating whether the
-published message should be retained.
+`Uint8Array` (or `Buffer` in Node.js, a subclass thereof), and an optional flag indicating whether
+the published message should be retained.
 
 Likewise, use `observeRaw` to observe matching incoming messages on raw MQTT
 subscription topics. The observable returned by calling `observeRaw` emits
 messages as tuples including the actual published topic and the payload. Payload
-is represented as `Uint8Array` (`Buffer` in Node.js) and needs to be parsed by
-the application. Use the `toString` method on a payload to convert the raw data
-to an UTF8 encoded string.
+is represented as `Uint8Array` (or `Buffer` in Node.js, a subclass thereof) and
+needs to be parsed by the application. Use the `toString` method on a payload to
+convert the raw data to an UTF8 encoded string.
 
 > **Note**: Only incoming messages that are *not* non-raw Coaty communication
 > events are dispatched to raw message observers. If you observe raw topics that
@@ -1902,9 +1902,9 @@ The following constraints apply to IO routing:
 * An IO source can be associated with multiple IO actors.
 * An IO actor can be associated with multiple IO sources to receive all their
   emitted values.
-* An IO source can only be associated with an IO actor if their value types are
-  compatible, i.e. if they produce/consume data in a common underlying data
-  format.
+* An IO source can only be associated with an IO actor if their value types and
+  value data formats are compatible, i.e. if they produce/consume data in a
+  common underlying data format.
 * An IO router also controls the data transfer rate between an IO source and
   its associated IO actors.
 
@@ -1946,10 +1946,10 @@ IO router classes and controllers for IO sources/IO actors are provided in the
 `@coaty/core/io-routing` module.
 
 The following example defines a temperature measurement routing scenario with
-two temperature sensor sources and two actors with compatible data value types.
-The IO context for this scenario defines an operating state, either normal or
-emergency. In each state, exactly one of the two actors should consume IO values
-emitted by both sources.
+two temperature sensor sources and two actors with compatible data value types
+and formats. The IO context for this scenario defines an operating state, either
+normal or emergency. In each state, exactly one of the two actors should consume
+IO values emitted by both sources.
 
 > **Note**: This example is fully implemented in the [Coaty JS unit tests on IO
 > routing](https://github.com/coatyio/coaty-js/blob/master/src/test/spec/io-routing.spec.ts).

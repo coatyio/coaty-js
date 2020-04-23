@@ -25,9 +25,9 @@ import { IoContext } from "../model/io-context";
  *
  * This router implements a basic routing algorithm where all compatible pairs
  * of IO sources and IO actors are associated. An IO source and an IO actor are
- * compatible if both define equal value types. You can define your own custom
- * compatibility check on value types in a subclass by overriding the
- * `areValueTypesCompatible` method.
+ * compatible if both define equal value types in equal data formats. You
+ * can define your own custom compatibility check on value types in a subclass
+ * by overriding the `areValueTypesCompatible` method.
  *
  * To implement context-specific routing strategies extend this class and
  * implement the abstract protected methods.
@@ -169,7 +169,7 @@ export abstract class IoRouter extends Controller {
         // actors on a unique and common route.
         let route = this._sourceRoutes.get(source.objectId);
         if (!route) {
-            route = source.externalRoute || this.communicationManager.createIoValueTopic(source);
+            route = source.externalRoute || this.communicationManager.createAssociatingRoute(source);
             this._sourceRoutes.set(source.objectId, route);
         }
         this.communicationManager.publishAssociate(
@@ -189,21 +189,24 @@ export abstract class IoRouter extends Controller {
     }
 
     /**
-     * Checks whether the value types of the given IO source and actor match.
+     * Checks whether the value types and value data formats of the given IO
+     * source and actor match.
      *
      * This is a precondition for associating IO source and actor.
      *
      * The base implementation returns true, if the given source value type is
-     * identical to the given actor value type.
+     * identical to the given actor value type **and** both value data formats
+     * (either raw binary or JSON) match; otherwise false.
      *
-     * Override the base implementation if you need a custom value type
-     * compatibility check.
+     * Override this base implementation if you need a custom value type
+     * compatibility check in your router.
      *
      * @param source an IO source object
      * @param actor an IO actor object
      */
     protected areValueTypesCompatible(source: IoSource, actor: IoActor): boolean {
-        return source.valueType === actor.valueType;
+        return source.valueType === actor.valueType &&
+            !!source.useRawIoValues === !!actor.useRawIoValues;
     }
 
     /**
