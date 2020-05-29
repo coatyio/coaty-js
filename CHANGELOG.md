@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/coatyio/coaty-js/compare/v2.1.0...v2.1.1) (2020-05-29)
+
+### Bug Fixes
+
+* **communication:** fix incorrect advertisements of an agent's Identity and IoNodes ([47bbf5e](https://github.com/coatyio/coaty-js/commit/47bbf5ebfb2cc52ad1238641733a53b60e5db84b))
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/coatyio/coaty-js/compare/v2.0.1...v2.1.0) (2020-05-29)
 
