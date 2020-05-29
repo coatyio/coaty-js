@@ -1,7 +1,7 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Identity, IoActor, IoSource } from "..";
-import { AgentInfo } from "./agent-info";
+import { AgentInfo, Identity, IoActor, IoSource } from "..";
+import { CommunicationBinding, CommunicationBindingOptions, CommunicationBindingWithOptions } from "../internal";
 
 /**
  * Configuration options for Coaty container components,
@@ -82,11 +82,44 @@ export interface CommonOptions {
 }
 
 /**
- * Options used for communication
+ * Options used for communication.
  */
 export interface CommunicationOptions {
 
     /**
+     * Communication binding for transmitting Coaty communication events via a
+     * specific publish-subscribe messaging protocol.
+     *
+     * Use one of the predefined Coaty communication bindings which are provided
+     * as separate npm packages named `@coaty/binding.*`. For example, to use
+     * the MQTT protocol as a binding for your Coaty application:
+     *
+     * ```ts
+     * import { MqttBinding } from "@coaty/binding.mqtt";
+     *
+     * const configuration: Configuration = {
+     *    ...
+     *    communication: {
+     *        binding: MqttBinding.withOptions({
+     *            namespace: ...,
+     *            brokerUrl: ... ,
+     *            ...
+     *        }),
+     *        ...
+     *    },
+     *    ...
+     * };
+     * ```
+     *
+     * @remarks If no binding is specified, the MQTT binding is used with the
+     * MQTT specific options defined in this interface.
+     */
+    binding?: CommunicationBindingWithOptions<CommunicationBinding<CommunicationBindingOptions>, CommunicationBindingOptions>;
+
+    /**
+     * 
+     * @deprecated since 2.1.0. Specify in binding options instead.
+     * 
      * Namespace used to isolate different Coaty applications (optional).
      *
      * Communication events are only routed between agents within a common
@@ -100,6 +133,8 @@ export interface CommunicationOptions {
     namespace?: string;
 
     /**
+     * @deprecated since 2.1.0. Specify in binding options instead.
+     * 
      * Determines whether to enable cross-namespace communication between agents
      * in special use cases (optional). 
      *
@@ -117,6 +152,8 @@ export interface CommunicationOptions {
     shouldAutoStart?: boolean;
 
     /**
+     * @deprecated since 2.1.0.
+     * 
      * Determines whether the communication manager should provide a protocol
      * compliant client ID when connecting to the broker/router.
      *
@@ -137,6 +174,8 @@ export interface CommunicationOptions {
     useProtocolCompliantClientId?: boolean;
 
     /**
+     * @deprecated since 2.1.0. Specify in binding options instead.
+     * 
      * Connection Url to MQTT broker (schema 'protocol://host:port') (optional).
      * If the `servers` option in property `mqttClientOptions` is specified this
      * property is ignored.
@@ -144,6 +183,8 @@ export interface CommunicationOptions {
     brokerUrl?: string;
 
     /**
+     * @deprecated since 2.1.0. Specify as binding options instead.
+     * 
      * Options passed to MQTT Client (see [MQTT.js connect
      * options](https://github.com/mqttjs/MQTT.js#mqttconnecturl-options)).
      *
@@ -168,9 +209,9 @@ export interface ControllerConfig {
 export interface ControllerOptions {
 
     /**
-     * Any application-specific properties accessible by indexer.
+     * Any application-specific controller options.
      */
-    [extra: string]: any;
+    [key: string]: any;
 }
 
 /**
@@ -235,6 +276,8 @@ export interface DbConnectionInfo {
  *
  * @param primary the (partial) primary configuration
  * @param secondary the (partial) secondary configuration to be merged
+ *
+ * @throws if merged configuration misses required sub-configuration options.
  */
 export function mergeConfigurations(
     primary: Partial<Configuration>,
@@ -262,7 +305,7 @@ export function mergeConfigurations(
     });
 
     if (result.communication === undefined) {
-        result.communication = {};
+        throw new Error("Missing 'communication' configuration options in merged configuration.");
     }
 
     return result as Configuration;
