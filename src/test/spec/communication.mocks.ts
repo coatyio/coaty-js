@@ -108,6 +108,7 @@ export class MockObjectController extends Controller {
     onInit() {
         super.onInit();
 
+        this._handleIdentityEvents();
         this._handleDiscoverEvents();
 
         this.communicationManager.observeUpdateWithObjectType("coaty.test.MockObject")
@@ -153,6 +154,14 @@ export class MockObjectController extends Controller {
             .subscribe(event => {
                 logger.count++;
                 logger.eventData.push(event.data);
+            });
+    }
+
+    private _handleIdentityEvents() {
+        this.communicationManager
+            .observeAdvertiseWithCoreType("Identity")
+            .subscribe(event => {
+                Spy.set(this.registeredName + "_Identities", event);
             });
     }
 

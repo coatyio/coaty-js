@@ -218,6 +218,13 @@ describe("Communication", () => {
             },
             TEST_TIMEOUT);
 
+        it("Identity Advertise events are received", (done) => {
+            delayAction(200, done, () => {
+                expect(Spy.get("MockObjectController1_Identities").value1.calls.argsFor(0)[0].data.object.coreType).toBe("Identity");
+                expect(Spy.get("MockObjectController2_Identities").value1.calls.argsFor(0)[0].data.object.coreType).toBe("Identity");
+            });
+        }, TEST_TIMEOUT);
+
         it("throws on resubscription of response events", (done) => {
             let isResubOkay = false;
             let isResubError = false;
