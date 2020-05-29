@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>DiscoverEvent | @coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -107,6 +107,7 @@
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="discoverevent.html#data" class="tsd-kind-icon">data</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="discoverevent.html#eventtype" class="tsd-kind-icon">event<wbr>Type</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="discoverevent.html#eventtypefilter" class="tsd-kind-icon">event<wbr>Type<wbr>Filter</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="discoverevent.html#responseeventtype" class="tsd-kind-icon">response<wbr>Event<wbr>Type</a></li>
 								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="discoverevent.html#sourceid" class="tsd-kind-icon">source<wbr>Id</a></li>
 							</ul>
 						</section>
@@ -114,6 +115,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="discoverevent.html#ensurevalidresponseparameters" class="tsd-kind-icon">ensure<wbr>Valid<wbr>Response<wbr>Parameters</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="discoverevent.html#isvalideventfilter" class="tsd-kind-icon">is<wbr>Valid<wbr>Event<wbr>Filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="discoverevent.html#withcoretypes" class="tsd-kind-icon">with<wbr>Core<wbr>Types</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="discoverevent.html#withexternalandobjectid" class="tsd-kind-icon">with<wbr>External<wbr>And<wbr>Object<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="discoverevent.html#withexternalid" class="tsd-kind-icon">with<wbr>External<wbr>Id</a></li>
@@ -139,7 +141,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L52">src/com/communication-event.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L61">src/com/communication-event.ts:61</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -170,7 +172,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#eventrequest">eventRequest</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L50">src/com/communication-event.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L59">src/com/communication-event.ts:59</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -187,7 +189,7 @@
 					<div class="tsd-signature tsd-kind-icon">resolve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="resolveevent.html" class="tsd-signature-type">ResolveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L20">src/com/discover-resolve.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L24">src/com/discover-resolve.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -203,7 +205,7 @@
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
+							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
 									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="resolveevent.html" class="tsd-signature-type">ResolveEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
@@ -236,7 +238,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#data">data</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L83">src/com/communication-event.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L112">src/com/communication-event.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -259,7 +261,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#eventtype">eventType</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L11">src/com/discover-resolve.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L11">src/com/discover-resolve.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h4>
@@ -277,7 +279,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#eventtypefilter">eventTypeFilter</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L45">src/com/communication-event.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L49">src/com/communication-event.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -288,6 +290,24 @@
 								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+					<a name="responseeventtype" class="tsd-anchor"></a>
+					<h3>response<wbr>Event<wbr>Type</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> responseEventType<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#responseeventtype">responseEventType</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L15">src/com/discover-resolve.ts:15</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -303,7 +323,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#sourceid">sourceId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L67">src/com/communication-event.ts:67</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L96">src/com/communication-event.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -323,7 +343,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#sourceid">sourceId</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-event.ts#L76">src/com/communication-event.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L105">src/com/communication-event.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -360,15 +380,17 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L95">src/com/discover-resolve.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L99">src/com/discover-resolve.ts:99</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<dl class="tsd-comment-tags">
 									<dt>internal</dt>
 									<dd><p>For internal use in framework only.</p>
-										<p>Throws an error if the given Resolve event data does not correspond to
-										the event data of this Discover event.</p>
+									</dd>
+									<dt>throws</dt>
+									<dd><p>if the given Resolve event data does not correspond to the event
+										data of this Discover event.</p>
 									</dd>
 								</dl>
 							</div>
@@ -385,6 +407,47 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
+					<a name="isvalideventfilter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid<wbr>Event<wbr>Filter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Event<wbr>Filter<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="communicationevent.html">CommunicationEvent</a>.<a href="communicationevent.html#isvalideventfilter">isValidEventFilter</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-event.ts#L89">src/com/communication-event.ts:89</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Determines whether the given name is valid as an event filter for Coaty
+									communication.</p>
+								</div>
+								<p>Event filters are used for Coaty communication event filtering, e.g. to
+									filter a communication namespace, an object type, a channel identifier,
+								or a remote operation.</p>
+								<p>An event filter is valid for communication if it is non-empty and does
+									not contain the following characters: <code>NULL (U+0000)</code>, <code># (U+0023)</code>, <code>+
+(U+002B)</code>, <code>/ (U+002F)</code>.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an event filter</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if the given name can be used for event filtering; false
+							otherwise</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 					<a name="withcoretypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> with<wbr>Core<wbr>Types</h3>
@@ -395,7 +458,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L75">src/com/discover-resolve.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L79">src/com/discover-resolve.ts:79</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -426,7 +489,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L66">src/com/discover-resolve.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L70">src/com/discover-resolve.ts:70</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -463,7 +526,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L27">src/com/discover-resolve.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L31">src/com/discover-resolve.ts:31</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -494,7 +557,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L37">src/com/discover-resolve.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L41">src/com/discover-resolve.ts:41</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -531,7 +594,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L47">src/com/discover-resolve.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L51">src/com/discover-resolve.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -568,7 +631,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L56">src/com/discover-resolve.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L60">src/com/discover-resolve.ts:60</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -599,7 +662,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/discover-resolve.ts#L84">src/com/discover-resolve.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/discover-resolve.ts#L88">src/com/discover-resolve.ts:88</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -655,11 +718,17 @@
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="discoverevent.html#eventtypefilter" class="tsd-kind-icon">event<wbr>Type<wbr>Filter</a>
 							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+								<a href="discoverevent.html#responseeventtype" class="tsd-kind-icon">response<wbr>Event<wbr>Type</a>
+							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="discoverevent.html#sourceid" class="tsd-kind-icon">source<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="discoverevent.html#ensurevalidresponseparameters" class="tsd-kind-icon">ensure<wbr>Valid<wbr>Response<wbr>Parameters</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
+								<a href="discoverevent.html#isvalideventfilter" class="tsd-kind-icon">is<wbr>Valid<wbr>Event<wbr>Filter</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="discoverevent.html#withcoretypes" class="tsd-kind-icon">with<wbr>Core<wbr>Types</a>
@@ -695,59 +764,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

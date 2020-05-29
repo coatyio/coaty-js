@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>CommunicationManager | @coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -97,16 +97,8 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationmanager.html#default_namespace" class="tsd-kind-icon">DEFAULT_<wbr>NAMESPACE</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationmanager.html#protocol_version" class="tsd-kind-icon">PROTOCOL_<wbr>VERSION</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#namespace" class="tsd-kind-icon">namespace</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#options" class="tsd-kind-icon">options</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#runtime" class="tsd-kind-icon">runtime</a></li>
 							</ul>
@@ -114,7 +106,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#createiovaluetopic" class="tsd-kind-icon">create<wbr>IoValue<wbr>Topic</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#createassociatingroute" class="tsd-kind-icon">create<wbr>Associating<wbr>Route</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#getionodebycontext" class="tsd-kind-icon">get<wbr>IoNode<wbr>ByContext</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeadvertisewithcoretype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Core<wbr>Type</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationmanager.html#observeadvertisewithobjecttype" class="tsd-kind-icon">observe<wbr>Advertise<wbr>With<wbr>Object<wbr>Type</a></li>
@@ -161,7 +153,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L120">src/com/communication-manager.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L99">src/com/communication-manager.ts:99</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -188,67 +180,7 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="default_namespace" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> DEFAULT_<wbr>NAMESPACE</h3>
-					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>NAMESPACE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"-"</span><span class="tsd-signature-symbol"> = &quot;-&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L72">src/com/communication-manager.ts:72</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Defines the default namespace used for communication.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="protocol_version" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> PROTOCOL_<wbr>VERSION</h3>
-					<div class="tsd-signature tsd-kind-icon">PROTOCOL_<wbr>VERSION<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> = 3</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L67">src/com/communication-manager.ts:67</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Defines the communication protocol version number, a positive integer.
-								Increment this version whenever you add new communication events or make
-							breaking changes to the communication protocol.</p>
-						</div>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Accessors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<a name="namespace" class="tsd-anchor"></a>
-					<h3>namespace</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> namespace<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L158">src/com/communication-manager.ts:158</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the namespace for communication as specified in the configuration
-									options.</p>
-								</div>
-								<p>Returns the default namespace used, if no namespace has been specified in
-								configuration options.</p>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 					<a name="options" class="tsd-anchor"></a>
 					<h3>options</h3>
@@ -259,17 +191,20 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L147">src/com/communication-manager.ts:147</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L129">src/com/communication-manager.ts:129</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the communication manager&#39;s current communication options.</p>
+									<p>Gets the communication manager&#39;s current effective communication options
+									(read-only).</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>remarks</dt>
-									<dd><p>These options may change whenever this communication manager is
-										restarted.</p>
+									<dd><p>The effective options are based on the communication options
+											specified in the configuration, augmented by local partial communication
+											options specified in the <code>start()</code> method. So, effective options may
+										change whenever this communication manager is restarted.</p>
 									</dd>
 								</dl>
 							</div>
@@ -287,7 +222,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L137">src/com/communication-manager.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L116">src/com/communication-manager.ts:116</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -303,26 +238,26 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="createiovaluetopic" class="tsd-anchor"></a>
-					<h3>create<wbr>IoValue<wbr>Topic</h3>
+					<a name="createassociatingroute" class="tsd-anchor"></a>
+					<h3>create<wbr>Associating<wbr>Route</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>IoValue<wbr>Topic<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Associating<wbr>Route<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L711">src/com/communication-manager.ts:711</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L714">src/com/communication-manager.ts:714</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates a new topic for routing IO values of the given IO source to
-									associated IO actors.</p>
+									<p>Creates a new IO route for routing IO values of the given IO source to associated IO
+									actors.</p>
 								</div>
-								<p>This method is called by IO routers to associate IO sources with IO
-									actors. An IO source uses this topic to publish IO values; an associated
-								IO actor subscribes to this topic to receive these values.</p>
+								<p>This method is called by IO routers to associate IO sources with IO actors. An IO
+									source publishes IO values on this route; an associated IO actor observes this route
+								to receive these values.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -334,7 +269,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-							<p>a topic for submitting data from an IO source to IO actors</p>
+							<p>an associating topic for routing IO values</p>
 						</li>
 					</ul>
 				</section>
@@ -348,7 +283,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L168">src/com/communication-manager.ts:168</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L139">src/com/communication-manager.ts:139</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -378,7 +313,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L390">src/com/communication-manager.ts:390</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L348">src/com/communication-manager.ts:348</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -399,7 +334,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Advertise events</p>
+							<p>an observable emitting inbound Advertise events</p>
 						</li>
 					</ul>
 				</section>
@@ -413,7 +348,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L409">src/com/communication-manager.ts:409</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L367">src/com/communication-manager.ts:367</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -442,7 +377,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="advertiseevent.html" class="tsd-signature-type">AdvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Advertise events</p>
+							<p>an observable emitting inbound Advertise events</p>
 						</li>
 					</ul>
 				</section>
@@ -456,7 +391,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L372">src/com/communication-manager.ts:372</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L330">src/com/communication-manager.ts:330</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -467,7 +402,7 @@
 									following characters: <code>NULL (U+0000)</code>, <code># (U+0023)</code>, <code>+ (U+002B)</code>, <code>/
 (U+002F)</code>.</p>
 								<p>The given context object is matched against the context filter specified
-									in incoming Call event data to determine whether the Call event should be
+									in inbound Call event data to determine whether the Call event should be
 								emitted or skipped by the observable.</p>
 								<p>A Call event is <em>not</em> emitted by the observable if:</p>
 								<ul>
@@ -506,7 +441,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="callevent.html" class="tsd-signature-type">CallEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Call events whose context filter
+							<p>an observable emitting inbound Call events whose context filter
 							matches the given context</p>
 						</li>
 					</ul>
@@ -521,7 +456,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L442">src/com/communication-manager.ts:442</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L400">src/com/communication-manager.ts:400</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -550,7 +485,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="channelevent.html" class="tsd-signature-type">ChannelEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Channel events</p>
+							<p>an observable emitting inbound Channel events</p>
 						</li>
 					</ul>
 				</section>
@@ -564,7 +499,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L265">src/com/communication-manager.ts:265</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L223">src/com/communication-manager.ts:223</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -575,7 +510,7 @@
 								communication state.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/communicationstate.html" class="tsd-signature-type">CommunicationState</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting communication states</p>
+							<p>an observable emitting communication state changes</p>
 						</li>
 					</ul>
 				</section>
@@ -589,7 +524,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L423">src/com/communication-manager.ts:423</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L381">src/com/communication-manager.ts:381</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -601,7 +536,7 @@
 								release system resources and to avoid memory leaks.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="deadvertiseevent.html" class="tsd-signature-type">DeadvertiseEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Deadvertise events</p>
+							<p>an observable emitting inbound Deadvertise events</p>
 						</li>
 					</ul>
 				</section>
@@ -615,7 +550,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L290">src/com/communication-manager.ts:290</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L248">src/com/communication-manager.ts:248</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -627,7 +562,7 @@
 								release system resources and to avoid memory leaks.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="discoverevent.html" class="tsd-signature-type">DiscoverEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Discover events</p>
+							<p>an observable emitting inbound Discover events</p>
 						</li>
 					</ul>
 				</section>
@@ -641,7 +576,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L502">src/com/communication-manager.ts:502</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L466">src/com/communication-manager.ts:466</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -670,19 +605,22 @@
 					<a name="observeiovalue" class="tsd-anchor"></a>
 					<h3>observe<wbr>IoValue</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">observe<wbr>IoValue<span class="tsd-signature-symbol">(</span>ioActor<span class="tsd-signature-symbol">: </span><a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>IoValue<span class="tsd-signature-symbol">(</span>ioActor<span class="tsd-signature-symbol">: </span><a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L515">src/com/communication-manager.ts:515</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L483">src/com/communication-manager.ts:483</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Observe IO values for the given IO actor.</p>
 								</div>
+								<p>Depending on the data format specification of the IO actor
+									(<code>IoActor.useRawIoValues</code>), values emitted by the observable are either
+								raw binary (Uint8Array, or Buffer in Node.js) or decoded as JSON objects.</p>
 								<p>Subscriptions to the returned observable are <strong>automatically
 									unsubscribed</strong> when the communication manager is stopped, in order to
 								release system resources and to avoid memory leaks.</p>
@@ -693,8 +631,8 @@
 									<h5>ioActor: <a href="../interfaces/ioactor.html" class="tsd-signature-type">IoActor</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming values for the IO actor</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>an observable emitting inbound values for the IO actor</p>
 						</li>
 					</ul>
 				</section>
@@ -708,7 +646,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L277">src/com/communication-manager.ts:277</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L235">src/com/communication-manager.ts:235</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -733,7 +671,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L303">src/com/communication-manager.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L261">src/com/communication-manager.ts:261</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -745,7 +683,7 @@
 								release system resources and to avoid memory leaks.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="queryevent.html" class="tsd-signature-type">QueryEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Query events</p>
+							<p>an observable emitting inbound Query events</p>
 						</li>
 					</ul>
 				</section>
@@ -753,42 +691,51 @@
 					<a name="observeraw" class="tsd-anchor"></a>
 					<h3>observe<wbr>Raw</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">observe<wbr>Raw<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">observe<wbr>Raw<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L479">src/com/communication-manager.ts:479</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L447">src/com/communication-manager.ts:447</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Observe matching incoming messages on a raw subscription topic.</p>
+									<p>Observe matching inbound messages on a raw subscription topic.</p>
 								</div>
-								<p>The observable returned by calling <code>observeRaw</code> emits messages as tuples
-									including the actual published topic and the payload. Payload is
-									represented as <code>Uint8Array</code> (<code>Buffer</code> in Node.js) and needs to be parsed
-									by the application. Use the <code>toString</code> method on a payload to convert the
-								raw data to an UTF8 encoded string.</p>
+								<p>This method returns an observable that emits messages as tuples including
+									the actual publication topic and the payload. Payload is represented as
+									<code>Uint8Array</code> (or Buffer<code>in Node.js, a subclass thereof) and needs to be
+parsed by the application. Use the</code>toString` method on a payload to
+								convert the raw data to an UTF8 encoded string.</p>
 								<p>Use this method to interoperate with external systems that publish
 									messages on external topics. Use this method together with <code>publishRaw()</code>
-								to transfer binary data between Coaty agents.</p>
+								to transfer arbitrary binary data between Coaty agents.</p>
 								<p>Subscriptions to the returned observable are <strong>automatically
 									unsubscribed</strong> when the communication manager is stopped, in order to
 								release system resources and to avoid memory leaks.</p>
 								<dl class="tsd-comment-tags">
 									<dt>remarks</dt>
-									<dd><p>Incoming non-raw Coaty events are <em>not</em> dispatched to raw
+									<dd><p>To unobserve a given raw subscription topic, simply unsubscribe
+											any subscriptions on the returned observable, either explicitely or
+										implicitely (by using RX operators such as <code>take</code> or <code>takeUntil</code>).</p>
+									</dd>
+									<dt>remarks</dt>
+									<dd><p>Inbound non-raw Coaty events are <em>not</em> dispatched to raw
 										observers.</p>
 									</dd>
 									<dt>remarks</dt>
-									<dd><p>The specified subscription topic must be a valid MQTT
-											subscription topic. It must be non-empty and must not contain the
-										character <code>NULL (U+0000)</code>.</p>
+									<dd><p>The specified subscription topic must be in a valid,
+											binding-specific format that corresponds with the configured
+										communication binding.</p>
 									</dd>
-									<dt>throws</dt>
-									<dd><p>if given subscription topic is not in a valid format</p>
+									<dt>remarks</dt>
+									<dd><p>The subscription topic string must fully identify the topics on
+											which publications should be received, including potential wildcards. For
+											example, in a WAMP binding, pattern-based subscription topics must
+											include all wildcards such as &quot;*&quot;, and &quot;**&quot;. In this case, wildcards must
+										not be specified separately in the subscription options.</p>
 									</dd>
 								</dl>
 							</div>
@@ -797,14 +744,25 @@
 								<li>
 									<h5>topic: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the subscription topic</p>
+										<p>binding-specific subscription topic</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-symbol">{}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>binding-specific subscription options (optional)</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-index-signature">
+											<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting any matching incoming messages as tuples
-								containing the actual topic and the payload as Uint8Array (Buffer in
-							Node.js)</p>
+							<p>an observable emitting any matching inbound messages as tuples
+								containing the actual topic and the payload as Uint8Array (or Buffer in
+							Node.js, a subclass thereof)</p>
 						</li>
 					</ul>
 				</section>
@@ -818,7 +776,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L317">src/com/communication-manager.ts:317</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L275">src/com/communication-manager.ts:275</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -839,7 +797,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Update events</p>
+							<p>an observable emitting inbound Update events</p>
 						</li>
 					</ul>
 				</section>
@@ -853,7 +811,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L336">src/com/communication-manager.ts:336</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L294">src/com/communication-manager.ts:294</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -882,7 +840,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="updateevent.html" class="tsd-signature-type">UpdateEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>an observable emitting incoming Update events</p>
+							<p>an observable emitting inbound Update events</p>
 						</li>
 					</ul>
 				</section>
@@ -897,13 +855,13 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/idisposable.html">IDisposable</a>.<a href="../interfaces/idisposable.html#ondispose">onDispose</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L739">src/com/communication-manager.ts:739</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L738">src/com/communication-manager.ts:738</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Perform clean-up side effects, such as unsubscribing, and disconnect from
-									the messaging transport.</p>
+									<p>Perform clean-up side effects, such as stopping the communication manager and
+									deallocating resources.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -920,7 +878,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L626">src/com/communication-manager.ts:626</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L594">src/com/communication-manager.ts:594</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -951,7 +909,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L731">src/com/communication-manager.ts:731</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L726">src/com/communication-manager.ts:726</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -988,7 +946,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L617">src/com/communication-manager.ts:617</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L585">src/com/communication-manager.ts:585</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1029,7 +987,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L663">src/com/communication-manager.ts:663</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L625">src/com/communication-manager.ts:625</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1060,7 +1018,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L654">src/com/communication-manager.ts:654</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L616">src/com/communication-manager.ts:616</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1091,7 +1049,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L536">src/com/communication-manager.ts:536</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L504">src/com/communication-manager.ts:504</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1125,21 +1083,49 @@
 					<a name="publishiovalue" class="tsd-anchor"></a>
 					<h3>publish<wbr>IoValue</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">publish<wbr>IoValue<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>IoValue<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="iovalueevent.html" class="tsd-signature-type">IoValueEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>IoValue<span class="tsd-signature-symbol">(</span>ioSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/iosource.html" class="tsd-signature-type">IoSource</a>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L696">src/com/communication-manager.ts:696</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L677">src/com/communication-manager.ts:677</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Publish the given IO value sourced from the specified IO source.</p>
+									<p>Publish the given IoValue event.</p>
 								</div>
-								<p>No publication is performed if the IO source is currently not associated
-								with any IO actor.</p>
+								<p>No publication is performed if the event&#39;s IO source is currently not
+								associated with any IO actor.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="iovalueevent.html" class="tsd-signature-type">IoValueEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the IoValue event for publishing</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L690">src/com/communication-manager.ts:690</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>since 2.1.0. Use <code>publishIoValue(event: IoValueEvent)</code> instead.</p>
+										<p>Publish the given IO value sourced from the specified IO source.</p>
+										<p>No publication is performed if the IO source is currently not associated
+										with any IO actor.</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -1150,13 +1136,13 @@
 									</div>
 								</li>
 								<li>
-									<h5>value: <span class="tsd-signature-type">any</span></h5>
+									<h5>value: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>a JSON compatible value to be published</p>
+										<p>a JSON compatible or binary value to be published</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1170,7 +1156,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L557">src/com/communication-manager.ts:557</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L525">src/com/communication-manager.ts:525</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1204,26 +1190,58 @@
 					<a name="publishraw" class="tsd-anchor"></a>
 					<h3>publish<wbr>Raw</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Raw<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="rawevent.html" class="tsd-signature-type">RawEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 						<li class="tsd-signature tsd-kind-icon">publish<wbr>Raw<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span>, shouldRetain<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L680">src/com/communication-manager.ts:680</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L643">src/com/communication-manager.ts:643</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Publish a value on the given topic. Used to interoperate
-									with external clients that subscribe on the given topic.</p>
+									<p>Publish a raw payload on a given topic.</p>
 								</div>
-								<p>The topic is an MQTT publication topic, i.e. a non-empty string
-									that must not contain the following characters: <code>NULL (U+0000)</code>,
-								<code># (U+0023)</code>, <code>+ (U+002B)</code>.</p>
+								<p>Use this method to interoperate with external systems that subscribe on this
+									topic. Use this method together with <code>observeRaw()</code> to transfer arbitrary
+								binary data between Coaty agents.</p>
 								<dl class="tsd-comment-tags">
-									<dt>throws</dt>
-									<dd><p>if given topic is not in a valid format</p>
+									<dt>remarks</dt>
+									<dd><p>The publication topic of the Raw event must be in a valid
+											binding-specific format that corresponds with the configured communication
+											binding. The Raw event is not published if the topic is invalid or has a
+										Coaty-like shape.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="rawevent.html" class="tsd-signature-type">RawEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the Raw event for publishing</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L660">src/com/communication-manager.ts:660</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>since 2.1.0. Use <code>publishRaw(event: RawEvent)</code> instead.</p>
+										<p>Publish a raw payload on a given topic. Used to interoperate with
+										external clients that subscribe on a matching topic.</p>
+										<p>The topic is an MQTT publication topic, i.e. a non-empty string that must
+											not contain the following characters: <code>NULL (U+0000)</code>, <code># (U+0023)</code>, <code>+
+(U+002B)</code>.</p>
 									</dd>
 								</dl>
 							</div>
@@ -1238,11 +1256,12 @@
 								<li>
 									<h5>value: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>a payload string or Uint8Array (Buffer in Node.js) to be published on the given topic</p>
+										<p>a payload string or Uint8Array (or Buffer in Node.js, a
+										subclass thereof) to be published on the given topic</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> shouldRetain: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> shouldRetain: <span class="tsd-signature-type">boolean</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>whether to publish a retained message (default false)</p>
 									</div>
@@ -1262,7 +1281,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L579">src/com/communication-manager.ts:579</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L547">src/com/communication-manager.ts:547</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1303,7 +1322,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L231">src/com/communication-manager.ts:231</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L197">src/com/communication-manager.ts:197</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1340,19 +1359,20 @@
 					<a name="start" class="tsd-anchor"></a>
 					<h3>start</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/communicationoptions.html" class="tsd-signature-type">CommunicationOptions</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L195">src/com/communication-manager.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L167">src/com/communication-manager.ts:167</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Starts or restarts this communication manager with communication options
-									specified in the configuration and in the optional <code>options</code> parameter.</p>
+									<p>Starts or restarts this communication manager joining the communication
+										infrastructure with effective communication options specified in the
+									configuration augmented by those in the optional <code>options</code> parameter.</p>
 								</div>
 								<p>If no options are given, this operation does nothing if the communication
 									manager is already in <code>Started</code> operating state; otherwise, i.e. in
@@ -1377,7 +1397,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>a promise that is resolved when start-up has been completed.</p>
 						</li>
 					</ul>
@@ -1386,26 +1406,26 @@
 					<a name="stop" class="tsd-anchor"></a>
 					<h3>stop</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-manager.ts#L251">src/com/communication-manager.ts:251</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/communication-manager.ts#L211">src/com/communication-manager.ts:211</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Stops dispatching and emitting events and disconnects from the
+									<p>Stops dispatching and emitting communication events and unjoins from the
 									communication infrastructure.</p>
 								</div>
 								<p>To continue processing with this communication manager sometime later,
 								invoke <code>start()</code>, but not before the returned promise resolves.</p>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>a promise that is resolved when communication connection has
-							been closed</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>a promise that is resolved when communication manager has
+							unjoined the communication infrastructure.</p>
 						</li>
 					</ul>
 				</section>
@@ -1429,15 +1449,6 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
 								<a href="communicationmanager.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationmanager.html#default_namespace" class="tsd-kind-icon">DEFAULT_<wbr>NAMESPACE</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationmanager.html#protocol_version" class="tsd-kind-icon">PROTOCOL_<wbr>VERSION</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-								<a href="communicationmanager.html#namespace" class="tsd-kind-icon">namespace</a>
-							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="communicationmanager.html#options" class="tsd-kind-icon">options</a>
 							</li>
@@ -1445,7 +1456,7 @@
 								<a href="communicationmanager.html#runtime" class="tsd-kind-icon">runtime</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="communicationmanager.html#createiovaluetopic" class="tsd-kind-icon">create<wbr>IoValue<wbr>Topic</a>
+								<a href="communicationmanager.html#createassociatingroute" class="tsd-kind-icon">create<wbr>Associating<wbr>Route</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="communicationmanager.html#getionodebycontext" class="tsd-kind-icon">get<wbr>IoNode<wbr>ByContext</a>
@@ -1547,59 +1558,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

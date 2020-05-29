@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>@coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -108,19 +108,19 @@
 					<li>a <a href="https://coatyio.github.io/coaty-js/man/developer-guide/">Developer Guide</a>
 						that provides the basics to get started developing a Coaty project with the
 					Coaty JS framework,</li>
-					<li>a complete <a href="https://coatyio.github.io/coaty-js/api/index.html">API
-						documentation</a> of all
+					<li>a complete [API
+						documentation](<a href="https://coatyio.github.io/coaty-js/api/index.html">https://coatyio.github.io/coaty-js/api/index.html</a>) of all
 					public type and member definitions of the Coaty JS framework sources,</li>
-					<li>a <a href="https://coatyio.github.io/coaty-js/man/coding-style-guide/">Coding Style
-						Guide</a> for Coaty
+					<li>a [Coding Style
+						Guide](<a href="https://coatyio.github.io/coaty-js/man/coding-style-guide/">https://coatyio.github.io/coaty-js/man/coding-style-guide/</a>) for Coaty
 					JS framework and application developers,</li>
-					<li>a specification of the <a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">Coaty communication
-					protocol</a>,</li>
-					<li>guidance notes on <a href="https://coatyio.github.io/coaty-js/man/rights-management/">rights
-						management</a> in a
+					<li>a specification of the [Coaty communication
+					protocol](<a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">https://coatyio.github.io/coaty-js/man/communication-protocol/</a>),</li>
+					<li>guidance notes on [rights
+						management](<a href="https://coatyio.github.io/coaty-js/man/rights-management/">https://coatyio.github.io/coaty-js/man/rights-management/</a>) in a
 					Coaty application.</li>
-					<li>a guide on the <a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">OGC SensorThings API
-						integration</a> in
+					<li>a guide on the [OGC SensorThings API
+						integration](<a href="https://coatyio.github.io/coaty-js/man/sensor-things-guide/">https://coatyio.github.io/coaty-js/man/sensor-things-guide/</a>) in
 					Coaty JS.</li>
 					<li><a href="https://coatyio.github.io/coaty-js/man/migration-guide/">Migration Guide</a> - a
 						guide on migrating an existing Coaty JS application to a newer Coaty JS major
@@ -138,8 +138,8 @@
 					<a href="https://github.com/coatyio/">github</a>. Extensions, such as connectors, adapters,
 					or building blocks, provide reusable functionality for specialized use cases and
 				application scenarios build on top of the Coaty core.</p>
-				<p>Finally, the unit tests delivered with the framework itself also provide a
-				valuable source of programming examples for experienced developers.</p>
+				<p>Finally, the integration tests delivered with the framework itself also provide
+				a valuable source of programming examples for experienced developers.</p>
 				<p>Note that the framework makes heavy use of the Reactive Programming paradigm
 					using RxJS observables. Understanding observables is an indispensable
 					prerequisite for developing applications with the framework. An introduction to
@@ -173,9 +173,9 @@
 				<p>You can install the latest standard distribution package in your
 				agent project as follows:</p>
 				<pre><code class="language-sh">npm install @coaty/core</code></pre>
-				<p><em>Note</em>: The distribution package defines several optional dependency modules, including
-					<code>pg</code>, <code>cordova-sqlite-storage</code>, and <code>sqlite3</code>. You need to install any such
-					optional dependency as a package dependency in your application project <em>if</em> you intend to make
+				<p><em>Note*: The distribution package defines several optional dependency modules, including
+						<code>pg</code>, <code>cordova-sqlite-storage</code>, and <code>sqlite3</code>. You need to install any such
+					optional dependency as a package dependency in your application project *if</em> you intend to make
 					use of the associated functionality. For example, if you want to make use of the framework&#39;s
 					Unified Storage API by persisting objects in a PostgreSQL database, you have to install
 				the <code>pg</code> module.</p>
@@ -229,6 +229,12 @@
 					</li>
 					<li class=" tsd-kind-enum tsd-is-external">
 						<a href="enums/annotationtype.html" class="tsd-kind-icon">Annotation<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/communicationbindingloglevel.html" class="tsd-kind-icon">Communication<wbr>Binding<wbr>Log<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/communicationbindingstate.html" class="tsd-kind-icon">Communication<wbr>Binding<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-enum tsd-is-external">
 						<a href="enums/communicationeventtype.html" class="tsd-kind-icon">Communication<wbr>Event<wbr>Type</a>
@@ -292,6 +298,9 @@
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/channeleventdata.html" class="tsd-kind-icon">Channel<wbr>Event<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
+						<a href="classes/communicationbinding.html" class="tsd-kind-icon">Communication<wbr>Binding</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/communicationevent.html" class="tsd-kind-icon">Communication<wbr>Event</a>
@@ -378,7 +387,16 @@
 						<a href="classes/iostateitem.html" class="tsd-kind-icon">Io<wbr>State<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/iovalueevent.html" class="tsd-kind-icon">Io<wbr>Value<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/iovalueeventdata.html" class="tsd-kind-icon">Io<wbr>Value<wbr>Event<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/mocksensorio.html" class="tsd-kind-icon">Mock<wbr>Sensor<wbr>Io</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/mqttbinding.html" class="tsd-kind-icon">Mqtt<wbr>Binding</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/multicastdnsdiscovery.html" class="tsd-kind-icon">Multicast<wbr>Dns<wbr>Discovery</a>
@@ -421,6 +439,12 @@
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/queryiterator.html" class="tsd-kind-icon">Query<wbr>Iterator</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/rawevent.html" class="tsd-kind-icon">Raw<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/raweventdata.html" class="tsd-kind-icon">Raw<wbr>Event<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/resolveevent.html" class="tsd-kind-icon">Resolve<wbr>Event</a>
@@ -479,6 +503,12 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/thingsensorobservationobservercontroller.html" class="tsd-kind-icon">Thing<wbr>Sensor<wbr>Observation<wbr>Observer<wbr>Controller</a>
 					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
+						<a href="classes/topicevent.html" class="tsd-kind-icon">Topic<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/topiceventdata.html" class="tsd-kind-icon">Topic<wbr>Event<wbr>Data</a>
+					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/updateevent.html" class="tsd-kind-icon">Update<wbr>Event</a>
 					</li>
@@ -508,6 +538,15 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/commonoptions.html" class="tsd-kind-icon">Common<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/communicationbindingoptions.html" class="tsd-kind-icon">Communication<wbr>Binding<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/communicationbindingprotocol.html" class="tsd-kind-icon">Communication<wbr>Binding<wbr>Protocol</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/communicationeventlike.html" class="tsd-kind-icon">Communication<wbr>Event<wbr>Like</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/communicationoptions.html" class="tsd-kind-icon">Communication<wbr>Options</a>
@@ -612,6 +651,9 @@
 						<a href="interfaces/iosource.html" class="tsd-kind-icon">Io<wbr>Source</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/joinoptions.html" class="tsd-kind-icon">Join<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/location.html" class="tsd-kind-icon">Location</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
@@ -619,6 +661,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/loghost.html" class="tsd-kind-icon">Log<wbr>Host</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/mqttbindingoptions.html" class="tsd-kind-icon">Mqtt<wbr>Binding<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/multicastdnsservice.html" class="tsd-kind-icon">Multicast<wbr>Dns<wbr>Service</a>
@@ -643,6 +688,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/observedproperty.html" class="tsd-kind-icon">Observed<wbr>Property</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/publicationitem.html" class="tsd-kind-icon">Publication<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/registeredsensorschangeinfo.html" class="tsd-kind-icon">Registered<wbr>Sensors<wbr>Change<wbr>Info</a>
@@ -675,6 +723,9 @@
 						<a href="interfaces/sqlqueryresultset.html" class="tsd-kind-icon">Sql<wbr>Query<wbr>Result<wbr>Set</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/subscriptionitem.html" class="tsd-kind-icon">Subscription<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/task.html" class="tsd-kind-icon">Task</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
@@ -691,6 +742,12 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#aggregateproperties" class="tsd-kind-icon">Aggregate<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#communicationbindingstatic" class="tsd-kind-icon">Communication<wbr>Binding<wbr>Static</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#communicationbindingwithoptions" class="tsd-kind-icon">Communication<wbr>Binding<wbr>With<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#coretype" class="tsd-kind-icon">Core<wbr>Type</a>
@@ -851,59 +908,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

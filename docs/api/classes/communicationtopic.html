@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>CommunicationTopic | @coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -67,12 +67,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Encapsulates the internal representation of messaging topics used by the
-						Coaty communication infrastructure.</p>
+						<p>Represents MQTT publication and subscription topics for Coaty communication
+						events (except Raw and external IoValue).</p>
 					</div>
-					<p>Note: this class is exported only for testing purposes within the Coaty
-						framework. It has not been exported in the public API module because it
-					should not be used by an application.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -88,22 +85,11 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#event_type_filter_separator" class="tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>FILTER_<wbr>SEPARATOR</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#event_type_topic_levels" class="tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>TOPIC_<wbr>LEVELS</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#protocol_name" class="tsd-kind-icon">PROTOCOL_<wbr>NAME</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#protocol_name_prefix" class="tsd-kind-icon">PROTOCOL_<wbr>NAME_<wbr>PREFIX</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#topic_levels_by_event_type" class="tsd-kind-icon">TOPIC_<wbr>LEVELS_<wbr>BY_<wbr>EVENT_<wbr>TYPE</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#correlationid" class="tsd-kind-icon">correlation<wbr>Id</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#eventtype" class="tsd-kind-icon">event<wbr>Type</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#eventtypefilter" class="tsd-kind-icon">event<wbr>Type<wbr>Filter</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#eventtypename" class="tsd-kind-icon">event<wbr>Type<wbr>Name</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#namespace" class="tsd-kind-icon">namespace</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#sourceid" class="tsd-kind-icon">source<wbr>Id</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#version" class="tsd-kind-icon">version</a></li>
@@ -112,81 +98,15 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="communicationtopic.html#gettopicname" class="tsd-kind-icon">get<wbr>Topic<wbr>Name</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#createbylevels" class="tsd-kind-icon">create<wbr>ByLevels</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#createbyname" class="tsd-kind-icon">create<wbr>ByName</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#geteventtypename" class="tsd-kind-icon">get<wbr>Event<wbr>Type<wbr>Name</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#gettopicfilter" class="tsd-kind-icon">get<wbr>Topic<wbr>Filter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#isonewayevent" class="tsd-kind-icon">is<wbr>One<wbr>Way<wbr>Event</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#israwtopic" class="tsd-kind-icon">is<wbr>Raw<wbr>Topic</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#isvalidiovaluetopic" class="tsd-kind-icon">is<wbr>Valid<wbr>IoValue<wbr>Topic</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#isvalidpublicationtopic" class="tsd-kind-icon">is<wbr>Valid<wbr>Publication<wbr>Topic</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#isvalidtopiclevel" class="tsd-kind-icon">is<wbr>Valid<wbr>Topic<wbr>Level</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#gettopicname" class="tsd-kind-icon">get<wbr>Topic<wbr>Name</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#iscoatytopiclike" class="tsd-kind-icon">is<wbr>Coaty<wbr>Topic<wbr>Like</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#isvalidtopic" class="tsd-kind-icon">is<wbr>Valid<wbr>Topic</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="communicationtopic.html#matches" class="tsd-kind-icon">matches</a></li>
 							</ul>
 						</section>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="event_type_filter_separator" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> EVENT_<wbr>TYPE_<wbr>FILTER_<wbr>SEPARATOR</h3>
-					<div class="tsd-signature tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>FILTER_<wbr>SEPARATOR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">":"</span><span class="tsd-signature-symbol"> = &quot;:&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L47">src/com/communication-topic.ts:47</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="event_type_topic_levels" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> EVENT_<wbr>TYPE_<wbr>TOPIC_<wbr>LEVELS</h3>
-					<div class="tsd-signature tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>TOPIC_<wbr>LEVELS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L49">src/com/communication-topic.ts:49</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>level: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="protocol_name" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> PROTOCOL_<wbr>NAME</h3>
-					<div class="tsd-signature tsd-kind-icon">PROTOCOL_<wbr>NAME<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"coaty"</span><span class="tsd-signature-symbol"> = &quot;coaty&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L45">src/com/communication-topic.ts:45</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="protocol_name_prefix" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> PROTOCOL_<wbr>NAME_<wbr>PREFIX</h3>
-					<div class="tsd-signature tsd-kind-icon">PROTOCOL_<wbr>NAME_<wbr>PREFIX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = CommunicationTopic.PROTOCOL_NAME + &quot;/&quot;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L46">src/com/communication-topic.ts:46</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="topic_levels_by_event_type" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> TOPIC_<wbr>LEVELS_<wbr>BY_<wbr>EVENT_<wbr>TYPE</h3>
-					<div class="tsd-signature tsd-kind-icon">TOPIC_<wbr>LEVELS_<wbr>BY_<wbr>EVENT_<wbr>TYPE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L50">src/com/communication-topic.ts:50</a></li>
-						</ul>
-					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
@@ -201,7 +121,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L33">src/com/communication-topic.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L24">src/com/mqtt/communication-topic.ts:24</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -218,7 +138,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L17">src/com/communication-topic.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L12">src/com/mqtt/communication-topic.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h4>
@@ -235,24 +155,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L21">src/com/communication-topic.ts:21</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<a name="eventtypename" class="tsd-anchor"></a>
-					<h3>event<wbr>Type<wbr>Name</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> eventTypeName<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L25">src/com/communication-topic.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L16">src/com/mqtt/communication-topic.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -269,7 +172,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L41">src/com/communication-topic.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L32">src/com/mqtt/communication-topic.ts:32</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -286,7 +189,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L29">src/com/communication-topic.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L20">src/com/mqtt/communication-topic.ts:20</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -303,7 +206,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L37">src/com/communication-topic.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L28">src/com/mqtt/communication-topic.ts:28</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -313,86 +216,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="gettopicname" class="tsd-anchor"></a>
-					<h3>get<wbr>Topic<wbr>Name</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Topic<wbr>Name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L409">src/com/communication-topic.ts:409</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the topic name for publishing.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="createbylevels" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>ByLevels</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>ByLevels<span class="tsd-signature-symbol">(</span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, namespace<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, eventType<span class="tsd-signature-symbol">: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a>, eventTypeFilter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sourceId<span class="tsd-signature-symbol">: </span><a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a>, correlationId<span class="tsd-signature-symbol">: </span><a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="communicationtopic.html" class="tsd-signature-type">CommunicationTopic</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L146">src/com/communication-topic.ts:146</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Create a new topic for the given topic levels.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>version: <span class="tsd-signature-type">number</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the protocol version</p>
-									</div>
-								</li>
-								<li>
-									<h5>namespace: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>eventType: <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>an event type</p>
-									</div>
-								</li>
-								<li>
-									<h5>eventTypeFilter: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a filter for an event type, or undefined</p>
-									</div>
-								</li>
-								<li>
-									<h5>sourceId: <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>ID from which this event originates</p>
-									</div>
-								</li>
-								<li>
-									<h5>correlationId: <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>correlation ID for two-way message or undefined</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="communicationtopic.html" class="tsd-signature-type">CommunicationTopic</a></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 					<a name="createbyname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>ByName</h3>
@@ -403,67 +226,26 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L70">src/com/communication-topic.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L63">src/com/mqtt/communication-topic.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Create a new topic from the given publication topic name.</p>
+									<p>Create a new topic instance from the given publication topic name.</p>
 								</div>
-								<dl class="tsd-comment-tags">
-									<dt>throws</dt>
-									<dd><p>exception when topic name is not in correct format</p>
-									</dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>topicName: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>the structured name of a publication topic</p>
+										<p>the structured name of a Coaty publication topic</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="communicationtopic.html" class="tsd-signature-type">CommunicationTopic</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="geteventtypename" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Event<wbr>Type<wbr>Name</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Event<wbr>Type<wbr>Name<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a>, eventTypeFilter<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L201">src/com/communication-topic.ts:201</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets a name that represents the given event type and filter.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>eventType: <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the event type to use</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> eventTypeFilter: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>the optional event type filter to use, or
-										undefined (optional)</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>a Coaty communication topic instance or undefined if the topic
+							name represents a Raw or external IO value event.</p>
 						</li>
 					</ul>
 				</section>
@@ -477,7 +259,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L176">src/com/communication-topic.ts:176</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L122">src/com/mqtt/communication-topic.ts:122</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -521,44 +303,80 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="isonewayevent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>One<wbr>Way<wbr>Event</h3>
+					<a name="gettopicname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Topic<wbr>Name</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>One<wbr>Way<wbr>Event<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Topic<wbr>Name<span class="tsd-signature-symbol">(</span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, namespace<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, eventType<span class="tsd-signature-symbol">: </span><a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a>, eventTypeFilter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sourceId<span class="tsd-signature-symbol">: </span><a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a>, correlationId<span class="tsd-signature-symbol">: </span><a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L209">src/com/communication-topic.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L93">src/com/mqtt/communication-topic.ts:93</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the topic name for the given topic levels.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
+								<li>
+									<h5>version: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the protocol version</p>
+									</div>
+								</li>
+								<li>
+									<h5>namespace: <span class="tsd-signature-type">string</span></h5>
+								</li>
 								<li>
 									<h5>eventType: <a href="../enums/communicationeventtype.html" class="tsd-signature-type">CommunicationEventType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>an event type</p>
+									</div>
+								</li>
+								<li>
+									<h5>eventTypeFilter: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>a filter for an event type, or undefined</p>
+									</div>
+								</li>
+								<li>
+									<h5>sourceId: <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>ID from which this event originates</p>
+									</div>
+								</li>
+								<li>
+									<h5>correlationId: <a href="../globals.html#uuid" class="tsd-signature-type">Uuid</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>correlation ID for two-way message or undefined</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="israwtopic" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Raw<wbr>Topic</h3>
+					<a name="iscoatytopiclike" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Coaty<wbr>Topic<wbr>Like</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Raw<wbr>Topic<span class="tsd-signature-symbol">(</span>topicName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Coaty<wbr>Topic<wbr>Like<span class="tsd-signature-symbol">(</span>topicName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L244">src/com/communication-topic.ts:244</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L148">src/com/mqtt/communication-topic.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Determines whether the given topic name conforms to a raw message.</p>
+									<p>Determines whether the given topic name starts with the same topic level
+									as a Coaty topic.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -571,114 +389,46 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if the given topic name is a raw topic; false otherwise</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="isvalidiovaluetopic" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid<wbr>IoValue<wbr>Topic</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>IoValue<wbr>Topic<span class="tsd-signature-symbol">(</span>topicName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, protocolVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L223">src/com/communication-topic.ts:223</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Determines whether the given topic name conforms to the communication
-										topic specification of an internal or external IoValue topic that is used
-									for publishing and subscription.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>topicName: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>a topic name</p>
-									</div>
-								</li>
-								<li>
-									<h5>protocolVersion: <span class="tsd-signature-type">number</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>communication protocol version</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if the given topic name is a valid IoValue topic; false
+							<p>true if the given topic name is a potential Coaty topic; false
 							otherwise</p>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="isvalidpublicationtopic" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid<wbr>Publication<wbr>Topic</h3>
+					<a name="isvalidtopic" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid<wbr>Topic</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Publication<wbr>Topic<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Topic<span class="tsd-signature-symbol">(</span>topic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, forSubscription<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L266">src/com/communication-topic.ts:266</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L162">src/com/mqtt/communication-topic.ts:162</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Determines whether the given name is a valid topic name for publication.</p>
+									<p>Determines whether the given name is a valid MQTT topic for publication
+									or subscription.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>name</p>
-									</div>
+									<h5>topic: <span class="tsd-signature-type">string</span></h5>
 								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if the given name can be used for publication; false
-							otherwise</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-					<a name="isvalidtopiclevel" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid<wbr>Topic<wbr>Level</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<wbr>Topic<wbr>Level<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L255">src/com/communication-topic.ts:255</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Determines whether the given name is valid as (part of) a topic level.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> forSubscription: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>name</p>
+										<p>indicates whether the name is used for
+										subscription (true) or publication (false)</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>true if the given name can be used in a topic level; false
-							otherwise</p>
+							<p>true if the given topic name can be used for publication or
+							subscription; false otherwise</p>
 						</li>
 					</ul>
 				</section>
@@ -692,7 +442,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/com/communication-topic.ts#L282">src/com/communication-topic.ts:282</a></li>
+									<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/com/mqtt/communication-topic.ts#L185">src/com/mqtt/communication-topic.ts:185</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -743,21 +493,6 @@
 					<li class="current tsd-kind-class tsd-is-external">
 						<a href="communicationtopic.html" class="tsd-kind-icon">Communication<wbr>Topic</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#event_type_filter_separator" class="tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>FILTER_<wbr>SEPARATOR</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#event_type_topic_levels" class="tsd-kind-icon">EVENT_<wbr>TYPE_<wbr>TOPIC_<wbr>LEVELS</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#protocol_name" class="tsd-kind-icon">PROTOCOL_<wbr>NAME</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#protocol_name_prefix" class="tsd-kind-icon">PROTOCOL_<wbr>NAME_<wbr>PREFIX</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#topic_levels_by_event_type" class="tsd-kind-icon">TOPIC_<wbr>LEVELS_<wbr>BY_<wbr>EVENT_<wbr>TYPE</a>
-							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="communicationtopic.html#correlationid" class="tsd-kind-icon">correlation<wbr>Id</a>
 							</li>
@@ -768,9 +503,6 @@
 								<a href="communicationtopic.html#eventtypefilter" class="tsd-kind-icon">event<wbr>Type<wbr>Filter</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-								<a href="communicationtopic.html#eventtypename" class="tsd-kind-icon">event<wbr>Type<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="communicationtopic.html#namespace" class="tsd-kind-icon">namespace</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
@@ -779,35 +511,20 @@
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="communicationtopic.html#version" class="tsd-kind-icon">version</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="communicationtopic.html#gettopicname" class="tsd-kind-icon">get<wbr>Topic<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#createbylevels" class="tsd-kind-icon">create<wbr>ByLevels</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="communicationtopic.html#createbyname" class="tsd-kind-icon">create<wbr>ByName</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#geteventtypename" class="tsd-kind-icon">get<wbr>Event<wbr>Type<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="communicationtopic.html#gettopicfilter" class="tsd-kind-icon">get<wbr>Topic<wbr>Filter</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#isonewayevent" class="tsd-kind-icon">is<wbr>One<wbr>Way<wbr>Event</a>
+								<a href="communicationtopic.html#gettopicname" class="tsd-kind-icon">get<wbr>Topic<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#israwtopic" class="tsd-kind-icon">is<wbr>Raw<wbr>Topic</a>
+								<a href="communicationtopic.html#iscoatytopiclike" class="tsd-kind-icon">is<wbr>Coaty<wbr>Topic<wbr>Like</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#isvalidiovaluetopic" class="tsd-kind-icon">is<wbr>Valid<wbr>IoValue<wbr>Topic</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#isvalidpublicationtopic" class="tsd-kind-icon">is<wbr>Valid<wbr>Publication<wbr>Topic</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-								<a href="communicationtopic.html#isvalidtopiclevel" class="tsd-kind-icon">is<wbr>Valid<wbr>Topic<wbr>Level</a>
+								<a href="communicationtopic.html#isvalidtopic" class="tsd-kind-icon">is<wbr>Valid<wbr>Topic</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
 								<a href="communicationtopic.html#matches" class="tsd-kind-icon">matches</a>
@@ -825,59 +542,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

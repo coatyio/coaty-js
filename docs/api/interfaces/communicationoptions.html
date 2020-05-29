@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>CommunicationOptions | @coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -67,7 +67,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Options used for communication</p>
+						<p>Options used for communication.</p>
 					</div>
 				</div>
 			</section>
@@ -86,6 +86,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#binding" class="tsd-kind-icon">binding</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#brokerurl" class="tsd-kind-icon">broker<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#mqttclientoptions" class="tsd-kind-icon">mqtt<wbr>Client<wbr>Options</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="communicationoptions.html#namespace" class="tsd-kind-icon">namespace</a></li>
@@ -100,20 +101,63 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="binding" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> binding</h3>
+					<div class="tsd-signature tsd-kind-icon">binding<span class="tsd-signature-symbol">:</span> <a href="../globals.html#communicationbindingwithoptions" class="tsd-signature-type">CommunicationBindingWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/communicationbinding.html" class="tsd-signature-type">CommunicationBinding</a><span class="tsd-signature-symbol">&lt;</span><a href="communicationbindingoptions.html" class="tsd-signature-type">CommunicationBindingOptions</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="communicationbindingoptions.html" class="tsd-signature-type">CommunicationBindingOptions</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L118">src/runtime/configuration.ts:118</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Communication binding for transmitting Coaty communication events via a
+							specific publish-subscribe messaging protocol.</p>
+						</div>
+						<p>Use one of the predefined Coaty communication bindings which are provided
+							as separate npm packages named <code>@coaty/binding.*</code>. For example, to use
+						the MQTT protocol as a binding for your Coaty application:</p>
+						<pre><code class="language-ts"><span class="hljs-keyword">import</span> { MqttBinding } <span class="hljs-keyword">from</span> <span class="hljs-string">"@coaty/binding.mqtt"</span>;
+
+<span class="hljs-keyword">const</span> configuration: Configuration = {
+  ...
+  communication: {
+      binding: MqttBinding.withOptions({
+          <span class="hljs-keyword">namespace</span>: ...,
+          brokerUrl: ... ,
+          ...
+      }),
+      ...
+  },
+  ...
+};</code></pre>
+						<dl class="tsd-comment-tags">
+							<dt>remarks</dt>
+							<dd><p>This feature is experimental until Coaty 3. If no binding is
+									specified, a default MQTT binding is used with the MQTT specific options
+								defined in this interface.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="brokerurl" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> broker<wbr>Url</h3>
 					<div class="tsd-signature tsd-kind-icon">broker<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L144">src/runtime/configuration.ts:144</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L184">src/runtime/configuration.ts:184</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Connection Url to MQTT broker (schema &#39;protocol://host:port&#39;) (optional).
-								If the <code>servers</code> option in property <code>mqttClientOptions</code> is specified this
-							property is ignored.</p>
-						</div>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>since 2.1.0. Specify in binding options instead.</p>
+								<p>Connection Url to MQTT broker (schema &#39;protocol://host:port&#39;) (optional).
+									If the <code>servers</code> option in property <code>mqttClientOptions</code> is specified this
+								property is ignored.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -122,17 +166,20 @@
 					<div class="tsd-signature tsd-kind-icon">mqtt<wbr>Client<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L154">src/runtime/configuration.ts:154</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L196">src/runtime/configuration.ts:196</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Options passed to MQTT Client (see <a href="https://github.com/mqttjs/MQTT.js#mqttconnecturl-options">MQTT.js connect
-							options</a>).</p>
-						</div>
-						<p>In addition to the MQTT.js options, you can also pass a QoS level (0 | 1
-							| 2) for publications, subscriptions, and last will messages in the <code>qos</code>
-						property. If it is not specified, the QoS level is 0.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>since 2.1.0. Specify as binding options instead.</p>
+								<p>Options passed to MQTT Client (see <a href="https://github.com/mqttjs/MQTT.js#mqttconnecturl-options">MQTT.js connect
+								options</a>).</p>
+								<p>In addition to the MQTT.js options, you can also pass a QoS level (0 | 1
+									| 2) for publications, subscriptions, and last will messages in the <code>qos</code>
+								property. If it is not specified, the QoS level is 0.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -141,18 +188,21 @@
 					<div class="tsd-signature tsd-kind-icon">namespace<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L100">src/runtime/configuration.ts:100</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L134">src/runtime/configuration.ts:134</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Namespace used to isolate different Coaty applications (optional).</p>
-						</div>
-						<p>Communication events are only routed between agents within a common
-						communication namespace.</p>
-						<p>A namespace string must not contain the following characters: <code>NULL
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>since 2.1.0. Specify in binding options instead.</p>
+								<p>Namespace used to isolate different Coaty applications (optional).</p>
+								<p>Communication events are only routed between agents within a common
+								communication namespace.</p>
+								<p>A namespace string must not contain the following characters: <code>NULL
 (U+0000)</code>, <code># (U+0023)</code>, <code>+ (U+002B)</code>, <code>/ (U+002F)</code>.</p>
-						<p>If not specified or empty, a default namespace named &quot;-&quot; is used.</p>
+								<p>If not specified or empty, a default namespace named &quot;-&quot; is used.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -161,7 +211,7 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Auto<wbr>Start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L117">src/runtime/configuration.ts:117</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L153">src/runtime/configuration.ts:153</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -177,17 +227,20 @@
 					<div class="tsd-signature tsd-kind-icon">should<wbr>Enable<wbr>Cross<wbr>Namespacing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L111">src/runtime/configuration.ts:111</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L147">src/runtime/configuration.ts:147</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Determines whether to enable cross-namespace communication between agents
-							in special use cases (optional).</p>
-						</div>
-						<p>If <code>true</code>, an agent receives communication events published by <em>any</em>
-						agent in the same networking infrastructure, regardless of namespace.</p>
-						<p>If not specified or <code>false</code>, this option is not enabled.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>since 2.1.0. Specify in binding options instead.</p>
+								<p>Determines whether to enable cross-namespace communication between agents
+								in special use cases (optional).</p>
+								<p>If <code>true</code>, an agent receives communication events published by <em>any</em>
+								agent in the same networking infrastructure, regardless of namespace.</p>
+								<p>If not specified or <code>false</code>, this option is not enabled.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -196,25 +249,28 @@
 					<div class="tsd-signature tsd-kind-icon">use<wbr>Protocol<wbr>Compliant<wbr>Client<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/runtime/configuration.ts#L137">src/runtime/configuration.ts:137</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/runtime/configuration.ts#L175">src/runtime/configuration.ts:175</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Determines whether the communication manager should provide a protocol
-							compliant client ID when connecting to the broker/router.</p>
-						</div>
-						<p>If not specified, the value of this option defaults to false.</p>
-						<p>For example, MQTT Spec 3.1 states that the broker MUST allow Client IDs
-							which are between 1 and 23 UTF-8 encoded bytes in length, and that
-							contain only the characters
-							&quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;.
-							However, broker implementations are free to allow non-compliant Client
-						IDs.</p>
-						<p>By default, non-compliant Client IDs of the form &quot;Coaty<uuid>&quot; are used
-								where <code>&lt;uuid&gt;</code> specifies the <code>objectId</code> of the communication manager&#39;s
-								<code>Identity</code> object. If you experience issues with a specific broker,
-						specify this option as <code>true</code>.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>since 2.1.0.</p>
+								<p>Determines whether the communication manager should provide a protocol
+								compliant client ID when connecting to the broker/router.</p>
+								<p>If not specified, the value of this option defaults to false.</p>
+								<p>For example, MQTT Spec 3.1 states that the broker MUST allow Client IDs
+									which are between 1 and 23 UTF-8 encoded bytes in length, and that
+									contain only the characters
+									&quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;.
+									However, broker implementations are free to allow non-compliant Client
+								IDs.</p>
+								<p>By default, non-compliant Client IDs of the form &quot;Coaty<uuid>&quot; are used
+										where <code>&lt;uuid&gt;</code> specifies the <code>objectId</code> of the communication manager&#39;s
+										<code>Identity</code> object. If you experience issues with a specific broker,
+								specify this option as <code>true</code>.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 			</section>
@@ -234,6 +290,9 @@
 					<li class="current tsd-kind-interface tsd-is-external">
 						<a href="communicationoptions.html" class="tsd-kind-icon">Communication<wbr>Options</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="communicationoptions.html#binding" class="tsd-kind-icon">binding</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="communicationoptions.html#brokerurl" class="tsd-kind-icon">broker<wbr>Url</a>
 							</li>
@@ -265,59 +324,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

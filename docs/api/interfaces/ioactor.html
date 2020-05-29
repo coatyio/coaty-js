@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>IoActor | @coaty/core - v2.0.1</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for @coaty/core - v2.0.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -101,7 +101,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ioactor.html#objecttype" class="tsd-kind-icon">object<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ioactor.html#parentobjectid" class="tsd-kind-icon">parent<wbr>Object<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ioactor.html#updaterate" class="tsd-kind-icon">update<wbr>Rate</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="ioactor.html#userawiovalues" class="tsd-kind-icon">use<wbr>Raw<wbr>IoValues</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="ioactor.html#userawiovalues" class="tsd-kind-icon">use<wbr>Raw<wbr>IoValues</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="ioactor.html#valuetype" class="tsd-kind-icon">value<wbr>Type</a></li>
 							</ul>
 						</section>
@@ -117,7 +117,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#coretype">coreType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/io-point.ts#L113">src/model/io-point.ts:113</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/io-point.ts#L139">src/model/io-point.ts:139</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -128,7 +128,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#externalid">externalId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L58">src/model/object.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L58">src/model/object.ts:58</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -144,7 +144,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#externalroute">externalRoute</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/io-point.ts#L71">src/model/io-point.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/io-point.ts#L97">src/model/io-point.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -154,7 +154,17 @@
 							sinks (optional).</p>
 						</div>
 						<p>Only used for associating routes that are not created by an IO router,
-						but defined by an external component.</p>
+						but defined by an external non-Coaty component.</p>
+						<dl class="tsd-comment-tags">
+							<dt>remarks</dt>
+							<dd><p>Note that the format of an external route is binding-specifc. In
+									order to deliver IO values from/to an external source/actor, the format
+									of the external route must correspond with the configured communication
+									binding. That means, it must be in a valid format and must not have a
+									Coaty-event-like shape. As the external route must be publishable and
+								subscribable, it must not be pattern-based (no wildcard tokens allowed).</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
@@ -164,7 +174,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#isdeactivated">isDeactivated</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L71">src/model/object.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L71">src/model/object.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -182,7 +192,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#locationid">locationId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L64">src/model/object.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L64">src/model/object.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +209,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L48">src/model/object.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L48">src/model/object.ts:48</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -215,7 +225,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#objectid">objectId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L43">src/model/object.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L43">src/model/object.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -231,7 +241,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#objecttype">objectType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L32">src/model/object.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L32">src/model/object.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -262,7 +272,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#parentobjectid">parentObjectId</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/object.ts#L53">src/model/object.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/object.ts#L53">src/model/object.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -278,7 +288,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#updaterate">updateRate</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/io-point.ts#L61">src/model/io-point.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/io-point.ts#L80">src/model/io-point.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -293,22 +303,31 @@
 						data. If undefined, there is no limit on the rate of published events.</p>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a name="userawiovalues" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Raw<wbr>IoValues</h3>
 					<div class="tsd-signature tsd-kind-icon">use<wbr>Raw<wbr>IoValues<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="iopoint.html">IoPoint</a>.<a href="iopoint.html#userawiovalues">useRawIoValues</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/io-point.ts#L140">src/model/io-point.ts:140</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/io-point.ts#L70">src/model/io-point.ts:70</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Determines whether IO values generated by external sources should be
-								treated as raw data that is not encoded as JSON objects. Raw data is
-							specified as a string or byte array.</p>
+							<p>Determines whether IO values published by IO sources or received by IO
+								actors should be treated as raw data that is not encoded/decoded as JSON
+							objects.</p>
 						</div>
-						<p>The value of this property defaults to false.</p>
+						<p>In order to associate an IO source with an IO actor their values of this
+							property must match, i.e. <strong>both</strong> properties must be either true or false
+							to ensure that IO values transmitted between an IO source and and an IO actor
+						can be properly encoded and decoded on each side.</p>
+						<p>Set this property to true to indicate that the IO source or IO actor
+							should handle IO values in raw data format, i.e as a byte array of type
+						<code>Uint8Array</code> (or <code>Buffer</code> in Node.js, a subclass thereof).</p>
+						<p>If set to false (default), the IO values sent by an IO source should be
+						encodable as JSON and decodable as JSON by an associated IO actor.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -317,7 +336,7 @@
 					<div class="tsd-signature tsd-kind-icon">value<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/4aee1fb/src/model/io-point.ts#L131">src/model/io-point.ts:131</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/41220bd/src/model/io-point.ts#L157">src/model/io-point.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -383,7 +402,7 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="ioactor.html#updaterate" class="tsd-kind-icon">update<wbr>Rate</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 								<a href="ioactor.html#userawiovalues" class="tsd-kind-icon">use<wbr>Raw<wbr>IoValues</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -402,59 +421,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>
