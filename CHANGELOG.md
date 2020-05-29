@@ -1,5 +1,18 @@
 # Changelog
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/coatyio/coaty-js/compare/v2.0.1...v2.1.0) (2020-05-29)
+
+This minor release introduces *communication bindings*, a mechanism to make Coaty's underlying publish-subscribe messaging protocol interchangeable, while keeping the set of communication event patterns and your application code unaffected. The default binding - MQTT with JSON-UTF8 payload encoding - is backward-compatible with Coaty 2 releases of Coaty JS and Coaty Swift. The communication binding API is considered experimental until Coaty 3.
+
+### Features
+
+* **communication:** add support for communication bindings ([41220bd](https://github.com/coatyio/coaty-js/commit/41220bdf78e73433baa2291edb20abd74973671c))
+* **communication:** deprecate `CommunicationManager.publishRaw(topic:value:shouldRetain:)`, use `CommunicationManager.publishRaw(event:)` instead (the deprecated method signature will be removed in the next major release) ([e6c90c9](https://github.com/coatyio/coaty-js/commit/e6c90c909174ad7d0a4c619fb4a586ef0e79b0a1))
+* **communication:** support passing a binary IO value to `CommunicationManager.publishIoValue()` ([2ec9a59](https://github.com/coatyio/coaty-js/commit/2ec9a59e67ade5352048519ad575a3168ca1bc2b))
+* **configuration:** deprecate binding-specific CommunicationOptions, these should be specified in binding options instead (the deprecated options will be removed in the next major release) ([57dcd99](https://github.com/coatyio/coaty-js/commit/57dcd997ce6015723466cc23659981e0bf5ce085))
+* **io-routing:** support both raw binary and JSON data formats when publishing and observing IO values ([b06447e](https://github.com/coatyio/coaty-js/commit/b06447e146cc4f2a366417879455328f883109c5))
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/coatyio/coaty-js/compare/v2.0.0...v2.0.1) (2020-04-15)
 
