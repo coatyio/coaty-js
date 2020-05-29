@@ -15,7 +15,10 @@ export * from "./com/deadvertise";
 export * from "./com/discover-resolve";
 export * from "./com/io-state";
 export * from "./com/query-retrieve";
+export * from "./com/raw";
 export * from "./com/update-complete";
+
+export * from "./com/mqtt/mqtt-binding";
 
 export { Controller } from "./controller/controller";
 export * from "./controller/connection-state-controller";

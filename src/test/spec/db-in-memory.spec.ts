@@ -50,7 +50,7 @@ describe("In-Memory NoSQL Database Access", () => {
     const configuration: Configuration = {
         communication: {
             shouldAutoStart: true,
-            brokerUrl: "mqtt://localhost:1898",
+            binding: global["test_binding"],
         },
         databases: {
             testdb: {

@@ -1,8 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, CoreTypes } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
-import { CommunicationTopic } from "./communication-topic";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Update event.
@@ -11,6 +10,10 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
 
     get eventType() {
         return CommunicationEventType.Update;
+    }
+
+    get responseEventType() {
+        return CommunicationEventType.Complete;
     }
 
     /**
@@ -36,7 +39,7 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     constructor(eventData: UpdateEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidTopicLevel(eventData.object.objectType)) {
+        if (!CommunicationEvent.isValidEventFilter(eventData.object.objectType)) {
             throw new TypeError(`in UpdateEvent: invalid objectType ${eventData.object.objectType}`);
         }
     }
@@ -54,9 +57,9 @@ export class UpdateEvent extends CommunicationEvent<UpdateEventData> {
     /**
      * @internal For internal use in framework only.
      *
-     * Throws an error if the given Complete event data does not correspond to
-     * the event data of this Update event.
      * @param eventData event data for Complete response event
+     * @throws if the given Complete event data does not correspond to the event
+     * data of this Update event.
      */
     ensureValidResponseParameters(eventData: CompleteEventData) {
         if (this.data.object.objectId !== eventData.object.objectId) {
@@ -114,7 +117,10 @@ export class CompleteEvent extends CommunicationEvent<CompleteEventData> {
     }
 
     /**
-     * Associated request event
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     *
+     * Associated request event.
      */
     eventRequest: UpdateEvent;
 

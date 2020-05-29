@@ -14,6 +14,7 @@ import {
     Controller,
     CoreTypes,
     DiscoverEvent,
+    RawEvent,
     RemoteCallErrorCode,
     RemoteCallErrorMessage,
     ResolveEvent,
@@ -96,7 +97,7 @@ export class MockDeviceController extends Controller {
             .subscribe(([topic, payload]) => {
                 logger.count++;
                 // Raw values are emitted as tuples of topic name and Uint8Array/Buffer payload
-                logger.eventData.push([topic, payload.toString()]);
+                logger.eventData.push([topic, payload]);
             });
     }
 
@@ -142,7 +143,7 @@ export class MockObjectController extends Controller {
 
     publishRawEvents(count: number, topic: string) {
         for (let i = 1; i <= count; i++) {
-            this.communicationManager.publishRaw(topic, `${i}`);
+            this.communicationManager.publishRaw(RawEvent.withTopicAndPayload(topic, Uint8Array.of(i)));
         }
     }
 
@@ -196,6 +197,7 @@ export class MockOperationsCallController extends Controller {
                 params,
                 contextFilter,
             ))
+            .pipe(take(1))
             .subscribe(returnEvent => {
                 logger.eventData[loggerKey] = returnEvent.data;
             });

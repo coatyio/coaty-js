@@ -14,8 +14,14 @@ describe("Bootstrapping", () => {
 
     const myMulticastDnsServiceName = "My mDNS Test Service";
     const myMulticastDnsServiceType = "coaty-test";
-    const myMulticastDnsServicePort = 1898;
+    const myMulticastDnsServicePort = 4711;
     const myMulticastDnsServiceHostname = "My mDNS Service Hostname";
+
+    const containers: Container[] = [];
+    const addContainer = (c: Container) => {
+        containers.push(c);
+        return c;
+    };
 
     const components: Components = {
         controllers: {
@@ -38,27 +44,31 @@ describe("Bootstrapping", () => {
         Spy.reset();
     });
 
+    afterAll(() => {
+        containers.forEach(c => c.shutdown());
+    });
+
     it("throws on undefined configuration", () => {
-        expect(() => Container.resolve(components, undefined)).toThrow();
+        expect(() => addContainer(Container.resolve(components, undefined))).toThrow();
     });
 
     it("throws on non-existing configuration", () => {
-        expect(() => Container
-            .resolve(components, NodeUtils.provideConfiguration("unknown.config.json")))
+        expect(() => addContainer(Container
+            .resolve(components, NodeUtils.provideConfiguration("unknown.config.json"))))
             .toThrow();
     });
 
     it("loads existing JSON configuration", () => {
-        expect(() => Container.resolve(
+        expect(() => addContainer(Container.resolve(
             components,
-            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.json"))))
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.json")))))
             .not.toThrow();
     });
 
     it("loads existing JS configuration", () => {
-        expect(() => Container.resolve(
+        expect(() => addContainer(Container.resolve(
             components,
-            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))))
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")))))
             .not.toThrow();
     });
 
@@ -68,6 +78,7 @@ describe("Bootstrapping", () => {
                 getConfigUrl("bootstrap.config.json")))
             .then(
                 container => {
+                    addContainer(container);
                     expect(container.runtime.commonOptions.agentIdentity.name).toBe("Barney");
                     expect(container.identity.name).toBe("Barney");
                     done();
@@ -119,9 +130,9 @@ describe("Bootstrapping", () => {
     });
 
     it("registers a controller at runtime", (done) => {
-        const container = Container.resolve(
+        const container = addContainer(Container.resolve(
             components,
-            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
+            NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))));
         const regFunc = () => container.registerController("MockObjectController1", mocks.MockObjectController1);
         expect(regFunc).not.toThrow();
 
@@ -178,18 +189,18 @@ describe("Bootstrapping", () => {
 
     describe("Container", () => {
         it("resolves all configured controllers", () => {
-            Container.resolve(
+            addContainer(Container.resolve(
                 components,
-                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))));
 
             expect(Spy.get("MockObjectController1Spy").value1)
                 .toHaveBeenCalledWith(1);
             expect(Spy.get("MockObjectController2Spy").value1)
                 .not.toHaveBeenCalled();
             expect(Spy.get("MockObjectController3Spy").value1)
-                .toHaveBeenCalledWith("mqtt://192.168.0.112");
+                .toHaveBeenCalledWith("mqtt://test.nobroker.org");
             expect(Spy.get("MockMyController1Spy").value1)
-                .toHaveBeenCalledWith("mqtt://192.168.0.112");
+                .toHaveBeenCalledWith("mqtt://test.nobroker.org");
             expect(Spy.get("MockMyController2Spy").value1)
                 .not.toHaveBeenCalled();
 
@@ -206,9 +217,9 @@ describe("Bootstrapping", () => {
         });
 
         it("gets controllers that are registered", () => {
-            const container = Container.resolve(
+            const container = addContainer(Container.resolve(
                 components,
-                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))));
 
             expect(container.getController("FooController"))
                 .toBeUndefined();
@@ -223,18 +234,18 @@ describe("Bootstrapping", () => {
         });
 
         it("has proper package version info in runtime", () => {
-            Container.resolve(
+            addContainer(Container.resolve(
                 components,
-                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))));
 
             expect(Spy.get("MockObjectController1Spy").value3)
                 .toHaveBeenCalledWith(process.env.npm_package_name + "@" + process.env.npm_package_version);
         });
 
         it("generates v4 UUIDs at runtime", () => {
-            const container = Container.resolve(
+            const container = addContainer(Container.resolve(
                 components,
-                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js")));
+                NodeUtils.provideConfiguration(getConfigFile("bootstrap.config.js"))));
 
             expect(container.runtime.newUuid()).toMatch(UUID_REGEX);
             expect(Runtime.newUuid()).toMatch(UUID_REGEX);

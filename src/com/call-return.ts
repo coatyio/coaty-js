@@ -1,8 +1,7 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, ContextFilter, isContextFilterValid, ObjectMatcher } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
-import { CommunicationTopic } from "./communication-topic";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Call event for invoking a remote operation call.
@@ -15,6 +14,10 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
 
     get eventTypeFilter() {
         return this._operation;
+    }
+
+    get responseEventType() {
+        return CommunicationEventType.Return;
     }
 
     /**
@@ -48,7 +51,7 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
         eventData: CallEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidTopicLevel(operation)) {
+        if (!CommunicationEvent.isValidEventFilter(operation)) {
             throw new TypeError("in CallEvent: argument 'operation' is not a valid operation name");
         }
 
@@ -84,10 +87,9 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
     /**
      * @internal For internal use in framework only.
      *
-     * Throws an error if the given Return event data does not correspond to the
-     * event data of this Call event.
-     *
      * @param eventData event data for Return response event
+     * @throws if the given Return event data does not correspond to the event
+     * data of this Call event.
      */
     ensureValidResponseParameters(eventData: ReturnEventData) {
         // No checks required.
@@ -253,7 +255,10 @@ export class ReturnEvent extends CommunicationEvent<ReturnEventData> {
     }
 
     /**
-     * Associated request event
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     * 
+     * Associated request event.
      */
     eventRequest: CallEvent;
 

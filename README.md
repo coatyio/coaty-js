@@ -78,8 +78,8 @@ framework supplied in separate projects on
 or building blocks, provide reusable functionality for specialized use cases and
 application scenarios build on top of the Coaty core.
 
-Finally, the unit tests delivered with the framework itself also provide a
-valuable source of programming examples for experienced developers.
+Finally, the integration tests delivered with the framework itself also provide
+a valuable source of programming examples for experienced developers.
 
 Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable

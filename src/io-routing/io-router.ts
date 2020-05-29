@@ -44,7 +44,7 @@ export abstract class IoRouter extends Controller {
 
     private _ioContext: IoContext;
     private _managedIoNodes: Map<Uuid, IoNode>;
-    private _sourceRoutes: Map<Uuid, string>;
+    private _sourceRoutes: Map<Uuid, [string, boolean]>;
 
     onInit() {
         super.onInit();
@@ -55,7 +55,7 @@ export abstract class IoRouter extends Controller {
         }
         this._ioContext.parentObjectId = this.container.identity.objectId;
         this._managedIoNodes = new Map<Uuid, IoNode>();
-        this._sourceRoutes = new Map<Uuid, string>();
+        this._sourceRoutes = new Map<Uuid, [string, boolean]>();
     }
 
     onCommunicationManagerStarting() {
@@ -168,12 +168,12 @@ export abstract class IoRouter extends Controller {
         // Ensure that an IO source publishes IO values to all associated IO
         // actors on a unique and common route.
         let route = this._sourceRoutes.get(source.objectId);
-        if (!route) {
-            route = source.externalRoute || this.communicationManager.createAssociatingRoute(source);
+        if (route === undefined) {
+            route = [source.externalRoute || this.communicationManager.createAssociatingRoute(source), !!source.externalRoute];
             this._sourceRoutes.set(source.objectId, route);
         }
         this.communicationManager.publishAssociate(
-            AssociateEvent.with(this._ioContext.name, source.objectId, actor.objectId, route, updateRate));
+            AssociateEvent.with(this._ioContext.name, source.objectId, actor.objectId, route[0], route[1], updateRate));
     }
 
     /**

@@ -10,8 +10,7 @@ import {
     ObjectJoinCondition,
     ObjectMatcher,
 } from "..";
-
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Query event.
@@ -20,6 +19,10 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
 
     get eventType() {
         return CommunicationEventType.Query;
+    }
+
+    get responseEventType() {
+        return CommunicationEventType.Retrieve;
     }
 
     /**
@@ -62,9 +65,9 @@ export class QueryEvent extends CommunicationEvent<QueryEventData> {
     /**
      * @internal For internal use in framework only.
      * 
-     * Throws an error if the given Retrieve event data does not correspond to 
-     * the event data of this Query event.
      * @param eventData event data for Retrieve response event
+     * @throws if the given Retrieve event data does not correspond to
+     * the event data of this Query event.
      */
     ensureValidResponseParameters(eventData: RetrieveEventData) {
         for (const obj of eventData.objects) {
@@ -225,7 +228,10 @@ export class RetrieveEvent extends CommunicationEvent<RetrieveEventData> {
     }
 
     /**
-     * Associated request event
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     * 
+     * Associated request event.
      */
     eventRequest: QueryEvent;
 

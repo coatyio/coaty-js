@@ -90,7 +90,7 @@ npm install
 ```
 
 **Note:** Peer dependencies will be installed automatically because they have
-also been defined as devDependencies (for executing the framework's unit tests).
+also been defined as devDependencies (for executing the framework's tests).
 
 The following npm scripts are used to control the build process:
 
@@ -119,7 +119,7 @@ is written to the `docs/api/` folder and accessible by `index.html`.
 
 ## Test Coaty framework
 
-The framework test suite contains unit, component and E2E tests:
+The framework test suite contains unit, component and E2E integration tests:
 
 ```sh
 npm run test        - Run the test suite on the current build
@@ -145,13 +145,12 @@ test_reports_dir     where JUnit XML output is written
 The test suite performs E2E communication messaging tests using the Coaty broker
 that is installed as a local npm dev dependency. The broker's options are
 configured in `./test/support/broker.config.json`. To avoid collisions with
-other brokers running on the local machine, the test broker listens to mqtt port
+other brokers running on the local machine, the test broker listens to MQTT port
 1898 and http/ws port 9898 (typically brokers use 1883/9883 by default). Note
 that the broker is only running while the test suite is executed.
 
-To support debugging of communication-related unit tests use the `test:debug`
-target. Any published and subscribed messages are logged to the console by the
-broker.
+To support debugging of communication-related tests use the `test:debug` target.
+Any published and subscribed messages are logged to the console by the broker.
 
 ## Release Coaty framework
 
@@ -230,8 +229,6 @@ Note that the `push-release` script may error because the git private key authen
 has not been set up properly. In this case, you can perform this step manually using your
 preferred GIT client. Do **NOT** forget to push the release tag, too. You can push both
 the release commits and the annotated tag by executing `git push --follow-tags`.
-
-Note that 
 
 ### Publish a release
 

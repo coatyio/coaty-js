@@ -1,8 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, CoreTypes } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
-import { CommunicationTopic } from "./communication-topic";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Advertise event.
@@ -29,7 +28,7 @@ export class AdvertiseEvent extends CommunicationEvent<AdvertiseEventData> {
     constructor(eventData: AdvertiseEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidTopicLevel(eventData.object.objectType)) {
+        if (!CommunicationEvent.isValidEventFilter(eventData.object.objectType)) {
             throw new TypeError(`in AdvertiseEvent: invalid objectType ${eventData.object.objectType}`);
         }
     }

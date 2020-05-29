@@ -6,13 +6,14 @@ const Jasmine = require("jasmine");
 const SpecReporter = require("jasmine-spec-reporter").SpecReporter;
 const reporters = require("jasmine-reporters");
 const broker = require("../../dist/es5-commonjs/scripts/broker");
+const MqttBinding = require("../../dist/es5-commonjs/index").MqttBinding;
 
 function runTests(testSpecDir, verbose, debug) {
     const noop = () => { };
     const jrunner = new Jasmine();
 
     // Boolean is implicitely converted to a string value.
-    process.env.jasmineDebug = debug;
+    process.env.test_debug = debug;
 
     if (verbose) {
         // Remove default reporter logs
@@ -24,7 +25,7 @@ function runTests(testSpecDir, verbose, debug) {
             displaySuiteNumber: true,
             displayPendingSpec: true,
             displayPendingSummary: false,
-            displayStacktrace: "none",
+            displayStacktrace: "pretty",
         }));
     }
 
@@ -47,10 +48,18 @@ function runTests(testSpecDir, verbose, debug) {
     const brokerSettings = require(path.resolve(brokerConfig) ||
         path.resolve("./test/support/broker.config.json"));
 
-    // Start static http server first to provide Coaty JSON configuration in unit tests.
+    // Start static http server first to provide Coaty JSON configuration in tests.
     startHttpServer(brokerSettings.staticServe, brokerSettings.staticPort)
         .then(() => {
-            // Then start broker and execute the unit tests.
+            // Provide a global communication binding to all tests.
+            global["test_binding"] = MqttBinding.withOptions({
+                brokerUrl: `mqtt://localhost:${brokerSettings.port}`,
+
+                // 0:debug, 1:info, 2:error
+                logLevel: debug ? 0 : 2,
+            });
+
+            // Then start broker and execute the tests.
             startBroker(() => {
                 jrunner.execute();
             },

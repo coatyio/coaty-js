@@ -31,8 +31,8 @@ describe("Historian", () => {
 
     const configuration: Configuration = {
         communication: {
-            brokerUrl: "mqtt://localhost:1898",
             shouldAutoStart: true,
+            binding: global["test_binding"],
         },
         controllers: {
             HistorianController: {

@@ -1,8 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { Uuid } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
-import { CommunicationTopic } from "./communication-topic";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Associate event.
@@ -31,11 +30,6 @@ export class AssociateEvent extends CommunicationEvent<AssociateEventData> {
      */
     constructor(ioContextName: string, eventData: AssociateEventData) {
         super(eventData);
-
-        if (!CommunicationTopic.isValidTopicLevel(ioContextName)) {
-            throw new TypeError("in AssociateEvent: argument 'ioContextName' is not a valid IO context name");
-        }
-
         this._ioContextName = ioContextName;
     }
 
@@ -47,8 +41,10 @@ export class AssociateEvent extends CommunicationEvent<AssociateEventData> {
      * actor belong to
      * @param ioSourceId the IO source object Id to associate/disassociate
      * @param ioActorId the IO actor object Id to associate/disassociate
-     * @param associatingRoute the route used by IO source for publishing and by
-     * IO actor for subscribing, or undefined if used for disassocation
+     * @param associatingRoute the IO route used by IO source for publishing and
+     * by IO actor for subscribing, or undefined if used for disassocation
+     * @param isExternalRoute indicates whether the associating route is
+     * external (optional)
      * @param updateRate the recommended update rate (in millis) for publishing
      * IO source values (optional)
      */
@@ -57,8 +53,10 @@ export class AssociateEvent extends CommunicationEvent<AssociateEventData> {
         ioSourceId: Uuid,
         ioActorId: Uuid,
         associatingRoute: string,
+        isExternalRoute?: boolean,
         updateRate?: number) {
-        return new AssociateEvent(ioContextName, new AssociateEventData(ioSourceId, ioActorId, associatingRoute, updateRate));
+        return new AssociateEvent(ioContextName,
+            new AssociateEventData(ioSourceId, ioActorId, associatingRoute, isExternalRoute, updateRate));
     }
 
     get eventType() {
@@ -74,6 +72,7 @@ export class AssociateEventData extends CommunicationEventData {
     private _ioSourceId: Uuid;
     private _ioActorId: Uuid;
     private _associatingRoute: string;
+    private _isExternalRoute?: boolean;
     private _updateRate?: number;
 
     /**
@@ -83,17 +82,20 @@ export class AssociateEventData extends CommunicationEventData {
      * associate/disassociate
      * @param ioActorId the object Id of the IO actor object to
      * associate/disassociate
-     * @param associatingRoute the route used by IO source for publishing and
+     * @param associatingRoute the IO route used by IO source for publishing and
      *   by IO actor for subscribing, or undefined if used for disassocation
+     * @param isExternalRoute indicates whether the associating route is
+     * external (optional)
      * @param updateRate The recommended update rate (in millis) for publishing
      * IO source values (optional)
      */
-    constructor(ioSourceId: Uuid, ioActorId: Uuid, associatingRoute: string, updateRate?: number) {
+    constructor(ioSourceId: Uuid, ioActorId: Uuid, associatingRoute: string, isExternalRoute?: boolean, updateRate?: number) {
         super();
 
         this._ioSourceId = ioSourceId;
         this._ioActorId = ioActorId;
         this._associatingRoute = associatingRoute;
+        this._isExternalRoute = isExternalRoute;
         this._updateRate = updateRate;
 
         if (!this._hasValidParameters()) {
@@ -107,6 +109,7 @@ export class AssociateEventData extends CommunicationEventData {
             eventData.ioSourceId,
             eventData.ioActorId,
             eventData.associatingRoute,
+            eventData.isExternalRoute,
             eventData.updateRate);
     }
 
@@ -125,11 +128,21 @@ export class AssociateEventData extends CommunicationEventData {
     }
 
     /**
-     * The route associating the given IO source and IO actor, or undefined if
+     * The IO route associating the given IO source and IO actor, or undefined if
      * the association between IO source and actor should be dissolved.
      */
     get associatingRoute() {
         return this._associatingRoute;
+    }
+
+    /**
+     * Indicates whether the associating route represents an external topic, as
+     * specified by `IoPoint.externalRoute` (optional).
+     *
+     * Only used for association, not for disassociation.
+     */
+    get isExternalRoute() {
+        return this._isExternalRoute;
     }
 
     /**

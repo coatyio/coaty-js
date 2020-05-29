@@ -27,8 +27,8 @@ export class MockIoActorController extends IoActorController {
                 logger.associations.push(hasAssociation);
             });
 
-        // Do not log the latest submitted value on reassociation or undefined
-        // on initialization.
+        // Note: does not log the latest submitted value on reassociation or
+        // undefined on initialization.
         this.communicationManager.observeIoValue(actor)
             .subscribe(value => {
                 logger.values.push(value);

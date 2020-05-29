@@ -98,21 +98,22 @@ export interface CommunicationOptions {
      * import { MqttBinding } from "@coaty/binding.mqtt";
      *
      * const configuration: Configuration = {
-     *    ...
-     *    communication: {
-     *        binding: MqttBinding.withOptions({
-     *            namespace: ...,
-     *            brokerUrl: ... ,
-     *            ...
-     *        }),
-     *        ...
-     *    },
-     *    ...
+     *   ...
+     *   communication: {
+     *       binding: MqttBinding.withOptions({
+     *           namespace: ...,
+     *           brokerUrl: ... ,
+     *           ...
+     *       }),
+     *       ...
+     *   },
+     *   ...
      * };
      * ```
      *
-     * @remarks If no binding is specified, the MQTT binding is used with the
-     * MQTT specific options defined in this interface.
+     * @remarks This feature is experimental until Coaty 3. If no binding is
+     * specified, a default MQTT binding is used with the MQTT specific options
+     * defined in this interface.
      */
     binding?: CommunicationBindingWithOptions<CommunicationBinding<CommunicationBindingOptions>, CommunicationBindingOptions>;
 

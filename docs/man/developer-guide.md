@@ -163,8 +163,8 @@ framework supplied in separate projects on
 or building blocks, provide reusable functionality for specialized use cases and
 application scenarios build on top of the Coaty core.
 
-Finally, the unit tests delivered with the framework itself also provide a valuable
-source of programming examples for experienced developers.
+Finally, the integration tests delivered with the framework itself also provide
+a valuable source of programming examples for experienced developers.
 
 Note that the framework makes heavy use of the Reactive Programming paradigm
 using RxJS observables. Understanding observables is an indispensable
@@ -1218,10 +1218,10 @@ deferred, if the Communication Manager is either stopped or started but offline,
 i.e. not connected currently.
 
 All your *subscriptions* issued while the Communication Manager is stopped or
-offline will be (re)applied when it (re)connects again. *Publications* issued
-while the Communication Manager is stopped or offline will be applied only after
-the next (re)connect. Publications issued in online state will *not* be
-deferred, i.e. not reapplied after a reconnect.
+started (both online and offline) will be (re)applied when it (re)connects
+again. *Publications* issued while the Communication Manager is stopped or
+offline will be applied only after the next (re)connect. Publications issued in
+online state will *not* be deferred, i.e. not reapplied after a reconnect.
 
 If you stop the Communication Manager by executing its `stop` method, all
 deferred publications and subscriptions will be discarded.
@@ -1828,8 +1828,8 @@ MQTT. It can publish and subscribe to external, so-called "raw" MQTT messages.
 
 To enable interoperation with external MQTT clients, use `publishRaw` to publish
 a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
-`Uint8Array` (or `Buffer` in Node.js, a subclass thereof), and an optional flag indicating whether
-the published message should be retained.
+`Uint8Array` (or `Buffer` in Node.js, a subclass thereof), and an optional flag
+indicating whether the published message should be retained.
 
 Likewise, use `observeRaw` to observe matching incoming messages on raw MQTT
 subscription topics. The observable returned by calling `observeRaw` emits
@@ -1838,9 +1838,14 @@ is represented as `Uint8Array` (or `Buffer` in Node.js, a subclass thereof) and
 needs to be parsed by the application. Use the `toString` method on a payload to
 convert the raw data to an UTF8 encoded string.
 
-> **Note**: Only incoming messages that are *not* non-raw Coaty communication
-> events are dispatched to raw message observers. If you observe raw topics that
-> start with `coaty/`, matching incoming messages will never be emitted.
+> **Notes**: To unobserve a given raw subscription topic, simply unsubscribe
+> any subscriptions on the returned observable, either explicitely or
+> implicitely (by using RX operators such as `take` or `takeUntil`).
+>
+> Only incoming messages that are *not* non-raw Coaty communication events are
+> dispatched to raw message observers. If you observe raw topics that have a
+> Coaty event like topic structure, matching incoming messages will never be
+> emitted.
 
 ### Distributed lifecycle management
 
@@ -1932,12 +1937,12 @@ The communication event flow of IO routing comprises the following steps:
    `CommunicationManager.observeIoValue()` for a given IO actor these events can
    be observed.
 
-> **Note**: IO values cannot only be routed between Coaty-defined IO sources and
-> actors, but also from external publishing sources to Coaty-defined IO actors
-> and from Coaty-defined IO sources to external subscribing actors. In this
-> case, the associating route is not created by an IO router, but defined by the
-> external source or actor component. For details, see property
-> `IoPoint.externalRoute`.
+> **Note**: Not only can IO values be routed between Coaty-defined IO sources
+> and actors, but also from external publishing sources to Coaty-defined IO
+> actors and from Coaty-defined IO sources to external subscribing actors. In
+> this case, the associating route is not created by an IO router, but defined
+> by the external source or actor component. For details, see code documentation
+> of property `IoPoint.externalRoute`.
 
 ### IO Routing implementation
 
@@ -1951,7 +1956,8 @@ and formats. The IO context for this scenario defines an operating state, either
 normal or emergency. In each state, exactly one of the two actors should consume
 IO values emitted by both sources.
 
-> **Note**: This example is fully implemented in the [Coaty JS unit tests on IO
+> **Note**: This example is fully implemented in the [Coaty JS integration tests
+> on IO
 > routing](https://github.com/coatyio/coaty-js/blob/master/src/test/spec/io-routing.spec.ts).
 
 ```ts
@@ -1963,7 +1969,7 @@ interface TemperatureIoContext extends IoContext {
 
 // Common Context for IO routing
 const ioContext: TemperatureIoContext = {
-    name: "Temperature Measurement",
+    name: "TemperatureMeasurement",
     objectId: "b61740a6-95d7-4d1a-8be5-53f3aa1e0b79",
     coreType: "IoContext",
     objectType: "coaty.test.TemperatureIoContext",
@@ -2013,7 +2019,7 @@ const actor2: IoActor = {
 const configuration1: Configuration = {
     common: {
         ioContextNodes: {
-            "Temperature Measurement": {
+            TemperatureMeasurement: {
                 ioSources: [source1, source2],
             },
         },
@@ -2024,7 +2030,7 @@ const configuration1: Configuration = {
 const configuration2: Configuration = {
     common: {
         ioContextNodes: {
-            "Temperature Measurement": {
+            TemperatureMeasurement: {
                 ioActors: [actor1],
                 characteristics: {
                     isResponsibleForOperatingState: "normal",
@@ -2038,7 +2044,7 @@ const configuration2: Configuration = {
 const configuration3: Configuration = {
     common: {
         ioContextNodes: {
-            "Temperature Measurement": {
+            TemperatureMeasurement: {
                 ioActors: [actor2],
                 characteristics: {
                     isResponsibleForOperatingState: "emergency",
@@ -2108,7 +2114,7 @@ this.communicationManager
     });
 
 // Change context operating state to trigger rerouting from sources to emergency actors
-ioContext.operatingState = "emergency";
+this.ioContext.operatingState = "emergency";
 this.communicationManager
     .publishUpdate(UpdateEvent.withObject(ioContext))
     .pipe(take(1))
@@ -2143,7 +2149,7 @@ provides specific controller classes on top of these methods:
 
 Take a look at these controllers in action in the Coaty [OPC UA connector
 example](https://github.com/coatyio/connector.opc-ua.js/tree/master/example) or
-in the Coaty JS unit tests on IO routing.
+in the Coaty JS integration tests on IO routing.
 
 ## Unified Storage API - Query anywhere - Retrieve anywhere
 
@@ -2435,7 +2441,7 @@ In the following we will explain the NoSQL operation for finding objects.
 Detailed descriptions of all supported operations are documented in the code of
 class `DbContext`. For usage examples, take a look at the [Coaty JS Hello World
 example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js)
-and at the unit tests found under `ts/test/spec/db-nosql.spec.ts` and
+and at the integration tests found under `ts/test/spec/db-nosql.spec.ts` and
 `ts/test/spec/db-in-memory.spec.ts`.
 
 A NoSQL operation for finding objects looks like the following:
@@ -2580,7 +2586,7 @@ params: [ "Fred", "Flintstone" ]
 ```
 
 Detailed descriptions of the supported operations are documented in the code of class
-`DbContext`. Code examples can be found in the framework's unit tests
+`DbContext`. Code examples can be found in the framework's integration tests
 in the file `ts/test/spec/db-sql.spec.ts`.
 
 ### Local storage operations
@@ -2824,9 +2830,9 @@ dbContext.addCollection("appusers")
     .catch(error => console.log(error));
 ```
 
-Detailed descriptions of the supported NoSQL operations are documented in the code
-of class `DbContext`. Further code examples can be found in the framework's unit tests
-in the file `ts/test/spec/db-in-memory.spec.ts`.
+Detailed descriptions of the supported NoSQL operations are documented in the
+code of class `DbContext`. Further code examples can be found in the framework's
+integration tests in the file `ts/test/spec/db-in-memory.spec.ts`.
 
 ### SQLite Node.js adapter
 

@@ -1,4 +1,4 @@
 # Ignore the following files when publishing package to npm
 
-# unit test specs
+# test specs
 /test/

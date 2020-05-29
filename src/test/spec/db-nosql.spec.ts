@@ -35,13 +35,13 @@ import {
 } from "./db.mocks";
 import { failTest, skipTestIf } from "./utils";
 
-const isDebugTestDbMode = process.env.jasmineDebug === "true";
+const isDebugTestDbMode = process.env.test_debug === "true";
 
 describe("Postgres NoSQL Database Access", () => {
 
     const TEST_TIMEOUT = 30000;
 
-    const PG_ADAPTER_NAME = "PostgresAdapter";
+    const PG_ADAPTER_NAME = "Postgres";
 
     const components: Components = {
         controllers: {
@@ -53,7 +53,7 @@ describe("Postgres NoSQL Database Access", () => {
     const configuration: Configuration = {
         communication: {
             shouldAutoStart: true,
-            brokerUrl: "mqtt://localhost:1898",
+            binding: global["test_binding"],
         },
         databases: {
             testdb: {
@@ -72,7 +72,7 @@ describe("Postgres NoSQL Database Access", () => {
 
                     // Log pool activities in debug mode
                     log: (msg, level) => {
-                        isDebugTestDbMode && console.log(msg);
+                        isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${msg}`);
                     },
                 },
             },
@@ -84,7 +84,7 @@ describe("Postgres NoSQL Database Access", () => {
                 connectionOptions: {
                     // Log pool activities in debug mode
                     log: (msg, level) => {
-                        isDebugTestDbMode && console.log(msg);
+                        isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${msg}`);
                     },
                 },
             },
@@ -167,7 +167,7 @@ describe("Postgres NoSQL Database Access", () => {
                     // Drop database failed because other pool clients (from previous historian.spec tests) 
                     // are still connected to it; just continue...
                     isDbAvailable = true;
-                    isDebugTestDbMode && console.log(error);
+                    isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${error}`);
                     done();
                 });
         },

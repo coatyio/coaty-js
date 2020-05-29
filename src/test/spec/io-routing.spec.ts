@@ -4,9 +4,18 @@
  * Test suite for framework IO routing.
  */
 
-import { AssociateEvent, CommunicationManager, Components, Configuration, Container, CoreTypes, IoActor, IoContext, IoSource, Runtime } from "../..";
-import { CommunicationEventType } from "../../com/communication-event";
-import { CommunicationTopic } from "../../com/communication-topic";
+import {
+    Components,
+    Configuration,
+    Container,
+    CoreTypes,
+    IoActor,
+    IoContext,
+    IoSource,
+    Runtime,
+} from "../..";
+import { CommunicationTopic } from "../../com/mqtt/communication-topic";
+import { CommunicationEventType } from "../../internal";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
 
 import * as mocks from "./io-routing.mocks";
@@ -25,7 +34,7 @@ describe("IO Routing", () => {
         const configuration1: Configuration = {
             communication: {
                 shouldAutoStart: false,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
             controllers: {
             },
@@ -54,75 +63,33 @@ describe("IO Routing", () => {
             TEST_TIMEOUT);
 
         it("validates external IoValue topics", () => {
-            const version = CommunicationManager.PROTOCOL_VERSION;
-            expect(CommunicationTopic.isValidIoValueTopic("", version)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("+", version)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("#", version)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/#", version)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/+/", version)).toBeFalsy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar\u0000/", version)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("", false)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("+", false)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("#", false)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("/foo/#", false)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("/foo/+/", false)).toBeFalsy();
+            expect(CommunicationTopic.isValidTopic("/foo/bar\u0000/", false)).toBeFalsy();
 
-            expect(CommunicationTopic.isValidIoValueTopic("/", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("//", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("foo", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/foo/bar", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("foo/bar/", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic("/coaty/foo/bar", version)).toBeTruthy();
-            expect(CommunicationTopic.isValidIoValueTopic(
-                "coaty/" + CommunicationManager.PROTOCOL_VERSION + "/-" + "/IOV/5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                version)).toBeTruthy();
-        });
-
-        it("validates internal IoValue topics", () => {
-            const version = CommunicationManager.PROTOCOL_VERSION;
-            const namespace = "-";
-            let topic = CommunicationTopic.createByLevels(
-                CommunicationManager.PROTOCOL_VERSION,
-                namespace,
-                CommunicationEventType.IoValue,
-                undefined,
-                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                undefined,
-            ).getTopicName();
-
-            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeTruthy();
-
-            topic = CommunicationTopic.createByLevels(
-                CommunicationManager.PROTOCOL_VERSION - 1,
-                namespace,
-                CommunicationEventType.IoValue,
-                undefined,
-                undefined,
-                undefined,
-            ).getTopicName();
-
-            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
-
-            topic = CommunicationTopic.createByLevels(
-                CommunicationManager.PROTOCOL_VERSION,
-                namespace,
-                CommunicationEventType.Advertise,
-                "CoatyObject",
-                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                undefined,
-            ).getTopicName();
-
-            expect(CommunicationTopic.isValidIoValueTopic(topic, version)).toBeFalsy();
-
+            expect(CommunicationTopic.isValidTopic("/", false)).toBeTruthy();
+            expect(CommunicationTopic.isValidTopic("//", false)).toBeTruthy();
+            expect(CommunicationTopic.isValidTopic("foo", false)).toBeTruthy();
+            expect(CommunicationTopic.isValidTopic("/foo/bar", false)).toBeTruthy();
+            expect(CommunicationTopic.isValidTopic("foo/bar/", false)).toBeTruthy();
+            expect(CommunicationTopic.isValidTopic("/coaty/foo/bar", false)).toBeTruthy();
         });
 
         it("validates Associate topic and event", () => {
-            const version = CommunicationManager.PROTOCOL_VERSION;
+            const version = 3;
             const namespace = "-";
-            const ioContextName = "Temperature Measurememt";
-            const topicName = CommunicationTopic.createByLevels(
-                CommunicationManager.PROTOCOL_VERSION,
+            const ioContextName = "TemperatureMeasurememt";
+            const topicName = CommunicationTopic.getTopicName(
+                3,
                 namespace,
                 CommunicationEventType.Associate,
                 ioContextName,
                 "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
                 undefined,
-            ).getTopicName();
+            );
             const topic = CommunicationTopic.createByName(topicName);
 
             expect(topic.version).toBe(version);
@@ -131,20 +98,6 @@ describe("IO Routing", () => {
             expect(topic.eventTypeFilter).toBe(ioContextName);
             expect(topic.sourceId).toBe("5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7");
             expect(topic.correlationId).toBe(undefined);
-
-            expect(() => AssociateEvent.with(
-                "Temperature Measurement",
-                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                "2805b596-711f-440d-a97d-5b70a8e91ef8",
-                "myroute"))
-                .not.toThrow();
-
-            expect(() => AssociateEvent.with(
-                "Temperature/Measurement",
-                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                "2805b596-711f-440d-a97d-5b70a8e91ef8",
-                "myroute"))
-                .toThrow();
         });
 
     });
@@ -178,7 +131,7 @@ describe("IO Routing", () => {
         };
 
         const ioContext: IoContext = {
-            name: "Temperature Measurement",
+            name: "TemperatureMeasurement",
             coreType: "IoContext",
             objectType: CoreTypes.OBJECT_TYPE_IO_CONTEXT,
             objectId: Runtime.newUuid(),
@@ -187,7 +140,7 @@ describe("IO Routing", () => {
         const configuration1: Configuration = {
             common: {
                 ioContextNodes: {
-                    "Temperature Measurement": {
+                    TemperatureMeasurement: {
                         ioSources: [source1],
                         ioActors: [actor1],
                     },
@@ -195,7 +148,7 @@ describe("IO Routing", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
             controllers: {
                 BasicIoRouter: {
@@ -250,14 +203,15 @@ describe("IO Routing", () => {
                         expect(logger.values[i]).toBe(emittedValues[i]);
                     }
 
-                    // This will cause the 3rd state change event (disassociation) on the source
+                    // This will cause a 3rd state change event (disassociation) on the source,
+                    // but when the Associate event is received, its observable has already been
+                    // completed so the event is not dispatched.
                     container.shutdown();
 
                     delayAction(1000, done, () => {
-                        expect(sourceAssociations.length).toBe(3);
+                        expect(sourceAssociations.length).toBe(2);
                         expect(sourceAssociations[0]).toBe(false);
                         expect(sourceAssociations[1]).toBe(true);
-                        expect(sourceAssociations[2]).toBe(false);
                     });
 
                 });
@@ -297,7 +251,7 @@ describe("IO Routing", () => {
         };
 
         const ioContext = {
-            name: "Temperature Measurement",
+            name: "TemperatureMeasurement",
             coreType: "IoContext",
             objectType: "coaty.test.TemperatureIoContext",
             objectId: Runtime.newUuid(),
@@ -352,21 +306,21 @@ describe("IO Routing", () => {
         const configuration1: Configuration = {
             common: {
                 ioContextNodes: {
-                    "Temperature Measurement": {
+                    TemperatureMeasurement: {
                         ioSources: [source1, source2],
                     },
                 },
             },
             communication: {
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
         };
 
         const configuration2: Configuration = {
             common: {
                 ioContextNodes: {
-                    "Temperature Measurement": {
+                    TemperatureMeasurement: {
                         ioActors: [actor1],
                         characteristics: {
                             isResponsibleForOperatingState: "normal",
@@ -376,14 +330,14 @@ describe("IO Routing", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
         };
 
         const configuration3: Configuration = {
             common: {
                 ioContextNodes: {
-                    "Temperature Measurement": {
+                    TemperatureMeasurement: {
                         ioActors: [actor2],
                         characteristics: {
                             isResponsibleForOperatingState: "emergency",
@@ -393,14 +347,14 @@ describe("IO Routing", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
         };
 
         const configuration4: Configuration = {
             common: {
                 ioContextNodes: {
-                    "Temperature Measurement": {
+                    TemperatureMeasurement: {
                         ioActors: [actor3],
                         characteristics: {
                             isResponsibleForOperatingState: "normal",
@@ -410,7 +364,7 @@ describe("IO Routing", () => {
             },
             communication: {
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
             },
             controllers: {
                 RuleBasedIoRouter: {
@@ -494,7 +448,7 @@ describe("IO Routing", () => {
 
                 delayAction(500, undefined, () => {
                     // actor1 receives all IO values in normal operating state
-                    expect(logger1.associations.length).toBe(2);    // including initial value (false, because deassociated)
+                    expect(logger1.associations.length).toBe(2);    // including initial value (false, because disassociated)
                     expect(logger1.associations[0]).toBe(false);
                     expect(logger1.associations[1]).toBe(true);
                     expect(logger1.values.length).toBe(emittedValues1.length + emittedValues2.length);
@@ -505,12 +459,12 @@ describe("IO Routing", () => {
                     }
 
                     // actor2 receives no IO values in normal operating state
-                    expect(logger2.associations.length).toBe(1);    // initial value (false, because deassociated)
+                    expect(logger2.associations.length).toBe(1);    // initial value (false, because disassociated)
                     expect(logger2.associations[0]).toBe(false);
                     expect(logger2.values.length).toBe(0);
 
                     // actor3 receives no IO values because its value type is incompatible
-                    expect(logger3.associations.length).toBe(1);    // initial value (false, because deassociated)
+                    expect(logger3.associations.length).toBe(1);    // initial value (false, because disassociated)
                     expect(logger3.associations[0]).toBe(false);
                     expect(logger3.values.length).toBe(0);
 
@@ -552,23 +506,23 @@ describe("IO Routing", () => {
                             logger2.reset();
                             logger3.reset();
 
-                            // This will cause the final state change events (disassociation) on the sources
+                            // This will cause the final state change events (disassociation) on the sources,
+                            // but when the Associate event is received, its observable has already been
+                            // completed so the event is not dispatched.
                             container1.shutdown();
 
                             delayAction(500, undefined, () => {
-                                expect(source1Associations.length).toBe(5);
+                                expect(source1Associations.length).toBe(4);
                                 expect(source1Associations[0]).toBe(false);     // initial
                                 expect(source1Associations[1]).toBe(true);      // associate with actor1
-                                expect(source1Associations[2]).toBe(false);     // deassociate with actor1
+                                expect(source1Associations[2]).toBe(false);     // disassociate with actor1
                                 expect(source1Associations[3]).toBe(true);      // associate with actor2
-                                expect(source1Associations[4]).toBe(false);     // deassociate with actor2
 
-                                expect(source2Associations.length).toBe(5);
+                                expect(source2Associations.length).toBe(4);
                                 expect(source2Associations[0]).toBe(false);     // initial
                                 expect(source2Associations[1]).toBe(true);      // associate with actor1
-                                expect(source2Associations[2]).toBe(false);     // deassociate with actor1
+                                expect(source2Associations[2]).toBe(false);     // disassociate with actor1
                                 expect(source2Associations[3]).toBe(true);      // associate with actor2
-                                expect(source2Associations[4]).toBe(false);     // deassociate with actor2
 
                                 container2.shutdown();
                                 container3.shutdown();
@@ -577,7 +531,7 @@ describe("IO Routing", () => {
                                 delayAction(500, done, () => {
 
                                     expect(logger1.associations.length).toBe(0);    // not associated on shutdown
-                                    expect(logger2.associations.length).toBe(1);    // deassociated on shutdown
+                                    expect(logger2.associations.length).toBe(1);    // disassociated on shutdown
                                     expect(logger2.associations[0]).toBe(false);
                                     expect(logger3.associations.length).toBe(0);    // not associated on shutdown
                                 });

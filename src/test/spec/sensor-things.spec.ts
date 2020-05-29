@@ -31,8 +31,8 @@ describe("Sensor things", () => {
 
         const configuration1: Configuration = {
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
+                binding: global["test_binding"],
             },
         };
 
@@ -46,8 +46,8 @@ describe("Sensor things", () => {
 
         const configuration2: Configuration = {
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
+                binding: global["test_binding"],
             },
             controllers: {
                 MockEmitterController: {
@@ -65,8 +65,8 @@ describe("Sensor things", () => {
 
         const configuration3: Configuration = {
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
                 shouldAutoStart: true,
+                binding: global["test_binding"],
             },
             controllers: {
                 MockEmitterController: {

@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoreTypes, Uuid } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Deadvertise event.

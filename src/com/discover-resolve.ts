@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, CoreType, CoreTypes, Uuid } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Discover event.
@@ -10,6 +10,10 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
 
     get eventType() {
         return CommunicationEventType.Discover;
+    }
+
+    get responseEventType() {
+        return CommunicationEventType.Resolve;
     }
 
     /**
@@ -87,10 +91,10 @@ export class DiscoverEvent extends CommunicationEvent<DiscoverEventData> {
 
     /**
      * @internal For internal use in framework only.
-     * 
-     * Throws an error if the given Resolve event data does not correspond to 
-     * the event data of this Discover event.
+     *
      * @param eventData event data for Resolve response event
+     * @throws if the given Resolve event data does not correspond to the event
+     * data of this Discover event.
      */
     ensureValidResponseParameters(eventData: ResolveEventData) {
         if (this.data.coreTypes !== undefined && eventData.object) {
@@ -323,7 +327,11 @@ export class ResolveEvent extends CommunicationEvent<ResolveEventData> {
     }
 
     /**
-     * Associated request event
+     * 
+     * @internal For internal use in framework only. Do not use in application
+     * code.
+     * 
+     * Associated request event.
      */
     eventRequest: DiscoverEvent;
 

@@ -10,13 +10,13 @@ import { PostgresAdapter } from "../../db/adapter-postgres";
 
 import { failTest, skipTestIf } from "./utils";
 
-const isDebugTestDbMode = process.env.jasmineDebug === "true";
+const isDebugTestDbMode = process.env.test_debug === "true";
 
 describe("SQL Database Access", () => {
 
     const TEST_TIMEOUT = 10000;
 
-    const PG_ADAPTER_NAME = "PostgresAdapter";
+    const PG_ADAPTER_NAME = "Postgres";
 
     const components: Components = {
     };
@@ -24,7 +24,7 @@ describe("SQL Database Access", () => {
     const configuration: Configuration = {
         communication: {
             shouldAutoStart: false,
-            brokerUrl: "mqtt://localhost:1898",
+            binding: global["test_binding"],
         },
         controllers: {
         },
@@ -45,7 +45,7 @@ describe("SQL Database Access", () => {
 
                     // Log pool activities in debug mode
                     log: (msg, level) => {
-                        isDebugTestDbMode && console.log(msg);
+                        isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${msg}`);
                     },
                 },
             },
@@ -57,7 +57,7 @@ describe("SQL Database Access", () => {
                 connectionOptions: {
                     // Log pool activities in debug mode
                     log: (msg, level) => {
-                        isDebugTestDbMode && console.log(msg);
+                        isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${msg}`);
                     },
                 },
             },
@@ -98,7 +98,7 @@ describe("SQL Database Access", () => {
                 .then(() => { isDbAvailable = true; done(); })
                 .catch(error => {
                     isDbAvailable = false;
-                    isDebugTestDbMode && console.log(error);
+                    isDebugTestDbMode && console.log(`[${PG_ADAPTER_NAME}] [dbg] ${error}`);
                     done();
                 });
 

@@ -8,7 +8,6 @@ import {
     AdvertiseEvent,
     ChannelEvent,
     CoatyObject,
-    CommunicationManager,
     CommunicationState,
     Components,
     Configuration,
@@ -24,8 +23,8 @@ import {
     RemoteCallErrorMessage,
     UpdateEvent,
 } from "../..";
-import { CommunicationEventType } from "../../com/communication-event";
-import { CommunicationTopic } from "../../com/communication-topic";
+import { CommunicationTopic } from "../../com/mqtt/communication-topic";
+import { CommunicationEventType } from "../../internal";
 
 import * as mocks from "./communication.mocks";
 import { delayAction, Spy, UUID_REGEX } from "./utils";
@@ -34,10 +33,10 @@ describe("Communication", () => {
 
     describe("Communication Topics", () => {
 
-        const version = CommunicationManager.PROTOCOL_VERSION;
+        const version = 3;
         const namespace = "-";
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
-        const oneWayTopic = CommunicationTopic.createByLevels(
+        const oneWayTopic = CommunicationTopic.getTopicName(
             version,
             namespace,
             CommunicationEventType.Advertise,
@@ -46,7 +45,7 @@ describe("Communication", () => {
             undefined,
         );
         const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
-        const twoWayTopic = CommunicationTopic.createByLevels(
+        const twoWayTopic = CommunicationTopic.getTopicName(
             version,
             namespace,
             CommunicationEventType.Discover,
@@ -55,37 +54,20 @@ describe("Communication", () => {
             correlationId,
         );
 
-        it("throws on invalid topic structure format", () => {
-            expect(() => CommunicationTopic.createByName(oneWayTopic.getTopicName() + "/")).toThrow();
-            expect(() => CommunicationTopic.createByName("/" + oneWayTopic.getTopicName())).toThrow();
-        });
-
         it("has correct level structure for one-way event", () => {
-            expect(oneWayTopic.sourceId).toBe(senderId);
-            expect(oneWayTopic.eventType).toBe(CommunicationEventType.Advertise);
-            expect(oneWayTopic.eventTypeName).toBe(`Advertise:CoatyObject`);
-            expect(oneWayTopic.correlationId).toBe(undefined);
-            expect(oneWayTopic.version).toBe(version);
-
-            const tpc = CommunicationTopic.createByName(oneWayTopic.getTopicName());
+            const tpc = CommunicationTopic.createByName(oneWayTopic);
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
-            expect(tpc.eventTypeName).toBe(`Advertise:CoatyObject`);
+            expect(tpc.eventTypeFilter).toBe(`CoatyObject`);
             expect(tpc.correlationId).toBe(undefined);
             expect(tpc.version).toBe(version);
         });
 
         it("has correct level structure for two-way event", () => {
-            expect(twoWayTopic.sourceId).toBe(senderId);
-            expect(twoWayTopic.eventType).toBe(CommunicationEventType.Discover);
-            expect(twoWayTopic.eventTypeName).toBe(`Discover`);
-            expect(twoWayTopic.correlationId).toBe(correlationId);
-            expect(twoWayTopic.version).toBe(version);
-
-            const tpc = CommunicationTopic.createByName(twoWayTopic.getTopicName());
+            const tpc = CommunicationTopic.createByName(twoWayTopic);
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Discover);
-            expect(tpc.eventTypeName).toBe(`Discover`);
+            expect(tpc.eventTypeFilter).toBe(undefined);
             expect(tpc.correlationId).toBe(correlationId);
             expect(tpc.version).toBe(version);
         });
@@ -162,7 +144,7 @@ describe("Communication", () => {
                 agentIdentity: { name: "Agent1" },
             },
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
                 shouldAutoStart: true,
             },
         };
@@ -178,7 +160,7 @@ describe("Communication", () => {
 
         const configuration2: Configuration = {
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
                 shouldAutoStart: true,
             },
             controllers: {
@@ -196,7 +178,7 @@ describe("Communication", () => {
 
         const configuration3: Configuration = {
             communication: {
-                brokerUrl: "mqtt://localhost:1898",
+                binding: global["test_binding"],
                 shouldAutoStart: true,
             },
             controllers: {
@@ -236,7 +218,7 @@ describe("Communication", () => {
             },
             TEST_TIMEOUT);
 
-        it("throws on resubscription for response events", (done) => {
+        it("throws on resubscription of response events", (done) => {
             let isResubOkay = false;
             let isResubError = false;
             const myFooObject: CoatyObject = {
@@ -538,20 +520,17 @@ describe("Communication", () => {
             });
         }, TEST_TIMEOUT);
 
-        it("throws on invalid Raw topics", () => {
-            expect(() => container2.communicationManager
-                .publishRaw("", "abc"))
-                .toThrow();
-            expect(() => container2.communicationManager
-                .publishRaw("foo/\0", "abc"))
-                .toThrow();
-            expect(() => container2.communicationManager
-                .publishRaw("/foo/+", "abc"))
-                .toThrow();
-            expect(() => container2.communicationManager
-                .publishRaw("/foo/#", "abc"))
-                .toThrow();
-        });
+        // @todo Binding specific tests
+        // it("invalid Raw topics are not published", () => {
+        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("", "abc")))
+        //         .toThrow();
+        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("foo/\0", "abc")))
+        //         .toThrow();
+        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("/foo/+", "abc")))
+        //         .toThrow();
+        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("/foo/#", "abc")))
+        //         .toThrow();
+        // });
 
         it("all Raw topics are received", (done) => {
 
@@ -565,17 +544,16 @@ describe("Communication", () => {
                 eventData: [],
             };
             const eventCount = 3;
-            const topicFilter1 = "/test/42/";
-            const topicFilter2 = `${CommunicationTopic.PROTOCOL_NAME}/#`;
-            /* tslint:disable-next-line:max-line-length */
-            const topic2 = `${CommunicationTopic.PROTOCOL_NAME}/foo/bar/baz`;
+            const topic1 = "/test/42/";
+            const topic2 = `coaty/foo/bar/baz`;
+            const topicFilter2 = `coaty/#`;
 
-            deviceController.watchForRawEvents(logger1, topicFilter1);
+            deviceController.watchForRawEvents(logger1, topic1);
             deviceController.watchForRawEvents(logger2, topicFilter2);
 
             delayAction(500, undefined, () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController1")
-                    .publishRawEvents(eventCount, topicFilter1);
+                    .publishRawEvents(eventCount, topic1);
                 container2.getController<mocks.MockObjectController>("MockObjectController1")
                     .publishRawEvents(eventCount, topic2);
 
@@ -583,8 +561,10 @@ describe("Communication", () => {
                     expect(logger1.count).toBe(eventCount);
                     expect(logger1.eventData.length).toBe(eventCount);
                     for (let i = 1; i <= logger1.count; i++) {
-                        expect(logger1.eventData[i - 1][0]).toBe(topicFilter1);
-                        expect(logger1.eventData[i - 1][1]).toBe(`${i}`);
+                        expect(logger1.eventData[i - 1][0]).toBe(topic1);
+                        // Raw event payload is a Uint8Array of length 1.
+                        expect(logger1.eventData[i - 1][1].length).toBe(1);
+                        expect(logger1.eventData[i - 1][1][0]).toBe(i);
                     }
                     expect(logger2.count).toBe(0);
                     expect(logger2.eventData.length).toBe(0);
@@ -610,8 +590,8 @@ describe("Communication", () => {
                 agentIdentity: { name: "IntraCommunicationTestContainer" },
             },
             communication: {
+                binding: global["test_binding"],
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
             },
             controllers: {
                 MockDeviceController: {
@@ -728,9 +708,14 @@ describe("Communication", () => {
                 agentIdentity: { name: "CrossNamespaceTestContainer" },
             },
             communication: {
-                namespace: "my-namespace-1",
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: {
+                    type: global["test_binding"].type,
+                    options: {
+                        ...global["test_binding"].options,
+                        namespace: "my-namespace-1",
+                    },
+                },
             },
             controllers: {
                 MockDeviceController: {
@@ -749,9 +734,14 @@ describe("Communication", () => {
                 agentIdentity: { name: "CrossNamespaceTestContainer" },
             },
             communication: {
-                namespace: "my-namespace-2",
                 shouldAutoStart: true,
-                brokerUrl: "mqtt://localhost:1898",
+                binding: {
+                    type: global["test_binding"].type,
+                    options: {
+                        ...global["test_binding"].options,
+                        namespace: "my-namespace-2",
+                    },
+                },
             },
             controllers: {
                 MockObjectController: {
@@ -815,7 +805,15 @@ describe("Communication", () => {
                 eventData: [],
             };
 
-            container1.communicationManager.start({ shouldEnableCrossNamespacing: true })
+            const newBinding = {
+                type: global["test_binding"].type,
+                options: {
+                    ...global["test_binding"].options,
+                    namespace: "my-namespace-11",
+                    shouldEnableCrossNamespacing: true,
+                },
+            };
+            container1.communicationManager.start({ binding: newBinding })
                 .then(() => {
                     // Observes both core type and object type, so two events are received.
                     deviceController.watchForAdvertiseEvents(logger);

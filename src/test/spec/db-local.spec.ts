@@ -20,7 +20,7 @@ describe("Local Store Access", () => {
     const configuration: Configuration = {
         communication: {
             shouldAutoStart: false,
-            brokerUrl: "mqtt://localhost:1898",
+            binding: global["test_binding"],
         },
         controllers: {
         },

@@ -1,8 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
 import { CoatyObject, CoreTypes } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "./communication-event";
-import { CommunicationTopic } from "./communication-topic";
+import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
 
 /**
  * Channel event.
@@ -41,7 +40,7 @@ export class ChannelEvent extends CommunicationEvent<ChannelEventData> {
         eventData: ChannelEventData) {
         super(eventData);
 
-        if (!CommunicationTopic.isValidTopicLevel(channelId)) {
+        if (!CommunicationEvent.isValidEventFilter(channelId)) {
             throw new TypeError("in ChannelEvent: argument 'channelId' is not a valid channel identifier");
         }
 
