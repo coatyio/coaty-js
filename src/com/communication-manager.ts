@@ -817,22 +817,25 @@ export class CommunicationManager implements IDisposable {
 
     private _joinBinding() {
         const identity = this._container.identity;
-        const joinEvents: Array<[AdvertiseEvent, string]> = [];
+        const joinEvents: AdvertiseEvent[] = [];
 
-        // Advertise identity as core type when joining (cp. _observeDiscoverIdentity).
-        joinEvents.push([AdvertiseEvent.withObject(identity), identity.coreType]);
+        // Advertise identity when joining (cp. _observeDiscoverIdentity).
+        joinEvents.push(AdvertiseEvent.withObject(identity));
 
-        // Advertise IO nodes as core type when joining (cp. _observeDiscoverIoNodes).
+        // Advertise IO nodes when joining (cp. _observeDiscoverIoNodes).
         this._ioNodes.forEach(ioNode => {
-            joinEvents.push([AdvertiseEvent.withObject(ioNode), ioNode.coreType]);
+            joinEvents.push(AdvertiseEvent.withObject(ioNode));
         });
 
         // Deadvertise identity and IO nodes when unjoining.
-        const unjoinEvent = DeadvertiseEvent.withObjectIds(...joinEvents.map(e => e[0].data.object.objectId));
+        const unjoinEvent = DeadvertiseEvent.withObjectIds(...joinEvents.map(e => e.data.object.objectId));
 
         this._binding.join({
             agentId: identity.objectId,
-            joinEvents: joinEvents.map(e => this._createEventLike(e[0], e[1])),
+
+            // Advertise identity and IO nodes as core types only.
+            joinEvents: joinEvents.map(e => this._createEventLike(e, e.data.object.coreType)),
+
             unjoinEvent: this._createEventLike(unjoinEvent),
         });
 
