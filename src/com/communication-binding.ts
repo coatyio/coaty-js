@@ -2,8 +2,53 @@
 
 import { EventEmitter } from "events";
 
-import { CommunicationState } from "..";
-import { CommunicationEventType } from "../internal";
+/**
+ * Indicates the connectivity state of a communication binding with repect to
+ * the Coaty communication infrastructure.
+ *
+ * @remarks For bindings that use brokerless messaging protocols the value
+ * emitted while the binding is joined is always `Online`, since `Offline` state
+ * cannot be detected in such an infrastructure.
+ */
+export enum CommunicationState {
+
+    /** Disconnected from the Coaty communication infrastructure. */
+    Offline,
+
+    /** Connected to the Coaty communication infrastructure. */
+    Online,
+}
+
+/**
+ * Predefined event types for Coaty communication event patterns.
+ */
+export enum CommunicationEventType {
+    // Event types for non-Coaty messages
+    External = 0,
+
+    Raw,
+
+    // Event types for Coaty one-way messages
+    OneWay,
+
+    Advertise,
+    Deadvertise,
+    Channel,
+    Associate,
+    IoValue,
+
+    // Event types for Coaty two-way messages
+    TwoWay,
+
+    Discover,
+    Resolve,
+    Query,
+    Retrieve,
+    Update,
+    Complete,
+    Call,
+    Return,
+}
 
 /**
  * Protocol for exchanging communication event properties for both publications and
@@ -158,7 +203,7 @@ export enum CommunicationBindingState {
 /**
  * Defines options for joining the Coaty communication infrastructure.
  */
-export interface JoinOptions {
+export interface CommunicationBindingJoinOptions {
 
     /** 
      * An id that uniquely identifies the joining agent. 
@@ -265,7 +310,7 @@ export interface CommunicationBindingProtocol {
      *
      * @param joinOptions options used for joining
      */
-    join(joinOptions: JoinOptions): void;
+    join(joinOptions: CommunicationBindingJoinOptions): void;
 
     /**
      * Called by CommunicationManager once when this binding should leave the
@@ -406,7 +451,7 @@ export abstract class CommunicationBinding<O extends CommunicationBindingOptions
         this.onInit();
     }
 
-    join(joinOptions: JoinOptions) {
+    join(joinOptions: CommunicationBindingJoinOptions) {
         if (this.state === CommunicationBindingState.Joined) {
             return;
         }
@@ -459,7 +504,7 @@ export abstract class CommunicationBinding<O extends CommunicationBindingOptions
     /** 
      * Called by base binding class once to join.
      */
-    protected abstract onJoin(joinOptions: JoinOptions): void;
+    protected abstract onJoin(joinOptions: CommunicationBindingJoinOptions): void;
 
     /** 
      * Called by base binding class once to unjoin.

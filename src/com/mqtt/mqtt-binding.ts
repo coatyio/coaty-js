@@ -2,15 +2,15 @@
 
 import { Client, connect, IClientOptions, ISubscriptionMap } from "mqtt";
 
-import { CommunicationState } from "../..";
 import {
     CommunicationBinding,
+    CommunicationBindingJoinOptions,
     CommunicationBindingLogLevel,
     CommunicationBindingOptions,
     CommunicationBindingWithOptions,
     CommunicationEventLike,
     CommunicationEventType,
-    JoinOptions,
+    CommunicationState,
 } from "../../internal";
 
 import { CommunicationTopic } from "./communication-topic";
@@ -159,7 +159,7 @@ export interface MqttBindingOptions extends CommunicationBindingOptions {
  */
 export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
-    private _joinOptions: JoinOptions;
+    private _joinOptions: CommunicationBindingJoinOptions;
     private _pendingPublicationItems: PublicationItem[];
     private _issuedSubscriptionItems: SubscriptionItem[];
     private _isPublishingDeferred: boolean;
@@ -223,7 +223,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         this._reset();
     }
 
-    protected onJoin(joinOptions: JoinOptions) {
+    protected onJoin(joinOptions: CommunicationBindingJoinOptions) {
         this._joinOptions = joinOptions;
 
         // Set up MQTT Client

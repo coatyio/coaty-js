@@ -24,8 +24,10 @@ import {
     CommunicationBindingProtocol,
     CommunicationBindingState,
     CommunicationEventLike,
+    CommunicationEventType,
+    CommunicationState,
 } from "./communication-binding";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType, TopicEvent, TopicEventData } from "./communication-event";
+import { CommunicationEvent, CommunicationEventData, TopicEvent, TopicEventData } from "./communication-event";
 import { DeadvertiseEvent, DeadvertiseEventData } from "./deadvertise";
 import { DiscoverEvent, DiscoverEventData, ResolveEvent, ResolveEventData } from "./discover-resolve";
 import { IoStateEvent } from "./io-state";
@@ -35,19 +37,6 @@ import { RawEvent, RawEventData } from "./raw";
 import { CompleteEvent, CompleteEventData, UpdateEvent, UpdateEventData } from "./update-complete";
 
 import { MqttBinding } from "./mqtt/mqtt-binding";
-
-
-/**
- * Indicates the connectivity state of a Communication Manager.
- */
-export enum CommunicationState {
-
-    /** Disconnected */
-    Offline,
-
-    /** Connected */
-    Online,
-}
 
 /**
  * Indicates the current operating state of a Communication Manager.

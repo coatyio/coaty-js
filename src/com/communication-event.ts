@@ -2,36 +2,7 @@
 
 import { Uuid } from "..";
 
-/**
- * Predefined event types used by Coaty communication event patterns.
- */
-export enum CommunicationEventType {
-    // Event types for non-Coaty messages
-    External = 0,
-
-    Raw,
-
-    // Event types for Coaty one-way messages
-    OneWay,
-
-    Advertise,
-    Deadvertise,
-    Channel,
-    Associate,
-    IoValue,
-
-    // Event types for Coaty two-way messages
-    TwoWay,
-
-    Discover,
-    Resolve,
-    Query,
-    Retrieve,
-    Update,
-    Complete,
-    Call,
-    Return,
-}
+import { CommunicationEventType } from "../internal";
 
 /**
  * Base generic communication event class
