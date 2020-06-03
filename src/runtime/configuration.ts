@@ -1,7 +1,14 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { AgentInfo, Identity, IoActor, IoSource } from "..";
-import { CommunicationBinding, CommunicationBindingOptions, CommunicationBindingWithOptions } from "../internal";
+import {
+    AgentInfo,
+    CommunicationBinding,
+    CommunicationBindingOptions,
+    CommunicationBindingWithOptions,
+    Identity,
+    IoActor,
+    IoSource,
+} from "..";
 
 /**
  * Configuration options for Coaty container components,

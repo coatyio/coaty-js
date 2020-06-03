@@ -1,7 +1,7 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, ContextFilter, isContextFilterValid, ObjectMatcher } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
+import { CoatyObject, CommunicationEventType, ContextFilter, isContextFilterValid, ObjectMatcher } from "..";
+import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
  * Call event for invoking a remote operation call.

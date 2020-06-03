@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
+import { CoatyObject, CommunicationEventType, CoreTypes } from "..";
+import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
  * Channel event.

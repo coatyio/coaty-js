@@ -11,7 +11,7 @@ import {
     CommunicationEventLike,
     CommunicationEventType,
     CommunicationState,
-} from "../../internal";
+} from "../..";
 
 import { CommunicationTopic } from "./communication-topic";
 

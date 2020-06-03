@@ -1,7 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Uuid } from "../..";
-import { CommunicationEventType } from "../../internal";
+import { CommunicationEventType, Uuid } from "../..";
 
 /**
  * Represents MQTT publication and subscription topics for Coaty communication

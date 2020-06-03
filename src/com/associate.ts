@@ -1,7 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { Uuid } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
+import { CommunicationEventType, Uuid } from "..";
+import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
  * Associate event.

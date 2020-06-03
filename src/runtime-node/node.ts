@@ -4,8 +4,7 @@
 
 import * as bonjourFunc from "bonjour";
 
-import { Configuration, Container, toLocalIsoString } from "..";
-import { CommunicationState } from "../internal";
+import { CommunicationState, Configuration, Container, toLocalIsoString } from "..";
 
 /* Process Termination and Console Logging Utilities */
 

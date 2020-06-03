@@ -8,6 +8,8 @@ import {
     AdvertiseEvent,
     ChannelEvent,
     CoatyObject,
+    CommunicationEventType,
+    CommunicationState,
     Components,
     Configuration,
     Container,
@@ -23,7 +25,6 @@ import {
     UpdateEvent,
 } from "../..";
 import { CommunicationTopic } from "../../com/mqtt/communication-topic";
-import { CommunicationEventType, CommunicationState } from "../../internal";
 
 import * as mocks from "./communication.mocks";
 import { delayAction, Spy, UUID_REGEX } from "./utils";

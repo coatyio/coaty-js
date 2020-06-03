@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CommunicationEventData } from "../internal";
+import { CommunicationEventData } from "./communication-event";
 
 /**
  * IoState event.

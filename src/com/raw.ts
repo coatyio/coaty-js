@@ -1,6 +1,7 @@
 /*! Copyright (c) 2020 Siemens AG. Licensed under the MIT License. */
 
-import { CommunicationEventType, TopicEvent, TopicEventData } from "../internal";
+import { CommunicationEventType } from "..";
+import { TopicEvent, TopicEventData } from "./communication-event";
 
 /**
  * Raw event.

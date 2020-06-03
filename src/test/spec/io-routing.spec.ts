@@ -5,6 +5,7 @@
  */
 
 import {
+    CommunicationEventType,
     Components,
     Configuration,
     Container,
@@ -15,7 +16,6 @@ import {
     Runtime,
 } from "../..";
 import { CommunicationTopic } from "../../com/mqtt/communication-topic";
-import { CommunicationEventType } from "../../internal";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
 
 import * as mocks from "./io-routing.mocks";

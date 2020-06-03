@@ -1,7 +1,7 @@
 /*! Copyright (c) 2020 Siemens AG. Licensed under the MIT License. */
 
-import { IoSource } from "..";
-import { CommunicationEventType, TopicEvent, TopicEventData } from "../internal";
+import { CommunicationEventType, IoSource } from "..";
+import { TopicEvent, TopicEventData } from "./communication-event";
 
 /**
  * IoValue event.

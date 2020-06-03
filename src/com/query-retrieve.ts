@@ -3,6 +3,7 @@
 import {
     areObjectJoinConditionsValid,
     CoatyObject,
+    CommunicationEventType,
     CoreType,
     CoreTypes,
     isObjectFilterValid,
@@ -10,7 +11,7 @@ import {
     ObjectJoinCondition,
     ObjectMatcher,
 } from "..";
-import { CommunicationEvent, CommunicationEventData, CommunicationEventType } from "../internal";
+import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
  * Query event.
