@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/coatyio/coaty-js/compare/v2.1.1...v2.2.0) (2020-06-03)
+
+### Features
+
+* **communication:** make communication binding protocol publicly accessible by external binding implementations ([d3dea5a](https://github.com/coatyio/coaty-js/commit/d3dea5a91ce8419875fff4195101b0815a0c640f))
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/coatyio/coaty-js/compare/v2.1.0...v2.1.1) (2020-05-29)
 
