@@ -247,7 +247,7 @@ export class MqttTopic {
                 count++;
             } else if (code <= 0x7ff) {
                 count += 2;
-            } else if (code >= 0xd800 && code <= 0xdbff) {
+            } else if (code >= 0xd800 && code <= 0xdfff) {
                 // high surrogate code unit
                 count += 4;
             } else {
