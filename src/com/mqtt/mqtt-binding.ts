@@ -308,7 +308,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
         // Called when a reconnect starts.
         this._client.on("reconnect", () => {
-            this.log(CommunicationBindingLogLevel.info, "Client reconnecting... ");
+            this.log(CommunicationBindingLogLevel.info, "Client reconnecting...");
         });
 
         // Called after a disconnection requested by calling client.end().
@@ -338,8 +338,8 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
     }
 
     protected onUnjoin() {
-        // In Initialized state dispose allocated resources.
         if (!this._client) {
+            // In Initialized state dispose allocated resources.
             this._reset();
             return Promise.resolve();
         }
@@ -626,8 +626,9 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         };
 
         // For Raw and external IoValue events we need to store separate subscriptions
-        // for the same topic filter as they can be unsubscribed individually. Note
-        // however, that an MQTT broker only maintains the latest subscription.
+        // for the same (maybe pattern-based) topic filter as they can be unsubscribed
+        // individually. Note however, that an MQTT broker only maintains the latest
+        // subscription.
         const index = this._issuedSubscriptionItems.findIndex(i =>
             i.eventType === eventLike.eventType && i.topicFilter === topicFilter);
 
@@ -652,8 +653,9 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
         const items = this._issuedSubscriptionItems.splice(index, 1);
 
-        // For Raw and external IoValue events we can only unsubscribe the item if there
-        // is no other subscription issued on the same topic filter.
+        // For Raw and external IoValue events we can only unsubscribe the item if
+        // there is no other subscription issued on the same (maybe pattern-based)
+        // topic filter.
         let otherEventType: CommunicationEventType;
         if (eventLike.eventType === CommunicationEventType.Raw) {
             otherEventType = CommunicationEventType.IoValue;

@@ -80,7 +80,7 @@ export class MqttTopic {
     }
 
     /**
-     * Gets the topic name for the given topic levels.
+     * Gets the publication topic name for the given topic levels.
      *
      * @param version the protocol version
      * @param namepace the messaging namespace

@@ -145,8 +145,9 @@ export abstract class TopicEventData extends CommunicationEventData {
     /** 
      * Raw data string or Uint8Array (or Buffer in Node.js, a subclass thereof).
      *
-     * For inbound events raw data is always of type `Uint8Array`. For publication
-     * events, data may also be as string.
+     * For inbound events raw data is always of type `Uint8Array` (or Buffer in
+     * Node.js, a subclass thereof). For publication events, data may also be a
+     * string.
      */
     payload: string | Uint8Array;
 }
