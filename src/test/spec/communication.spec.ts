@@ -24,7 +24,7 @@ import {
     RemoteCallErrorMessage,
     UpdateEvent,
 } from "../..";
-import { CommunicationTopic } from "../../com/mqtt/communication-topic";
+import { MqttTopic } from "../../com/mqtt/mqtt-topic";
 
 import * as mocks from "./communication.mocks";
 import { delayAction, Spy, UUID_REGEX } from "./utils";
@@ -36,7 +36,7 @@ describe("Communication", () => {
         const version = 3;
         const namespace = "-";
         const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
-        const oneWayTopic = CommunicationTopic.getTopicName(
+        const oneWayTopic = MqttTopic.getTopicName(
             version,
             namespace,
             CommunicationEventType.Advertise,
@@ -45,7 +45,7 @@ describe("Communication", () => {
             undefined,
         );
         const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
-        const twoWayTopic = CommunicationTopic.getTopicName(
+        const twoWayTopic = MqttTopic.getTopicName(
             version,
             namespace,
             CommunicationEventType.Discover,
@@ -55,7 +55,7 @@ describe("Communication", () => {
         );
 
         it("has correct level structure for one-way event", () => {
-            const tpc = CommunicationTopic.createByName(oneWayTopic);
+            const tpc = MqttTopic.createByName(oneWayTopic);
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
             expect(tpc.eventTypeFilter).toBe(`CoatyObject`);
@@ -64,7 +64,7 @@ describe("Communication", () => {
         });
 
         it("has correct level structure for two-way event", () => {
-            const tpc = CommunicationTopic.createByName(twoWayTopic);
+            const tpc = MqttTopic.createByName(twoWayTopic);
             expect(tpc.sourceId).toBe(senderId);
             expect(tpc.eventType).toBe(CommunicationEventType.Discover);
             expect(tpc.eventTypeFilter).toBe(undefined);
@@ -74,7 +74,7 @@ describe("Communication", () => {
 
         it("has correct filter structure for one-way events", () => {
             const eventType = CommunicationEventType.Advertise;
-            const topicFilter = CommunicationTopic
+            const topicFilter = MqttTopic
                 .getTopicFilter(version, namespace, eventType, "CoatyObject", undefined);
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/ADV:CoatyObject/+`);
         });
@@ -82,48 +82,48 @@ describe("Communication", () => {
         it("has correct filter structure for Associate event", () => {
             const eventType = CommunicationEventType.Associate;
             const eventTypeFilter = "IoGroup1";
-            const topicFilter = CommunicationTopic
+            const topicFilter = MqttTopic
                 .getTopicFilter(version, namespace, eventType, eventTypeFilter, undefined);
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/ASC:${eventTypeFilter}/+`);
         });
 
         it("has correct filter structure for two-way request events", () => {
             const eventType = CommunicationEventType.Discover;
-            const topicFilter = CommunicationTopic
+            const topicFilter = MqttTopic
                 .getTopicFilter(version, namespace, eventType, undefined, undefined);
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/DSC/+/+`);
         });
 
         it("has correct filter structure for two-way response events", () => {
             const eventType = CommunicationEventType.Resolve;
-            const topicFilter = CommunicationTopic
+            const topicFilter = MqttTopic
                 .getTopicFilter(version, namespace, eventType, undefined, correlationId);
             expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/${correlationId}`);
         });
 
         it("raw topics match topic filters", () => {
-            expect(CommunicationTopic.matches("/", "/")).toBeTrue();
-            expect(CommunicationTopic.matches("/", "+/")).toBeTrue();
-            expect(CommunicationTopic.matches("/", "/+")).toBeTrue();
-            expect(CommunicationTopic.matches("/", "+/+")).toBeTrue();
-            expect(CommunicationTopic.matches("/a/", "/+/")).toBeTrue();
-            expect(CommunicationTopic.matches("//", "/+/")).toBeTrue();
-            expect(CommunicationTopic.matches("/", "/#")).toBeTrue();
-            expect(CommunicationTopic.matches("/aaa/b", "/#")).toBeTrue();
-            expect(CommunicationTopic.matches("a/", "/#")).toBeFalse();
-            expect(CommunicationTopic.matches("", "#")).toBeFalse();
-            expect(CommunicationTopic.matches("", "")).toBeFalse();
-            expect(CommunicationTopic.matches("sport/tennis/player1", "sport/tennis/player1/#")).toBeTrue();
-            expect(CommunicationTopic.matches("sport/tennis/player1/ranking", "sport/tennis/player1/#")).toBeTrue();
-            expect(CommunicationTopic.matches("sport/tennis/player1/score/wim", "sport/tennis/player1/#")).toBeTrue();
-            expect(CommunicationTopic.matches("sport", "sport/#")).toBeTrue();
-            expect(CommunicationTopic.matches("a/b", "#")).toBeTrue();
-            expect(CommunicationTopic.matches("/a", "#")).toBeTrue();
-            expect(CommunicationTopic.matches("/", "#")).toBeTrue();
-            expect(CommunicationTopic.matches("sport/tennis/player1", "sport/tennis/+")).toBeTrue();
-            expect(CommunicationTopic.matches("sport/tennis/player1/ranking", "sport/tennis/+")).toBeFalse();
-            expect(CommunicationTopic.matches("sport", "sport/+")).toBeFalse();
-            expect(CommunicationTopic.matches("sport/", "sport/+")).toBeTrue();
+            expect(MqttTopic.matches("/", "/")).toBeTrue();
+            expect(MqttTopic.matches("/", "+/")).toBeTrue();
+            expect(MqttTopic.matches("/", "/+")).toBeTrue();
+            expect(MqttTopic.matches("/", "+/+")).toBeTrue();
+            expect(MqttTopic.matches("/a/", "/+/")).toBeTrue();
+            expect(MqttTopic.matches("//", "/+/")).toBeTrue();
+            expect(MqttTopic.matches("/", "/#")).toBeTrue();
+            expect(MqttTopic.matches("/aaa/b", "/#")).toBeTrue();
+            expect(MqttTopic.matches("a/", "/#")).toBeFalse();
+            expect(MqttTopic.matches("", "#")).toBeFalse();
+            expect(MqttTopic.matches("", "")).toBeFalse();
+            expect(MqttTopic.matches("sport/tennis/player1", "sport/tennis/player1/#")).toBeTrue();
+            expect(MqttTopic.matches("sport/tennis/player1/ranking", "sport/tennis/player1/#")).toBeTrue();
+            expect(MqttTopic.matches("sport/tennis/player1/score/wim", "sport/tennis/player1/#")).toBeTrue();
+            expect(MqttTopic.matches("sport", "sport/#")).toBeTrue();
+            expect(MqttTopic.matches("a/b", "#")).toBeTrue();
+            expect(MqttTopic.matches("/a", "#")).toBeTrue();
+            expect(MqttTopic.matches("/", "#")).toBeTrue();
+            expect(MqttTopic.matches("sport/tennis/player1", "sport/tennis/+")).toBeTrue();
+            expect(MqttTopic.matches("sport/tennis/player1/ranking", "sport/tennis/+")).toBeFalse();
+            expect(MqttTopic.matches("sport", "sport/+")).toBeFalse();
+            expect(MqttTopic.matches("sport/", "sport/+")).toBeTrue();
         });
 
     });

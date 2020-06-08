@@ -15,7 +15,7 @@ import {
     IoSource,
     Runtime,
 } from "../..";
-import { CommunicationTopic } from "../../com/mqtt/communication-topic";
+import { MqttTopic } from "../../com/mqtt/mqtt-topic";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
 
 import * as mocks from "./io-routing.mocks";
@@ -63,26 +63,26 @@ describe("IO Routing", () => {
             TEST_TIMEOUT);
 
         it("validates external IoValue topics", () => {
-            expect(CommunicationTopic.isValidTopic("", false)).toBeFalsy();
-            expect(CommunicationTopic.isValidTopic("+", false)).toBeFalsy();
-            expect(CommunicationTopic.isValidTopic("#", false)).toBeFalsy();
-            expect(CommunicationTopic.isValidTopic("/foo/#", false)).toBeFalsy();
-            expect(CommunicationTopic.isValidTopic("/foo/+/", false)).toBeFalsy();
-            expect(CommunicationTopic.isValidTopic("/foo/bar\u0000/", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("+", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("#", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("/foo/#", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("/foo/+/", false)).toBeFalsy();
+            expect(MqttTopic.isValidTopic("/foo/bar\u0000/", false)).toBeFalsy();
 
-            expect(CommunicationTopic.isValidTopic("/", false)).toBeTruthy();
-            expect(CommunicationTopic.isValidTopic("//", false)).toBeTruthy();
-            expect(CommunicationTopic.isValidTopic("foo", false)).toBeTruthy();
-            expect(CommunicationTopic.isValidTopic("/foo/bar", false)).toBeTruthy();
-            expect(CommunicationTopic.isValidTopic("foo/bar/", false)).toBeTruthy();
-            expect(CommunicationTopic.isValidTopic("/coaty/foo/bar", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("/", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("//", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("foo", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("/foo/bar", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("foo/bar/", false)).toBeTruthy();
+            expect(MqttTopic.isValidTopic("/coaty/foo/bar", false)).toBeTruthy();
         });
 
         it("validates Associate topic and event", () => {
             const version = 3;
             const namespace = "-";
             const ioContextName = "TemperatureMeasurememt";
-            const topicName = CommunicationTopic.getTopicName(
+            const topicName = MqttTopic.getTopicName(
                 3,
                 namespace,
                 CommunicationEventType.Associate,
@@ -90,7 +90,7 @@ describe("IO Routing", () => {
                 "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
                 undefined,
             );
-            const topic = CommunicationTopic.createByName(topicName);
+            const topic = MqttTopic.createByName(topicName);
 
             expect(topic.version).toBe(version);
             expect(topic.namespace).toBe(namespace);

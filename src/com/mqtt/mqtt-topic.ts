@@ -6,7 +6,7 @@ import { CommunicationEventType, Uuid } from "../..";
  * Represents MQTT publication and subscription topics for Coaty communication
  * events (except Raw and external IoValue).
  */
-export class CommunicationTopic {
+export class MqttTopic {
 
     get eventType() {
         return this._eventType;
@@ -33,7 +33,7 @@ export class CommunicationTopic {
     }
 
     private static readonly PROTOCOL_NAME = "coaty";
-    private static readonly PROTOCOL_NAME_PREFIX = CommunicationTopic.PROTOCOL_NAME + "/";
+    private static readonly PROTOCOL_NAME_PREFIX = MqttTopic.PROTOCOL_NAME + "/";
     private static readonly EVENT_TYPE_FILTER_SEPARATOR = ":";
     private static readonly ILLEGAL_TOPIC_CHARS_REGEX = new RegExp(/[\u0000+#]/);
 
@@ -59,12 +59,12 @@ export class CommunicationTopic {
      * @returns a Coaty communication topic instance or undefined if the topic
      * name represents a Raw or external IO value event.
      */
-    static createByName(topicName: string): CommunicationTopic {
-        if (!CommunicationTopic.isCoatyTopicLike(topicName)) {
+    static createByName(topicName: string): MqttTopic {
+        if (!MqttTopic.isCoatyTopicLike(topicName)) {
             return undefined;
         }
 
-        const topic = new CommunicationTopic();
+        const topic = new MqttTopic();
         const [, version, namespace, event, sourceId, corrId] = topicName.split("/");
         const v = parseInt(version, 10);
         const [eventType, eventTypeFilter] = this._parseEvent(event);
@@ -97,12 +97,12 @@ export class CommunicationTopic {
         sourceId: Uuid,
         correlationId: Uuid,
     ): string {
-        let eventLevel = CommunicationTopic._getEventTopicLevelPrefix(eventType);
+        let eventLevel = MqttTopic._getEventTopicLevelPrefix(eventType);
         if (eventTypeFilter) {
-            eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
+            eventLevel += MqttTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
         }
-        let topic = `${CommunicationTopic.PROTOCOL_NAME}/${version}/${namespace}/${eventLevel}/${sourceId}`;
-        if (!CommunicationTopic._isOneWayEvent(eventType)) {
+        let topic = `${MqttTopic.PROTOCOL_NAME}/${version}/${namespace}/${eventLevel}/${sourceId}`;
+        if (!MqttTopic._isOneWayEvent(eventType)) {
             topic += `/${correlationId}`;
         }
         return topic;
@@ -124,9 +124,9 @@ export class CommunicationTopic {
         eventType: CommunicationEventType,
         eventTypeFilter: string,
         correlationId: Uuid): string {
-        let eventLevel = CommunicationTopic._getEventTopicLevelPrefix(eventType);
+        let eventLevel = MqttTopic._getEventTopicLevelPrefix(eventType);
         if (eventTypeFilter) {
-            eventLevel += CommunicationTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
+            eventLevel += MqttTopic.EVENT_TYPE_FILTER_SEPARATOR + eventTypeFilter;
         }
         let levels = `${this.PROTOCOL_NAME}/${version}/${namespace || "+"}/${eventLevel}/+`;
         if (!this._isOneWayEvent(eventType)) {
@@ -168,7 +168,7 @@ export class CommunicationTopic {
         if (forSubscription) {
             return topic.indexOf("\u0000") === -1;
         }
-        return !CommunicationTopic.ILLEGAL_TOPIC_CHARS_REGEX.test(topic);
+        return !MqttTopic.ILLEGAL_TOPIC_CHARS_REGEX.test(topic);
     }
 
     /**
