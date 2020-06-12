@@ -526,9 +526,9 @@ is destroyed in the `OnDestroy` interface method.
 
 If you make use of Angular CLI to bundle your Coaty web app for the browser, you
 have to consider the following topic. Starting with Angular CLI 6, the
-underlying webpack doesn't configure any shims for Node.js any more. But the
-MQTT.js client library used by Coaty JS requires some Node.js polyfills (for
-process, global, Buffer, etc.) when run in the browser.
+underlying webpack doesn't configure any shims for Node.js any more. But Coaty
+JS binding libraries require some Node.js polyfills (for process, global,
+Buffer, etc.) when run in the browser.
 
 To solve this problem, webpack needs to be reconfigured to polyfill or mock
 required Node.js globals and modules. This extra Node.js configuration is
@@ -543,17 +543,22 @@ module.exports = {
     //
     // Starting with Angular CLI 6, webpack doesn't configure these shims for Node.js global variables
     // any more by default. But some of these (process, global, Buffer, etc.) are required by
-    // MQTT.js dependency modules when run in the browser.
+    // dependency modules of bindings (e.g. MQTT.js for MQTT binding, autobahn-js for WAMP binding)
+    // when run in the browser.
     node: {
+        // For MQTT.js
         console: false,
         global: true,
         process: true,
-        __filename: 'mock',
-        __dirname: 'mock',
+        __filename: "mock",
+        __dirname: "mock",
         Buffer: true,
-        setImmediate: true
+        setImmediate: true,
 
-        // See "Other node core libraries" for additional options.
+        // For autobahn-js
+        fs: "empty",
+
+        // See "Other node core libraries" for additional options: https://v4.webpack.js.org/configuration/node/
     }
 };
 ```
