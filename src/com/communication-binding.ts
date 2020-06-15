@@ -544,6 +544,9 @@ export abstract class CommunicationBinding<O extends CommunicationBindingOptions
      * formed by concatenating the partial arguments is emitted on the
      * corresponding event emitter.
      *
+     * If any of the optional arguments is undefined, it is ignored in the
+     * composed message.
+     *
      * @param logLevel the log level
      * @param arg1 partial log message
      * @param arg2 partial log message (optional)
@@ -555,23 +558,7 @@ export abstract class CommunicationBinding<O extends CommunicationBindingOptions
         const targetLogLevel = this.options.logLevel ?? CommunicationBindingLogLevel.error;
         if (targetLogLevel <= logLevel) {
             const event = CommunicationBindingLogLevel[logLevel];
-            if (arg2 !== undefined) {
-                if (arg3 !== undefined) {
-                    if (arg4 !== undefined) {
-                        if (arg5 !== undefined) {
-                            this.emit(event, arg1.concat(arg2, arg3, arg4, arg5));
-                        } else {
-                            this.emit(event, arg1.concat(arg2, arg3, arg4));
-                        }
-                    } else {
-                        this.emit(event, arg1.concat(arg2, arg3));
-                    }
-                } else {
-                    this.emit(event, arg1.concat(arg2));
-                }
-            } else {
-                this.emit(event, arg1);
-            }
+            this.emit(event, (arg1 ?? "").concat(arg2 ?? "", arg3 ?? "", arg4 ?? "", arg5 ?? ""));
         }
     }
 
