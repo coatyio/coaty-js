@@ -348,8 +348,7 @@ const configuration: Configuration = {
     },
     communication: {
           // Options used for communication
-          namespace: ...,
-          brokerUrl: ... ,
+          binding: ...,
           shouldAutoStart: ... ,
           ...
     },

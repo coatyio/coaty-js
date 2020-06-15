@@ -138,7 +138,7 @@ The default values provided here can be overwritten by
 
 ```
 test_config          Jasmine config options
-test_broker_config   the Coaty broker config
+test_broker_config   the Coaty MQTT broker config (for MQTT binding only)
 test_reports_dir     where JUnit XML output is written
 ```
 

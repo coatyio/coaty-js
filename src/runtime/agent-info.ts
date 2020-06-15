@@ -72,7 +72,7 @@ export interface AgentBuildInfo {
 export interface AgentConfigInfo {
 
     /**
-     * The host name used for MQTT broker connections and REST based
+     * The host name used for communication binding connections and REST based
      * services (optional).
      *
      * The value is acquired from the environment variable

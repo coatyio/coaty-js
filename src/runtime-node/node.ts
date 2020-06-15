@@ -102,7 +102,7 @@ export class NodeUtils {
     public static logCommunicationState(container: Container) {
         container.communicationManager.observeCommunicationState()
             .subscribe(state => {
-                NodeUtils.logInfo(`[MQTT] ${container.identity.name} ${state !== CommunicationState.Online ? "not " : ""}connected to broker`);
+                NodeUtils.logInfo(`[COM] ${container.identity.name} ${state !== CommunicationState.Online ? "offline" : "online"}`);
             });
     }
 
