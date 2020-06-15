@@ -20,8 +20,9 @@ efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
-* standardized event based communication patterns on top of an open publish-subscribe
-  messaging protocol (currently [MQTT](https://mqtt.org)),
+* standardized event based communication patterns on top of an open
+  publish-subscribe messaging protocol such as [MQTT](https://mqtt.org) or
+  [WAMP](https://wamp-proto.org/),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
 * rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -52,7 +53,7 @@ includes:
   Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/) for Coaty
   JS framework and application developers,
 * a specification of the [Coaty communication
-  protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
+  event patterns](https://coatyio.github.io/coaty-js/man/communication-events/),
 * guidance notes on [rights
   management](https://coatyio.github.io/coaty-js/man/rights-management/) in a
   Coaty application.

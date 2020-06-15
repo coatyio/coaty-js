@@ -105,8 +105,9 @@ efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
-* standardized event based communication patterns on top of a open publish-subscribe
-  messaging protocol (currently [MQTT](https://mqtt.org)),
+* standardized event based communication patterns on top of an open
+  publish-subscribe messaging protocol such as [MQTT](https://mqtt.org) or
+  [WAMP](https://wamp-proto.org/),
 * a platform-agnostic, extensible object model to discover, distribute, share,
   query, and persist hierarchically typed data, and
 * rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -137,7 +138,7 @@ includes:
   Guide](https://coatyio.github.io/coaty-js/man/coding-style-guide/) for Coaty
   framework and application developers,
 * a specification of the [Coaty communication
-  protocol](https://coatyio.github.io/coaty-js/man/communication-protocol/),
+  event patterns](https://coatyio.github.io/coaty-js/man/communication-events/),
 * guidance notes on [rights
   management](https://coatyio.github.io/coaty-js/man/rights-management/) in a
   Coaty application.
@@ -955,7 +956,7 @@ decentralized Coaty application:
 * **Deadvertise** an object by its unique ID: notify subscribers when capability
   is no longer available; for abnormal disconnection of a party, last will
   concept of Coaty is implemented by sending this event.
-* **Channel**: Multicast objects to parties interested in any kind of objects
+* **Channel** Multicast objects to parties interested in any kind of objects
   delivered through a channel with a specific channel identifier.
 * **Discover - Resolve** Discover an object and/or related objects by external
   ID, internal ID, or object type, and receive responses by Resolve events.
@@ -999,19 +1000,17 @@ storage area is updated. In this way inefficient database polling is replaced by
 an efficient push-based approach.
 
 Internally, events are emitted and received by the Communication Manager using
-publish-subscribe messaging with an MQTT message broker. Events are passed to
-Coaty controllers by following the Reactive Programming paradigm using RxJS
-observables.
+a specific publish-subscribe messaging transport abstracted by *communication
+bindings*. Events are passed to Coaty controllers by following the Reactive
+Programming paradigm using RxJS observables.
 
 The Communication Manager provides features to transparently control the
 underlying publish-subscribe communication layer, including auto-reconnect,
 automatic re-subscription upon connection, and queued offline publishing.
 
 When initializing the Communication Manager you can customize characteristics of
-the underlying MQTT client library in the configuration property
-`CommunicationOptions.mqttClientOptions`. Among others, you can specify the MQTT
-QoS level for all publications, subscriptions, and last will messages (default
-is 0).
+the underlying communication binding in the configuration property
+`CommunicationOptions.binding`.
 
 ### Starting and stopping communication
 
@@ -3284,12 +3283,12 @@ example](https://github.com/coatyio/coaty-examples/tree/master/hello-world/js).
 
 ## Decentralized logging
 
-The Coaty framework provides the object type `Log` for decentralized
+The Coaty framework provides the object type `Log` for decentralized structured
 logging of any kind of informational events in your Coaty agents, such as
-errors, warnings, and system messages. Log objects are usually published
-to interested parties using an Advertise event. These log objects can then
-be collected and ingested into external processing pipelines such as the
-[ELK Stack](https://www.elastic.co/elk-stack).
+errors, warnings, system and application-specific messages. Log objects are
+usually published to interested parties using an Advertise event. These log
+objects can then be collected and ingested into external processing pipelines
+such as the [ELK Stack](https://www.elastic.co/elk-stack).
 
 A controller can publish a log object by creating and advertising a `Log`
 object. You can specify the level of logging (debug, info, warning, error,

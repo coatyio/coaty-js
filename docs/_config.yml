@@ -16,7 +16,7 @@
 title: Coaty JS Documentation
 description: >- # this means to ignore newlines until "baseurl:"
   Coaty JS Framework documentation including Developer Guide, API
-  documentation, Coding Style Guide, specification of the Communication Protocol,
+  documentation, Coding Style Guide, specification of the Communication Event Patterns,
   guidance notes on Rights Management, and a guide on integration of the OGC
   SensorThings API.
 baseurl: "/coaty-js" # /projectname for GitHub project pages hosted on https://coatyio.github.io/coaty-js

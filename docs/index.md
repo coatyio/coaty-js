@@ -10,9 +10,9 @@ framework documentation:
   code documentation of all public types and members of the Coaty JS sources
 * [Coding Style Guide]({{ site.baseurl }}{% link man/coding-style-guide.md %}) -
   guidelines for coding with the Coaty JS framework
-* [Communication Protocol]({{ site.baseurl }}{% link
-  man/communication-protocol.md %}) - specification of Coaty communication
-  protocol
+* [Communication Event Patterns]({{ site.baseurl }}{% link
+  man/communication-events.md %}) - specification of Coaty communication
+  events
 * [Rights Management]({{ site.baseurl }}{% link man/rights-management.md %}) -
   guidance notes on authentication and authorization in a Coaty application
 * [OGC SensorThings API]({{ site.baseurl }}{% link man/sensor-things-guide.md
