@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CoreTypes, DbConnectionInfo, ObjectJoinCondition, Uuid } from "..";
+import { CoatyObject, CoreTypes, DbConnectionInfo, isPlainObject, ObjectJoinCondition, Uuid } from "..";
 import { IDbAdapter, IDbAdapterConstructor, IDbAdapterExtension } from "./db-adapter";
 import { DbAdapterFactory } from "./db-adapter-factory";
 import {
@@ -421,7 +421,7 @@ export class DbContext implements IDbNoSqlOperations, IDbSqlOperations, IDbTrans
     }
 
     private _throwIfObjectFilterInvalid(filter: DbObjectFilter) {
-        if (!filter || typeof filter !== "object" || Array.isArray(filter)) {
+        if (!isPlainObject(filter)) {
             throw new TypeError("specified argument is not an object filter");
         }
     }

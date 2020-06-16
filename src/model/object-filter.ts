@@ -1,5 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { isPlainObject } from "..";
+
 /**
  * Defines criteria for filtering Coaty objects. Used in combination with Call events,
  * and with the `ObjectMatcher` functionality.
@@ -561,10 +563,7 @@ export function isContextFilterValid(filter: ContextFilter): boolean {
     if (filter === undefined) {
         return true;
     }
-    /* tslint:disable-next-line:no-null-keyword */
-    return filter !== null &&
-        typeof filter === "object" &&
-        areFilterConditionsValid(filter.conditions);
+    return isPlainObject(filter) && areFilterConditionsValid(filter.conditions);
 }
 
 export function isObjectFilterValid(filter: ObjectFilter): boolean {
@@ -582,7 +581,7 @@ function areFilterConditionsValid(conds: any): boolean {
     /* tslint:disable-next-line:no-null-keyword */
     return conds !== null &&
         isFilterConditionValid(conds) ||
-        (typeof conds === "object" &&
+        (isPlainObject(conds) &&
             !(conds.and && conds.or) &&
             (conds.and === undefined || isFilterConditionArrayValid(conds.and)) &&
             (conds.or === undefined || isFilterConditionArrayValid(conds.or)));

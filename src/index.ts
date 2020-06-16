@@ -51,3 +51,4 @@ export * from "./util/binary-search";
 export * from "./util/date";
 export * from "./util/async";
 export * from "./util/deep";
+export * from "./util/plain-object";

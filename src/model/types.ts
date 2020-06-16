@@ -1,6 +1,6 @@
 ﻿/*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { clone } from "..";
+import { clone, isPlainObject } from "..";
 import { AnnotationStatus, AnnotationType } from "./annotation";
 import { IoSourceBackpressureStrategy } from "./io-point";
 import { LogLevel } from "./log";
@@ -69,10 +69,13 @@ export class CoreTypes {
      * @param coreType a framework core type to check for (optional)
      */
     static isObject(obj: any, coreType?: CoreType): boolean {
+        if (!isPlainObject(obj)) {
+            return false;
+        }
         if (coreType) {
             return CoreTypes._isAssignable(obj, coreType);
         }
-        return obj && typeof obj === "object" && typeof obj.coreType === "string" &&
+        return typeof obj.coreType === "string" &&
             CoreTypes._isAssignable(obj, obj.coreType);
     }
 
@@ -85,10 +88,13 @@ export class CoreTypes {
      * @param coreType a framework core type to check for (optional)
      */
     static asObject(obj: any, coreType?: CoreType): CoatyObject {
+        if (!isPlainObject(obj)) {
+            return undefined;
+        }
         if (coreType) {
             return CoreTypes._assignableAs(obj, coreType);
         }
-        if (obj && typeof obj.coreType === "string") {
+        if (typeof obj.coreType === "string") {
             return CoreTypes._assignableAs(obj, obj.coreType);
         }
         return undefined;
@@ -270,9 +276,7 @@ export class CoreTypes {
     // Type checkers for framework core types
 
     private static _isObject(obj: any) {
-        return obj &&
-            typeof obj === "object" &&
-            typeof obj.name === "string" &&
+        return typeof obj.name === "string" &&
             typeof obj.objectType === "string" &&
             obj.objectType.length > 0 &&
             typeof obj.coreType === "string" &&
@@ -317,8 +321,7 @@ export class CoreTypes {
     }
 
     private static _isScimNames(names: any) {
-        return names &&
-            typeof names === "object" &&
+        return isPlainObject(names) &&
             (names.formatted === undefined ||
                 (typeof names.formatted === "string" &&
                     names.formatted.length > 0)) &&
@@ -341,7 +344,7 @@ export class CoreTypes {
     }
 
     private static _isScimMultiValuedAttribute(attr: any) {
-        return attr && typeof attr === "object" &&
+        return isPlainObject(attr) &&
             typeof attr.type === "string" && typeof attr.value === "string" &&
             (attr.primary === undefined || typeof attr.primary === "boolean") &&
             (attr.display === undefined || typeof attr.display === "string");
@@ -376,8 +379,7 @@ export class CoreTypes {
                 CoreTypes.isObjectArray(obj.ioSources, "IoSource")) &&
             (obj.ioActors === undefined ||
                 CoreTypes.isObjectArray(obj.ioActors, "IoActor")) &&
-            (obj.characteristics === undefined ||
-                (obj.characteristics && typeof obj.characteristics === "object"));
+            (obj.characteristics === undefined || isPlainObject(obj.characteristics));
     }
 
     private static _isAnnotation(obj: any) {
@@ -393,8 +395,7 @@ export class CoreTypes {
             (obj.variants === undefined ||
                 (Array.isArray(obj.variants) &&
                     (<any[]>obj.variants).every(o =>
-                        o &&
-                        (typeof o === "object") &&
+                        isPlainObject(o) &&
                         (typeof o.variant === "string") &&
                         o.variant.length > 0 &&
                         (typeof o.downloadUrl === "string"))));
@@ -413,7 +414,7 @@ export class CoreTypes {
             typeof obj.status === "number" &&
             TaskStatus[obj.status] !== undefined &&
             (obj.requirements === undefined ||
-                (obj.requirements && typeof obj.requirements === "object")) &&
+                isPlainObject(obj.requirements)) &&
             (obj.description === undefined ||
                 typeof obj.description === "string") &&
             (obj.assigneeObjectId === undefined ||
@@ -465,13 +466,12 @@ export class CoreTypes {
             typeof obj.logMessage === "string" &&
             typeof obj.logDate === "string" &&
             (obj.logTags === undefined || CoreTypes.isStringArray(obj.logTags)) &&
-            (obj.logLabels === undefined || (obj.logLabels && typeof obj.logLabels === "object")) &&
+            (obj.logLabels === undefined || isPlainObject(obj.logLabels)) &&
             (obj.logHost === undefined || CoreTypes._isLogHost(obj.logHost));
     }
 
     private static _isLogHost(obj: any) {
-        return obj &&
-            typeof obj === "object" &&
+        return isPlainObject(obj) &&
             (obj.agentInfo === undefined || CoreTypes._isAgentInfo(obj.agentInfo)) &&
             (obj.pid === undefined || typeof obj.pid === "number") &&
             (obj.hostname === undefined || typeof obj.hostname === "string") &&
@@ -479,29 +479,23 @@ export class CoreTypes {
     }
 
     private static _isAgentInfo(obj: any) {
-        return obj &&
-            typeof obj === "object" &&
-            (obj.packageInfo &&
-                typeof obj.packageInfo === "object" &&
+        return isPlainObject(obj) &&
+            (isPlainObject(obj.packageInfo) &&
                 typeof obj.packageInfo.name === "string" &&
                 typeof obj.packageInfo.version === "string") &&
-            (obj.buildInfo &&
-                typeof obj.buildInfo === "object" &&
+            (isPlainObject(obj.buildInfo) &&
                 typeof obj.buildInfo.buildDate === "string" &&
                 typeof obj.buildInfo.buildMode === "string") &&
-            (obj.configInfo &&
-                typeof obj.configInfo === "object" &&
+            (isPlainObject(obj.configInfo) &&
                 typeof obj.configInfo.serviceHost === "string");
     }
 
     private static _isLocation(obj: any) {
         return CoreTypes._isObject(obj) &&
             obj.coreType === "Location" &&
-            obj.geoLocation &&
-            typeof obj.geoLocation === "object" &&
+            isPlainObject(obj.geoLocation) &&
             typeof obj.geoLocation.timestamp === "number" &&
-            obj.geoLocation.coords &&
-            typeof obj.geoLocation.coords === "object" &&
+            isPlainObject(obj.geoLocation.coords) &&
             typeof obj.geoLocation.coords.latitude === "number" &&
             typeof obj.geoLocation.coords.longitude === "number" &&
             typeof obj.geoLocation.coords.accuracy === "number" &&
@@ -526,8 +520,7 @@ export class CoreTypes {
             obj.creatorId &&
             typeof obj.creatorId === "string" &&
             obj.creatorId.length > 0 &&
-            (obj.tags === undefined ||
-                CoreTypes.isStringArray(obj.tags)) &&
+            (obj.tags === undefined || CoreTypes.isStringArray(obj.tags)) &&
             CoreTypes.isObject(obj.object);
     }
 }

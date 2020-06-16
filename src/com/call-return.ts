@@ -1,6 +1,6 @@
 /*! Copyright (c) 2019 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CommunicationEventType, ContextFilter, isContextFilterValid, ObjectMatcher } from "..";
+import { CoatyObject, CommunicationEventType, ContextFilter, isContextFilterValid, isPlainObject, ObjectMatcher } from "..";
 import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
@@ -169,7 +169,7 @@ export class CallEventData extends CommunicationEventData {
      * @param name the name of a key in the JSON parameters object
      */
     getParameterByName(name: string) {
-        if (typeof this._parameters !== "object") {
+        if (!isPlainObject(this._parameters)) {
             return undefined;
         }
         return this.parameters[name];
@@ -215,7 +215,7 @@ export class CallEventData extends CommunicationEventData {
     }
 
     private _hasValidParameters(): boolean {
-        return (this._parameters === undefined || Array.isArray(this._parameters) || typeof this._parameters === "object") &&
+        return (this._parameters === undefined || Array.isArray(this._parameters) || isPlainObject(this._parameters)) &&
             isContextFilterValid(this._filter);
     }
 
@@ -403,7 +403,7 @@ export class ReturnEventData extends CommunicationEventData {
             return false;
         }
         if (this._error !== undefined &&
-            (typeof this.error !== "object" || this._error.code === undefined || this._error.message === undefined)) {
+            (!isPlainObject(this._error) || this._error.code === undefined || this._error.message === undefined)) {
             return false;
         }
         return true;

@@ -1,5 +1,7 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
+import { isPlainObject } from "..";
+
 /**
  * Defines a condition for joining related objects into a result set of Coaty objects.
  * Result objects are augmented by resolving object references to related 
@@ -68,8 +70,7 @@ export function areObjectJoinConditionsValid(joinConds: ObjectJoinCondition | Ob
 
 function isJoinConditionValid(joinCond: ObjectJoinCondition) {
     /* tslint:disable-next-line:no-null-keyword */
-    return joinCond !== null &&
-        typeof joinCond === "object" &&
+    return isPlainObject(joinCond) &&
         (typeof joinCond.localProperty === "string") &&
         (typeof joinCond.asProperty === "string") &&
         (joinCond.isLocalPropertyArray === undefined ||

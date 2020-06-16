@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoreTypes, isTimeInterval } from "..";
+import { CoreTypes, isPlainObject, isTimeInterval } from "..";
 import {
     FeatureOfInterestObjectTypeLiteral,
     ObservationObjectTypeLiteral,
@@ -29,7 +29,7 @@ export class SensorThingsTypes {
             typeof obj.parentObjectId !== undefined /* thing */ &&
             SensorThingsTypes._isObservedProperty(obj.observedProperty) &&
             (obj.observedArea === undefined ||
-                typeof obj.observedArea === "object") &&
+                isPlainObject(obj.observedArea)) &&
             (obj.phenomenonTime === undefined ||
                 isTimeInterval(obj.phenomenonTime)) &&
             (obj.resultTime === undefined ||
@@ -64,7 +64,7 @@ export class SensorThingsTypes {
             (obj.validTime === undefined ||
                 isTimeInterval(obj.validTime)) &&
             (obj.parameters === undefined ||
-                typeof obj.parameters === "object") &&
+                isPlainObject(obj.parameters)) &&
             (obj.featureOfInterestId === undefined ||
                 (typeof obj.featureOfInterestId === "string" &&
                     obj.featureOfInterestId.length > 0));
@@ -78,13 +78,13 @@ export class SensorThingsTypes {
             obj.objectType === SensorThingsTypes.OBJECT_TYPE_THING &&
             typeof obj.description === "string" &&
             (obj.properties === undefined ||
-                typeof obj.properties === "object") &&
+                isPlainObject(obj.properties)) &&
             (obj.locations === undefined ||
                 CoreTypes.isStringArray(obj.locations));
     }
 
     private static _isUnitOfMeasurement(obj: any) {
-        return typeof obj === "object" &&
+        return isPlainObject(obj) &&
             (obj.name === undefined ||
                 typeof obj.name === "string") &&
             (obj.symbol === undefined ||
@@ -94,7 +94,7 @@ export class SensorThingsTypes {
     }
 
     private static _isObservedProperty(obj: any) {
-        return obj && typeof obj === "object" &&
+        return isPlainObject(obj) &&
             typeof obj.name === "string" && obj.name.length > 0 &&
             typeof obj.definition === "string" &&
             typeof obj.description === "string";

@@ -7,6 +7,7 @@ import {
     CoreType,
     CoreTypes,
     isObjectFilterValid,
+    isPlainObject,
     ObjectFilter,
     ObjectJoinCondition,
     ObjectMatcher,
@@ -308,8 +309,6 @@ export class RetrieveEventData extends CommunicationEventData {
     }
 
     private _isValidPrivateData() {
-        return this._privateData === undefined ||
-            (this._privateData &&
-                typeof this._privateData === "object");
+        return this._privateData === undefined || isPlainObject(this._privateData);
     }
 }

@@ -1,6 +1,6 @@
 /*! Copyright (c) 2018 Siemens AG. Licensed under the MIT License. */
 
-import { CoatyObject, CommunicationEventType, CoreTypes } from "..";
+import { CoatyObject, CommunicationEventType, CoreTypes, isPlainObject } from "..";
 import { CommunicationEvent, CommunicationEventData } from "./communication-event";
 
 /**
@@ -147,8 +147,6 @@ export class ChannelEventData extends CommunicationEventData {
     }
 
     private _isValidPrivateData() {
-        return this._privateData === undefined ||
-            (this._privateData &&
-                typeof this._privateData === "object");
+        return this._privateData === undefined || isPlainObject(this._privateData);
     }
 }
