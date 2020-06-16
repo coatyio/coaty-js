@@ -5,10 +5,11 @@ const path = require("path");
 const Jasmine = require("jasmine");
 const SpecReporter = require("jasmine-spec-reporter").SpecReporter;
 const reporters = require("jasmine-reporters");
-const broker = require("../../dist/es5-commonjs/scripts/broker");
-const MqttBinding = require("../../dist/es5-commonjs/index").MqttBinding;
 
-function runTests(testSpecDir, verbose, debug) {
+const TEST_REPORT_DIR = "./test/report/";
+const TEST_SUPPORT_DIR = "./test/support/";
+
+function runTests(testSpecDir, binding, verbose, debug) {
     const noop = () => { };
     const jrunner = new Jasmine();
 
@@ -35,61 +36,53 @@ function runTests(testSpecDir, verbose, debug) {
         // Produce a single XML file
         consolidateAll: true,
         filePrefix: "junitresults.coaty",
-        savePath: path.resolve(reportsDir || "./test/reports/"),
+        savePath: path.resolve(reportsDir || TEST_REPORT_DIR),
     }));
 
     // Configure Jasmine
     const jasmineConfigFile = process.env.npm_package_config_test_config;
-    const jasmineConfig = require(path.resolve(jasmineConfigFile || "./test/support/jasmine.json"));
+    const jasmineConfig = require(path.resolve(jasmineConfigFile || TEST_SUPPORT_DIR + "jasmine.json"));
     jasmineConfig.spec_dir = testSpecDir;
     jrunner.loadConfig(jasmineConfig);
 
-    const brokerConfig = process.env.npm_package_config_test_broker_config;
-    const brokerSettings = require(path.resolve(brokerConfig) ||
-        path.resolve("./test/support/broker.config.json"));
+    // Enable display of error stack trace in debug mode
+    
 
-    // Start static http server first to provide Coaty JSON configuration in tests.
-    startHttpServer(brokerSettings.staticServe, brokerSettings.staticPort)
+    // Start static http server first to provide Coaty JSON configuration to tests.
+    startHttpServer()
         .then(() => {
-            // Provide a global communication binding to all tests.
-            global["test_binding"] = MqttBinding.withOptions({
-                brokerUrl: `mqtt://localhost:${brokerSettings.port}`,
+            if (!binding) {
+                binding = "MQTT";
+                console.log(chalk.yellow(`# No communication binding specified: using MQTT...`));
+            }
+            const bnd = binding.toLowerCase();
+            try {
+                const bndConfig = require(path.resolve(`${TEST_SUPPORT_DIR}${bnd}.config.js`));
 
-                // 0:debug, 1:info, 2:error
-                logLevel: debug ? 0 : 2,
-            });
+                // Provide the communication binding with options to all tests.
+                global["test_binding"] = bndConfig.initBinding(debug);
 
-            // Then start broker and execute the tests.
-            startBroker(() => {
-                jrunner.execute();
-            },
-                debug,
-                {
-                    port: brokerSettings.port,
-                    wsPort: brokerSettings.wsPort,
-                    logVerbose: brokerSettings.logVerbose
-                });
+                // Execute tests in the context of the given binding.
+                bndConfig.withTests(debug, () => jrunner.execute());
+            } catch (error) {
+                console.log(chalk.red(`# Failed to init ${binding} binding: ${error}`));
+                console.log(chalk.red(`# Make sure binding @coaty/binding.${bnd} has been installed.`));
+                process.exit();
+            }
         });
 }
 
-function startBroker(onReady, debug, options) {
-    options.onReady = onReady;
-    if (debug) {
-        options.logVerbose = true;
-    }
-    broker.run(options);
-}
-
-function startHttpServer(static, port) {
+function startHttpServer() {
+    const config = require(path.resolve(TEST_SUPPORT_DIR + "webserve.config.json"));
     return new Promise((resolve) => {
         const fs = require("fs");
         const http = require("http");
         const server = http.createServer((req, res) => {
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(fs.readFileSync(path.resolve(static, "." + req.url)));
+            res.end(fs.readFileSync(path.resolve(config.staticServe, "." + req.url)));
         });
-        server.listen(port, () => {
-            console.log(chalk.yellow(`# Static HTTP server running on port ${port}...`));
+        server.listen(config.staticPort, () => {
+            console.log(chalk.yellow(`# Static HTTP server running on port ${config.staticPort}...`));
             resolve();
         });
     });

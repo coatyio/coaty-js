@@ -13,7 +13,6 @@
  *   npm run lint:fix      - Lint TypeScript source files and fix linting errors
  *   npm run doc           - Generate HTML documentation from source code
  *   npm run test          - Run the test suites on the current build
- *   npm run test:debug    - Run the test suites on the current build with verbose output
  * ```
  */
 
@@ -34,8 +33,7 @@ builder(require("yargs")
     .command("lint", "Lint TypeScript source files")
     .command("lint:fix", "Lint TypeScript source files and fix linting errors")
     .command("doc", "Generate HTML documentation from source code")
-    .command("test", "Run the test suites on the current build")
-    .command("test:debug", "Run the test suites on the current build with verbose output")
+    .command("test", "Run the test suites on the current build with args [<binding-name>] [--verbose] [--debug]")
     .argv);
 
 function builder(argv) {
@@ -61,7 +59,7 @@ function builder(argv) {
                 lint(true);
                 break;
             case "test":
-                test(argv.verbose, argv.debug);
+                test(argv._[1], argv.verbose, argv.debug);
                 break;
             case "broker":
                 broker();
@@ -218,21 +216,21 @@ function lint(applyFixes) {
 /**
  * Run the test suite.
  */
-function test(verbose, debug) {
+function test(binding, verbose, debug) {
     const target = DIST_TARGET;
     const distDir = "./dist/";
 
-    logInfo("Run test suites on distribution package " + target);
+    logInfo(`Run tests with ${binding || "default"} binding on distribution package ${target}`);
 
     // Copy src/test/config files to <target>/test/config
     const testConfigDir = distDir + target + "/test/config";
     rimraf.sync(path.resolve(testConfigDir));
     fse.copySync("./" + SRC_TARGETDIR + "/test/config", testConfigDir);
 
-    // Start Jasmine
+    // Set up and start test environment
     const testSpecDir = distDir + target + "/test/spec";
     const jasmineRunner = require(path.resolve("./test/support/jasmine-runner.js"));
-    jasmineRunner(testSpecDir, verbose, debug);
+    jasmineRunner(testSpecDir, binding, verbose, debug);
 }
 
 /**

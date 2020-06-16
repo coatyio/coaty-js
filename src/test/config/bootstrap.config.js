@@ -9,7 +9,6 @@ module.exports = {
     },
     communication: {
         shouldAutoStart: true,
-        brokerUrl: "mqtt://test.nobroker.org"
     },
     controllers: {
         MockObjectController1: { mockCtrlProp: 1 },

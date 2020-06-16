@@ -1,0 +1,79 @@
+{
+    "$schema": "https://raw.githubusercontent.com/crossbario/crossbar/master/crossbar.json",
+    "version": 2,
+    "controller": {},
+    "workers": [
+        {
+            "type": "router",
+            "realms": [
+                {
+                    "name": "coaty",
+                    "roles": [
+                        {
+                            "name": "anonymous",
+                            "permissions": [
+                                {
+                                    "uri": "",
+                                    "match": "prefix",
+                                    "allow": {
+                                        "call": true,
+                                        "register": false,
+                                        "publish": true,
+                                        "subscribe": true
+                                    },
+                                    "disclose": {
+                                        "caller": false,
+                                        "publisher": false
+                                    },
+                                    "cache": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "transports": [
+                {
+                    "type": "websocket",
+                    "endpoint": {
+                        "type": "tcp",
+                        "port": 8199
+                    },
+                    "options": {
+                        "allowed_origins": [
+                            "*"
+                        ],
+                        "allow_null_origin": true,
+                        "enable_webstatus": false,
+                        "max_frame_size": 1048576,
+                        "max_message_size": 1048576,
+                        "auto_fragment_size": 65536,
+                        "fail_by_drop": true,
+                        "open_handshake_timeout": 2500,
+                        "close_handshake_timeout": 1000,
+                        "auto_ping_interval": 10000,
+                        "auto_ping_timeout": 5000,
+                        "auto_ping_size": 4
+                    }
+                },
+                {
+                    "type": "mqtt",
+                    "endpoint": {
+                        "type": "tcp",
+                        "port": 1884
+                    },
+                    "options": {
+                        "realm": "coaty",
+                        "role": "anonymous",
+                        "payload_mapping": {
+                            "": {
+                                "type": "native",
+                                "serializer": "json"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

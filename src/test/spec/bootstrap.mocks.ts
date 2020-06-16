@@ -41,7 +41,7 @@ export class MockObjectController3 extends Controller {
         super.onInit();
         Spy.set(
             "MockObjectController3Spy",
-            this.communicationManager.options.brokerUrl,
+            this.communicationManager.options.binding.type,
             this.runtime.isWebWorkerPlatform);
     }
 }
@@ -51,7 +51,7 @@ export class MockMyController1 extends Controller {
         super.onInit();
         Spy.set(
             "MockMyController1Spy",
-            this.communicationManager.options.brokerUrl,
+            this.communicationManager.options.binding.type,
             this.runtime.isWebPlatform);
     }
 }
@@ -61,7 +61,7 @@ export class MockMyController2 extends Controller {
         super.onInit();
         Spy.set(
             "MockMyController2Spy",
-            this.communicationManager.options.brokerUrl,
+            this.communicationManager.options.binding.type,
             this.runtime.isWebPlatform);
     }
 }

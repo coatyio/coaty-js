@@ -6,8 +6,7 @@
         "extra": { "testProp": 4711 }
     },
     "communication": {
-        "shouldAutoStart": true,
-        "brokerUrl": "mqtt://test.nobroker.org"
+        "shouldAutoStart": true
     },
     "controllers": {
         "MockObjectController1": {

@@ -17,8 +17,8 @@
         "build:nolint": "node build/builder.js build:nolint",
         "lint": "node build/builder.js lint",
         "lint:fix": "node build/builder.js lint:fix",
-        "test": "node build/builder.js test --verbose",
-        "test:debug": "node build/builder.js test --verbose --debug",
+        "test": "node build/builder.js test --verbose --",
+        "test:debug": "node build/builder.js test --verbose --debug --",
         "doc": "node build/builder.js doc",
         "version-release": "node scripts/coaty-scripts.js version-release",
         "cut-release": "node scripts/coaty-scripts.js version-release %1 && node build/builder.js build:nolint && node build/builder.js doc && node scripts/coaty-scripts.js cut-release %2",
@@ -27,7 +27,7 @@
     },
     "config": {
         "test_config": "test/support/jasmine.json",
-        "test_broker_config": "test/support/broker.config.json",
+        "test_broker_config": "test/support/mqtt.broker.config.json",
         "test_reports_dir": "test/reports"
     },
     "keywords": [
@@ -77,6 +77,8 @@
         "websocket-stream": "^5.5.2"
     },
     "devDependencies": {
+        "@coaty/binding.mqtt": "^2.0.0",
+        "@coaty/binding.wamp": "^2.0.0",
         "@types/bonjour": "^3.5.6",
         "@types/jasmine": "^3.5.10",
         "@types/node-fetch": "^2.5.7",

@@ -5,7 +5,6 @@
  */
 
 import {
-    CommunicationEventType,
     Components,
     Configuration,
     Container,
@@ -15,7 +14,6 @@ import {
     IoSource,
     Runtime,
 } from "../..";
-import { MqttTopic } from "../../com/mqtt/mqtt-topic";
 import { BasicIoRouter, IoAssociationRule, IoSourceController, RuleBasedIoRouter } from "../../io-routing";
 
 import * as mocks from "./io-routing.mocks";
@@ -61,45 +59,6 @@ describe("IO Routing", () => {
                 });
             },
             TEST_TIMEOUT);
-
-        it("validates external IoValue topics", () => {
-            expect(MqttTopic.isValidTopic("", false)).toBeFalsy();
-            expect(MqttTopic.isValidTopic("+", false)).toBeFalsy();
-            expect(MqttTopic.isValidTopic("#", false)).toBeFalsy();
-            expect(MqttTopic.isValidTopic("/foo/#", false)).toBeFalsy();
-            expect(MqttTopic.isValidTopic("/foo/+/", false)).toBeFalsy();
-            expect(MqttTopic.isValidTopic("/foo/bar\u0000/", false)).toBeFalsy();
-
-            expect(MqttTopic.isValidTopic("/", false)).toBeTruthy();
-            expect(MqttTopic.isValidTopic("//", false)).toBeTruthy();
-            expect(MqttTopic.isValidTopic("foo", false)).toBeTruthy();
-            expect(MqttTopic.isValidTopic("/foo/bar", false)).toBeTruthy();
-            expect(MqttTopic.isValidTopic("foo/bar/", false)).toBeTruthy();
-            expect(MqttTopic.isValidTopic("/coaty/foo/bar", false)).toBeTruthy();
-        });
-
-        it("validates Associate topic and event", () => {
-            const version = 3;
-            const namespace = "-";
-            const ioContextName = "TemperatureMeasurememt";
-            const topicName = MqttTopic.getTopicName(
-                3,
-                namespace,
-                CommunicationEventType.Associate,
-                ioContextName,
-                "5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7",
-                undefined,
-            );
-            const topic = MqttTopic.createByName(topicName);
-
-            expect(topic.version).toBe(version);
-            expect(topic.namespace).toBe(namespace);
-            expect(topic.eventType).toBe(CommunicationEventType.Associate);
-            expect(topic.eventTypeFilter).toBe(ioContextName);
-            expect(topic.sourceId).toBe("5d5e8ad3-d8a0-4174-9d68-dfad1e0fd8e7");
-            expect(topic.correlationId).toBe(undefined);
-        });
-
     });
 
     describe("Basic IO Routing within a single Container", () => {

@@ -108,7 +108,6 @@ export interface CommunicationOptions {
      *   ...
      *   communication: {
      *       binding: MqttBinding.withOptions({
-     *           namespace: ...,
      *           brokerUrl: ... ,
      *           ...
      *       }),

@@ -24,109 +24,11 @@ import {
     RemoteCallErrorMessage,
     UpdateEvent,
 } from "../..";
-import { MqttTopic } from "../../com/mqtt/mqtt-topic";
 
 import * as mocks from "./communication.mocks";
 import { delayAction, Spy, UUID_REGEX } from "./utils";
 
 describe("Communication", () => {
-
-    describe("Communication Topics", () => {
-
-        const version = 3;
-        const namespace = "-";
-        const senderId = "3d34eb53-2536-4134-b0cd-8c406b94bb80";
-        const oneWayTopic = MqttTopic.getTopicName(
-            version,
-            namespace,
-            CommunicationEventType.Advertise,
-            "CoatyObject",
-            senderId,
-            undefined,
-        );
-        const correlationId = "2eef1124-bf73-49dd-8aba-4abe54251ed9";
-        const twoWayTopic = MqttTopic.getTopicName(
-            version,
-            namespace,
-            CommunicationEventType.Discover,
-            undefined,
-            senderId,
-            correlationId,
-        );
-
-        it("has correct level structure for one-way event", () => {
-            const tpc = MqttTopic.createByName(oneWayTopic);
-            expect(tpc.sourceId).toBe(senderId);
-            expect(tpc.eventType).toBe(CommunicationEventType.Advertise);
-            expect(tpc.eventTypeFilter).toBe(`CoatyObject`);
-            expect(tpc.correlationId).toBe(undefined);
-            expect(tpc.version).toBe(version);
-        });
-
-        it("has correct level structure for two-way event", () => {
-            const tpc = MqttTopic.createByName(twoWayTopic);
-            expect(tpc.sourceId).toBe(senderId);
-            expect(tpc.eventType).toBe(CommunicationEventType.Discover);
-            expect(tpc.eventTypeFilter).toBe(undefined);
-            expect(tpc.correlationId).toBe(correlationId);
-            expect(tpc.version).toBe(version);
-        });
-
-        it("has correct filter structure for one-way events", () => {
-            const eventType = CommunicationEventType.Advertise;
-            const topicFilter = MqttTopic
-                .getTopicFilter(version, namespace, eventType, "CoatyObject", undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ADV:CoatyObject/+`);
-        });
-
-        it("has correct filter structure for Associate event", () => {
-            const eventType = CommunicationEventType.Associate;
-            const eventTypeFilter = "IoGroup1";
-            const topicFilter = MqttTopic
-                .getTopicFilter(version, namespace, eventType, eventTypeFilter, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/ASC:${eventTypeFilter}/+`);
-        });
-
-        it("has correct filter structure for two-way request events", () => {
-            const eventType = CommunicationEventType.Discover;
-            const topicFilter = MqttTopic
-                .getTopicFilter(version, namespace, eventType, undefined, undefined);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/DSC/+/+`);
-        });
-
-        it("has correct filter structure for two-way response events", () => {
-            const eventType = CommunicationEventType.Resolve;
-            const topicFilter = MqttTopic
-                .getTopicFilter(version, namespace, eventType, undefined, correlationId);
-            expect(topicFilter).toBe(`coaty/${version}/${namespace}/RSV/+/${correlationId}`);
-        });
-
-        it("raw topics match topic filters", () => {
-            expect(MqttTopic.matches("/", "/")).toBeTrue();
-            expect(MqttTopic.matches("/", "+/")).toBeTrue();
-            expect(MqttTopic.matches("/", "/+")).toBeTrue();
-            expect(MqttTopic.matches("/", "+/+")).toBeTrue();
-            expect(MqttTopic.matches("/a/", "/+/")).toBeTrue();
-            expect(MqttTopic.matches("//", "/+/")).toBeTrue();
-            expect(MqttTopic.matches("/", "/#")).toBeTrue();
-            expect(MqttTopic.matches("/aaa/b", "/#")).toBeTrue();
-            expect(MqttTopic.matches("a/", "/#")).toBeFalse();
-            expect(MqttTopic.matches("", "#")).toBeFalse();
-            expect(MqttTopic.matches("", "")).toBeFalse();
-            expect(MqttTopic.matches("sport/tennis/player1", "sport/tennis/player1/#")).toBeTrue();
-            expect(MqttTopic.matches("sport/tennis/player1/ranking", "sport/tennis/player1/#")).toBeTrue();
-            expect(MqttTopic.matches("sport/tennis/player1/score/wim", "sport/tennis/player1/#")).toBeTrue();
-            expect(MqttTopic.matches("sport", "sport/#")).toBeTrue();
-            expect(MqttTopic.matches("a/b", "#")).toBeTrue();
-            expect(MqttTopic.matches("/a", "#")).toBeTrue();
-            expect(MqttTopic.matches("/", "#")).toBeTrue();
-            expect(MqttTopic.matches("sport/tennis/player1", "sport/tennis/+")).toBeTrue();
-            expect(MqttTopic.matches("sport/tennis/player1/ranking", "sport/tennis/+")).toBeFalse();
-            expect(MqttTopic.matches("sport", "sport/+")).toBeFalse();
-            expect(MqttTopic.matches("sport/", "sport/+")).toBeTrue();
-        });
-
-    });
 
     describe("Event Patterns", () => {
 
@@ -527,18 +429,6 @@ describe("Communication", () => {
             });
         }, TEST_TIMEOUT);
 
-        // @todo Binding specific tests
-        // it("invalid Raw topics are not published", () => {
-        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("", "abc")))
-        //         .toThrow();
-        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("foo/\0", "abc")))
-        //         .toThrow();
-        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("/foo/+", "abc")))
-        //         .toThrow();
-        //     expect(() => container2.communicationManager.publishRaw(RawEvent.withTopicAndPayload("/foo/#", "abc")))
-        //         .toThrow();
-        // });
-
         it("all Raw topics are received", (done) => {
 
             const deviceController = container1.getController<mocks.MockDeviceController>("MockDeviceController1");
@@ -550,13 +440,38 @@ describe("Communication", () => {
                 count: 0,
                 eventData: [],
             };
-            const eventCount = 3;
-            const topic1 = "/test/42/";
-            const topic2 = `coaty/foo/bar/baz`;
-            const topicFilter2 = `coaty/#`;
+
+            // Raw topics are binding-specific.
+            let topic1;         // valid
+            let topic2;         // invalid because Coaty topic-like
+            let topicFilter2;   // invalid because Coaty topic-like
+            let topicFilter2Options;
+
+            const bindingName = global["test_binding"].type.name;
+            switch (bindingName) {
+                case "MqttBinding":
+                    topic1 = "/test/42/";
+                    topic2 = `coaty/foo/bar/baz`;
+                    topicFilter2 = `coaty/#`;
+                    topicFilter2Options = {};
+                    break;
+                case "WampBinding":
+                    topic1 = "test.42";
+                    topic2 = `coaty.foo.bar.baz`;
+                    topicFilter2 = `coaty.`;
+                    topicFilter2Options = { match: "prefix" };
+                    break;
+                default:
+                    // Enforce fail.
+                    expect(["MqttBinding", "WampBinding"]).toContain(bindingName);
+                    done();
+                    return;
+            }
 
             deviceController.watchForRawEvents(logger1, topic1);
-            deviceController.watchForRawEvents(logger2, topicFilter2);
+            deviceController.watchForRawEvents(logger2, topicFilter2, topicFilter2Options);
+
+            const eventCount = 3;
 
             delayAction(500, undefined, () => {
                 container2.getController<mocks.MockObjectController>("MockObjectController1")

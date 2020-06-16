@@ -4,26 +4,11 @@
  * Utilities for testing.
  */
 
-import * as path from "path";
-
 /**
  * Regex that matches a UUID v4 as used in Coaty framework.
  */
 export const UUID_REGEX_STRING = "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}";
 export const UUID_REGEX = new RegExp(UUID_REGEX_STRING);
-
-const TEST_CONFIG_DIR = "dist/es5-commonjs/test/config";
-
-/* tslint:disable-next-line:no-var-requires */
-const STATIC_HTTP_PORT = "" + require(path.resolve("./test/support/broker.config.json")).staticPort;
-
-export function getConfigFile(filename: string): string {
-    return path.resolve(path.join(TEST_CONFIG_DIR, filename));
-}
-
-export function getConfigUrl(configName: string): string {
-    return `http://localhost:${STATIC_HTTP_PORT}/${TEST_CONFIG_DIR}/${configName}`;
-}
 
 export function delayAction(delay: number, done: () => void, action?: () => void) {
     setTimeout(
