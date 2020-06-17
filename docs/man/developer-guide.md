@@ -44,7 +44,7 @@ this guide.
   * [Query - Retrieve event pattern - an example](#query---retrieve-event-pattern---an-example)
   * [Update - Complete event pattern - an example](#update---complete-event-pattern---an-example)
   * [Call - Return event pattern - an example](#call---return-event-pattern---an-example)
-  * [Observing and publishing raw MQTT messages](#observing-and-publishing-raw-mqtt-messages)
+  * [Raw event pattern - an example](#raw-event-pattern---an-example)
   * [Distributed lifecycle management](#distributed-lifecycle-management)
 * [IO Routing](#io-routing)
   * [IO Routing communication event flow](#io-routing-communication-event-flow)
@@ -99,9 +99,9 @@ applications out of decentrally organized application components, so called
 act in an autonomous, collaborative, and ad-hoc fashion. Coaty agents can run on
 IoT devices, mobile devices, in microservices, cloud or backend services.
 
-The Coaty framework provides a production-ready application and communication layer
-foundation for building collaborative IoT applications in an easy-to-use yet powerful and
-efficient way. The key properties of the framework include:
+The Coaty framework provides a production-ready application and communication
+layer foundation for building collaborative IoT applications in an easy-to-use
+yet powerful and efficient way. The key properties of the framework include:
 
 * a lightweight and modular object-oriented software architecture favoring a
   resource-oriented and declarative programming style,
@@ -115,8 +115,8 @@ efficient way. The key properties of the framework include:
 
 Coaty supports interoperable framework implementations for multiple platforms.
 The Coaty JS package provides the cross-platform implementation targeted at
-JavaScript/TypeScript, running as mobile or web apps in the browser, or as Node.js
-services.
+JavaScript/TypeScript, running as mobile or web apps in the browser, or as
+Node.js services.
 
 Coaty JS comes with complete API documentation, a Developer Guide, a Coding
 Style Guide, best-practice examples, and additional extensions.
@@ -174,9 +174,9 @@ Reactive Programming can be found [here](http://reactivex.io/). Examples and
 explanations can be found on the [RxJS](https://rxjs.dev/) and [Learn
 RxJS](https://www.learnrxjs.io/) websites.
 
-If you are new to TypeScript programming, we recommend to take a look at the official
-[TypeScript website](http://www.typescriptlang.org/). Its "Playground" is especially useful
-to interactively try some TypeScript code in your browser.
+If you are new to TypeScript programming, we recommend to take a look at the
+official [TypeScript website](http://www.typescriptlang.org/). Its "Playground"
+is especially useful to interactively try some TypeScript code in your browser.
 
 To program Coaty applications, we recommend to use [Visual Studio
 Code](https://code.visualstudio.com/), a free, open source IDE that runs
@@ -185,9 +185,10 @@ TypeScript linting within the IDE.
 
 ## Getting started
 
-To build and run Coaty agents with the Coaty JS technology stack
-you need to install the `Node.js` JavaScript runtime (version 8 or higher) globally on
-your target machine. Download and installation details can be found [here](http://nodejs.org/).
+To build and run Coaty agents with the Coaty JS technology stack you need to
+install the `Node.js` JavaScript runtime (version 8 or higher) globally on your
+target machine. Download and installation details can be found
+[here](http://nodejs.org/).
 
 The framework uses the package dependency manager `npm` to download dependent libraries.
 npm comes with `Node.js` so you need to install it first.
@@ -208,10 +209,13 @@ The Coaty JavaScript technology stack makes use of the following core
 technologies:
 
 * **TypeScript** - the framework's main programming language
-* **MQTT.JS** - an MQTT client used to implement event based communication on
-  top of MQTT messaging
 * **RxJS** - the ReactiveX JavaScript library for asynchronous programming with
   observable streams
+
+For communication bindings, the following messaging client libraries are used:
+
+* **MQTT.js** - an MQTT client for the MQTT binding
+* **autobahn-js** - a WAMP client for the WAMP binding
 
 The framework can also make use of database driver packages to be required in
 combination with the Unified Storage API:
@@ -563,8 +567,9 @@ module.exports = {
 };
 ```
 
-The Angular project configuration in `angular.json` must be adjusted to integrate
-the custom webpack config file by using custom builders for the build and serve targets:
+The Angular project configuration in `angular.json` must be adjusted to
+integrate the custom webpack config file by using custom builders for the build
+and serve targets:
 
 ```json
     "architect": {
@@ -601,9 +606,9 @@ container.mapControllers(callback)
 
 ### Shut down a Coaty container
 
-Before the Coaty agent exists, or if you no longer need the container,
-shut down the container to release all registered components and its
-allocated system resources:
+Before the Coaty agent exists, or if you no longer need the container, shut down
+the container to release all registered components and its allocated system
+resources:
 
 ```ts
 container.shutdown();
@@ -616,12 +621,12 @@ disconnects the agent from the communication infrastructure.
 
 After invoking shutdown, the container and its components are no longer usable.
 
-Note that the `onDispose` method of container components is only called
-when the container is shut down by invoking the `shutdown` method. You should
-not perform important side effects in `onDispose`, such as saving agent
-state persistently, because the `onDispose` method is not guaranteed to be called
-by the framework in every circumstance, e.g., when the agent process
-terminates abnormally or when the `shutdown` method is not used by your app.
+Note that the `onDispose` method of container components is only called when the
+container is shut down by invoking the `shutdown` method. You should not perform
+important side effects in `onDispose`, such as saving agent state persistently,
+because the `onDispose` method is not guaranteed to be called by the framework
+in every circumstance, e.g., when the agent process terminates abnormally or
+when the `shutdown` method is not used by your app.
 
 ### Define an agent-specific controller class
 
@@ -776,6 +781,8 @@ CoatyObject
   |
   |-- Annotation
   |-- Identity
+  |-- IoContext
+  |-- IoNode
   |-- IoSource
   |-- IoActor
   |-- Location
@@ -847,44 +854,47 @@ interface CoatyObject {
 }
 ```
 
-The property `coreType` is the framework core type name of the object;
-it corresponds with the name of the interface that defines the object's shape.
+The property `coreType` is the framework core type name of the object; it
+corresponds with the name of the interface that defines the object's shape.
 
 The `objectType` property is the concrete type name of the object in a canonical
-form. It should be defined using a hierarchical naming pattern with some levels in the
-hierarchy separated by periods (`.`, pronounced "dot") to avoid name collisions,
-following Java package naming conventions (i.e. `com.domain.package.Type`).
-All predefined object types use the form `coaty.<InterfaceName>`,
-e.g. `coaty.CoatyObject` (see constants in `CoreTypes` class). Do not use the
-reserved toplevel namespace `coaty.*` for your application defined object types.
+form. It should be defined using a hierarchical naming pattern with some levels
+in the hierarchy separated by periods (`.`, pronounced "dot") to avoid name
+collisions, following Java package naming conventions (i.e.
+`com.domain.package.Type`). All predefined object types use the form
+`coaty.<InterfaceName>`, e.g. `coaty.CoatyObject` (see constants in `CoreTypes`
+class). Do not use the reserved toplevel namespace `coaty.*` for your
+application defined object types.
 
 The concrete and core type names of all predefined object types are defined
 as static properties of the `CoreTypes` class in the framework `model` module.
 
 The `name` property defines a descriptive name for the object.
 
-The `objectId` property defines the unique identity of an object within the system.
+The `objectId` property defines the unique identity of an object within the
+system.
 
 The optional `externalId` property defines the identity of an object relative to
-an external system, such as the primary key for this object in an external database.
-Note that external IDs are not guaranteed to be unique across
-the whole universe of system objects. Usually, external IDs are only unique for
-a specific type of objects.
+an external system, such as the primary key for this object in an external
+database. Note that external IDs are not guaranteed to be unique across the
+whole universe of system objects. Usually, external IDs are only unique for a
+specific type of objects.
 
 The optional `parentObjectId` property refers to the UUID of the parent object.
 It is used to model parent-child relationships of objects. For example,
-Annotation objects can be modelled as children of target objects they are attached to.
+Annotation objects can be modelled as children of target objects they are
+attached to.
 
 The optional `locationId` property refers to the UUID of the Location object
 that this object is associated with.
 
-The optional `isDeactivated` property marks an object that is no longer used. The
-concrete definition meaning of this property is defined by the Coaty application.
-The property value is optional and defaults to false.
+The optional `isDeactivated` property marks an object that is no longer used.
+The concrete definition meaning of this property is defined by the Coaty
+application. The property value is optional and defaults to false.
 
-Application specific object types can be defined based on the predefined core object
-types by adding additional property-value pairs. Allowed value types must conform to
-JSON data types.
+Application specific object types can be defined based on the predefined core
+object types by adding additional property-value pairs. Allowed value types must
+conform to JSON data types.
 
 ### Define domain-specific object types
 
@@ -992,11 +1002,18 @@ handle such responses. For example, the requester can decide to
 * handle any response over time, or
 * process responses as defined by any other application-specific logic.
 
-In the latter case innovative scenarios beyond classic request-response can be
-realized. For example, a Query event responder could re-execute the database
-query and publish a Retrieve event with the new results every time the concerned
-storage area is updated. In this way inefficient database polling is replaced by
-an efficient push-based approach.
+Using this "open channel" communication, you can realize advanced interaction
+scenarios beyond classic request-response in a very simple way. For example, by
+introducing *live queries*, a Query event responder could monitor the database
+for changes and publish a Retrieve event with the latest query result every time
+the concerned data is updated. In this way, inefficient manual database polling
+is replaced by an efficient automatic push-based approach that helps your
+application feel quick and responsive.
+
+To give you another example, it may be desirable for some remote operation calls
+to have a progressive series of call results, e.g. to return partial data in
+chunks or progress status of long running operations, even simultaneously by
+different callees.
 
 Internally, events are emitted and received by the Communication Manager using
 a specific publish-subscribe messaging transport abstracted by *communication
@@ -1045,8 +1062,9 @@ from within the `platformReady` callback on the Ionic root component or from
 within any Ionic Component Page.
 
 Use the `CommunicationManager.observeCommunicationState` method to observe
-communication state changes of the underlying MQTT connection (i.e. online or
-offline). Usage of this feature is further simplified by the convenience method
+communication state changes of the underlying messaging transport connection to
+the Coaty communication infrastrcuture (i.e. online or offline). Usage of this
+feature is further simplified by the convenience method
 `NodeUtils.logCommunicationState` and by a convenience controller class named
 [`ConnectionStateController`](#connection-state-controller).
 
@@ -1060,24 +1078,24 @@ or object type.
 Use `publishDeadvertise` to send Deadvertise events for objects by specifying
 their object IDs.
 
-Use `publishChannel` to send Channel events. A channel identifier must be specified.
-It is used to deliver the channeled objects to parties observing Channel events
-for the same channel identifier.
+Use `publishChannel` to send Channel events. A channel identifier must be
+specified. It is used to deliver the channeled objects to parties observing
+Channel events for the same channel identifier.
 
-Use `publishDiscover` to send Discover events. The observable returned
-will emit all the Resolve events which are direct responses to the published request.
-Be aware that multiple Resolve events may be emitted from different parties
-which may have different payloads: some may be responding with an object,
-some with related objects, and some with both. Your Resolve event handler
-must differentiate these cases carefully. For example, if you are discovering
-an object ID and you are only interested in related objects (e.g. annotation
-objects) you have to ignore response events which only provide an object
-but no related objects. The `DiscoverEventData` class provides convenience methods
-to differentiate between supported payloads: `isDiscoveringExternalId`,
-`isDiscoveringObjectId`, `isDiscoveringExternalAndObjectId`, `isDiscoveringTypes`,
-`isCoreTypeCompatible`, `isObjectTypeCompatible`. The `matchesObject` method
-can be used to determines whether a given object matches the requirements of
-incoming discover event data.
+Use `publishDiscover` to send Discover events. The observable returned will emit
+all the Resolve events which are direct responses to the published request. Be
+aware that multiple Resolve events may be emitted from different parties which
+may have different payloads: some may be responding with an object, some with
+related objects, and some with both. Your Resolve event handler must
+differentiate these cases carefully. For example, if you are discovering an
+object ID and you are only interested in related objects (e.g. annotation
+objects) you have to ignore response events which only provide an object but no
+related objects. The `DiscoverEventData` class provides convenience methods to
+differentiate between supported payloads: `isDiscoveringExternalId`,
+`isDiscoveringObjectId`, `isDiscoveringExternalAndObjectId`,
+`isDiscoveringTypes`, `isCoreTypeCompatible`, `isObjectTypeCompatible`. The
+`matchesObject` method can be used to determines whether a given object matches
+the requirements of incoming discover event data.
 
 Use `publishUpdate` to send Update events. The observable returned will
 emit all the Complete events which are direct responses to the published request.
@@ -1289,10 +1307,10 @@ this.communicationManager
 
 ### Deadvertise event pattern - an example
 
-The Deadvertise event works in combination with the Advertise event.
-By publishing a Deadvertise event with the unique object ID of an object,
-you can notify observers that this object (which has been advertised earlier)
-is no longer available:
+The Deadvertise event works in combination with the Advertise event. By
+publishing a Deadvertise event with the unique object ID of an object, you can
+notify observers that this object (which has been advertised earlier) is no
+longer available:
 
 ```ts
 import { map } from "rxjs/operators";
@@ -1316,12 +1334,12 @@ this.communicationManager
 ```
 
 This concept is especially useful in combination with abnormal termination of an
-agent and the MQTT last will concept. On connection to the broker, the
-communication manager of a Coaty container sends a last will message consisting
-of a Deadvertise event with the object ID of its identity component. Whenever
-the agent disconnects normally or abnormally, the broker publishes its last will
-message to all subscribers which observe Deadvertise events. For details, see
-this [section](#distributed-lifecycle-management).
+agent and the last will concept of broker-based pub/sub systems. On connection
+to the broker, the communication manager of a Coaty container sends a last will
+message consisting of a Deadvertise event with the object ID of its identity
+component. Whenever the agent disconnects normally or abnormally, the broker
+publishes its last will message to all subscribers which observe Deadvertise
+events. For details, see this [section](#distributed-lifecycle-management).
 
 Using this pattern, agents can detect the online/offline state of other Coaty
 agents and act accordingly. One typical use case is to set the parent object ID
@@ -1393,9 +1411,9 @@ this.communicationManager
 
 ### Channel event pattern - an example
 
-The Channel event pattern provides a very efficient way of pushing any type
-of Coaty objects to observers that share a specific channel identifier. It
-differs from Advertise events in that these are pushing specific core or object
+The Channel event provides a very efficient way of pushing any type of Coaty
+objects to observers that share a specific channel identifier. It differs from
+Advertise events in that these are pushing objects of specific core or object
 types to interested observers.
 
 ```ts
@@ -1421,10 +1439,12 @@ this.communicationManager
 ### Discover - Resolve event pattern - an example
 
 The two-way Discover-Resolve communication pattern can be used to discover Coaty
-objects of a certain core or object type and/or with a certain object id or external id.
+objects of a certain core or object type and/or with a certain object ID or
+external ID.
 
-For example, by scanning the QR Code of a physical asset, which encodes its external id,
-the Discover event can resolve the Coaty object representation of this asset.
+For example, by scanning the QR Code of a physical asset, which encodes its
+external ID, the Discover event can resolve the Coaty object representation of
+this asset.
 
 ```ts
 import { filter, map, take, timeout } from "rxjs/operators";
@@ -1462,22 +1482,22 @@ this.communicationManager.observeDiscover()
     });
 ```
 
-Note that the Resolve event cannot only respond with a matching object, but
-can alternatively or additionally provide related objects. The logic of
-resolving Discover events is application specific and defined by the
-resolving agent. For example, a Discover event that specifies an external id
-*in combination* with the object types `Thing` and `Sensor` could be resolved
-by returning the `Thing` object with the given external id and all sensor
-objects associated with this thing as related objects.
+Note that the Resolve event cannot only respond with a matching object, but can
+alternatively or additionally provide related objects. The logic of resolving
+Discover events is application specific and defined by the resolving agent. For
+example, a Discover event that specifies an external id *in combination* with
+the object types `Thing` and `Sensor` could be resolved by returning the `Thing`
+object with the given external id and all sensor objects associated with this
+thing as related objects.
 
-To share object state between Coaty agents, the Discover-Resolve event
-pattern is often used in combination with the Advertise event pattern. One
-agent advertises new object state whenever it changes; other agents that
-are interested in object state changes observe this kind of Advertise event.
-To ensure that any interested agent immediately gets the latest object state
-on connection, it should initially publish a Discover event for the object
-state. The agent that advertises object state should observe these Discover
-events and resolve the current object state.
+To share object state between Coaty agents, the Discover-Resolve event pattern
+is often used in combination with the Advertise event pattern. One agent
+advertises new object state whenever it changes; other agents that are
+interested in object state changes observe this kind of Advertise event. To
+ensure that any interested agent immediately gets the latest object state on
+connection, it should initially publish a Discover event for the object state.
+The agent that advertises object state should observe these Discover events and
+resolve the current object state.
 
 The `ObjectCacheController` class applies this principle to look up and cache
 objects with certain object IDs. In your own code, you can easily implement this
@@ -1595,10 +1615,10 @@ accomplishments by Complete events.
 
 An Update request or proposal specifies an entire Coaty object as event data.
 
-An Update event signal accomplishment by responding with a Complete event with
-the entire (usually changed) object as event data. This approach avoids complex
-merging operations of incremental change deltas in the agents. Since objects are
-treated as immutable entities on the agent this approach is in line.
+A responding Complete event signals accomplishment with the entire (usually
+changed) object as event data. This approach avoids complex merging operations
+of incremental change deltas in the agents. Since objects are treated as
+immutable entities on the agent this approach is in line.
 
 The Update-Complete pattern can also be used to propose potential object
 changes. Observes can then express how to accept the proposal by responding with
@@ -1824,22 +1844,48 @@ The optional `executionInfo` property (any JSON value) in Return event data may
 be used to specify additional parameters of the execution environment, such as
 the execution time of the operation, or the ID of the operated control unit.
 
-### Observing and publishing raw MQTT messages
+### Raw event pattern - an example
 
-A Coaty agent can act as a gateway to an external system that communicates by
-MQTT. It can publish and subscribe to external, so-called "raw" MQTT messages.
+A Coaty agent can act as a gateway to an external system that communicates with
+the same communication protocol that Coaty is using. The agent can then publish
+and subscribe to external messages, so called Raw events. You can also use Raw
+events to transfer arbitrary binary data between Coaty agents.
 
-To enable interoperation with external MQTT clients, use `publishRaw` to publish
-a raw MQTT message specifying an MQTT topic, a payload (of type `string` or
-`Uint8Array` (or `Buffer` in Node.js, a subclass thereof), and an optional flag
-indicating whether the published message should be retained.
+Use `publishRaw` to publish a raw message on a publication topic string, with
+payload data (of type `string` or `Uint8Array` (or `Buffer` in Node.js, a
+subclass thereof), and optional publication options. Note that the topic format
+and the publication options are specific to the communication binding used. The
+payload data format is application specific.
 
-Likewise, use `observeRaw` to observe matching incoming messages on raw MQTT
+For example, with the MQTT communication binding in place, you can publish a raw
+MQTT message with a retain flag set as follows:
+
+```ts
+this.communicationManager.publishRaw(RawEvent.withTopicAndPayload(
+    "sensor/temperature/4711",
+    "30 degreeCelsius",
+    {
+        retain: true
+    }));
+```
+
+Likewise, use `observeRaw` to observe matching incoming messages on raw
 subscription topics. The observable returned by calling `observeRaw` emits
-messages as tuples including the actual published topic and the payload. Payload
-is represented as `Uint8Array` (or `Buffer` in Node.js, a subclass thereof) and
-needs to be parsed by the application. Use the `toString` method on a payload to
-convert the raw data to an UTF8 encoded string.
+messages as tuples including the actual publication topic and the payload.
+Payload is represented as `Uint8Array` (or `Buffer` in Node.js, a subclass
+thereof) and needs to be decoded by the application. Use the `toString` method
+on a payload to convert the raw data to a UTF8 encoded string.
+
+For example, to observe raw MQTT messages of all temperature sensors in the
+above example:
+
+```ts
+this.communicationManager.observeRaw("sensor/temperature/+")
+    .subscribe(([topic, payload]) => {
+        console.log("Publication topic:", topic);
+        console.log("Payload data:", payload.toString());
+    });
+```
 
 > **Notes**: To unobserve a given raw subscription topic, simply unsubscribe
 > any subscriptions on the returned observable, either explicitely or
@@ -1852,8 +1898,9 @@ convert the raw data to an UTF8 encoded string.
 
 ### Distributed lifecycle management
 
-A Coaty agent keeps track of other agents or specific Coaty objects in a Coaty
-network by monitoring agent identities or custom object types.
+A Coaty agent can keep track of other agents or specific Coaty objects by
+monitoring agent identities or custom object types which are advertised by
+joining agents and deadvertised by leaving agents.
 
 An agent's identity is a Coaty object of core type `Identity`. It is initialized
 by the agent container with default property values. You can customize and
@@ -1868,11 +1915,12 @@ type `Identity` or with the object ID of its own agent identity.
 Whenever the Communication Manager is stopped, it *deadvertises* the agent's
 identity automatically and stops resolving its own identity to other agents.
 
-Tracking agent identities also supports abnormal termination of an agent, e.g.
-when its process crashed or is killed. Coaty realizes a "last will" concept for
-distributed Coaty applications. It ensures that even when the Communication
-Manager disconnects abnormally, all other Coaty agents receive a Deadvertise
-event with the object ID of the terminating agent's identity.
+Tracking agent identities also supports abnormal disconnection or termination of
+an agent, e.g. when the connection is lost temporarily or when its process
+crashes or is killed. Coaty realizes a "last will" concept for distributed Coaty
+applications. It ensures that even when the Communication Manager disconnects
+abnormally, all other Coaty agents receive a Deadvertise event with the object
+ID of the terminating agent's identity.
 
 To ease programming this pattern, Coaty provides a convenience controller class
 named [`ObjectLifecycleController`](#object-lifecycle-controller). Using this
@@ -2158,9 +2206,9 @@ in the Coaty JS integration tests on IO routing.
 
 The Coaty framework supports unified persistent or in-memory storage and
 retrieval of objects and other data in SQL and NoSQL databases. The Unified
-Storage API is database-agnostic. It unifies common CRUD constructs of relational
-databases and NoSQL document databases in a simple but powerful API based on promises
-for asynchronous operations.
+Storage API is database-agnostic. It unifies common CRUD constructs of
+relational databases and NoSQL document databases in a simple but powerful API
+based on promises for asynchronous operations.
 
 The Unified Storage API is especially suited to interact with Query - Retrieve
 communication event patterns. It enables declarative, seamless and transparent
@@ -2169,34 +2217,34 @@ implementations. The query event's object filter which specifies selection and
 ordering criteria can be directly passed to the database agnostic API for
 schemaless object retrieval.
 
-The Unified Storage API uses the notion of *database adapters* to connect to specific
-databases. The framework provides ready-to-use built-in adapters. You can also
-write your own adapter to connect to a specific database not yet supported by
-the framework.
+The Unified Storage API uses the notion of *database adapters* to connect to
+specific databases. The framework provides ready-to-use built-in adapters. You
+can also write your own adapter to connect to a specific database not yet
+supported by the framework.
 
 Database adapters can support SQL operations, NoSQL operations, or both.
-Depending on the specific database adapter, the API can be used in
-Coaty containers running in Node.js services, in Cordova apps, or in
-the browser. For example, the built-in SQLite Cordova adapter can run
-in Cordova apps; the built-in SQLite Node adapter can run in Node.js.
-The built-in Postgres adapter can also run in a Node.js environnment.
+Depending on the specific database adapter, the API can be used in Coaty
+containers running in Node.js services, in Cordova apps, or in the browser. For
+example, the built-in SQLite Cordova adapter can run in Cordova apps; the
+built-in SQLite Node adapter can run in Node.js. The built-in Postgres adapter
+can also run in a Node.js environnment.
 
-For services, we recommend to use the standard built-in Postgres adapter
-in combination with a PostgreSQL 9.5 (or later) database server. PostgreSQL is
-an open-source object-relational DBMS running on a variety of operating system
-platforms. It supports almost all SQL operations as well as highly efficient NoSQL
-document operations using the JSONB data type for binary storage and retrieval of
-JSON objects. The Postgres adapter stores objects as JSONB column data
-properly indexed to speed-up containment operations on key-value pairs.
+For services, we recommend to use the standard built-in Postgres adapter in
+combination with a PostgreSQL 9.5 (or later) database server. PostgreSQL is an
+open-source object-relational DBMS running on a variety of operating system
+platforms. It supports almost all SQL operations as well as highly efficient
+NoSQL document operations using the JSONB data type for binary storage and
+retrieval of JSON objects. The Postgres adapter stores objects as JSONB column
+data properly indexed to speed-up containment operations on key-value pairs.
 
 For efficient non-persistent, in-memory storage of objects we recommend to use
 the built-in In-Memory adapter. This adapter supports NoSQL operations only. It
 can be used in any Coaty container, running in Node.js, Cordova apps, or
 browsers.
 
-For mobile apps, device apps and services that should locally persist small amounts of
-data, such as user settings or preferences, we recommend to use one of the
-built-in SQLite adapters (see subsection 'Local Store operations' below).
+For mobile apps, device apps and services that should locally persist small
+amounts of data, such as user settings or preferences, we recommend to use one
+of the built-in SQLite adapters (see subsection 'Local Store operations' below).
 
 ### Persistent storage and retrieval of Coaty objects
 
@@ -2227,11 +2275,11 @@ const configuration: Configuration = {
 };
 ```
 
-For all database adapters used by your agent (typically specified
-in the databases configuration options), you must register the adapter's
-constructor function before use. The name of the adapter must correspond
-to the value of the `adapter` property specified in the connection info
-of the database configuration.
+For all database adapters used by your agent (typically specified in the
+databases configuration options), you must register the adapter's constructor
+function before use. The name of the adapter must correspond to the value of the
+`adapter` property specified in the connection info of the database
+configuration.
 
 ```ts
 import { Components } from "@coaty/core";
@@ -2243,13 +2291,12 @@ DbAdapterFactory.registerAdapter("PostgresAdapter", PostgresAdapter);
 const container = Container.resolve(...);
 ```
 
-The Coaty framework exposes *database context* objects to perform SQL and/or NoSQL
-operations on the database. It features a promise-based interface for
-asynchronous data flow control. A database context is a light-weight object
-that can be used to perform a single operation or multiple operations
-in sequence. A database context object can be short-lived but you
-can also use it for the lifetime of your container by storing it as an
-instance member in a controller.
+The Coaty framework exposes *database context* objects to perform SQL and/or
+NoSQL operations on the database. It features a promise-based interface for
+asynchronous data flow control. A database context is a light-weight object that
+can be used to perform a single operation or multiple operations in sequence. A
+database context object can be short-lived but you can also use it for the
+lifetime of your container by storing it as an instance member in a controller.
 
 A database context object is created with the connection information specified
 in the configuration:
@@ -2264,12 +2311,13 @@ import { PostgresAdapter } from "@coaty/core/db/adapter-postgres";
 const dbContext2 = new DbContext(this.runtime.databaseOptions["mydb1"], PostgresAdapter);
 ```
 
-The SQL and NoSQL operations that you can invoke on the database contexts are defined
-by the interfaces `IDbSqlOperations` and `IDbNoSqlOperations`, respectively.
+The SQL and NoSQL operations that you can invoke on the database contexts are
+defined by the interfaces `IDbSqlOperations` and `IDbNoSqlOperations`,
+respectively.
 
-If you invoke an operation on a database context that is not supported by
-the associated database adapter, the returned promise is rejected with an
-"operation not supported" error.
+If you invoke an operation on a database context that is not supported by the
+associated database adapter, the returned promise is rejected with an "operation
+not supported" error.
 
 For example, to create and populate a collection of User objects, invoke the
 following NoSQL operations:
@@ -2282,12 +2330,12 @@ dbContext.addCollection("appusers")
 ```
 
 To invoke multiple asynchronous operations in sequence, it is best practice to
-use composing promises and promise chaining as shown in the above example.
-Avoid the common bad practice pattern of nesting promises as if they were callbacks.
+use composing promises and promise chaining as shown in the above example. Avoid
+the common bad practice pattern of nesting promises as if they were callbacks.
 
-Note that you can reuse a database context object even if an operation
-performed on it fails or yields an error. You can also catch rejected promises
-after every single operation. After a catch clause, the promise chain is restored:
+Note that you can reuse a database context object even if an operation performed
+on it fails or yields an error. You can also catch rejected promises after every
+single operation. After a catch clause, the promise chain is restored:
 
 ```ts
 dbContext.addCollection("appusers")
@@ -2369,20 +2417,22 @@ dbContext.addCollection("appusers")
 ```
 
 Note that `Promise.all` implements a fail-fast behavior. It returns a promise
-that resolves when all of the promises in the array have resolved, or immediately
-rejects with the reason of the first passed promise that rejects, discarding all
-the other promises whether or not they have resolved. To avoid fail-fast behavior
-in the above example, all the operation catch handlers return a *fulfilled* promise
-to signal that `Promise.all` should also await completion of failed operations.
+that resolves when all of the promises in the array have resolved, or
+immediately rejects with the reason of the first passed promise that rejects,
+discarding all the other promises whether or not they have resolved. To avoid
+fail-fast behavior in the above example, all the operation catch handlers return
+a *fulfilled* promise to signal that `Promise.all` should also await completion
+of failed operations.
 
-**A final note of caution**: Iterating over individual objects retrieved by a database
-operation such as `findObjects` and applying some asynchronous database operation on
-each one **in parallel** normally does **not** perform better than applying these
-operations **in series**. This is because database queries are usually queued by the
-database driver and executed one after the other. Moreover, chaining a lerge number
-of promises does not scale well because allocation in memory has a negative impact on
-memory footprint. To avoid these pitfalls you should in general prefer sequential promise
-chaining by `Async.inSeries`.
+**A final note of caution**: Iterating over individual objects retrieved by a
+database operation such as `findObjects` and applying some asynchronous database
+operation on each one **in parallel** normally does **not** perform better than
+applying these operations **in series**. This is because database queries are
+usually queued by the database driver and executed one after the other.
+Moreover, chaining a lerge number of promises does not scale well because
+allocation in memory has a negative impact on memory footprint. To avoid these
+pitfalls you should in general prefer sequential promise chaining by
+`Async.inSeries`.
 
 ### NoSQL operations
 
@@ -2517,18 +2567,18 @@ The `findObjects` operation supports two ways of iterating the query results
 2. Fetch the query result a chunk of rows at a time to avoid memory problems.
    This provides an efficient way to process large query result sets.
 
-Note that fetching query results in chunks is significantly slower than
-fetching the whole query at once when the query contains not significantly
-more or even less items than the size of a chunk as specified by `fetchSize`.
+Note that fetching query results in chunks is significantly slower than fetching
+the whole query at once when the query contains not significantly more or even
+less items than the size of a chunk as specified by `fetchSize`.
 
-Fetching results in chunks is especially beneficial in combination with the
-skip and take options. This is the preferred way of paging through a
-large result set by retrieving only a specific subset.
+Fetching results in chunks is especially beneficial in combination with the skip
+and take options. This is the preferred way of paging through a large result set
+by retrieving only a specific subset.
 
 The `findObjects` method is especially suited to handle Query - Retrieve
-communication event patterns. The object filter defined by a
-Query event can be directly passed to `findObjects`. The object join conditions
-defined by a Query event can be passed to `findObjects` using the
+communication event patterns. The object filter defined by a Query event can be
+directly passed to `findObjects`. The object join conditions defined by a Query
+event can be passed to `findObjects` using the
 `DbContext.getDbJoinConditionsFrom` mapping function.
 
 ### SQL operations
@@ -2549,12 +2599,12 @@ Use `iquery` to execute an SQL query defined by the given query builder and
 retrieve the results iteratively. The result can be iterated one by one or in
 batches to avoid memory overrun when the result contains a large number of rows.
 
-Use the predefined query builder function `SQL` to formulate
-your parameterized SQL query. `SQL` is a tag function for defining universal
-SQL queries by template literals. The tag function translates universal
-parametrized queries into queries for the specific SQL dialect to be addressed.
-It also ensures that SQL identifiers and literals are properly quoted, i.e.
-escaped to prevent SQL syntax errors and SQL injection. For example:
+Use the predefined query builder function `SQL` to formulate your parameterized
+SQL query. `SQL` is a tag function for defining universal SQL queries by
+template literals. The tag function translates universal parametrized queries
+into queries for the specific SQL dialect to be addressed. It also ensures that
+SQL identifiers and literals are properly quoted, i.e. escaped to prevent SQL
+syntax errors and SQL injection. For example:
 
 ```ts
 const myTable = "app-users";
@@ -2588,24 +2638,24 @@ query:  SELECT * FROM `app-users` WHERE 'first name' = ? AND 'last-name' = ?;
 params: [ "Fred", "Flintstone" ]
 ```
 
-Detailed descriptions of the supported operations are documented in the code of class
-`DbContext`. Code examples can be found in the framework's integration tests
-in the file `ts/test/spec/db-sql.spec.ts`.
+Detailed descriptions of the supported operations are documented in the code of
+class `DbContext`. Code examples can be found in the framework's integration
+tests in the file `ts/test/spec/db-sql.spec.ts`.
 
 ### Local storage operations
 
-The Unified Storage API also supports *local* database contexts that persist data in a
-local database file without using a database server. Such a database context is
-usually adequate for storing small amounts of data in the local file system
-of a device or service. SQLite is a typical example of such a database. Typically,
-a local database context is used to persist agent-specific settings.
+The Unified Storage API also supports *local* database contexts that persist
+data in a local database file without using a database server. Such a database
+context is usually adequate for storing small amounts of data in the local file
+system of a device or service. SQLite is a typical example of such a database.
+Typically, a local database context is used to persist agent-specific settings.
 For example, a local database context can be used in a Node.js environment as
 well as in a Cordova app (utilizing specific built-in SQLite database adapters).
 
-Besides SQL operations and transactions, a local database context supports
-local storage of pairs of keys and values. Keys are strings and values are any
-JSON objects. Values can be retrieved when a key is known or by mapping through
-all key-value pairs.
+Besides SQL operations and transactions, a local database context supports local
+storage of pairs of keys and values. Keys are strings and values are any JSON
+objects. Values can be retrieved when a key is known or by mapping through all
+key-value pairs.
 
 ```ts
 addStore(name: string): Promise<any>;
@@ -2619,61 +2669,64 @@ close(): Promise<any>;
 ```
 
 Detailed descriptions of the supported operations are documented in the code of
-class `DbLocalContext`. Code examples can be found in the framework's unit
-tests in the file `ts/test/spec/db-local.spec.ts`.
+class `DbLocalContext`. Code examples can be found in the framework's unit tests
+in the file `ts/test/spec/db-local.spec.ts`.
 
 ### Transactions
 
 To bundle multiple query operations inside a transaction block, use the
-`transaction` method on the database context. The action callback **must** return a
-promise that is fulfilled if **all** operations have executed without errors, and
-that is rejected if **any** of the operations fail. All operations within a
-transaction **must** operate on the transaction database context that is passed to
-the action callback.
+`transaction` method on the database context. The action callback **must**
+return a promise that is fulfilled if **all** operations have executed without
+errors, and that is rejected if **any** of the operations fail. All operations
+within a transaction **must** operate on the transaction database context that
+is passed to the action callback.
 
 ```ts
 transaction(action: (transactionContext: DbContext | DbLocalContext) => Promise<any>): Promise<any>;
 ```
 
 While you can invoke independent transactions on the same or different database
-contexts in parallel, or invoke transactions on the same database context in series,
-transactions cannot be *nested*. In this case, the promise returned by trying to invoke
-the subtransaction is rejected with a corresponding error.
+contexts in parallel, or invoke transactions on the same database context in
+series, transactions cannot be *nested*. In this case, the promise returned by
+trying to invoke the subtransaction is rejected with a corresponding error.
 
 ### Database adapter extensions
 
 In addition to the unified SQL and NoSQL operations described above, a database
-adapter can also define *extension* methods. Extensions are adapter-specific, i.e.
-specific to databases and database drivers. Extensions are registered with the `registerExtension`
-adapter method. A database extension context for a specific adapter can now call the
-defined extension using the `callExtension` method. As with the other
-operations, extension methods return promises yielding the requested data.
+adapter can also define *extension* methods. Extensions are adapter-specific,
+i.e. specific to databases and database drivers. Extensions are registered with
+the `registerExtension` adapter method. A database extension context for a
+specific adapter can now call the defined extension using the `callExtension`
+method. As with the other operations, extension methods return promises yielding
+the requested data.
 
 ### Use of database adapters
 
 The built-in database adapters provided by the Coaty framework use specific
 low-level database driver modules to connect to databases.
 
-The drivers used by built-in adapters are defined as (optional) peer dependencies
-in the package.json of the `coaty` npm module. To use a specific adapter in your
-agent project, you must install the associated driver module(s) as dependencies
-in the package.json. Refer to the framework's package.json
-to figure out which version of the driver modules should be installed. You
-only need to install driver modules for adapters that you really use in your
+The drivers used by built-in adapters are defined as (optional) peer
+dependencies in the package.json of the `coaty` npm module. To use a specific
+adapter in your agent project, you must install the associated driver module(s)
+as dependencies in the package.json. Refer to the framework's package.json to
+figure out which version of the driver modules should be installed. You only
+need to install driver modules for adapters that you really use in your
 application project.
 
 ### Postgres adapter
 
 To make use of the built-in Postgres database adapter, install PostgreSQL
 version 9.5 or higher. Download and installation details can be found
-[here](https://www.postgresql.org/). Then, set up and start the database
-server as explained in the [Postgres documentation](https://www.postgresql.org/docs/).
+[here](https://www.postgresql.org/). Then, set up and start the database server
+as explained in the [Postgres documentation](https://www.postgresql.org/docs/).
 
-You also need to add the npm module `pg` as a dependency to your project's package.json
-and install it. The module version should correspond with the version of the `pg` module
-specified in the `coaty` framework package definition as a peer dependency.
+You also need to add the npm module `pg` as a dependency to your project's
+package.json and install it. The module version should correspond with the
+version of the `pg` module specified in the `coaty` framework package definition
+as a peer dependency.
 
-Next, create the target database(s) and user roles. This can be accomplished using
+Next, create the target database(s) and user roles. This can be accomplished
+using
 
 * the pgAdmin tool,
 * the pgsql interactive terminal,
@@ -2726,15 +2779,17 @@ createUser(name: string, comment?: string): Promise<void>;
 deleteUser(name: string): Promise<void>;
 ```
 
-When setting up PostgreSQL do not forget to set a proper password for the PostgreSQL
-admin user if you want to make use of these extension methods. Usually,
-when installing PostgreSQL on Windows or when using a PostgreSQL docker container the
-admin user and admin password are both preset to `postgres`. On Linux, you might
-have to set the password explicitely by running `sudo -u postgres psql postgres` and
-then defining a password through the command `postgres=# \password postgres`.
+When setting up PostgreSQL do not forget to set a proper password for the
+PostgreSQL admin user if you want to make use of these extension methods.
+Usually, when installing PostgreSQL on Windows or when using a PostgreSQL docker
+container the admin user and admin password are both preset to `postgres`. On
+Linux, you might have to set the password explicitely by running `sudo -u
+postgres psql postgres` and then defining a password through the command
+`postgres=# \password postgres`.
 
-The following example shows how to initialize a database (i.e. create a database and
-database user, and add collections) at program startup with the PostgreSQL adapter:
+The following example shows how to initialize a database (i.e. create a database
+and database user, and add collections) at program startup with the PostgreSQL
+adapter:
 
 ```ts
 import { Components, Configuration } from "@coaty/core";
@@ -2775,16 +2830,17 @@ adminContext.callExtension("initDatabase", configuration.databases["db"], ["myco
     .catch(error => console.log(error));
 ```
 
-Note that you have to be an admin user ("postgres" in the example, using "postgres"
-as password) with access to the postgres admin database ("postgres") to successfully
-execute these operations.
+Note that you have to be an admin user ("postgres" in the example, using
+"postgres" as password) with access to the postgres admin database ("postgres")
+to successfully execute these operations.
 
 ### In-memory adapter
 
 For efficient non-persistent, in-memory storage of objects we recommend to use
 the built-in `InMemoryAdapter`. This adapter supports the complete set of NoSQL
 operations. Transactions are not supported. Fetching in chunks is not supported,
-i.e. `DbObjectFilter.shouldFetchInChunks` and `DbObjectFilter.fetchSize` are ignored.
+i.e. `DbObjectFilter.shouldFetchInChunks` and `DbObjectFilter.fetchSize` are
+ignored.
 
 This adapter has no external dependencies to database drivers and requires no
 installation of third-party modules. It can be used in any Coaty container,
@@ -2802,10 +2858,12 @@ This adapter supports the following connection options:
 }
 ```
 
-The database specified by either the connection string or options is implicitely and
-automatically created in-memory the first time you are creating a `DbContext` on it.
+The database specified by either the connection string or options is implicitely
+and automatically created in-memory the first time you are creating a
+`DbContext` on it.
 
-The following example shows how to create and use a database with the `InMemoryAdapter`:
+The following example shows how to create and use a database with the
+`InMemoryAdapter`:
 
 ```ts
 import { Configuration } from "@coaty/core";
@@ -2839,27 +2897,29 @@ integration tests in the file `ts/test/spec/db-in-memory.spec.ts`.
 
 ### SQLite Node.js adapter
 
-The Coaty framework provides a built-in database adapter for persistent SQL-based
-local storage and retrieval in Node.js processes. The `SqLiteNodeAdapter`
-makes use of SQLite 3 utilizing the `sqlite3` npm module as database driver.
+The Coaty framework provides a built-in database adapter for persistent
+SQL-based local storage and retrieval in Node.js processes. The
+`SqLiteNodeAdapter` makes use of SQLite 3 utilizing the `sqlite3` npm module as
+database driver.
 
-The SQLite node adapter supports SQL operations, transactions, and local
-store operations exposed by a local database context (of class `DbLocalContext`).
-For the `query` operation the `fetchSize` option is ignored.
+The SQLite node adapter supports SQL operations, transactions, and local store
+operations exposed by a local database context (of class `DbLocalContext`). For
+the `query` operation the `fetchSize` option is ignored.
 
 The adapter also provides an extension method `deleteDatabase` for deleting an
 SQLite database file.
 
 The SQLite database file path is specified as connection string in the
-connection info object. If you specify an absolute or relative file path
-ensure that the path exists and is accessible by the process, otherwise
-the database file cannot be created or opened. The database file name should
-include the extension, if desired, e.g. `"db/myservice.db"`. No further connection
-options are supported.
+connection info object. If you specify an absolute or relative file path ensure
+that the path exists and is accessible by the process, otherwise the database
+file cannot be created or opened. The database file name should include the
+extension, if desired, e.g. `"db/myservice.db"`. No further connection options
+are supported.
 
-You also need to add the npm module `sqlite3` as a dependency to your project's package.json
-and install it. The module version should correspond with the version of the `sqlite3` module
-specified in the `coaty` framework package definition as a peer dependency.
+You also need to add the npm module `sqlite3` as a dependency to your project's
+package.json and install it. The module version should correspond with the
+version of the `sqlite3` module specified in the `coaty` framework package
+definition as a peer dependency.
 
 To connect to a local SQLite database, specify `SqLiteNodeAdapter` in your
 connection information and register the adapter before use:
@@ -2896,11 +2956,11 @@ const dbContext = new DbLocalContext(this.runtime.databaseOptions["localdb"]);
 
 ### SQLite Cordova adapter
 
-The Coaty framework provides a built-in database adapter for persistent SQL-based
-local storage and retrieval in mobile browser apps running on iOS, Android and Windows.
-The SQLite Cordova adapter makes use of the cordova-sqlite-storage plugin.
-The adapter provides a powerful alternative to limited HTML5 local storage in
-your mobile app.
+The Coaty framework provides a built-in database adapter for persistent
+SQL-based local storage and retrieval in mobile browser apps running on iOS,
+Android and Windows. The SQLite Cordova adapter makes use of the
+cordova-sqlite-storage plugin. The adapter provides a powerful alternative to
+limited HTML5 local storage in your mobile app.
 
 The SQLite node adapter supports SQL operations, transactions, and local
 store operations exposed by a local database context (of class `DbLocalContext`).
@@ -2922,17 +2982,18 @@ following choices:
 * `Documents`: stored in Documents subdirectory, visible to iTunes and backed
   up by iCloud
 
-Like with other Cordova plugins you must wait for the `deviceready` event
-in your app before instantiating a local database context with this adapter.
-Note that controllers and other service classes injected into Ionic/Angular
-UI components are created before the `deviceready` event is fired. Thus, you
-should never execute operations on a local database context on this adapter
-in the constructor of such a class.
+Like with other Cordova plugins you must wait for the `deviceready` event in
+your app before instantiating a local database context with this adapter. Note
+that controllers and other service classes injected into Ionic/Angular UI
+components are created before the `deviceready` event is fired. Thus, you should
+never execute operations on a local database context on this adapter in the
+constructor of such a class.
 
-To use the SQLite Cordova adapter, yo need to add the npm module `cordova-sqlite-storage`
-as a dependency to your project's package.json and install it. The module version should
-correspond with the version of the `cordova-sqlite-storage` module specified
-in the `coaty` framework package definition as a peer dependency.
+To use the SQLite Cordova adapter, yo need to add the npm module
+`cordova-sqlite-storage` as a dependency to your project's package.json and
+install it. The module version should correspond with the version of the
+`cordova-sqlite-storage` module specified in the `coaty` framework package
+definition as a peer dependency.
 
 To connect to a local SQLite database, specify `SqLiteCordovaAdapter` in your
 connection information and register the adapter before use:
@@ -2973,11 +3034,11 @@ const dbContext = new DbLocalContext(this.runtime.databaseOptions["localdb"]);
 You can implement your own custom database adapter by defining a class that
 derives from `DbAdapterBase` and implements the `IDbAdapter` and
 `IDbAdapterExtension` interfaces. `DbAdapterBase` provides default
-implementations for all interface methods that return a rejected promise
-which yields an "Operation not supported" error.
+implementations for all interface methods that return a rejected promise which
+yields an "Operation not supported" error.
 
-You can specify the custom adapter in the database configuration options.
-Note that the custom adapter class must be registered before use.
+You can specify the custom adapter in the database configuration options. Note
+that the custom adapter class must be registered before use.
 
 ```ts
 import { Configuration } from "@coaty/core";
@@ -3001,19 +3062,18 @@ DbAdapterFactory.registerAdapter("MyCustomDatabaseAdapter", MyCustomDatabaseAdap
 
 ### Convenience controllers
 
-Besides the base `Controller` class, the framework also provides
-some convenience controller classes that you can reuse in your
-agent project.
+Besides the base `Controller` class, the framework also provides some
+convenience controller classes that you can reuse in your agent project.
 
 #### Connection State Controller
 
-The `ConnectionStateController` class monitors the connection state (online or offline)
-of the associated communication manager.
+The `ConnectionStateController` class monitors the connection state (online or
+offline) of the associated communication manager.
 
 Use its  `isOffline` getter to get a boolean observable that emits `true` if the
-connection state of the associated communication manager transitions to offline, and
-`false` if it transitions to online. When subscribed, the current connection state is
-emitted immediately.
+connection state of the associated communication manager transitions to offline,
+and `false` if it transitions to online. When subscribed, the current connection
+state is emitted immediately.
 
 #### Object Lifecycle Controller
 
@@ -3187,8 +3247,8 @@ export class UserCacheController extends ObjectCacheController<FactoryUser> {
 }
 ```
 
-Resolve an object with a given objectId by your custom cache controller
-as follows:
+Resolve an object with a given objectId by your custom cache controller as
+follows:
 
 ```ts
 this.userCacheController.resolveObject(objectId)
@@ -3204,33 +3264,33 @@ this.userCacheController.resolveObject(objectId)
 The `HistorianController` class can be used on each Coaty agent to create and/or
 persist snapshots in time of arbitrary Coaty objects.
 
-A snapshot represents a deep copy of the object and its state, a timestamp, a creator ID,
-and an optional array of associated tags. The tags can be used on retrieval of snapshots
-to identify different purposes.
+A snapshot represents a deep copy of the object and its state, a timestamp, a
+creator ID, and an optional array of associated tags. The tags can be used on
+retrieval of snapshots to identify different purposes.
 
 A snapshot is created by the `generateSnapshot(object, ...tags)` or
-`generateSnapshot(object, timestamp, ...tags)` method.
-Driven by specific controller options, you can decide to
+`generateSnapshot(object, timestamp, ...tags)` method. Driven by specific
+controller options, you can decide to
 
 * advertise each generated snapshot (`shouldAdvertiseSnapshots`)
 * persist each generated snapshot in a database collection (`shouldPersistLocalSnapshots`)
 * persist each observed snapshot advertised by another Historian controller (`shouldPersistObservedSnapshots`)
 * execute matching Query events for snapshot objects on the database and retrieve results (`shouldReplyToQueries`)
 
-The `HistorianController` provides a convenience method to query snapshots using the
-Query event pattern:
+The `HistorianController` provides a convenience method to query snapshots using
+the Query event pattern:
 
 * `querySnapshotsByParentId(parentObjectId: Uuid): Observable<Snapshot[]>`
 
-The `HistorianController` also provides convenience methods to retrieve snapshots
-from a database collection:
+The `HistorianController` also provides convenience methods to retrieve
+snapshots from a database collection:
 
 * `findSnapshotsByParentId(parentObjectId: Uuid, startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
 * `findSnapshotsByTimeFrame(startTimestamp?: number, endTimestamp?: number): Promise<Snapshot[]>`
 * `findSnapshotsByFilter(filter: ObjectFilter): Promise<Snapshot[]>`
 
-You can set up a `HistorianController` in the Coaty container components and configuration
-as follows:
+You can set up a `HistorianController` in the Coaty container components and
+configuration as follows:
 
 ```ts
 import { Components, Configuration } from "@coaty/core";
@@ -3271,10 +3331,10 @@ export const configuration: Configuration = {
     };
 ```
 
-The `database` controller option has two properties `key` and `collection`; `key` references the
-database key as defined in the `databases` option of your configuration; `collection` is the name
-of the collection to be used. If the collection doesn't exist, it will be created in the given
-database.
+The `database` controller option has two properties `key` and `collection`;
+`key` references the database key as defined in the `databases` option of your
+configuration; `collection` is the name of the collection to be used. If the
+collection doesn't exist, it will be created in the given database.
 
 To see an example of the `HistorianController` in action, take a look at the
 [Hello World
@@ -3346,8 +3406,8 @@ by external tools.
 
 ## Utilities
 
-The framework provides some useful utility functions in the `util` module
-that are missing in the JavaScript ES5/ES6 standard.
+The framework provides some useful utility functions in the `util` module that
+are missing in the JavaScript ES5/ES6 standard.
 
 ### Asynchronous promise operations
 
@@ -3460,12 +3520,13 @@ console.log(toLocalIsoString(new Date(), true));
 
 #### Equality check
 
-Determines whether two JavaScript values, typically objects or arrays, are deep equal according
-to a recursive equality algorithm.
+Determines whether two JavaScript values, typically objects or arrays, are deep
+equal according to a recursive equality algorithm.
 
-Note that the strict equality operator `===` is used to compare leave values. For checking the
-containment of properties in objects the `hasOwnProperty` operator is used, i.e. only properties
-defined on the object directly (not inherited) are considered.
+Note that the strict equality operator `===` is used to compare leave values.
+For checking the containment of properties in objects the `hasOwnProperty`
+operator is used, i.e. only properties defined on the object directly (not
+inherited) are considered.
 
 Compares JavaScript values, typically objects or arrays, and determines whether
 they are deep equal according to a recursive equality algorithm.
@@ -3485,29 +3546,31 @@ equals({ x : 5, y : [6] }, { x : 5, y : 6 })) => false
 
 #### Contains check
 
-Checks if a JavaScript value (usually an object or array) contains
-other values. Primitive value types (number, string, boolean, null, undefined) contain
-only the identical value. Object properties match if all the key-value
-pairs of the specified object are contained in them. Array properties
-match if all the specified array elements are contained in them.
+Checks if a JavaScript value (usually an object or array) contains other values.
+Primitive value types (number, string, boolean, null, undefined) contain only
+the identical value. Object properties match if all the key-value pairs of the
+specified object are contained in them. Array properties match if all the
+specified array elements are contained in them.
 
-The general principle is that the contained object must match the containing object
-as to structure and data contents recursively on all levels, possibly after discarding
-some non-matching array elements or object key/value pairs from the containing object.
-But remember that the order of array elements is not significant when doing a containment match,
-and duplicate array elements are effectively considered only once.
+The general principle is that the contained object must match the containing
+object as to structure and data contents recursively on all levels, possibly
+after discarding some non-matching array elements or object key/value pairs from
+the containing object. But remember that the order of array elements is not
+significant when doing a containment match, and duplicate array elements are
+effectively considered only once.
 
-As a special exception to the general principle that the structures must match, an
-array on *toplevel* may contain a primitive value:
+As a special exception to the general principle that the structures must match,
+an array on *toplevel* may contain a primitive value:
 
 ```ts
 contains([1, 2, 3], [3]) => true
 contains([1, 2, 3], 3) => true
 ```
 
-Note that the strict equality operator `===` is used to compare primitive values. For checking the
-containment of properties in objects the `hasOwnProperty` operator is used, i.e. only properties
-defined on the object directly (not inherited) are considered.
+Note that the strict equality operator `===` is used to compare primitive
+values. For checking the containment of properties in objects the
+`hasOwnProperty` operator is used, i.e. only properties defined on the object
+directly (not inherited) are considered.
 
 For example:
 
@@ -3534,9 +3597,9 @@ contains([1, { "foo": [{ "bar": [1, 2, 3] }, 2, 3] }], [{ "foo": [{ "bar": [3] }
 
 #### Includes check
 
-Checks if a value is included on toplevel in the given
-operand array of values which may be primitive types (number, string, boolean, null)
-or object types compared using the deep equality operator.
+Checks if a value is included on toplevel in the given operand array of values
+which may be primitive types (number, string, boolean, null) or object types
+compared using the deep equality operator.
 
 For example:
 
@@ -3551,44 +3614,48 @@ includes([1, 46, { "foo": 47, "bar": 42 }, "foo"], { "foo": 47 }) => false
 
 ## Node.js utilities
 
-The framework includes a `NodeUtils` class in the `runtime-node` module which provides
-some static utility methods to be used by Coaty agent services.
+The framework includes a `NodeUtils` class in the `runtime-node` module which
+provides some static utility methods to be used by Coaty agent services.
 
-Use the `handleProcessTermination` method to perform synchronous and asynchronous cleanup
-of allocated resources (e.g. file descriptors, handles, DB connections, etc.) before shutting
-down the Node.js process.
+Use the `handleProcessTermination` method to perform synchronous and
+asynchronous cleanup of allocated resources (e.g. file descriptors, handles, DB
+connections, etc.) before shutting down the Node.js process.
 
-Use the `logCommunicationState` method to log changes in online/offline communication state
+Use the `logCommunicationState` method to log changes in online/offline
+communication state
 (i.e. agent connection to Coaty broker) to the console.
 
-Use the `logInfo`, `logError`, and `logEvent` methods to log a given informational message,
-error, or event to the console, also providing a logging timestamp.
+Use the `logInfo`, `logError`, and `logEvent` methods to log a given
+informational message, error, or event to the console, also providing a logging
+timestamp.
 
 Usage examples can be found in the [Coaty JS code
 examples](https://github.com/coatyio/coaty-examples).
 
 ## Multicast DNS discovery
 
-The framework includes a `MulticastDnsDiscovery` class to support multicast DNS discovery
-(a.k.a Bonjour, Zeroconf, mDNS) to be used within Node.js based agents. These functions can
-be used, for example, to auto-discover the IP address of the Coaty broker/router
-or the URL of a container configuration hosted on a web server.
+The framework includes a `MulticastDnsDiscovery` class to support multicast DNS
+discovery (a.k.a Bonjour, Zeroconf, mDNS) to be used within Node.js based
+agents. These functions can be used, for example, to auto-discover the IP
+address of the Coaty broker/router or the URL of a container configuration
+hosted on a web server.
 
-Use the `publishMulticastDnsService`, `publishMqttBrokerService`, and `publishWampRouterService`
-methods in a Coaty service to publish corresponding mDNS services (see examples below).
+Use the `publishMulticastDnsService`, `publishMqttBrokerService`, and
+`publishWampRouterService` methods in a Coaty service to publish corresponding
+mDNS services (see examples below).
 
-Use the `unpublishMulticastDnsServices` function to stop publishing of mDNS services when the
-Coaty service exits.
+Use the `unpublishMulticastDnsServices` function to stop publishing of mDNS
+services when the Coaty service exits.
 
 Use the `findMulticastDnsService`, `findMqttBrokerService`, and
 `findWampRouterService` functions in a Coaty agent to discover a published mDNS
 service (see examples below).
 
-> Note that multicast DNS discovery can only resolve host names within an IP subnet.
-> If you need discovery of broker connection information across subnets, host the
-> container configuration with this information as a JSON file on a centrally accessible
-> web server and retrieve it using HTTP/REST as described in this
-> [section](#bootstrap-a-coaty-container-in-nodejs).
+> Note that multicast DNS discovery can only resolve host names within an IP
+> subnet. If you need discovery of broker connection information across subnets,
+> host the container configuration with this information as a JSON file on a
+> centrally accessible web server and retrieve it using HTTP/REST as described
+> in this [section](#bootstrap-a-coaty-container-in-nodejs).
 
 ### Discover configuration URLs
 
@@ -3618,7 +3685,8 @@ MulticastDnsDiscovery.findMulticastDnsService("My Config URL", "coaty-config", 1
 
 ### Discover broker or router
 
-Publish Coaty broker/router discovery information (with default connection parameters) as follows:
+Publish Coaty broker/router discovery information (with default connection
+parameters) as follows:
 
 ```ts
 import { MulticastDnsDiscovery } from "@coaty/core/runtime-node";
@@ -3634,9 +3702,9 @@ MulticastDnsDiscovery.publishWampRouterService()
     .catch(error => console.error("Router info could not be published", error));
 ```
 
-Auto discover the broker/router URL in a Coaty network and use this information to dynamically
-configure the communication manager at run time. For this to work correctly, ensure that the
-communication manager is *not* started automatically.
+Auto discover the broker/router URL in a Coaty network and use this information
+to dynamically configure the communication manager at run time. For this to work
+correctly, ensure that the communication manager is *not* started automatically.
 
 ```ts
 import { Container } from "@coaty/core";
@@ -3738,18 +3806,19 @@ npm run publish-release
 ```
 
 Note that parameters supplied with an `npm run` command can be referenced in a
-related Coaty script call by substituting a `%i` parameter, where `i` is the one-based
-positional index of the desired npm run command parameter.
+related Coaty script call by substituting a `%i` parameter, where `i` is the
+one-based positional index of the desired npm run command parameter.
 
 ### Coaty broker for development
 
 For Coaty development and testing purposes, the framework includes the
 [Aedes](https://www.npmjs.com/package/aedes) MQTT broker. In your own
-application projects, you can also use this broker for development and testing.
+application projects, you can also use this broker for development and testing
+in combination with the MQTT communication binding.
 
 > Note: You should **not** use this broker in a production system. Instead, use
 > a high-performance MQTT broker of your choice (such as VerneMQ, HiveMQ,
-> Mosquitto, EMQ X, or Crossbar.io WAMP router).
+> Mosquitto, or EMQ X).
 
 The broker script provides the following options:
 
@@ -3844,23 +3913,23 @@ broker.run({
 
 ### Generate project meta info at build time
 
-The framework provides an object interface in the `runtime` module named `AgentInfo`.
-This interface represents package, build and config information of any Coaty agent project,
-whether it runs as a client app or as a backend service. Project information is generated
-when the project is build and can be used at runtime, e.g. for logging,
-informational display, or configuration (e.g. discriminating based on production vs.
-development build mode).
+The framework provides an object interface in the `runtime` module named
+`AgentInfo`. This interface represents package, build and config information of
+any Coaty agent project, whether it runs as a client app or as a backend
+service. Project information is generated when the project is build and can be
+used at runtime, e.g. for logging, informational display, or configuration (e.g.
+discriminating based on production vs. development build mode).
 
-The framework provides several methods to generate `AgentInfo` at build time of the
-project:
+The framework provides several methods to generate `AgentInfo` at build time of
+the project:
 
 * an `info` script to be run as part of the build process based on npm scripts
 * a gulp task to be run as part of a gulp-based build process
 * a pure function to be called in custom build processes based on Node.js.
 
-Each of these methods generates a TypeScript file named `agent.info.ts` which exports
-an `AgentInfo` object on a variable named `agentInfo`. You can import this object
-into your project and use it as needed:
+Each of these methods generates a TypeScript file named `agent.info.ts` which
+exports an `AgentInfo` object on a variable named `agentInfo`. You can import
+this object into your project and use it as needed:
 
 ```ts
 import { agentInfo } from "path_to/agent.info";
@@ -3873,8 +3942,8 @@ console.log(agentInfo.configInfo.serviceHost));
 ...
 ```
 
-Package information exposed by the `AgentInfo.packageInfo` object is extracted from the
-project's package.json file.
+Package information exposed by the `AgentInfo.packageInfo` object is extracted
+from the project's package.json file.
 
 The build mode exposed by the `AgentInfo.buildInfo` object indicates whether the
 agent is built for a production, development, staging, or any other custom build
@@ -3885,10 +3954,10 @@ to a proper value before starting the build process. If this variable is not
 set, a `development` build mode is assumed unless a default build mode has been
 specified in the info script or function.
 
-The `serviceHost` property exposed by the `AgentInfo.configInfo` object represents the host
-name used for MQTT broker connections and REST based services.
-The value is acquired from the environment variable `COATY_SERVICE_HOST`.
-If not set, the value defaults to an empty string.
+The `serviceHost` property exposed by the `AgentInfo.configInfo` object
+represents the host name used for MQTT broker connections and REST based
+services. The value is acquired from the environment variable
+`COATY_SERVICE_HOST`. If not set, the value defaults to an empty string.
 
 #### Generate project info by script
 
@@ -3936,13 +4005,14 @@ gulp.task("agentinfo", infoScript.gulpBuildAgentInfo("path_to"));
 gulp.task("build", gulp.series("clean", "agentinfo", "transpile", "tslint"));
 ```
 
-Note that the `agentinfo` gulp task must be run **before** transpiling the TypeScript
-source code.
+Note that the `agentinfo` gulp task must be run **before** transpiling the
+TypeScript source code.
 
 #### Generate project info by a function
 
-To integrate generation of project info into your custom Node.js based build process, you
-can use the function `generateAgentInfoFile` which is exported by the `runtime` module:
+To integrate generation of project info into your custom Node.js based build
+process, you can use the function `generateAgentInfoFile` which is exported by
+the `runtime` module:
 
 ```js
 const infoScript = require("coaty/scripts/info");
@@ -3956,18 +4026,19 @@ infoScript.generateAgentInfoFile(agentInfoFolder, agentInfoFilename, packageFile
 
 ### Release a project
 
-The provided release scripts separate local steps that only affect the local git repo
-from remote steps that affect the npm registry:
+The provided release scripts separate local steps that only affect the local git
+repo from remote steps that affect the npm registry:
 
 * `version-release` - bump new release version based on recommended conventional commits
 * `cut-release` - cut the release using conventional changelog management
 * `push-release` - push release commits and release tag to the remote git repo
 * `publish-release` - publish the release to npm registry server
 
-To use the release scripts in your project, add the npm modules `conventional-changelog`
-and `conventional-recommended-bump` as dependencies to your project's package.json and
-install them. The module versions should correspond with the versions specified in the
-`coaty` framework package definition as peer dependencies.
+To use the release scripts in your project, add the npm modules
+`conventional-changelog` and `conventional-recommended-bump` as dependencies to
+your project's package.json and install them. The module versions should
+correspond with the versions specified in the `coaty` framework package
+definition as peer dependencies.
 
 #### Version a release
 
@@ -3978,9 +4049,9 @@ computes a new package version and bumps it.
 coaty-scripts version-release (recommended | first | major | minor | patch | <semantic version>)
 ```
 
-If supplied with `recommended`, a recommended version bump is computed based
-on conventional commits. An error is reported, if the recommended version cannot
-be computed because there are no commits for this release at all.
+If supplied with `recommended`, a recommended version bump is computed based on
+conventional commits. An error is reported, if the recommended version cannot be
+computed because there are no commits for this release at all.
 
 If supplied with `first`, the package version is bumped to the current version
 specified in package.json.
@@ -3991,14 +4062,14 @@ incremented to the next major, minor, or patch version, respectively.
 If supplied with a valid semantic version (e.g. `1.2.3` or `1.2.3-beta.5`)
 this version is bumped. You can also use this option to create a prerelease.
 
-In any of the above cases except `first`, an error is reported if the new version
-to be bumped is equal to the current package version.
+In any of the above cases except `first`, an error is reported if the new
+version to be bumped is equal to the current package version.
 
-> The auto-generated release information in the CHANGELOG only includes
-> `feat`, `fix`, and `perf` conventional commits. Non-conventional commits are *not*
-> included. Other conventional commit types such as `docs`, `chore`, `style`, `refactor`
-> are *not* included. However, if there is any `BREAKING CHANGE`, this commit
-> will *always* appear in the changelog.
+> The auto-generated release information in the CHANGELOG only includes `feat`,
+> `fix`, and `perf` conventional commits. Non-conventional commits are *not*
+> included. Other conventional commit types such as `docs`, `chore`, `style`,
+> `refactor` are *not* included. However, if there is any `BREAKING CHANGE`,
+> this commit will *always* appear in the changelog.
 
 #### Cut a release
 
@@ -4012,27 +4083,27 @@ The `cut-release` script
 coaty-scripts cut-release ["<release note>"]
 ```
 
-If supplied with an optional release note, the given text is
-prepended to the release information generated by conventional commits.
-The text should consist of whole sentences.
+If supplied with an optional release note, the given text is prepended to the
+release information generated by conventional commits. The text should consist
+of whole sentences.
 
 *Before* executing the script, you should build the project's distribution
 package, and other assets, such as auto-generated API documentation.
 
 #### Push a release
 
-Use the `push-release` script to push the cut release commits and the
-release tag to the remote git repo server.
+Use the `push-release` script to push the cut release commits and the release
+tag to the remote git repo server.
 
 ```sh
 coaty-scripts push-release
 ```
 
-Note that the `push-release` script may error because the git private key authentication
-has not been set up properly. In this case, you can perform this step manually
-using your preferred GIT client. Do **NOT** forget to push the release tag, too.
-You can push both the release commits and the annotated tag by executing
-`git push --follow-tags`.
+Note that the `push-release` script may error because the git private key
+authentication has not been set up properly. In this case, you can perform this
+step manually using your preferred GIT client. Do **NOT** forget to push the
+release tag, too. You can push both the release commits and the annotated tag by
+executing `git push --follow-tags`.
 
 #### Publish a release
 
@@ -4064,8 +4135,8 @@ by adding a `publishConfig` section to your package.json:
 
 Note that authentication is required for publishing, so you need to set up an
 appropriate account at the npm registry server first. Then, create an npm
-authentication token (on npm website or by invoking `npm adduser`) and
-paste the created authentication information into your `~/.npmrc`.
+authentication token (on npm website or by invoking `npm adduser`) and paste the
+created authentication information into your `~/.npmrc`.
 
 ---
 Copyright (c) 2018 Siemens AG. This work is licensed under a
