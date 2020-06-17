@@ -88,8 +88,8 @@ The definition of an event filter is specific to the following event type:
 
 ## Event Data
 
-Communication event data consists of attribute-value pairs in JavaScript Object
-Notation format ([JSON](http://www.json.org), see [RFC
+Communication event data to be published consists of attribute-value pairs in
+JavaScript Object Notation format ([JSON](http://www.json.org), see [RFC
 4627](https://www.ietf.org/rfc/rfc4627.txt)). Each communication event type
 defines its own data schema.
 
@@ -106,6 +106,10 @@ specified. Common type definitions include:
 
 ### Advertise Event Data
 
+The Advertise event is used to communicate Coaty objects to agents interested in
+a specific type of object. Advertise events can be observed based on either an
+object's core type (`coreType`) or an object's object type (`objectType`).
+
 An Advertise event accepts this JSON data:
 
 ```js
@@ -120,7 +124,12 @@ options in the form of key-value pairs.
 
 ### Deadvertise Event Data
 
-A Deadvertise event accepts the following JSON data:
+The Deadvertise event works in combination with the Advertise event. By
+publishing a Deadvertise event with the unique object ID of an object, you can
+notify observers that this object (which has been advertised earlier) is no
+longer available.
+
+A Deadvertise event accepts this JSON data:
 
 ```js
 { "objectIds": [ UUID1, UUID2, ... ] }
@@ -130,6 +139,11 @@ The `objectIds` property specifies the unique IDs of all objects that should be
 deadvertised.
 
 ### Channel Event Data
+
+The Channel event provides a very efficient way of pushing any type of Coaty
+objects to observers that share a specific channel identifier. It differs from
+Advertise events in that these are pushing objects of specific core or object
+types to interested observers.
 
 A Channel event accepts the following JSON data:
 
@@ -149,13 +163,16 @@ or
 }
 ```
 
-The property `privateData` is optional. It contains application-specific
-options in the form of key-value pairs.
+The property `privateData` is optional. It contains application-specific options
+in the form of key-value pairs.
 
 ### Discover - Resolve Event Data
 
-The Discover pattern is used to resolve an object based on its external ID,
-its object ID, or type restrictions. It accepts the following JSON data:
+The two-way Discover-Resolve event pattern can be used to discover Coaty
+objects of a certain core or object type and/or with a certain object ID or
+external ID.
+
+A Discover request event accepts the following JSON data:
 
 ```js
 { 
@@ -165,9 +182,9 @@ its object ID, or type restrictions. It accepts the following JSON data:
 }
 ```
 
-Discover an object by specifying its external ID (e.g. barcode scan id).
-Since external IDs are not guaranteed to be unique, results can be restricted by
-one of the specified object types or core types (optional).
+Discover an object by specifying its external ID (e.g. barcode scan id). Since
+external IDs are not guaranteed to be unique, results can be restricted by one
+of the specified object types or core types (optional).
 
 ```js
 { "objectId": UUID }
@@ -176,24 +193,23 @@ one of the specified object types or core types (optional).
 Discover an object based on its object ID.
 
 ```js
-{ "externalID": "extId", "objectId": UUID }
+{ "externalId": "extId", "objectId": UUID }
 ```
 
-Discover an object based on its external ID and its object ID.
-Useful for finding an object with an external representation that is
-persisted in an external data store.
+Discover an object based on its external ID and its object ID. Useful for
+finding an object with an external representation that is persisted in an
+external data store.
 
 ```js
 { "objectTypes": ["object type", ...], "coreTypes": ["core type", ...] }
 ```
 
-Discover an object based on the specified object type or core type.
-Exactly one of the properties `objectTypes` or `coreTypes` must
-be specified. To discover a series of objects based on type
-restrictions and object attribute filtering, use the Query - Retrieve
-event pattern.
+Discover an object based on the specified object type or core type. Exactly one
+of the properties `objectTypes` or `coreTypes` must be specified. To discover a
+series of objects based on type restrictions and object attribute filtering, use
+the Query - Retrieve event pattern.
 
-The Resolve response event accepts the following JSON data:
+A Resolve response event accepts the following JSON data:
 
 ```js
 {
@@ -221,13 +237,16 @@ or
 }
 ```
 
-The property `privateData` is optional. It contains application-specific
-options in the form of key-value pairs.
+The property `privateData` is optional. It contains application-specific options
+in the form of key-value pairs.
 
 ### Query - Retrieve Event Data
 
-The Query pattern is used to retrieve objects based on type restrictions and
-object attribute filtering and joining:
+The two-way Query-Retrieve event pattern is used to query objects based on
+object type restrictions, object attribute filtering and joining conditions, and
+ordering criteria.
+
+The Query request event accepts this JSON data:
 
 ```js
 {
@@ -238,11 +257,12 @@ object attribute filtering and joining:
 }
 ```
 
-Query objects are retrieved based on the specified object types or core types, an optional
-object filter, and optional join conditions. Exactly one of the properties `objectTypes`
-or `coreTypes` must be specified.
+Query objects are retrieved based on the specified object types or core types,
+an optional object filter, and optional join conditions. Exactly one of the
+properties `objectTypes` or `coreTypes` must be specified.
 
-The optional `objectFilter` defines conditions for filtering and arranging result objects:
+The optional `objectFilter` defines conditions for filtering and arranging
+result objects:
 
 ```js
 {
@@ -268,8 +288,8 @@ The optional `objectFilter` defines conditions for filtering and arranging resul
 }
 ```
 
-The following filter operators are defined (for details see framework
-source documentation of enum `ObjectFilterOperator`):
+The following filter operators are defined (for details see framework source
+documentation of enum `ObjectFilterOperator`):
 
 ```
 LessThan,
@@ -289,9 +309,10 @@ In,
 NotIn
 ```
 
-The optional join conditions are used to join related objects into a result set of
-objects. Result objects are augmented by resolving object references to related
-objects and storing them in an extra property. A join condition looks like the following:
+The optional join conditions are used to join related objects into a result set
+of objects. Result objects are augmented by resolving object references to
+related objects and storing them in an extra property. A join condition looks
+like the following:
 
 ```js
 {
@@ -324,14 +345,18 @@ The Retrieve response event accepts the following JSON data:
 }
 ```
 
-The property `privateData` is optional. It contains application-specific
-options in the form of key-value pairs.
+The property `privateData` is optional. It contains application-specific options
+in the form of key-value pairs.
 
 ### Update - Complete Event Data
 
-The Update-Complete pattern is used to update and synchronize object state
-across agents. An Update request or proposal specifies an entire Coaty object as
-data:
+The two-way Update-Complete event pattern is used to update and synchronize
+object state across agents. An agent can request or suggest an object update and
+receive accomplishments by Complete events. Update events can be observed based
+on either an object's core type (`coreType`) or an object's object type
+(`objectType`).
+
+An Update request or proposal specifies an entire Coaty object as JSON data:
 
 ```js
 {
@@ -339,12 +364,12 @@ data:
 }
 ```
 
-An Update event signals accomplishment by responding with a Complete event with
-the entire (usually changed) object in the data. This approach avoids complex
-merging operations of incremental change deltas in the agents. Since objects are
-treated as immutable entities on the agent this approach is in line.
+A Complete event signals accomplishment with the entire (usually changed) object
+as event data. This approach avoids complex merging operations of incremental
+change deltas in the agents. Since objects are treated as immutable entities on
+the agent this approach is in line.
 
-The data for the Complete response event looks like the following:
+The JSON data for the Complete response event looks like the following:
 
 ```js
 {
@@ -358,9 +383,9 @@ in the form of an key-value pairs.
 
 ### Call - Return Event Data
 
-The Call-Return pattern is used to request execution of a remote operation and
-to receive
-results - or errors in case the operation fails - by one or multiple agents.
+The two-way Call-Return event pattern is used to request execution of a remote
+operation and to receive results - or errors in case the operation fails - by
+one or multiple agents. Call events can be observed based on an operation name.
 
 The operation name should be defined using a hierarchical naming pattern with
 some levels in the hierarchy separated by periods (`.`, pronounced "dot") to
@@ -369,9 +394,10 @@ avoid name collisions, following Java package naming conventions (i.e.
 on/off lights in the `lights` package of domain `com.mydomain` could be named
 `"com.mydomain.lights.switchLight"`.
 
-The data of the Call event contains the optional parameter values passed to
-the referenced operation to be invoked, and an optional context filter that
-defines conditions under which the operation should be executed by a remote end.
+The JSON data of the Call request event contains the optional parameter values
+passed to the referenced operation to be invoked, and an optional context filter
+that defines conditions under which the operation should be executed by a remote
+end.
 
 ```json
 {
@@ -409,8 +435,8 @@ context object at the remote end are *both* specified and they do not match (by
 checking object property values against the filter conditions). In all other
 cases, the match is considered successfull.
 
-The data for the Return response event has two forms. If the remote operation
-executes successfully, the data looks like the following:
+The JSON data of the Return response event has two forms. If the remote
+operation executes successfully, the data looks like the following:
 
 ```js
 {
@@ -452,8 +478,10 @@ messages exist for all predefined error codes.
 
 ### Raw Event Data
 
-A Raw event is publishing arbitrary binary data (byte array) as its data.
-Encoding and decoding is left to the application.
+A Raw event is publishing arbitrary binary data (byte array) as its payload
+data. Encoding and decoding of payload data is left to the application. A Raw
+event is observed based on a subscription topic which may be pattern-based and
+which is in a binding-specific format.
 
 ### Associate Event Data
 
@@ -477,7 +505,7 @@ milliseconds) for publishing `IoValue` events.
 The property `associatingRoute` defines the subscription or publication topic of
 the association; if undefined the association should be dissolved. Since an
 associating route is used for both topic publication *and* subscription, it
-**must not** be pattern-based.
+**must not** be pattern-based. Note that the topic format is binding-specific.
 
 Associating routes between Coaty-defined IO sources and IO actors use the topic
 of an `IoValue` event. Note that the `<IO source objectId>` specifies the object
@@ -495,7 +523,7 @@ in JSON format or a binary byte array as data. In the latter case, decoding is
 left to the application logic of the receiving IO actor.
 
 Likewise, the data published by an **external** IO source can be either
-specified as an UTF-8 encoded string in JSON format or as binary data (byte
+specified as a UTF-8 encoded string in JSON format or as binary data (byte
 array). In the latter case, decoding is left to the application logic of the
 receiving IO actor.
 
