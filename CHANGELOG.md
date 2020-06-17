@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="2.2.1"></a>
+## [2.2.1](https://github.com/coatyio/coaty-js/compare/v2.2.0...v2.2.1) (2020-06-17)
+
+This patch release fixes some binding-related issues, updates binding-specific documentation, and supports configurable communication bindings for the framework test suite.
+
+### Bug Fixes
+
+* **com:** correct UTF8 byte count calculation of high surrogate pairs ([b22b7cd](https://github.com/coatyio/coaty-js/commit/b22b7cdc1ce638d1ef8ad3d9ac9c00b4e1ae2ada))
+* **communication:** ignore undefined optional arguments passed to the `CommunicationBinding.log` method ([ad75ea6](https://github.com/coatyio/coaty-js/commit/ad75ea6febd2f13074e01588c48da5eb15a329d7))
+* provide correct validation of plain JavaScript objects using `isPlainObject` utility function ([e21a17d](https://github.com/coatyio/coaty-js/commit/e21a17d4529d5bae16c4ab20835a8d1a1c632578))
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/coatyio/coaty-js/compare/v2.1.1...v2.2.0) (2020-06-03)
 

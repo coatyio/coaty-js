@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@coaty/core - v2.2.0</title>
-	<meta name="description" content="Documentation for @coaty/core - v2.2.0">
+	<title>@coaty/core - v2.2.1</title>
+	<meta name="description" content="Documentation for @coaty/core - v2.2.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">@coaty/core - v2.2.0</a>
+					<a href="index.html" class="title">@coaty/core - v2.2.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -54,7 +54,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1>@coaty/core - v2.2.0</h1>
+			<h1>@coaty/core - v2.2.1</h1>
 		</div>
 	</div>
 </header>
@@ -84,8 +84,9 @@
 				<ul>
 					<li>a lightweight and modular object-oriented software architecture favoring a
 					resource-oriented and declarative programming style,</li>
-					<li>standardized event based communication patterns on top of an open publish-subscribe
-					messaging protocol (currently <a href="https://mqtt.org">MQTT</a>),</li>
+					<li>standardized event based communication patterns on top of an open
+						publish-subscribe messaging protocol such as <a href="https://mqtt.org">MQTT</a> or
+					<a href="https://wamp-proto.org/">WAMP</a>,</li>
 					<li>a platform-agnostic, extensible object model to discover, distribute, share,
 					query, and persist hierarchically typed data, and</li>
 					<li>rule based, context driven routing of IoT (sensor) data using smart backpressure
@@ -115,7 +116,7 @@
 						Guide](<a href="https://coatyio.github.io/coaty-js/man/coding-style-guide/">https://coatyio.github.io/coaty-js/man/coding-style-guide/</a>) for Coaty
 					JS framework and application developers,</li>
 					<li>a specification of the [Coaty communication
-					protocol](<a href="https://coatyio.github.io/coaty-js/man/communication-protocol/">https://coatyio.github.io/coaty-js/man/communication-protocol/</a>),</li>
+					event patterns](<a href="https://coatyio.github.io/coaty-js/man/communication-events/">https://coatyio.github.io/coaty-js/man/communication-events/</a>),</li>
 					<li>guidance notes on [rights
 						management](<a href="https://coatyio.github.io/coaty-js/man/rights-management/">https://coatyio.github.io/coaty-js/man/rights-management/</a>) in a
 					Coaty application.</li>
@@ -312,9 +313,6 @@
 						<a href="classes/communicationmanager.html" class="tsd-kind-icon">Communication<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/communicationtopic.html" class="tsd-kind-icon">Communication<wbr>Topic</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/completeevent.html" class="tsd-kind-icon">Complete<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
@@ -397,6 +395,9 @@
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/mqttbinding.html" class="tsd-kind-icon">Mqtt<wbr>Binding</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/mqtttopic.html" class="tsd-kind-icon">Mqtt<wbr>Topic</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/multicastdnsdiscovery.html" class="tsd-kind-icon">Multicast<wbr>Dns<wbr>Discovery</a>
@@ -874,6 +875,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#isobjectfiltervalid" class="tsd-kind-icon">is<wbr>Object<wbr>Filter<wbr>Valid</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#isplainobject" class="tsd-kind-icon">is<wbr>Plain<wbr>Object</a>
 					</li>
 					<li class=" tsd-kind-function tsd-is-external">
 						<a href="globals.html#istimeinterval" class="tsd-kind-icon">is<wbr>Time<wbr>Interval</a>
