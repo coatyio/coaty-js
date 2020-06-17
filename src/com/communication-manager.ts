@@ -399,8 +399,8 @@ export class CommunicationManager implements IDisposable {
      * This method returns an observable that emits messages as tuples including
      * the actual publication topic and the payload. Payload is represented as
      * `Uint8Array` (or Buffer` in Node.js, a subclass thereof) and needs to be
-     * parsed by the application. Use the `toString` method on a payload to
-     * convert the raw data to an UTF8 encoded string.
+     * decoded by the application. Use the `toString` method on a payload to
+     * convert the raw data to a UTF8 encoded string.
      *
      * Use this method to interoperate with external systems that publish
      * messages on external topics. Use this method together with `publishRaw()`
@@ -421,11 +421,9 @@ export class CommunicationManager implements IDisposable {
      * binding-specific format that corresponds with the configured
      * communication binding.
      *
-     * @remarks The subscription topic string must fully identify the topics on
-     * which publications should be received, including potential wildcards. For
-     * example, in a WAMP binding, pattern-based subscription topics must
-     * include all wildcards such as "*", and "**". In this case, wildcards must
-     * not be specified separately in the subscription options.
+     * @remarks Depending on the communication binding used, pattern-based
+     * subscription topics may include all wildcards in the topic string (e.g.
+     * MQTT) or may be specified in the subscription options (e.g. WAMP).
      *
      * @param topic binding-specific subscription topic
      * @param options binding-specific subscription options (optional)
