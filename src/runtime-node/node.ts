@@ -281,7 +281,7 @@ export class MulticastDnsDiscovery {
      * not in a browser runtime.
      *
      * @param path the router's URL path (default value is `/`)
-     * @param realm the router's realm (default value is `coaty-app`)
+     * @param realm the router's realm (default value is `coaty`)
      * @param port the router's port (default value is 80)
      * @param name the name of the mDNS service (default value is `Coaty WAMP
      * Router`)
@@ -295,7 +295,7 @@ export class MulticastDnsDiscovery {
             name || "Coaty WAMP Router",
             type || "coaty-wamp",
             port || 80,
-            { path: path || "/", realm: realm || "coaty-app" },
+            { path: path || "/", realm: realm || "coaty" },
             host);
     }
 
