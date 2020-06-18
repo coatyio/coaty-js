@@ -3748,6 +3748,14 @@ MulticastDnsDiscovery.findWampRouterService()
 > `@ionic-native/zeroconf` plugin which is a wrapper around the cordova plugin.
 > In a pure browser environment, it is not possible to discover mDns services
 > with JavaScript.
+>
+> To discover the Coaty MQTT or WAMP service with an external tool, use one of
+> the following FQDNs (fully qualified domain names): `"Coaty MQTT
+> Broker._coaty-mqtt._tcp.local"` or `"Coaty WAMP
+> Broker._coaty-wamp._tcp.local"` (for default parameters). Since the mDNS
+> library we are using does not handle `"_services._dns-sd._udp."` meta-queries
+> for browsing, mDNS services published by one of the above methods can only be
+> discovered if you specify the mDNS service name and type *explicitely*.
 
 ### Stop publishing mDNS services
 

@@ -242,6 +242,13 @@ export class MulticastDnsDiscovery {
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
      *
+     * @remarks If published with default arguments, the FQDN (fully qualified
+     * domain name) of the Coaty MQTT broker mDNS service is "Coaty MQTT
+     * Broker._coaty-mqtt._tcp.local". Since the used mDNS library does not
+     * handle "_services._dns-sd._udp." meta-queries for browsing, Coaty MQTT
+     * Broker information can only be discovered if you provide the mDNS service
+     * name explicitely.
+     *
      * @param port the broker's port (default value is 1883)
      * @param wsPort the broker's websocket port (default value is 9883)
      * @param name the name of the mDNS service (default value is `Coaty MQTT
@@ -279,6 +286,13 @@ export class MulticastDnsDiscovery {
      *
      * This function can only be used in a server-side environment (Node.js),
      * not in a browser runtime.
+     *
+     * @remarks If published with default arguments, the FQDN (fully qualified
+     * domain name) of the WAMP router mDNS service is "Coaty WAMP
+     * Broker._coaty-wamp._tcp.local". Since the used mDNS library does not
+     * handle "_services._dns-sd._udp." meta-queries for browsing, Coaty WAMP
+     * Router information can only be discovered if you provide the mDNS service
+     * name explicitely.
      *
      * @param path the router's URL path (default value is `/`)
      * @param realm the router's realm (default value is `coaty`)
