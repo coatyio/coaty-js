@@ -25,6 +25,30 @@ a separate branch. We use the [GitHub Pull Request
 Workflow](https://guides.github.com/introduction/flow/). The mentioned link is
 the recommended documentation to read and understand this workflow.
 
+Our Git development workflow includes the following steps:
+
+* Each repository has a master and a develop branch.
+* Mainline of development is always on the develop branch.
+* The master branch only contains releases that could be deployed to production.
+  Do not develop on this.
+* For a new feature or a patch, you can create a separate **local** branch
+  branched from develop. These branches should be named
+  `"feat-<name-of-feature>"` or `"fix-<name-of-issue>"`. If the feature/patch is
+  small you can also do it on the local develop branch directly.
+* During development, commits should not be pushed to the remote as they should
+  not be made public at that time. Also, it is easier to make changes to the
+  local commit history (e.g. amend commit, rewrite history) if the branch is
+  kept local only.
+* When a feature is completed the commits should be merged back (preferably via
+  fast-forward) into the local develop branch.
+* Then, on the local develop branch the feature is released according to the
+  CONTRIBUTING guidelines of the project (including versioning, tagging,
+  creating changelog and documentation, etc.).
+* Finally, the local develop branch is pushed and merged into the master branch
+  (via fast-forward).
+* Local and remote master and develop branches should now be even.
+* The local feature/patch branch can be deleted.
+
 ## Automatic versioning and changelog management
 
 We are using the [Conventional Commits Style](https://conventionalcommits.org/)
