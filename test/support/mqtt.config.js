@@ -19,7 +19,6 @@ function getBrokerConfig() {
 
 module.exports = {
 
-    // Configure global debug and warn modes for autobahn package.
     initBinding: (debug) => {
         return MqttBinding.withOptions({
             brokerUrl: `mqtt://localhost:${getBrokerConfig().port}`,
