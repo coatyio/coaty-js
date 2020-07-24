@@ -143,6 +143,45 @@ export class NodeUtils {
         console.log(output);
     }
 
+    /**
+     * Gets the first IPv4 address of the specified network interface of the
+     * local machine. If no network interface name is specified, the first IPv4
+     * address of the first network interface that provides an IPv4 address is
+     * returned. Returns `undefined` if no IPv4 address could be looked up.
+     *
+     * This function can only be used in a server-side environment (Node.js),
+     * not in a browser runtime.
+     */
+    public static getLocalIpV4Address(networkInterface?: string) {
+        return this._getLocalIpAddress("IPv4", networkInterface);
+    }
+
+    /**
+     * Gets the first IPv6 address of the specified network interface of the
+     * local machine. If no network interface name is specified, the first IPv6
+     * address of the first network interface that provides an IPv6 address is
+     * returned. Returns `undefined` if no IPv6 address could be looked up.
+     *
+     * This function can only be used in a server-side environment (Node.js),
+     * not in a browser runtime.
+     */
+    public static getLocalIpV6Address(networkInterface?: string) {
+        return this._getLocalIpAddress("IPv6", networkInterface);
+    }
+
+    private static _getLocalIpAddress(version: "IPv4" | "IPv6", networkInterface?: string) {
+        const ifs = require("os").networkInterfaces();
+        const addresses = Object.keys(ifs)
+            .filter(name => networkInterface ? name === networkInterface : true)
+            .map(x => [x, ifs[x].filter(y => y.family === version && !y.internal)[0]])
+            .filter(x => x[1])
+            .map(x => x[1].address);
+        if (addresses.length === 0) {
+            return undefined;
+        }
+        return addresses[0] as string;
+    }
+
 }
 
 /* Bonjour/Multicast DNS support for discovery of Coaty broker/router addresses, Configuration URLs, etc. */
@@ -401,6 +440,8 @@ export class MulticastDnsDiscovery {
     }
 
     /**
+     * @deprecated since 2.3.0. Use `NodeUtils.getLocalIpV4Address()` instead.
+     * 
      * Gets the first IPv4 address of the specified network interface of the
      * local machine. If no network interface name is specified, the first IPv4
      * address of the first network interface that provides an IPv4 address is
