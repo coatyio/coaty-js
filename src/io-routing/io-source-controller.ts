@@ -69,14 +69,22 @@ export class IoSourceController extends Controller {
      * @param value an IO value of the given type
      */
     publish<T>(source: IoSource, value: T) {
-        const [, , , association, updateSubject] = this._ensureRegistered<T>(source);
+        const [, , updateRate, association, updateSubject] = this._ensureRegistered<T>(source);
 
         if (!association.value) {
             return;
         }
 
-        // Deep copy value to make it immutable for caching
-        if (typeof value === "string" ||
+        const rate = updateRate.value;
+        if (rate === undefined || rate === 0 || source.updateStrategy === IoSourceBackpressureStrategy.None) {
+            updateSubject.next(value);
+            return;
+        }
+
+        // Deep copy value to make it immutable for backpressure strategy caching.
+        if (value instanceof Uint8Array) {
+            value = Uint8Array.from(value) as any;
+        } else if (typeof value === "string" ||
             typeof value === "boolean" ||
             typeof value === "number" ||
             typeof value === "object") {
