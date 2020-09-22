@@ -398,7 +398,7 @@ export class CommunicationManager implements IDisposable {
      *
      * This method returns an observable that emits messages as tuples including
      * the actual publication topic and the payload. Payload is represented as
-     * `Uint8Array` (or Buffer` in Node.js, a subclass thereof) and needs to be
+     * `Uint8Array` (or `Buffer` in Node.js, a subclass thereof) and needs to be
      * decoded by the application. Use the `toString` method on a payload to
      * convert the raw data to a UTF8 encoded string.
      *
@@ -786,7 +786,7 @@ export class CommunicationManager implements IDisposable {
 
         this._binding = new bindingWithOptions.type(bindingWithOptions.options);
 
-        const bindingName = `${this._binding.apiName}${this._binding.apiVersion}`;
+        const bindingName = `${this._binding.apiName}v${this._binding.apiVersion}`;
         this._binding.on("debug", debug => console.log(`[${bindingName}] [dbg] ${debug}`));
         this._binding.on("info", info => console.log(`[${bindingName}] [inf] ${info}`));
         this._binding.on("error", error => console.log(`[${bindingName}] [err] ${error}`));
