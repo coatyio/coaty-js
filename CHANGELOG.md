@@ -1,5 +1,19 @@
 # Changelog
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/coatyio/coaty-js/compare/v2.2.1...v2.3.0) (2020-09-22)
+
+This feature release supports additional `NodeUtils` functionality and fixes a bug in the IO routing module. Additionally, it supports the libp2p binding in the framework test suite.
+
+### Bug Fixes
+
+* **io-routing:** clone Uint8Array value parameter in `IoSourceController.publish()` if needed ([536d796](https://github.com/coatyio/coaty-js/commit/536d796ebc2b8c04eaec08854092b647bf77f3a5))
+* **runtime-node:** change default realm argument of `NodeUtils.publishWampRouterService()` to "coaty" ([c300048](https://github.com/coatyio/coaty-js/commit/c3000488fea386f679f6f55354beeeaf19150fda))
+
+### Features
+
+* **runtime-node:** add `NodeUtils.getLocalIpV6Address()`, move `MulticastDnsDiscovery.getLocalIpV4Address()` to `NodeUtils.getLocalIpV4Address()` and mark old definition as deprecated ([d484816](https://github.com/coatyio/coaty-js/commit/d4848169328d583919b7c581a95c5fc072dbdc28))
+
 <a name="2.2.1"></a>
 ## [2.2.1](https://github.com/coatyio/coaty-js/compare/v2.2.0...v2.2.1) (2020-06-17)
 

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CommunicationState | @coaty/core - v2.2.1</title>
-	<meta name="description" content="Documentation for @coaty/core - v2.2.1">
+	<title>CommunicationState | @coaty/core - v2.3.0</title>
+	<meta name="description" content="Documentation for @coaty/core - v2.3.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">@coaty/core - v2.2.1</a>
+					<a href="../index.html" class="title">@coaty/core - v2.3.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -67,14 +67,14 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Indicates the connectivity state of a communication binding with repect to
+						<p>Indicates the connectivity state of a communication binding with respect to
 						the Coaty communication infrastructure.</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>remarks</dt>
-						<dd><p>For bindings that use brokerless messaging protocols the value
-								emitted while the binding is joined is always <code>Online</code>, since <code>Offline</code> state
-							cannot be detected in such an infrastructure.</p>
+						<dd><p>For bindings that use brokerless peer-to-peer messaging protocols
+								the value emitted while the binding is joined is <code>Online</code>, if and only if the
+							agent is not isolated, i.e. can communicate with other agents.</p>
 						</dd>
 					</dl>
 				</div>
@@ -101,7 +101,7 @@
 					<div class="tsd-signature tsd-kind-icon">Offline<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/de53601/src/com/communication-binding.ts#L16">src/com/communication-binding.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/8460fa3/src/com/communication-binding.ts#L16">src/com/communication-binding.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -116,7 +116,7 @@
 					<div class="tsd-signature tsd-kind-icon">Online<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/de53601/src/com/communication-binding.ts#L19">src/com/communication-binding.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/coatyio/coaty-js/blob/8460fa3/src/com/communication-binding.ts#L19">src/com/communication-binding.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -169,6 +169,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
