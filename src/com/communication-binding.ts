@@ -3,12 +3,12 @@
 import { EventEmitter } from "events";
 
 /**
- * Indicates the connectivity state of a communication binding with repect to
+ * Indicates the connectivity state of a communication binding with respect to
  * the Coaty communication infrastructure.
  *
- * @remarks For bindings that use brokerless messaging protocols the value
- * emitted while the binding is joined is always `Online`, since `Offline` state
- * cannot be detected in such an infrastructure.
+ * @remarks For bindings that use brokerless peer-to-peer messaging protocols
+ * the value emitted while the binding is joined is `Online`, if and only if the
+ * agent is not isolated, i.e. can communicate with other agents.
  */
 export enum CommunicationState {
 
@@ -241,8 +241,7 @@ export interface CommunicationBindingJoinOptions {
 
 /**
  * Defines a generic public API for transmitting Coaty communication events via
- * specific broker-based or brokerless publish-subscribe messaging protocols, e.g.
- * MQTT.
+ * specific broker-based or brokerless publish-subscribe messaging protocols.
  */
 export interface CommunicationBindingProtocol {
 
@@ -285,9 +284,10 @@ export interface CommunicationBindingProtocol {
     /**
      * Emitted whenever the binding's communication state changes.
      *
-     * @remarks For bindings that use brokerless messaging protocols the value
-     * emitted while the binding is joined is always `Online`, since `Offline`
-     * state cannot be detected in such an infrastructure.
+     * @remarks For bindings that use brokerless peer-to-peer messaging
+     * protocols the value emitted while the binding is joined is `Online`, if
+     * and only if the agent is not isolated, i.e. can communicate with other
+     * agents.
      */
     on(event: "communicationState", listener: (state: CommunicationState) => void): void;
 
