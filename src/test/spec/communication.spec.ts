@@ -101,7 +101,7 @@ describe("Communication", () => {
             container3 = Container.resolve(components3, configuration3);
 
             delayAction(1000, done, () => {
-                // Delay publishing to give MockObjectControllers time to subscribe
+                // Delay publishing to give MockObjectControllers time to subscribe.
                 container1 = Container.resolve(components1, configuration1);
             });
         });
@@ -115,7 +115,7 @@ describe("Communication", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -383,7 +383,9 @@ describe("Communication", () => {
                 callController.publishCallEvent("coaty.test.xyz", {}, undefined, logger, "res5");                                               // no match
                 // tslint:enable: max-line-length
 
-                delayAction(1000, done, () => {
+                // Due to libp2p publication request delay (500ms)
+                const isLibp2p = global["test_binding"].type.name === "Libp2pBinding";
+                delayAction(isLibp2p ? 6000 : 1000, done, () => {
                     const expectedResultCount = 5;
                     expect(Object.keys(logger.eventData).length).toBe(expectedResultCount);
 
@@ -461,9 +463,15 @@ describe("Communication", () => {
                     topicFilter2 = `coaty.`;
                     topicFilter2Options = { match: "prefix" };
                     break;
+                case "Libp2pBinding":
+                    topic1 = "/test/42/";
+                    topic2 = `coaty/foo/bar/baz`;
+                    topicFilter2 = `coaty/#`;
+                    topicFilter2Options = {};
+                    break;
                 default:
                     // Enforce fail.
-                    expect(["MqttBinding", "WampBinding"]).toContain(bindingName);
+                    expect(["MqttBinding", "WampBinding", "Libp2pBinding"]).toContain(bindingName);
                     done();
                     return;
             }
@@ -541,7 +549,7 @@ describe("Communication", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -602,7 +610,7 @@ describe("Communication", () => {
             delayAction(1000, undefined, () => {
                 objectController.publishAdvertiseEvents(4);
 
-                delayAction(1000, done, () => {
+                delayAction(2000, done, () => {
                     expect(logger.count).toBe(4 + 4 + 2 + 2);
                     expect(logger.eventData.length).toBe(logger.count);
                     expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(3);
@@ -692,7 +700,7 @@ describe("Communication", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -744,9 +752,19 @@ describe("Communication", () => {
                         objectController.publishAdvertiseEvents(1);
 
                         delayAction(1000, done, () => {
-                            expect(logger.count).toBe(2);
-                            expect(logger.eventData.length).toBe(logger.count);
-                            expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(2);
+                            switch (newBinding.type.name) {
+                                // These bindings don't support cross namespacing.
+                                case "Libp2pBinding":
+                                    expect(logger.count).toBe(0);
+                                    expect(logger.eventData.length).toBe(logger.count);
+                                    break;
+                                // All other bindings support cross namespacing.
+                                default:
+                                    expect(logger.count).toBe(2);
+                                    expect(logger.eventData.length).toBe(logger.count);
+                                    expect(logger.eventData.filter(e => e.object.name === "Advertised_1").length).toBe(2);
+                                    break;
+                            }
                         });
                     });
                 });

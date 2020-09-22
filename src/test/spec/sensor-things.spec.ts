@@ -87,7 +87,7 @@ describe("Sensor things", () => {
             container3 = Container.resolve(components3, configuration3);
 
             delayAction(1000, done, () => {
-                // Delay publishing to give MockEmitterController time to subscribe
+                // Delay publishing to give MockEmitterControllers time to subscribe
                 container1 = Container.resolve(components1, configuration1);
             });
         });
@@ -101,7 +101,7 @@ describe("Sensor things", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -141,28 +141,27 @@ describe("Sensor things", () => {
                     eventData: [],
                 };
                 const eventCount = 5;
-                const deviceController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
+                const receiverController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
 
-                deviceController.watchForAdvertiseEvents(logger, element);
+                receiverController.watchForAdvertiseEvents(logger, element);
 
                 delayAction(500, undefined, () => {
                     container2
                         .getController<mocks.MockEmitterController>("MockEmitterController")
                         .publishAdvertiseEvents(eventCount, element);
 
-                    delayAction(1000, undefined, () => {
+                    delayAction(2000, undefined, () => {
                         expect(logger.count).toBe(eventCount);
                         expect(logger.eventData.length).toBe(eventCount);
                         for (let i = 1; i <= eventCount; i++) {
                             expect(logger.eventData[i - 1].object.name).toBe("Advertised_" + i);
                         }
-                        testFunction(elementArray); // iterate on a copy of the array
-
+                        testFunction(elementArray);
                     });
                 });
 
             };
-            testFunction(SENSOR_THINGS_TYPES_SET.slice());
+            testFunction(SENSOR_THINGS_TYPES_SET.slice());  // iterate on a copy of the array
 
         }, 15 * TEST_TIMEOUT);
 
@@ -178,33 +177,32 @@ describe("Sensor things", () => {
                     return;
                 }
                 const element = elementArray.shift();
-                const deviceController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
                 const logger: mocks.ChannelEventLogger = {
                     count: 0,
                     eventData: [],
                 };
                 const eventCount = 4;
                 const channelId = "42";
+                const receiverController = container1.getController<mocks.MockReceiverController>("MockReceiverController");
 
-                deviceController.watchForChannelEvents(logger, channelId);
+                receiverController.watchForChannelEvents(logger, channelId);
 
                 delayAction(500, undefined, () => {
                     container2
                         .getController<mocks.MockEmitterController>("MockEmitterController")
                         .publishChannelEvents(eventCount, element, channelId);
 
-                    delayAction(1000, undefined, () => {
+                    delayAction(1500, undefined, () => {
                         expect(logger.count).toBe(eventCount);
                         expect(logger.eventData.length).toBe(eventCount);
                         for (let i = 1; i <= eventCount; i++) {
-                            expect(logger.eventData[i - 1].object.name).toBe("Channeled_100" + i);
+                            expect(logger.eventData[i - 1].object.name).toBe("Channeled_" + i);
                         }
-                        testFunction(elementArray); // iterate on a copy of the array
-
+                        testFunction(elementArray);
                     });
                 });
             };
-            testFunction(SENSOR_THINGS_TYPES_SET.slice());
+            testFunction(SENSOR_THINGS_TYPES_SET.slice());  // iterate on a copy of the array
         }, 15 * TEST_TIMEOUT);
 
     });

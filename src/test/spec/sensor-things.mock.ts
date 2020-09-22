@@ -131,7 +131,7 @@ export class MockEmitterController extends Controller {
             this.communicationManager.publishChannel(
                 ChannelEvent.withObject(
                     channelId,
-                    this._createSensorThings(1000 + i, objectType, "Channeled")));
+                    this._createSensorThings(i, objectType, "Channeled")));
         }
     }
 
@@ -269,19 +269,19 @@ export class SensorThingsCollection {
     }
 
     private static _objectTypeRouter(objectType: string) {
-        if (objectType === SensorThingsTypes.OBJECT_TYPE_SENSOR) {
-            return SensorThingsCollection.sensor;
-        } else if (objectType === SensorThingsTypes.OBJECT_TYPE_FEATURE_OF_INTEREST) {
-            return SensorThingsCollection.featureOfInterest;
-        } else if (objectType === CoreTypes.OBJECT_TYPE_LOCATION) {
-            return SensorThingsCollection.location;
-        } else if (objectType === SensorThingsTypes.OBJECT_TYPE_OBSERVATION) {
-            return SensorThingsCollection.observation;
-        } else if (objectType === SensorThingsTypes.OBJECT_TYPE_THING) {
-            return SensorThingsCollection.thing;
-        } else {
-            throw new Error("SensorThings objectType expected. " + objectType + " given");
+        switch (objectType) {
+            case SensorThingsTypes.OBJECT_TYPE_SENSOR:
+                return SensorThingsCollection.sensor;
+            case SensorThingsTypes.OBJECT_TYPE_FEATURE_OF_INTEREST:
+                return SensorThingsCollection.featureOfInterest;
+            case CoreTypes.OBJECT_TYPE_LOCATION:
+                return SensorThingsCollection.location;
+            case SensorThingsTypes.OBJECT_TYPE_OBSERVATION:
+                return SensorThingsCollection.observation;
+            case SensorThingsTypes.OBJECT_TYPE_THING:
+                return SensorThingsCollection.thing;
+            default:
+                throw new Error("SensorThings objectType expected. " + objectType + " given");
         }
     }
-
 }

@@ -81,7 +81,7 @@ describe("Historian", () => {
             container.shutdown();
 
             delayAction(1000, done, () => {
-                // give broker time to log output messages
+                // Give infrastructure time for logging.
             });
         },
         TEST_TIMEOUT);

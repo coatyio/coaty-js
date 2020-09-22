@@ -41,11 +41,6 @@ export class MockIoContextController extends Controller {
 
     private _ioContext: IoContext;
 
-    onCommunicationManagerStarting() {
-        super.onCommunicationManagerStarting();
-
-    }
-
     discoverIoContext(objectType: string) {
         this.communicationManager.publishDiscover(DiscoverEvent.withObjectTypes([objectType]))
             .subscribe(resolve => {
@@ -55,12 +50,11 @@ export class MockIoContextController extends Controller {
 
     changeIoContext(operatingState: string) {
         this._ioContext["operatingState"] = operatingState;
-        this.communicationManager
+        return this.communicationManager
             .publishUpdate(UpdateEvent.withObject(this._ioContext))
-            .pipe(
-                take(1),
-            )
-            .subscribe(complete => {
+            .pipe(take(1))
+            .toPromise()
+            .then(complete => {
                 this._ioContext = complete.data.object as IoContext;
             });
     }

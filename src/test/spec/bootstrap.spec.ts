@@ -69,10 +69,12 @@ describe("Bootstrapping", () => {
     });
 
     afterAll(done => {
-        containers.forEach(c => c.shutdown());
+        delayAction(1000, undefined, () => {
+            containers.forEach(c => c.shutdown());
 
-        // Wait until shutdown of all containers has been completed.
-        delayAction(1000, done);
+            // Wait until shutdown of all containers has been completed.
+            delayAction(1000, done);
+        });
     }, TEST_TIMEOUT);
 
     it("throws on undefined configuration", () => {

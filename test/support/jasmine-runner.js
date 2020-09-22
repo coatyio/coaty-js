@@ -66,7 +66,7 @@ function runTests(testSpecDir, binding, verbose, debug) {
                 bndConfig.withTests(debug, () => jrunner.execute());
             } catch (error) {
                 console.log(chalk.red(`# Failed to init ${binding} binding: ${error}`));
-                console.log(chalk.red(`# Make sure binding @coaty/binding.${bnd} has been installed.`));
+                console.log(chalk.red(`# Make sure binding @coaty/binding.${bnd} has been installed as a devDependency.`));
                 process.exit();
             }
         });

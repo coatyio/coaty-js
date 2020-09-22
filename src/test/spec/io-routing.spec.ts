@@ -21,46 +21,6 @@ import { delayAction, Spy } from "./utils";
 
 describe("IO Routing", () => {
 
-    describe("IO Value Topic", () => {
-
-        const TEST_TIMEOUT = 10000;
-
-        const components1: Components = {
-            controllers: {},
-        };
-
-        const configuration1: Configuration = {
-            communication: {
-                shouldAutoStart: false,
-                binding: global["test_binding"],
-            },
-            controllers: {
-            },
-        };
-
-        let container: Container;
-
-        beforeAll(done => {
-            Spy.reset();
-
-            delayAction(1000, done, () => {
-                container = Container.resolve(components1, configuration1);
-            });
-        });
-
-        afterAll(
-            done => {
-                container.shutdown();
-
-                Spy.reset();
-
-                delayAction(1000, done, () => {
-                    // give broker time to log output messages
-                });
-            },
-            TEST_TIMEOUT);
-    });
-
     describe("Basic IO Routing within a single Container", () => {
 
         const TEST_TIMEOUT = 10000;
@@ -131,7 +91,7 @@ describe("IO Routing", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -148,12 +108,12 @@ describe("IO Routing", () => {
 
             actorController.logActor(actor1, logger);
 
-            delayAction(1000, undefined, () => {
+            delayAction(2000, undefined, () => {
                 for (const value of emittedValues) {
                     sourceController.publish<number>(source1, value);
                 }
 
-                delayAction(1000, undefined, () => {
+                delayAction(2000, undefined, () => {
                     expect(logger.associations.length).toBe(2);
                     expect(logger.associations[0]).toBe(false);
                     expect(logger.associations[1]).toBe(true);
@@ -167,7 +127,7 @@ describe("IO Routing", () => {
                     // completed so the event is not dispatched.
                     container.shutdown();
 
-                    delayAction(1000, done, () => {
+                    delayAction(2000, done, () => {
                         expect(sourceAssociations.length).toBe(2);
                         expect(sourceAssociations[0]).toBe(false);
                         expect(sourceAssociations[1]).toBe(true);
@@ -369,7 +329,7 @@ describe("IO Routing", () => {
                 Spy.reset();
 
                 delayAction(1000, done, () => {
-                    // give broker time to log output messages
+                    // Give infrastructure time for logging.
                 });
             },
             TEST_TIMEOUT);
@@ -397,109 +357,117 @@ describe("IO Routing", () => {
             actor2Controller.logActor(actor2, logger2);
             actor3Controller.logActor(actor3, logger3);
 
-            delayAction(500, undefined, () => {
+            delayAction(1000, undefined, () => {
                 ioContextController.discoverIoContext(ioContext.objectType);
 
-                for (let i = 0; i < emittedValues1.length; i++) {
-                    sourceController.publish<number>(source1, emittedValues1[i]);
-                    sourceController.publish<number>(source2, emittedValues2[i]);
-                }
+                delayAction(2000, undefined, () => {
 
-                delayAction(500, undefined, () => {
-                    // actor1 receives all IO values in normal operating state
-                    expect(logger1.associations.length).toBe(2);    // including initial value (false, because disassociated)
-                    expect(logger1.associations[0]).toBe(false);
-                    expect(logger1.associations[1]).toBe(true);
-                    expect(logger1.values.length).toBe(emittedValues1.length + emittedValues2.length);
-                    for (let i = 0; i < logger1.values.length; i++) {
-                        expect(logger1.values[i]).toBe(i % 2 === 0 ?
-                            emittedValues1[Math.floor(i / 2)] :
-                            emittedValues2[Math.floor(i / 2)]);
+                    for (let i = 0; i < emittedValues1.length; i++) {
+                        sourceController.publish<number>(source1, emittedValues1[i]);
+                        sourceController.publish<number>(source2, emittedValues2[i]);
                     }
 
-                    // actor2 receives no IO values in normal operating state
-                    expect(logger2.associations.length).toBe(1);    // initial value (false, because disassociated)
-                    expect(logger2.associations[0]).toBe(false);
-                    expect(logger2.values.length).toBe(0);
-
-                    // actor3 receives no IO values because its value type is incompatible
-                    expect(logger3.associations.length).toBe(1);    // initial value (false, because disassociated)
-                    expect(logger3.associations[0]).toBe(false);
-                    expect(logger3.values.length).toBe(0);
-
-                    // Now switch the context to emergency operation and publish the same IO values again
-                    logger1.reset();
-                    logger2.reset();
-                    logger3.reset();
-                    ioContextController.changeIoContext("emergency");
-
-                    delayAction(500, undefined, () => {
-
-                        for (let i = 0; i < emittedValues1.length; i++) {
-                            sourceController.publish<number>(source1, emittedValues1[i]);
-                            sourceController.publish<number>(source2, emittedValues2[i]);
+                    delayAction(2000, undefined, () => {
+                        // actor1 receives all IO values in normal operating state
+                        expect(logger1.associations.length).toBe(2);    // including initial value (false, because disassociated)
+                        expect(logger1.associations[0]).toBe(false);
+                        expect(logger1.associations[1]).toBe(true);
+                        expect(logger1.values.length).toBe(emittedValues1.length + emittedValues2.length);
+                        for (let i = 0; i < logger1.values.length; i++) {
+                            expect(logger1.values[i]).toBe(i % 2 === 0 ?
+                                emittedValues1[Math.floor(i / 2)] :
+                                emittedValues2[Math.floor(i / 2)]);
                         }
 
-                        delayAction(500, undefined, () => {
+                        // actor2 receives no IO values in normal operating state
+                        expect(logger2.associations.length).toBe(1);    // initial value (false, because disassociated)
+                        expect(logger2.associations[0]).toBe(false);
+                        expect(logger2.values.length).toBe(0);
 
-                            // actor1 receives no IO values in emergency operating state
-                            expect(logger1.associations.length).toBe(1);    // disassociated by context change
-                            expect(logger1.associations[0]).toBe(false);
-                            expect(logger1.values.length).toBe(0);
+                        // actor3 receives no IO values because its value type is incompatible
+                        expect(logger3.associations.length).toBe(1);    // initial value (false, because disassociated)
+                        expect(logger3.associations[0]).toBe(false);
+                        expect(logger3.values.length).toBe(0);
 
-                            // actor2 receives all IO values in emergency operating state
-                            expect(logger2.associations.length).toBe(1);    // associated by context change
-                            expect(logger2.associations[0]).toBe(true);
-                            expect(logger2.values.length).toBe(emittedValues1.length + emittedValues2.length);
-                            for (let i = 0; i < logger2.values.length; i++) {
-                                expect(logger2.values[i]).toBe(i % 2 === 0 ?
-                                    emittedValues1[Math.floor(i / 2)] :
-                                    emittedValues2[Math.floor(i / 2)]);
-                            }
-
-                            // actor3 receives no IO values because its value type is incompatible
-                            expect(logger3.associations.length).toBe(0);
-                            expect(logger3.values.length).toBe(0);
-
+                        // In libp2p binding we need to wait some time to prevent
+                        // gossiping of older messages on new subscriptions.
+                        delayAction(2000, undefined, () => {
                             logger1.reset();
                             logger2.reset();
                             logger3.reset();
 
-                            // This will cause the final state change events (disassociation) on the sources,
-                            // but when the Associate event is received, its observable has already been
-                            // completed so the event is not dispatched.
-                            container1.shutdown();
+                            // Now switch the context to emergency operation and publish the same IO values again.
+                            ioContextController.changeIoContext("emergency")
+                                .then(() => {
+                                    delayAction(2000, undefined, () => {
+                                        for (let i = 0; i < emittedValues1.length; i++) {
+                                            sourceController.publish<number>(source1, emittedValues1[i]);
+                                            sourceController.publish<number>(source2, emittedValues2[i]);
+                                        }
 
-                            delayAction(500, undefined, () => {
-                                expect(source1Associations.length).toBe(4);
-                                expect(source1Associations[0]).toBe(false);     // initial
-                                expect(source1Associations[1]).toBe(true);      // associate with actor1
-                                expect(source1Associations[2]).toBe(false);     // disassociate with actor1
-                                expect(source1Associations[3]).toBe(true);      // associate with actor2
+                                        delayAction(2000, undefined, () => {
 
-                                expect(source2Associations.length).toBe(4);
-                                expect(source2Associations[0]).toBe(false);     // initial
-                                expect(source2Associations[1]).toBe(true);      // associate with actor1
-                                expect(source2Associations[2]).toBe(false);     // disassociate with actor1
-                                expect(source2Associations[3]).toBe(true);      // associate with actor2
+                                            // actor1 receives no IO values in emergency operating state
+                                            expect(logger1.associations.length).toBe(1);    // disassociated by context change
+                                            expect(logger1.associations[0]).toBe(false);
+                                            expect(logger1.values.length).toBe(0);
 
-                                container2.shutdown();
-                                container3.shutdown();
-                                container4.shutdown();
+                                            // actor2 receives all IO values in emergency operating state
+                                            expect(logger2.associations.length).toBe(1);    // associated by context change
+                                            expect(logger2.associations[0]).toBe(true);
+                                            expect(logger2.values.length).toBe(emittedValues1.length + emittedValues2.length);
+                                            for (let i = 0; i < logger2.values.length; i++) {
+                                                expect(logger2.values[i]).toBe(i % 2 === 0 ?
+                                                    emittedValues1[Math.floor(i / 2)] :
+                                                    emittedValues2[Math.floor(i / 2)]);
+                                            }
 
-                                delayAction(500, done, () => {
+                                            // actor3 receives no IO values because its value type is incompatible
+                                            expect(logger3.associations.length).toBe(0);
+                                            expect(logger3.values.length).toBe(0);
 
-                                    expect(logger1.associations.length).toBe(0);    // not associated on shutdown
-                                    expect(logger2.associations.length).toBe(1);    // disassociated on shutdown
-                                    expect(logger2.associations[0]).toBe(false);
-                                    expect(logger3.associations.length).toBe(0);    // not associated on shutdown
+                                            logger1.reset();
+                                            logger2.reset();
+                                            logger3.reset();
+
+                                            // This will cause the final state change events (disassociation) on the sources,
+                                            // but when the Associate event is received, its observable has already been
+                                            // completed so the event is not dispatched.
+                                            container1.shutdown();
+
+                                            delayAction(1000, undefined, () => {
+                                                expect(source1Associations.length).toBe(4);
+                                                expect(source1Associations[0]).toBe(false);     // initial
+                                                expect(source1Associations[1]).toBe(true);      // associate with actor1
+                                                expect(source1Associations[2]).toBe(false);     // disassociate with actor1
+                                                expect(source1Associations[3]).toBe(true);      // associate with actor2
+
+                                                expect(source2Associations.length).toBe(4);
+                                                expect(source2Associations[0]).toBe(false);     // initial
+                                                expect(source2Associations[1]).toBe(true);      // associate with actor1
+                                                expect(source2Associations[2]).toBe(false);     // disassociate with actor1
+                                                expect(source2Associations[3]).toBe(true);      // associate with actor2
+
+                                                container2.shutdown();
+                                                container3.shutdown();
+                                                container4.shutdown();
+
+                                                delayAction(1000, done, () => {
+
+                                                    expect(logger1.associations.length).toBe(0);    // not associated on shutdown
+                                                    expect(logger2.associations.length).toBe(1);    // disassociated on shutdown
+                                                    expect(logger2.associations[0]).toBe(false);
+                                                    expect(logger3.associations.length).toBe(0);    // not associated on shutdown
+                                                });
+                                            });
+                                        });
+                                    });
                                 });
-                            });
                         });
                     });
                 });
             });
-        }, TEST_TIMEOUT);
+        }, 10 * TEST_TIMEOUT);
 
     });
 
