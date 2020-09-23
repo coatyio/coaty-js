@@ -77,8 +77,9 @@
         "websocket-stream": "^5.5.2"
     },
     "devDependencies": {
+        "@coaty/binding.libp2p": "^2.0.0",
         "@coaty/binding.mqtt": "^2.0.1",
-        "@coaty/binding.wamp": "^2.0.1",
+        "@coaty/binding.wamp": "^2.0.2",
         "@types/bonjour": "^3.5.6",
         "@types/jasmine": "^3.5.14",
         "@types/node-fetch": "^2.5.7",
