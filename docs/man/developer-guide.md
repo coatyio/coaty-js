@@ -1992,7 +1992,11 @@ The communication event flow of IO routing comprises the following steps:
 > and actors, but also from external publishing sources to Coaty-defined IO
 > actors and from Coaty-defined IO sources to external subscribing actors. In
 > this case, the associating route is not created by an IO router, but defined
-> by the external source or actor component. For details, see code documentation
+> by the external source or actor component. In order to e.g. route values from
+> an externalRoute to a Coaty agent create an IoSource describing the external
+> source, set the externalRoute property to the binding specific route on which
+> the events will be published and register it in the Coaty agent. It can then
+> be used as just any 'internal' IO source. For details, see code documentation
 > of property `IoPoint.externalRoute`.
 
 ### IO Routing implementation

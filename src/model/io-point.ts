@@ -87,12 +87,13 @@ export interface IoPoint extends CoatyObject {
      * Only used for associating routes that are not created by an IO router,
      * but defined by an external non-Coaty component.
      *
-     * @remarks Note that the format of an external route is binding-specifc. In
-     * order to deliver IO values from/to an external source/actor, the format
-     * of the external route must correspond with the configured communication
-     * binding. That means, it must be in a valid format and must not have a
-     * Coaty-event-like shape. As the external route must be publishable and
-     * subscribable, it must not be pattern-based (no wildcard tokens allowed).
+     * @remarks Note that the format of an external route is binding-specific.
+     * In order to deliver IO values from/to an external source/actor, the
+     * format of the external route must correspond with the configured
+     * communication binding. That means, it must be in a valid format and must
+     * not have a Coaty-event-like shape. As the external route must be
+     * publishable and subscribable, it must not be pattern-based (no wildcard
+     * tokens allowed).
      */
     externalRoute?: string;
 }
