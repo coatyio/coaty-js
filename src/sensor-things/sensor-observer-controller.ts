@@ -82,7 +82,6 @@ export class SensorObserverController extends Controller {
 
     /**
      * Returns an observable of the Sensors that are associated with this Thing.
-     * 
      *
      * This is performed by sending a Query event for Sensor objects with the
      * parentObjectId matching the objectId of the Thing.
