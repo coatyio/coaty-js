@@ -193,7 +193,7 @@ export class SensorThingsCollection {
             definition: "http://www.qudt.org/qudt/owl/1.0.0/unit/Instances.html#DegreeCelsius",
         },
         observationType: ObservationTypes.MEASUREMENT,
-        parentObjectId: "00tt046a-0709-4f70-9ea5-beebf8fa89af",
+        parentObjectId: "4c480c29-f65f-496f-8005-03e7503eec2b",
         observedProperty: {
             name: "Temperature",
             description: "DewPoint Temperature",
