@@ -500,7 +500,7 @@ export class MyApp {
 }
 ```
 
-Aa an alternative to the aforementioned approach, you can also create and
+As an alternative to the aforementioned approach, you can also create and
 resolve Coaty containers explicitely in an Angular service class. Then, inject
 this service into your view components to access the container components, such
 as controllers, communication manager, runtime and options. This approach is

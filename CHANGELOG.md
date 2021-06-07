@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/coatyio/coaty-js/compare/v2.3.0...v2.3.1) (2021-06-07)
+
+This patch release fixes an issue with async cleanup on process termination and supports coaty-scripts with npm version 7+.
+
+### Bug Fixes
+
+* **runtime-node:** fix async cleanup in NodeUtils.handleProcessTermination to await completion before termination ([b92cc54](https://github.com/coatyio/coaty-js/commit/b92cc54d57e71caaf6d3d5205a52593016335f9a))
+* **scripts:** support coaty-scripts for npm version 7+ ([4623f4e](https://github.com/coatyio/coaty-js/commit/4623f4e8d02df1fb43fa1e341b8418010b4f89c9))
+* fix an incorrect uuid in SensorThings module ([966f0a1](https://github.com/coatyio/coaty-js/commit/966f0a12b19c17aafe75a7ae318dc86883b42dfd))
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/coatyio/coaty-js/compare/v2.2.1...v2.3.0) (2020-09-22)
 
