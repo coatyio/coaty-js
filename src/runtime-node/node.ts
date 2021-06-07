@@ -65,16 +65,18 @@ export class NodeUtils {
     }
 
     /**
-     * Perform synchronous and asynchronous cleanup of allocated resources
-     * (e.g. file descriptors, handles, DB connections, etc.) before shutting down the Node.js process.
-     * 
+     * Perform synchronous and asynchronous cleanup of allocated resources (e.g.
+     * file descriptors, handles, DB connections, etc.) before shutting down the
+     * Node.js process.
+     *
      * @param cleanup callback function for synchronous cleanup (optional)
      * @param cleanupAsync callback function for asynchronous cleanup (optional)
      */
     public static handleProcessTermination(cleanup?: () => void, cleanupAsync?: () => Promise<any>) {
-        // The correct use of 'uncaughtException' is to perform synchronous cleanup of 
-        // allocated resources (e.g. file descriptors, handles, etc) before shutting down 
-        // the process. It is not safe to resume normal operation after 'uncaughtException'.
+        // The correct use of 'uncaughtException' is to perform synchronous
+        // cleanup of allocated resources (e.g. file descriptors, handles, etc)
+        // before shutting down the process. It is not safe to resume normal
+        // operation after 'uncaughtException'.
         process.on("uncaughtException", err => {
             NodeUtils.logError(err, "uncaughtException:");
             NodeUtils.logError(err.stack, "       stacktrace:");
@@ -82,7 +84,8 @@ export class NodeUtils {
         });
 
         process.on("SIGINT", () => {
-            Promise.resolve(cleanupAsync && cleanupAsync())
+            const prom = cleanupAsync ? cleanupAsync() : Promise.resolve();
+            prom
                 .then(() => process.exit())
                 .catch(() => process.exit(1));
         });
