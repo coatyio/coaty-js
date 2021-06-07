@@ -10,6 +10,7 @@ if (process.argv.length > 2) {
     // Get args from original "npm run <cmd> ...<args>" command
     const npmRunArgs = [];
     if (process.env.npm_config_argv) {
+        // npm version up to 6
         try {
             const npmConfigArgs = JSON.parse(process.env.npm_config_argv);
             if (npmConfigArgs && npmConfigArgs.original && npmConfigArgs.original.length > 2) {
@@ -17,6 +18,17 @@ if (process.argv.length > 2) {
                     npmRunArgs.push(npmConfigArgs.original[i]);
                 }
             }
+        }
+        catch (e) {
+            utils.logError(e);
+            process.exit(1);
+        }
+    } else if (process.env.npm_lifecycle_script && process.env.npm_command) {
+        // npm version 7+
+        try {
+            const pkg = require(process.env.npm_package_json);
+            const paramsString = process.env.npm_lifecycle_script.substring(pkg.scripts[process.env.npm_lifecycle_event].length);
+            npmRunArgs.push(...[].concat.apply([], paramsString.split('"').map((v, i) => i % 2 ? v : v.split(' '))).filter(s => !!s));
         }
         catch (e) {
             utils.logError(e);
