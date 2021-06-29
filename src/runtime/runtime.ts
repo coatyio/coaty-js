@@ -75,8 +75,8 @@ export class Runtime {
      * PROPER VALUES ARE INJECTED WHEN BUILDING THE FRAMEWORK.
 	 */
     private static FRAMEWORK_PACKAGE_NAME = "@coaty/core";
-    private static FRAMEWORK_PACKAGE_VERSION = "2.3.1";
-    private static FRAMEWORK_BUILD_DATE = 1623072394126;
+    private static FRAMEWORK_PACKAGE_VERSION = "2.3.2";
+    private static FRAMEWORK_BUILD_DATE = 1624980055902;
     /*********************************************************
 	 * END OF AUTO GENERATED CODE 
 	 */

@@ -1,6 +1,6 @@
 {
     "name": "@coaty/core",
-    "version": "2.3.1",
+    "version": "2.3.2",
     "description": "Collaborative IoT Framework in JavaScript for Node.js and browsers",
     "homepage": "https://coaty.io",
     "repository": {

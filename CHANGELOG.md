@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="2.3.2"></a>
+## [2.3.2](https://github.com/coatyio/coaty-js/compare/v2.3.1...v2.3.2) (2021-06-29)
+
+This patch release optimizes keep-alive behavior of the MQTT binding to detect broken connections more quickly.
+
+### Bug Fixes
+
+* **com:** do not reschedule keep-alive messages in MQTT binding after publishing to detect broken connections more quickly ([12b1765](https://github.com/coatyio/coaty-js/commit/12b1765edc3ef5d91c203dd2433583566285a68f))
+
 <a name="2.3.1"></a>
 ## [2.3.1](https://github.com/coatyio/coaty-js/compare/v2.3.0...v2.3.1) (2021-06-07)
 
