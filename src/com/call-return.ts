@@ -313,7 +313,7 @@ export class ReturnEventData extends CommunicationEventData {
      * The error object to be returned in case the operation call yielded an error (optional).
      * The value is `undefined` if the operation executed successfully.
      * 
-     * The error object consists of two properties: `errorCode`, `errorMessage`.
+     * The error object consists of two properties: `code`, `message`.
      * 
      * The error code given is an integer that indicates the error type
      * that occurred, either a predefined error or an application defined one. Predefined error
