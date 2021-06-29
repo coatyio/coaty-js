@@ -280,6 +280,11 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         // subscribed again, because this is handled by separate binding logic.
         mqttClientOpts.resubscribe = false;
 
+        // Do not reschedule keep-alive messages after sending packets. This can
+        // cause a broken connection to never be detected as long as messages
+        // with QoS 0 are being published continuously.
+        mqttClientOpts.reschedulePings = false;
+
         // Connect to broker with MQTT v3.1.1 protocol.
         mqttClientOpts.protocolId = "MQTT";
         mqttClientOpts.protocolVersion = 4;
