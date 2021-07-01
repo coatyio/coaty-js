@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="2.3.3"></a>
+## [2.3.3](https://github.com/coatyio/coaty-js/compare/v2.3.2...v2.3.3) (2021-07-01)
+
+This patch release fixes an issue that causes publications to be blocked after connection downtime in some rare situations.
+
+### Bug Fixes
+
+* **mqtt-binding:** prevent publications from being not submitted after reconnection in some rare situations ([b1cfa4e](https://github.com/coatyio/coaty-js/commit/b1cfa4e80011dc4f8627b30a77338adea7cab9f3))
+
 <a name="2.3.2"></a>
 ## [2.3.2](https://github.com/coatyio/coaty-js/compare/v2.3.1...v2.3.2) (2021-06-29)
 
