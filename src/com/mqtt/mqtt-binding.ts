@@ -289,7 +289,14 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         mqttClientOpts.protocolId = "MQTT";
         mqttClientOpts.protocolVersion = 4;
 
-        this._client = connect(this.options.brokerUrl, mqttClientOpts);
+        let connectionUrl = this.options.brokerUrl;
+        const isWebPlatform = new Function("try {return this===window;}catch(e){return false;}")();
+        if (isWebPlatform) {
+            // Ensure websocket protocol is used in the browser.
+            connectionUrl = connectionUrl.replace(/^mqtt/, "ws");
+        }
+
+        this._client = connect(connectionUrl, mqttClientOpts);
 
         this.log(CommunicationBindingLogLevel.info, "Client connecting to ", this.options.brokerUrl);
 
@@ -330,6 +337,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         // Emitted when the client goes offline, i.e. when the connection to the server
         // is closed (for whatever reason) and before the client reconnects.
         this._client.on("offline", () => {
+            this.log(CommunicationBindingLogLevel.info, "Client offline");
 
             // Stop draining until next reconnect.
             this._isDrainingPublications = true;
@@ -426,7 +434,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
     private _reset() {
         this._client = undefined;
-        this._clientIdLogItem = "[---]";
+        this._clientIdLogItem = "[---] ";
         this._joinOptions = undefined;
         this._isDrainingPublications = false;
         this._pendingPublicationItems = [];
@@ -549,7 +557,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
     /**
      * Encodes the given event data.
      * 
-     * @param eventData a raw value or JSON object to be encoded 
+     * @param eventLike event with raw or JSON object data 
      * @returns encoded data in raw or JSON-UTF8 string format
      * @throws if event data cannot be encoded
      */
@@ -557,6 +565,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         if (eventLike.isDataRaw) {
             return eventLike.data;
         }
+        // Note: throws a TypeError if data is cyclic.
         return JSON.stringify(eventLike.data);
     }
 
