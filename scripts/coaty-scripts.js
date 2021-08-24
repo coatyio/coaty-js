@@ -7,7 +7,9 @@
 const utils = require("./utils");
 
 if (process.argv.length > 2) {
-    // Get args from original "npm run <cmd> ...<args>" command
+    // Get args from original "npm run <cmd> ...<args>" command. Note that "npm
+    // exec" and "npx" are not affected by the following "npm run" specific
+    // clauses.
     const npmRunArgs = [];
     if (process.env.npm_config_argv) {
         // npm version up to 6
@@ -23,7 +25,7 @@ if (process.argv.length > 2) {
             utils.logError(e);
             process.exit(1);
         }
-    } else if (process.env.npm_lifecycle_script && process.env.npm_command) {
+    } else if (process.env.npm_lifecycle_script && process.env.npm_command === "run-script") {
         // npm version 7+
         try {
             const pkg = require(process.env.npm_package_json);

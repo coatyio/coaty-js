@@ -3821,6 +3821,15 @@ Note that parameters supplied with an `npm run` command can be referenced in a
 related Coaty script call by substituting a `%i` parameter, where `i` is the
 one-based positional index of the desired npm run command parameter.
 
+Aside from the npm run command you can execute coaty scripts directly via the
+`npx` or `npm exec` binaries invoked on the root folder or a subfolder of your
+project:
+
+```sh
+npx coaty-scripts <script-name> <script-options>
+npm exec -- coaty-scripts <script-name> <script-options>
+```
+
 ### Coaty broker for development
 
 For Coaty development and testing purposes, the framework includes the
