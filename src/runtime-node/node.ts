@@ -363,7 +363,7 @@ export class MulticastDnsDiscovery {
      * not in a browser runtime.
      */
     public static unpublishMulticastDnsServices(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             // console.log(`Unpublishing all multicast DNS services...`);
             MulticastDnsDiscovery.bonjour.unpublishAll(() => {
                 MulticastDnsDiscovery.bonjour.destroy();

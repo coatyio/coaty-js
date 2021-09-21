@@ -200,7 +200,7 @@ export class SqLiteNodeAdapter extends SqLiteBaseAdapter {
     /* IDbLocalStore */
 
     close(): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             if (!this._db) {
                 resolve();
             } else {
