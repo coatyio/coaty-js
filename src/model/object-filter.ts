@@ -183,14 +183,16 @@ export const filterOp = {
 
     /**
      * Checks if the filter property is less than the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     *
+     * For string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     lessThan: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.LessThan, value],
 
     /**
      * Checks if the filter property is less than or equal to the given value.
+     * 
      * For string comparison, a default lexical ordering is used.
      * Note: Do not compare a number with a string, as the result is not defined.
      */
@@ -199,49 +201,55 @@ export const filterOp = {
 
     /**
      * Checks if the filter property is greater than the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     *
+     * For string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     greaterThan: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.GreaterThan, value],
 
     /**
-     * Checks if the filter property is greater than or equal to the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * Checks if the filter property is greater than or equal to the given
+     * value.
+     *
+     * For string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     greaterThanOrEqual: (value: number | string): [ObjectFilterOperator, number | string] =>
         [ObjectFilterOperator.GreaterThanOrEqual, value],
 
     /**
-     * Checks if the filter property is between the given values, i.e.
-     * prop >= value1 AND prop <= value2.
+     * Checks if the filter property is between the given values, i.e. prop >=
+     * value1 AND prop <= value2.
+     *
      * If the first argument `value1` is not less than or equal to the second
-     * argument `value2`, those two arguments are automatically swapped.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * argument `value2`, those two arguments are automatically swapped. For
+     * string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     between: (value1: number | string, value2: number | string): [ObjectFilterOperator, number | string, number | string] =>
         [ObjectFilterOperator.Between, value1, value2],
 
     /**
-     * Checks if the filter property is not between the given values, i.e.
-     * prop < value1 OR prop > value2.
+     * Checks if the filter property is not between the given values, i.e. prop
+     * < value1 OR prop > value2.
+     *
      * If the first argument `value1` is not less than or equal to the second
-     * argument `value2`, those two arguments are automatically swapped.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * argument `value2`, those two arguments are automatically swapped. For
+     * string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     notBetween: (value1: number | string, value2: number | string): [ObjectFilterOperator, number | string, number | string] =>
         [ObjectFilterOperator.NotBetween, value1, value2],
 
     /**
      * Checks if the filter property string matches the given pattern.
-     * If pattern does not contain percent signs or underscores, then the pattern
-     * only represents the string itself; in that case LIKE acts like the equals
-     * operator (but less performant). An underscore (_) in pattern stands for
-     * (matches) any single character; a percent sign (%) matches any sequence of
-     * zero or more characters.
+     *
+     * If pattern does not contain percent signs or underscores, then the
+     * pattern only represents the string itself; in that case LIKE acts like
+     * the equals operator (but less performant). An underscore (_) in pattern
+     * stands for (matches) any single character; a percent sign (%) matches any
+     * sequence of zero or more characters.
      *
      * LIKE pattern matching always covers the entire string. Therefore, if it's
      * desired to match a sequence anywhere within a string, the pattern must
@@ -249,25 +257,26 @@ export const filterOp = {
      *
      * To match a literal underscore or percent sign without matching other
      * characters, the respective character in pattern must be preceded by the
-     * escape character. The default escape character is the backslash.
-     * To match the escape character itself, write two escape characters.
-     * 
-     * For example, the pattern string `%a_c\\d\_` matches `abc\d_` in `hello abc\d_`
-     * and `acc\d_` in `acc\d_`, but nothing in `hello abc\d_world`. Note that
-     * in programming languages like JavaScript, Java, or C#, where the backslash
-     * character is used as escape character for certain special characters you have
-     * to double backslashes in literal string constants. Thus, for the example above the
-     * pattern string literal would look like `"%a_c\\\\d\\_"`.
+     * escape character. The default escape character is the backslash. To match
+     * the escape character itself, write two escape characters.
+     *
+     * For example, the pattern string `%a_c\\d\_` matches `abc\d_` in `hello
+     * abc\d_` and `acc\d_` in `acc\d_`, but nothing in `hello abc\d_world`.
+     * Note that in programming languages like JavaScript, Java, or C#, where
+     * the backslash character is used as escape character for certain special
+     * characters you have to double backslashes in literal string constants.
+     * Thus, for the example above the pattern string literal would look like
+     * `"%a_c\\\\d\\_"`.
      */
     like: (pattern: string): [ObjectFilterOperator, string] =>
         [ObjectFilterOperator.Like, pattern],
 
     /**
-     * Checks if the filter property is deep equal to the given value
-     * according to a recursive equality algorithm.
-     * 
-     * Note: do not check for `undefined` value as it is converted 
-     * to `null` implicitely by JSON. Use the `NotExists` operator instead.
+     * Checks if the filter property is deep equal to the given value according
+     * to a recursive equality algorithm.
+     *
+     * Note: do not check for `undefined` value as it is converted to `null`
+     * implicitely by JSON. Use the `notExists` operator instead.
      */
     equals: (value: any): [ObjectFilterOperator, any] =>
         [ObjectFilterOperator.Equals, value],
@@ -275,9 +284,9 @@ export const filterOp = {
     /**
      * Checks if the filter property is not deep equal to the given value
      * according to a recursive equality algorithm.
-     * 
-     * Note: do not check for `undefined` value as it is converted 
-     * to `null` implicitely by JSON. Use the `Exists` operator instead.
+     *
+     * Note: do not check for `undefined` value as it is converted to `null`
+     * implicitely by JSON. Use the `Exists` operator instead.
      */
     notEquals: (value: any): [ObjectFilterOperator, any] =>
         [ObjectFilterOperator.NotEquals, value],
@@ -295,20 +304,23 @@ export const filterOp = {
         [ObjectFilterOperator.NotExists],
 
     /**
-     * Checks if the filter property value (usually an object or array) contains the
-     * given values. Primitive value types (number, string, boolean, null) contain
-     * only the identical value. Object properties match if all the key-value
-     * pairs of the specified object are contained in them. Array properties
-     * match if all the specified array elements are contained in them.
-     * 
-     * The general principle is that the contained object must match the containing object 
-     * as to structure and data contents recursively on all levels, possibly after discarding 
-     * some non-matching array elements or object key/value pairs from the containing object. 
-     * But remember that the order of array elements is not significant when doing a containment match, 
-     * and duplicate array elements are effectively considered only once.
+     * Checks if the filter property value (usually an object or array) contains
+     * the given values.
      *
-     * As a special exception to the general principle that the structures must match, an
-     * array on *toplevel* may contain a primitive value:
+     * Primitive value types (number, string, boolean, null) contain only the
+     * identical value. Object properties match if all the key-value pairs of
+     * the specified object are contained in them. Array properties match if all
+     * the specified array elements are contained in them.
+     *
+     * The general principle is that the contained object must match the
+     * containing object as to structure and data contents recursively on all
+     * levels, possibly after discarding some non-matching array elements or
+     * object key/value pairs from the containing object. But remember that the
+     * order of array elements is not significant when doing a containment
+     * match, and duplicate array elements are effectively considered only once.
+     *
+     * As a special exception to the general principle that the structures must
+     * match, an array on *toplevel* may contain a primitive value:
      * ```ts
      * contains([1, 2, 3], [3]) => true
      * contains([1, 2, 3], 3) => true
@@ -318,23 +330,26 @@ export const filterOp = {
         [ObjectFilterOperator.Contains, values],
 
     /**
-     * Checks if the filter property value (usually an object or array) does not contain the
-     * given values. Primitive value types (number, string, boolean, null) contain
-     * only the identical value. Object properties match if all the key-value
-     * pairs of the specified object are not contained in them. Array properties
-     * match if all the specified array elements are not contained in them.
-     * 
-     * The general principle is that the contained object must match the containing object 
-     * as to structure and data contents recursively on all levels, possibly after discarding 
-     * some non-matching array elements or object key/value pairs from the containing object. 
-     * But remember that the order of array elements is not significant when doing a containment match, 
-     * and duplicate array elements are effectively considered only once.
+     * Checks if the filter property value (usually an object or array) does not
+     * contain the given values.
      *
-     * As a special exception to the general principle that the structures must match, an
-     * array on *toplevel* may contain a primitive value:
+     * Primitive value types (number, string, boolean, null) contain only the
+     * identical value. Object properties match if all the key-value pairs of
+     * the specified object are not contained in them. Array properties match if
+     * all the specified array elements are not contained in them.
+     *
+     * The general principle is that the contained object must match the
+     * containing object as to structure and data contents recursively on all
+     * levels, possibly after discarding some non-matching array elements or
+     * object key/value pairs from the containing object. But remember that the
+     * order of array elements is not significant when doing a containment
+     * match, and duplicate array elements are effectively considered only once.
+     *
+     * As a special exception to the general principle that the structures must
+     * match, an array on *toplevel* may contain a primitive value:
      * ```ts
-     * notContains([1, 2, 3], [4]) => true
-     * notContains([1, 2, 3], 4) => true
+     * notContains([1, 2, 3], [3]) => false
+     * notContains([1, 2, 3], 3) => false
      * ```
      */
     notContains: (values: any): [ObjectFilterOperator, any] =>
@@ -342,8 +357,8 @@ export const filterOp = {
 
     /**
      * Checks if the filter property value is included on toplevel in the given
-     * operand array of values which may be primitive types (number, string, boolean, null)
-     * or object types compared using the deep equality operator.
+     * operand array of values which may be primitive types (number, string,
+     * boolean, null) or object types compared using the deep equality operator.
      *
      * For example:
      * ```ts
@@ -357,9 +372,10 @@ export const filterOp = {
         [ObjectFilterOperator.In, values],
 
     /**
-     * Checks if the filter property value is not included on toplevel in the given
-     * operand array of values which may be primitive types (number, string, boolean, null)
-     * or object types compared using the deep equality operator.
+     * Checks if the filter property value is not included on toplevel in the
+     * given operand array of values which may be primitive types (number,
+     * string, boolean, null) or object types compared using the deep equality
+     * operator.
      *
      * For example:
      * ```ts
@@ -381,59 +397,68 @@ export enum ObjectFilterOperator {
 
     /**
      * Checks if the filter property is less than the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     *
+     * For string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     LessThan,
 
     /**
-     * Checks if the filter property is less than or equal to the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * Checks if the filter property is less than or equal to the given value
+     *
+     * For string comparison, a default lexical ordering is used. Note: Do not
+     * compare a number with a string, as the result is not defined.
      */
     LessThanOrEqual,
 
     /**
-     * Checks if the filter property is greater than the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * Checks if the filter property is greater than the given value. For string
+     * comparison, a default lexical ordering is used.
+     *
+     * Note: Do not compare a number with a string, as the result is not
+     * defined.
      */
     GreaterThan,
 
     /**
-     * Checks if the filter property is greater than or equal to the given value.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * Checks if the filter property is greater than or equal to the given
+     * value. For string comparison, a default lexical ordering is used.
+     *
+     * Note: Do not compare a number with a string, as the result is not
+     * defined.
      */
     GreaterThanOrEqual,
 
     /**
      * Checks if the filter property is between the two given operands, i.e.
-     * prop >= operand AND prop <= operand2.
-     * If the first operand is not less than or equal to the second
-     * operand, those two arguments are automatically swapped.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     * prop >= operand1 AND prop <= operand2.
+     *
+     * If the first operand is not less than or equal to the second operand,
+     * those two arguments are automatically swapped. For string comparison, a
+     * default lexical ordering is used. Note: Do not compare a number with a
+     * string, as the result is not defined.
      */
     Between,
 
     /**
      * Checks if the filter property is not between the given operands, i.e.
      * prop < operand1 OR prop > operand2.
-     * If the first operand is not less than or equal to the second
-     * operand, those two arguments are automatically swapped.
-     * For string comparison, a default lexical ordering is used.
-     * Note: Do not compare a number with a string, as the result is not defined.
+     *
+     * If the first operand is not less than or equal to the second operand,
+     * those two arguments are automatically swapped. For string comparison, a
+     * default lexical ordering is used. Note: Do not compare a number with a
+     * string, as the result is not defined.
      */
     NotBetween,
 
     /**
      * Checks if the filter property string matches the given pattern.
-     * If pattern does not contain percent signs or underscores, then the pattern
-     * only represents the string itself; in that case LIKE acts like the equals
-     * operator (but less performant). An underscore (_) in pattern stands for
-     * (matches) any single character; a percent sign (%) matches any sequence of
-     * zero or more characters.
+     *
+     * If pattern does not contain percent signs or underscores, then the
+     * pattern only represents the string itself; in that case LIKE acts like
+     * the equals operator (but less performant). An underscore (_) in pattern
+     * stands for (matches) any single character; a percent sign (%) matches any
+     * sequence of zero or more characters.
      *
      * LIKE pattern matching always covers the entire string. Therefore, if it's
      * desired to match a sequence anywhere within a string, the pattern must
@@ -441,33 +466,34 @@ export enum ObjectFilterOperator {
      *
      * To match a literal underscore or percent sign without matching other
      * characters, the respective character in pattern must be preceded by the
-     * escape character. The default escape character is the backslash.
-     * To match the escape character itself, write two escape characters.
-     * 
-     * For example, the pattern string `%a_c\\d\_` matches `abc\d_` in `hello abc\d_`
-     * and `acc\d_` in `acc\d_`, but nothing in `hello abc\d_world`. Note that 
-     * in programming languages like JavaScript, Java, or C#, where the backslash
-     * character is used as escape character for certain special characters you have
-     * to double backslashes in literal string constants. Thus, for the example above
-     * the pattern string literal would look like `"%a_c\\\\d\\_"`. 
+     * escape character. The default escape character is the backslash. To match
+     * the escape character itself, write two escape characters.
+     *
+     * For example, the pattern string `%a_c\\d\_` matches `abc\d_` in `hello
+     * abc\d_` and `acc\d_` in `acc\d_`, but nothing in `hello abc\d_world`.
+     * Note that in programming languages like JavaScript, Java, or C#, where
+     * the backslash character is used as escape character for certain special
+     * characters you have to double backslashes in literal string constants.
+     * Thus, for the example above the pattern string literal would look like
+     * `"%a_c\\\\d\\_"`. 
      */
     Like,
 
     /**
-     * Checks if the filter property is deep equal to the given value
-     * according to a recursive equality algorithm.
-     * 
-     * Note: do not check for `undefined` value as it is converted 
-     * to `null` implicitely by JSON. Use the `NotExists` operator instead.
+     * Checks if the filter property is deep equal to the given value according
+     * to a recursive equality algorithm.
+     *
+     * Note: do not check for `undefined` value as it is converted to `null`
+     * implicitely by JSON. Use the `NotExists` operator instead.
      */
     Equals,
 
     /**
      * Checks if the filter property is not deep equal to the given value
      * according to a recursive equality algorithm.
-     * 
-     * Note: do not check for `undefined` value as it is converted 
-     * to `null` implicitely by JSON. Use the `Exists` operator instead.
+     *
+     * Note: do not check for `undefined` value as it is converted to `null`
+     * implicitely by JSON. Use the `Exists` operator instead.
      */
     NotEquals,
 
@@ -482,20 +508,23 @@ export enum ObjectFilterOperator {
     NotExists,
 
     /**
-     * Checks if the filter property value (usually an object or array) contains the
-     * given values. Primitive value types (number, string, boolean, null) contain
-     * only the identical value. Object properties match if all the key-value
-     * pairs of the specified object are contained in them. Array properties
-     * match if all the specified array elements are contained in them.
-     * 
-     * The general principle is that the contained object must match the containing object 
-     * as to structure and data contents recursively on all levels, possibly after discarding 
-     * some non-matching array elements or object key/value pairs from the containing object. 
-     * But remember that the order of array elements is not significant when doing a containment match, 
-     * and duplicate array elements are effectively considered only once.
+     * Checks if the filter property value (usually an object or array) contains
+     * the given values.
      *
-     * As a special exception to the general principle that the structures must match, an
-     * array on *toplevel* may contain a primitive value:
+     * Primitive value types (number, string, boolean, null) contain only the
+     * identical value. Object properties match if all the key-value pairs of
+     * the specified object are contained in them. Array properties match if all
+     * the specified array elements are contained in them.
+     *
+     * The general principle is that the contained object must match the
+     * containing object as to structure and data contents recursively on all
+     * levels, possibly after discarding some non-matching array elements or
+     * object key/value pairs from the containing object. But remember that the
+     * order of array elements is not significant when doing a containment
+     * match, and duplicate array elements are effectively considered only once.
+     *
+     * As a special exception to the general principle that the structures must
+     * match, an array on *toplevel* may contain a primitive value:
      * ```ts
      * Contains([1, 2, 3], [3]) => true
      * Contains([1, 2, 3], 3) => true
@@ -504,20 +533,23 @@ export enum ObjectFilterOperator {
     Contains,
 
     /**
-     * Checks if the filter property value (usually an object or array) does not contain the
-     * given values. Primitive value types (number, string, boolean, null) contain
-     * only the identical value. Object properties match if all the key-value
-     * pairs of the specified object are not contained in them. Array properties
-     * match if all the specified array elements are not contained in them.
-     * 
-     * The general principle is that the contained object must match the containing object 
-     * as to structure and data contents recursively on all levels, possibly after discarding 
-     * some non-matching array elements or object key/value pairs from the containing object. 
-     * But remember that the order of array elements is not significant when doing a containment match, 
-     * and duplicate array elements are effectively considered only once.
+     * Checks if the filter property value (usually an object or array) does not
+     * contain the given values.
      *
-     * As a special exception to the general principle that the structures must match, an
-     * array on *toplevel* may contain a primitive value:
+     * Primitive value types (number, string, boolean, null) contain only the
+     * identical value. Object properties match if all the key-value pairs of
+     * the specified object are not contained in them. Array properties match if
+     * all the specified array elements are not contained in them.
+     *
+     * The general principle is that the contained object must match the
+     * containing object as to structure and data contents recursively on all
+     * levels, possibly after discarding some non-matching array elements or
+     * object key/value pairs from the containing object. But remember that the
+     * order of array elements is not significant when doing a containment
+     * match, and duplicate array elements are effectively considered only once.
+     *
+     * As a special exception to the general principle that the structures must
+     * match, an array on *toplevel* may contain a primitive value:
      * ```ts
      * NotContains([1, 2, 3], [4]) => true
      * NotContains([1, 2, 3], 4) => true
@@ -527,8 +559,8 @@ export enum ObjectFilterOperator {
 
     /**
      * Checks if the filter property value is included on toplevel in the given
-     * operand array of values which may be primitive types (number, string, boolean, null)
-     * or object types compared using the deep equality operator.
+     * operand array of values which may be primitive types (number, string,
+     * boolean, null) or object types compared using the deep equality operator.
      *
      * For example:
      * ```ts
@@ -541,9 +573,10 @@ export enum ObjectFilterOperator {
     In,
 
     /**
-     * Checks if the filter property value is not included on toplevel in the given
-     * operand array of values which may be primitive types (number, string, boolean, null)
-     * or object types compared using the deep equality operator.
+     * Checks if the filter property value is not included on toplevel in the
+     * given operand array of values which may be primitive types (number,
+     * string, boolean, null) or object types compared using the deep equality
+     * operator.
      *
      * For example:
      * ```ts
