@@ -443,7 +443,7 @@ export class PostgresAdapter extends DbAdapterBase {
         const dbc = new DbContext(dbInfo, PostgresAdapter);
         const dbConfig = this._getPoolOptions(dbInfo);
 
-        return this.createUser(dbConfig.user, dbConfig.password)
+        return this.createUser(dbConfig.user, dbConfig.password as string)
             .then(() => this.createDatabase(dbConfig.database, dbConfig.user))
 
             // Add collections if they do not exist yet

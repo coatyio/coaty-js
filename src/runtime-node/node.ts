@@ -193,19 +193,11 @@ export class NodeUtils {
  * Represents a multicast DNS service object as resolved by the `MulticastDnsDiscovery.findMulticastDnsService` and
  * `MulticastDnsDiscovery.publishMulticastDnsService` methods.
  * 
- * Note: This interface just reexposes the members of the `bonjour.Service` interface defined 
+ * Note: This interface just reexposes the members of the `bonjour.BaseService` interface defined 
  * in the npm `bonjour` package.
  */
-export interface MulticastDnsService {
-    name: string;
-    type: string;
-    subtypes: string[];
-    protocol: string;
-    host: string;
-    port: number;
-    fqdn: string;
-    txt: object;
-    published: boolean;
+/* tslint:disable-next-line:no-empty-interface */
+export interface MulticastDnsService extends bonjourFunc.BaseService {
 }
 
 /**

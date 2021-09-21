@@ -83,7 +83,7 @@ describe("Utilities", () => {
     }, TEST_TIMEOUT);
 
     it("Async.withTimeout rejects on timeout", (done) => {
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise<void>((resolve, reject) => {
             setTimeout(() => resolve(), 2000);
         });
         Async.withTimeout(1000, promise)
