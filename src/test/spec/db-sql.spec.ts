@@ -205,6 +205,11 @@ describe("SQL Database Access", () => {
             skipTestIf(!isDbAvailable, "No database server");
 
             const insertData = [...testData];
+            const deleteAllItems = () => {
+                return dbContext
+                    .query(SQL`DELETE FROM ${testDataTable}{IDENT};`)
+                    .catch(error => Promise.reject(error));
+            };
             const insertNextItem = () => {
                 const item = insertData.pop();
                 if (!item) {
@@ -220,8 +225,9 @@ describe("SQL Database Access", () => {
             };
 
             dbContext
-                .query(SQL`CREATE TABLE ${testDataTable}{IDENT} 
+                .query(SQL`CREATE TABLE IF NOT EXISTS ${testDataTable}{IDENT}
                              (id Integer, name Varchar, value Float);`)
+                .then(result => deleteAllItems())
                 .then(result => insertNextItem())
                 .then(() => done())
                 .catch(error => failTest(error, done));

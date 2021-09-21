@@ -773,6 +773,7 @@ describe("Postgres NoSQL Database Access", () => {
                     filter = {
                         conditions: {
                             and: [
+                                [[], filterOp.notExists()],
                                 ["testObj.noname", filterOp.notEquals(6)],
                                 ["testObj.noname", filterOp.equals(undefined)],
                                 ["testObj.noname", filterOp.notEquals(undefined)],
@@ -795,6 +796,7 @@ describe("Postgres NoSQL Database Access", () => {
                     filter = {
                         conditions: {
                             and: [
+                                [[], filterOp.exists()],
                                 ["name", filterOp.like("Test % 1_.%")],
                                 ["unknown", filterOp.notExists()],
                                 ["testObj.name", filterOp.like("Test SubObject %")],

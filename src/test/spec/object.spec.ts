@@ -38,6 +38,7 @@ describe("Objects", () => {
         filter = {
             conditions: {
                 and: [
+                    [[], filterOp.exists()],
                     ["foo", filterOp.notExists()],
                     ["foo.bar", filterOp.notExists()],
                     ["filterUndefined", filterOp.notExists()],
