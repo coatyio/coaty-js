@@ -157,6 +157,7 @@ Documentation is licensed under a
 Last but certainly not least, a big *Thank You!* to the folks who helped to
 implement Coaty JS and make it even better:
 
+* Nejc Zupan [@zupan](https://github.com/zupan)
 * Markus Sauer [@markussauer](https://github.com/markussauer)
 * Alihan Livdumlu [@adragonite](https://github.com/adragonite)
 * Atakan Dulker [@phynics](https://github.com/phynics)

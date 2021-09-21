@@ -20,11 +20,10 @@ import { AggregateOp } from "../db-operators";
 
 /* Custom Type Parsers */
 
-// The node-pg type parser returns bigint (int8, 64-bit integer with OID 20) 
-// as string. Since we don't support bigints and SELECT COUNT() returns bigint 
-// we always parse the bigint string as decimal integer.
+// The node-pg type parser returns bigint (int8, 64-bit integer with OID 20) as
+// string. Since we don't support bigints and SELECT COUNT() returns bigint we
+// always parse the bigint string as decimal integer.
 types.setTypeParser(20, value => parseInt(value, 10));
-
 
 /**
  * Provides access to a PostgreSQL 9.5 (or later) database server. Supports
@@ -38,19 +37,19 @@ types.setTypeParser(20, value => parseInt(value, 10));
  * ```
  * {
  *    // database host
- *    host: 'localhost',
+ *    host: process.env.PGHOST || 'localhost',
  *
  *    // database user's name
- *    user: process.platform === 'win32' ? process.env.USERNAME : process.env.USER,
+ *    user: process.env.PGUSER || process.env.USER
  * 
  *    // name of database to connect
- *    database: process.platform === 'win32' ? process.env.USERNAME : process.env.USER,
+ *    database: process.env.PGDATABASE || process.env.USER
  *
  *    // database user's password
- *    password: null,
+ *    password: process.env.PGPASSWORD || null,
  *
  *    // database port
- *    port: 5432,
+ *    port: process.env.PGPORT || 5432,
  *
  *    // number of rows to return at a time from a prepared statement's
  *    // portal. 0 will return all rows at once
@@ -122,7 +121,7 @@ types.setTypeParser(20, value => parseInt(value, 10));
 export class PostgresAdapter extends DbAdapterBase {
 
     // Long-lived pool objects used throughout the lifetime of the application
-    private static readonly PG_POOLS = new Map<DbConnectionInfo, Pool>();
+    private static readonly PG_POOLS = new Map<DbConnectionInfo, PoolItem>();
 
     private static readonly COLLECTION_SCHEMA = "collections";
 
@@ -130,8 +129,9 @@ export class PostgresAdapter extends DbAdapterBase {
     private static readonly DEFAULT_FETCH_SIZE = 100;
     private static readonly MINIMUM_FETCH_SIZE = 10;
 
-    // Client connection used for queries within a transaction.
-    // The value is undefined if this db context is not associated with a transaction.
+    // Client connection used for queries within the current transaction.
+    // Transactions within PostgreSQL must be scoped to a single client. The
+    // value is undefined if this context is not associated with a transaction.
     private _transactionClient: PooledClient;
 
     constructor(connectionInfo: DbConnectionInfo) {
@@ -150,14 +150,25 @@ export class PostgresAdapter extends DbAdapterBase {
         const tableId = this._getTableId(name);
         const indexId = asIdentifier(name + "_object_idx");
 
-        // Use optimized and smaller "jsonb_path_ops" GIN index 
-        // supporting only the JSONB @> containment operator during
-        // WHERE filtering, but performing better when searching data and 
-        // having a smaller on-disk size than the default GIN operator on JSONB.
+        // Use optimized and smaller "jsonb_path_ops" GIN index supporting only
+        // the JSONB @>, @@, and @? operators during WHERE filtering, but
+        // performing better when searching data and having a smaller on-disk
+        // size than the default GIN operator index "jsonb_ops" on JSONB. Note
+        // that for PostgreSQL database server versions less than 12 only @>
+        // containment operations are optimized by this index (as jsonpath
+        // operators @@ and @? did not exist yet). In PG server version 12 all
+        // the JSONB containment, existence, and comparison operations are
+        // expressed with the operators @>, @@, and @? to make efficient use of
+        // the "jsonb_path_ops" index. However, in this version GIN indexing
+        // only supports a subset of uses of @@ and @! operators (e.g. only
+        // jsonpath filter expressions like equality comparison (==), but not
+        // less-than or greather-than comparison). Starting with PG server
+        // version 13, all jsonpath filter expressions make use of GIN indexing.
         //
-        // Catch any unique_violation exceptions (error code 23505) due to concurrent execution of CREATE SCHEMA
-        // and do nothing in this case.
-        // (see https://stackoverflow.com/questions/29900845/create-schema-if-not-exists-raises-duplicate-key-error)
+        // Catch any unique_violation exceptions (error code 23505) due to
+        // concurrent execution of CREATE SCHEMA and do nothing in this case.
+        // (see
+        // https://stackoverflow.com/questions/29900845/create-schema-if-not-exists-raises-duplicate-key-error)
         const sql = `do $$
                     BEGIN
                     CREATE SCHEMA IF NOT EXISTS ${PostgresAdapter.COLLECTION_SCHEMA};
@@ -172,21 +183,21 @@ export class PostgresAdapter extends DbAdapterBase {
                        ON ${tableId} USING GIN(object jsonb_path_ops);`;
 
         /* tslint:disable-next-line:no-empty */
-        return this._getQueryable().query(sql).then(result => { });
+        return this._queryPooled(sql).then(result => { });
     }
 
     removeCollection(name: string): Promise<void> {
         const sql = `DROP TABLE IF EXISTS ${this._getTableId(name)};`;
 
         /* tslint:disable-next-line:no-empty */
-        return this._getQueryable().query(sql).then(result => { });
+        return this._queryPooled(sql).then(result => { });
     }
 
     clearCollection(name: string): Promise<void> {
         const sql = `TRUNCATE TABLE ${this._getTableId(name)};`;
 
         /* tslint:disable-next-line:no-empty */
-        return this._getQueryable().query(sql).then(result => { });
+        return this._queryPooled(sql).then(result => { });
     }
 
     insertObjects(
@@ -237,51 +248,55 @@ export class PostgresAdapter extends DbAdapterBase {
                             $2,
                             $3::jsonb,
                             ${createMissing})
-                        WHERE ${tableId}.objectid in (SELECT (value #>>'{}')::uuid FROM jsonb_array_elements($1));`;
+                        WHERE ${tableId}.objectid in (SELECT value::uuid FROM jsonb_array_elements_text($1));`;
             values.push(JSON.stringify(value));
         } else {
             // Delete property value pair from object
             text = `UPDATE ${tableId} 
                         SET object = object - $2
-                        WHERE ${tableId}.objectid in (SELECT (value #>>'{}')::uuid FROM jsonb_array_elements($1));`;
+                        WHERE ${tableId}.objectid in (SELECT value::uuid FROM jsonb_array_elements_text($1));`;
         }
 
-        return this._getQueryable().query(text, values);
+        return this._queryPooled(text, values);
     }
 
     deleteObjectsById(collectionName: string, objectIds: Uuid | Uuid[]): Promise<Uuid[]> {
         const tableId = this._getTableId(collectionName);
         const text = `DELETE FROM ${tableId}
-                          WHERE objectid in (SELECT (value #>>'{}')::uuid FROM jsonb_array_elements($1))
+                          WHERE objectid in (SELECT value::uuid FROM jsonb_array_elements_text($1))
                           RETURNING objectid;`;
         return this._queryOnObjects(objectIds, text);
     }
 
     deleteObjects(collectionName: string, filter?: DbObjectFilter): Promise<number> {
-        const tableId = this._getTableId(collectionName);
-        const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
-        const text = `DELETE FROM ${tableId}
+        const createQuery: CreateQuery = info => {
+            const tableId = this._getTableId(collectionName);
+            const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, this._supportsJsonpath(info));
+            const text = `DELETE FROM ${tableId}
                               ${whereClause}
                               RETURNING objectid;`;
-
-        return this._getQueryable().query(text, whereParams).then(result => result.rows.length);
+            return [text, whereParams];
+        };
+        return this._queryPooledLazy(createQuery).then(result => result.rows.length);
     }
 
     findObjectById<T extends CoatyObject>(collectionName: string, id: string, isExternalId = false): Promise<T> {
-        const tableId = this._getTableId(collectionName);
-        let text: string;
-        let values: any[];
-
-        if (isExternalId) {
-            const filter: DbObjectFilter = { conditions: ["externalId", filterOp.equals(id)] };
-            const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
-            text = `SELECT object FROM ${tableId} ${whereClause};`;
-            values = whereParams;
-        } else {
-            text = `SELECT object FROM ${tableId} WHERE objectid = $1;`;
-            values = [id];
-        }
-        return this._getQueryable().query(text, values).then(result =>
+        const createQuery: CreateQuery = info => {
+            const tableId = this._getTableId(collectionName);
+            let text: string;
+            let values: any[];
+            if (isExternalId) {
+                const filter: DbObjectFilter = { conditions: ["externalId", filterOp.equals(id)] };
+                const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, this._supportsJsonpath(info));
+                text = `SELECT object FROM ${tableId} ${whereClause};`;
+                values = whereParams;
+            } else {
+                text = `SELECT object FROM ${tableId} WHERE objectid = $1;`;
+                values = [id];
+            }
+            return [text, values];
+        };
+        return this._queryPooledLazy(createQuery).then(result =>
             result.rows.length === 0 ? undefined : result.rows[0].object);
     }
 
@@ -289,30 +304,36 @@ export class PostgresAdapter extends DbAdapterBase {
         collectionName: string,
         filter?: DbObjectFilter,
         joinConditions?: DbJoinCondition | DbJoinCondition[]): Promise<IQueryIterator<T>> {
-        const tableId = this._getTableId(collectionName);
         const fetchInChunks = filter && filter.shouldFetchInChunks;
-        const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, fetchInChunks);
-        const orderBy = this._getOrderByClause(filter);
-        const limit = !fetchInChunks && filter ? (filter.take !== undefined ? Math.max(0, filter.take) : "ALL") : "ALL";
-        const offset = !fetchInChunks && filter ? (filter.skip !== undefined ? Math.max(0, filter.skip) : 0) : 0;
         const rowField = "object";
-        const text = `SELECT ${rowField} FROM ${tableId}
+        const createQuery: CreateQuery = info => {
+            const tableId = this._getTableId(collectionName);
+            const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, this._supportsJsonpath(info), fetchInChunks);
+            const orderBy = this._getOrderByClause(filter);
+            const limit = !fetchInChunks && filter ? (filter.take !== undefined ? Math.max(0, filter.take) : "ALL") : "ALL";
+            const offset = !fetchInChunks && filter ? (filter.skip !== undefined ? Math.max(0, filter.skip) : 0) : 0;
+            const text = `SELECT ${rowField} FROM ${tableId}
                               ${whereClause}
                               ${orderBy} LIMIT ${limit} OFFSET ${offset}`;
-        const query = this._getJoinQuery(tableId, text, rowField, joinConditions, filter);
+            const query = this._getJoinQuery(tableId, text, rowField, joinConditions, filter);
+            return fetchInChunks ? [query] : [query, whereParams];
+        };
         if (fetchInChunks) {
             const fetchSize = this._getFetchSize(filter && filter.fetchSize);
-            return this._fetchInChunks<T>(query, rowField, fetchSize, filter && filter.take, filter && filter.skip);
+            return this._fetchInChunks<T>(createQuery, rowField, fetchSize, filter && filter.take, filter && filter.skip);
         } else {
-            return this._fetchOnce<T>(query, whereParams, rowField);
+            return this._fetchOnce<T>(createQuery, rowField);
         }
     }
 
     countObjects(collectionName: string, filter?: DbObjectFilter): Promise<number> {
-        const tableId = this._getTableId(collectionName);
-        const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
-        const text = `SELECT COUNT(objectid) FROM ${tableId} ${whereClause};`;
-        return this._getQueryable().query(text, whereParams).then(result => result.rows[0].count);
+        const createQuery: CreateQuery = info => {
+            const tableId = this._getTableId(collectionName);
+            const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, this._supportsJsonpath(info));
+            const text = `SELECT COUNT(objectid) FROM ${tableId} ${whereClause};`;
+            return [text, whereParams];
+        };
+        return this._queryPooledLazy(createQuery).then(result => result.rows[0].count);
     }
 
     aggregateObjects(
@@ -320,14 +341,16 @@ export class PostgresAdapter extends DbAdapterBase {
         aggregateProps: AggregateProperties,
         aggregateOp: AggregateOp,
         filter?: DbObjectFilter): Promise<number | boolean> {
-        const propsArray = ObjectMatcher.getFilterProperties(aggregateProps);
-        const tableId = this._getTableId(collectionName);
-        const [aggFunc, aggType] = this._getAggregateParams(aggregateOp);
-        const [whereClause, whereParams] = this._getWhereClauseAndParams(filter);
-        const text = `SELECT ${aggFunc}((${this._getObjectIndexer(propsArray, true)})::${aggType}) AS result
+        const createQuery: CreateQuery = info => {
+            const propsArray = ObjectMatcher.getFilterProperties(aggregateProps);
+            const tableId = this._getTableId(collectionName);
+            const [aggFunc, aggType] = this._getAggregateParams(aggregateOp);
+            const [whereClause, whereParams] = this._getWhereClauseAndParams(filter, this._supportsJsonpath(info));
+            const text = `SELECT ${aggFunc}((${this._getObjectIndexer(propsArray, true)})::${aggType}) AS result
                               FROM ${tableId} ${whereClause};`;
-
-        return this._getQueryable().query(text, whereParams).then(result =>
+            return [text, whereParams];
+        };
+        return this._queryPooledLazy(createQuery).then(result =>
             // If no rows have been selected by where clause, query returns SQL NULL
             /* tslint:disable-next-line:no-null-keyword */
             result.rows[0].result === null ? undefined : result.rows[0].result);
@@ -337,14 +360,14 @@ export class PostgresAdapter extends DbAdapterBase {
 
     query(sql: SqlQueryBuilder): Promise<SqlQueryResultSet> {
         const [text, params] = sql("$", true, 0, id => asIdentifier(id), lit => asLiteral(lit));
-        return this._getQueryable().query(text, params).then(result => result);
+        return this._queryPooled(text, params).then(result => result);
     }
 
     iquery(sql: SqlQueryBuilder, queryOptions?: SqlQueryOptions): Promise<IQueryIterator<any>> {
         const [text] = sql("$", true, 0, id => asIdentifier(id), lit => asLiteral(lit), true);
         const fetchSize = this._getFetchSize(queryOptions && queryOptions.fetchSize);
         return this._fetchInChunks<any>(
-            text,
+            () => [text],
             undefined,
             fetchSize,
             queryOptions && queryOptions.take,
@@ -384,10 +407,10 @@ export class PostgresAdapter extends DbAdapterBase {
                     });
             };
 
-            this._getPool().connect()
+            this._getPooledClient(true)
                 .then(client => {
                     this._beginTransaction(
-                        new PooledClient(client, true),
+                        client,
                         clnt => transact(clnt),
                         error => reject(error));
                 })
@@ -399,20 +422,22 @@ export class PostgresAdapter extends DbAdapterBase {
     /* Extension methods */
 
     /**
-     * Initialize a database from the given connection info. The database and database user is created
-     * if it not yet exists. Then, collections are added if needed from the given collection names.
-     * Optionally, the collections can be cleared initially. This can be useful in test scenarios
-     * where collection data from a previous run should be removed.
-     * 
-     * Returns a promise that is resolved if the database and collections have been
-     * created successfully, and rejected if an error occurs.
-     * 
-     * Note that the database context on which this extension method is invoked must connect to the 
-     * `postgres` database with superuser admin permissions.
-     * 
+     * Initialize a database from the given connection info. The database and
+     * database user is created if it not yet exists. Then, collections are
+     * added if needed from the given collection names. Optionally, the
+     * collections can be cleared initially. This can be useful in test
+     * scenarios where collection data from a previous run should be removed.
+     *
+     * Returns a promise that is resolved if the database and collections have
+     * been created successfully, and rejected if an error occurs.
+     *
+     * Note that the database context on which this extension method is invoked
+     * must connect to the `postgres` database with superuser admin permissions.
+     *
      * @param dbInfo connection info for database operations
      * @param collections an array of database collection names
-     * @param clearCollections determines whether collection data should be cleared initially
+     * @param clearCollections determines whether collection data should be
+     * cleared initially
      */
     initDatabase(dbInfo: DbConnectionInfo, collections?: string[], clearCollections: boolean = false) {
         const dbc = new DbContext(dbInfo, PostgresAdapter);
@@ -430,15 +455,17 @@ export class PostgresAdapter extends DbAdapterBase {
 
     /**
      * Create a new database of the given name if it doesn't already exist.
-     * Returns a promise that if fulfilled yields `true` if the database has been
-     * created, `false` otherwise. The promise is rejected if an error occurs.
-     * To create a database the specified owner must be a superuser. To issue
-     * this command, the client should connect to the `postgres` database.
+     *
+     * Returns a promise that if fulfilled yields `true` if the database has
+     * been created, `false` otherwise. The promise is rejected if an error
+     * occurs. To create a database the specified owner must be a superuser. To
+     * issue this command, the client should connect to the `postgres` database.
      *
      * Note that this operation cannot be executed inside a transaction block.
      *
      * @param name the name of the database to create
-     * @param owner the owner (superuser) of the database, see `createUser` extension
+     * @param owner the owner (superuser) of the database, see `createUser`
+     * extension
      * @param comment a comment to associate with the created database
      */
     createDatabase(name: string, owner: string, comment?: string): Promise<boolean> {
@@ -446,7 +473,7 @@ export class PostgresAdapter extends DbAdapterBase {
 
         let sql = `SELECT true FROM pg_database WHERE datname = ${asLiteral(name)};`;
 
-        return this._getQueryable().query(sql).then(result => {
+        return this._queryPooled(sql).then(result => {
             if (result.rows.length === 1) {
                 return false;
             }
@@ -457,12 +484,12 @@ export class PostgresAdapter extends DbAdapterBase {
                        WITH OWNER = ${asIdentifier(owner)}
                        ENCODING = 'UTF8';`;
 
-            return this._getQueryable().query(sql).then(() => {
+            return this._queryPooled(sql).then(() => {
                 if (comment) {
                     sql = `COMMENT ON DATABASE ${dbId} IS ${asLiteral(comment)};`;
 
                     /* tslint:disable-next-line:no-empty */
-                    return this._getQueryable().query(sql).then(res => true);
+                    return this._queryPooled(sql).then(res => true);
                 }
                 return true;
             });
@@ -471,12 +498,12 @@ export class PostgresAdapter extends DbAdapterBase {
 
     /**
      * Drops the given database if it exists.
-     * Returns a promise that is fullfilled if the database has been
-     * deleted or didn't exist. The promise is rejected if an error occurs.
-     * Note that an error occurs if you try to delete a database that has
-     * active client connections. This command can only be executed by the
-     * database owner. To issue this command, the client should connect to the
-     * `postgres` database.
+     *
+     * Returns a promise that is fullfilled if the database has been deleted or
+     * didn't exist. The promise is rejected if an error occurs. Note that an
+     * error occurs if you try to delete a database that has active client
+     * connections. This command can only be executed by the database owner. To
+     * issue this command, the client should connect to the `postgres` database.
      *
      * Note that this operation cannot be executed inside a transaction block.
      *
@@ -486,16 +513,16 @@ export class PostgresAdapter extends DbAdapterBase {
         const sql = `DROP DATABASE IF EXISTS ${asIdentifier(name)};`;
 
         /* tslint:disable-next-line:no-empty */
-        return this._getQueryable().query(sql).then(result => { });
+        return this._queryPooled(sql).then(result => { });
     }
 
     /**
      * Create a user (role) with the given name if it doesn't already exist.
-     * Returns a promise that is fullfilled if the user has been
-     * created or already exists. The promise is rejected if an error occurs.
-     * You must have CREATEROLE privilege or be a database superuser
-     * to use this command. To issue this command, the client should connect to
-     * the `postgres` database.
+     *
+     * Returns a promise that is fullfilled if the user has been created or
+     * already exists. The promise is rejected if an error occurs. You must have
+     * CREATEROLE privilege or be a database superuser to use this command. To
+     * issue this command, the client should connect to the `postgres` database.
      *
      * @param name the name of the user to create
      * @param password the plain or md5 encoded password
@@ -506,7 +533,7 @@ export class PostgresAdapter extends DbAdapterBase {
 
         let sql = `SELECT true FROM pg_roles WHERE rolname = ${asLiteral(name)};`;
 
-        return this._getQueryable().query(sql).then(result => {
+        return this._queryPooled(sql).then(result => {
             if (result.rows.length === 1) {
                 return false;
             }
@@ -515,12 +542,12 @@ export class PostgresAdapter extends DbAdapterBase {
                        PASSWORD ${asLiteral(password)}
                        NOSUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION;`;
 
-            return this._getQueryable().query(sql).then(() => {
+            return this._queryPooled(sql).then(() => {
                 if (comment) {
                     const cSql = `COMMENT ON ROLE ${userId} IS ${asLiteral(comment)};`;
 
                     /* tslint:disable-next-line:no-empty */
-                    return this._getQueryable().query(cSql).then(res => true);
+                    return this._queryPooled(cSql).then(res => true);
                 }
                 return true;
             });
@@ -529,11 +556,11 @@ export class PostgresAdapter extends DbAdapterBase {
 
     /**
      * Drop the given user (role).
-     * Returns a promise that is fullfilled if the user has been
-     * deleted. The promise is rejected if an error occurs.
-     * You must have CREATEROLE privilege or be a database superuser
-     * to use this command. To issue this command, the client should connect to
-     * the `postgres` database.
+     *
+     * Returns a promise that is fullfilled if the user has been deleted. The
+     * promise is rejected if an error occurs. You must have CREATEROLE
+     * privilege or be a database superuser to use this command. To issue this
+     * command, the client should connect to the `postgres` database.
      *
      * @param name the name of the user to remove
      */
@@ -541,7 +568,7 @@ export class PostgresAdapter extends DbAdapterBase {
         const sql = `DROP ROLE IF EXISTS ${asIdentifier(name)};`;
 
         /* tslint:disable-next-line:no-empty */
-        return this._getQueryable().query(sql).then(result => { });
+        return this._queryPooled(sql).then(result => { });
     }
 
     /* Query Builders */
@@ -551,8 +578,7 @@ export class PostgresAdapter extends DbAdapterBase {
         if (values.length === 0) {
             return Promise.resolve([]);
         }
-
-        return this._getQueryable().query(text, values).then(result => result.rows.map(row => row.objectid));
+        return this._queryPooled(text, values).then(result => result.rows.map(row => row.objectid));
     }
 
     private _getQueryValuesOnObjects(objects: CoatyObject | CoatyObject[] | Uuid | Uuid[]): any[] {
@@ -562,7 +588,7 @@ export class PostgresAdapter extends DbAdapterBase {
         return [JSON.stringify([objects])];
     }
 
-    private _getWhereClauseAndParams(filter: DbObjectFilter, embedParams = false): [string, any[]] {
+    private _getWhereClauseAndParams(filter: DbObjectFilter, supportsJsonpath: boolean, embedParams = false): [string, any[]] {
         if (!filter || !filter.conditions) {
             return ["", []];
         }
@@ -575,36 +601,47 @@ export class PostgresAdapter extends DbAdapterBase {
         const params = [];
         const contains: Array<[string[], any]> = [];
         const notContains: Array<[string[], any]> = [];
-        let i = 1;
+        let pi = 1;
         let p1;
         let p2;
 
-        const para = (param: any, index: number) => {
-            return embedParams ? `${asLiteral(param)}` : `$${index}`;
+        const para = (param: any, index: number, isJsonpathFilterExpression = false) => {
+            // jsonpath filter expressions cannot refer to query parameter variables; values must always be embedded.
+            return isJsonpathFilterExpression ? asJsonpathLiteral(param, true) : (embedParams ? asLiteral(param) : `$${index}`);
         };
 
         const checkExistence = (propsArray: string[], isNegated = false) => {
-            let clause = `object ? ${asLiteral(propsArray[0])}`;
-            for (let ip = 1; ip < propsArray.length; ip++) {
-                clause += ` AND ${this._getObjectIndexer(propsArray.slice(0, ip))} ? ${asLiteral(propsArray[ip])}`;
+            if (supportsJsonpath) {
+                clauses.push(`(object @@ '${isNegated ? "!" : ""}exists(${this._getJsonpathKeys(propsArray)})')`);
+            } else {
+                if (propsArray.length === 0) {
+                    if (isNegated) {
+                        clauses.push(`(false)`);
+                    }
+                    return;
+                }
+                let clause = `object ? ${asLiteral(propsArray[0])}`;
+                for (let ip = 1; ip < propsArray.length; ip++) {
+                    clause += ` AND ${this._getObjectIndexer(propsArray.slice(0, ip))} ? ${asLiteral(propsArray[ip])}`;
+                }
+                clauses.push(`(${isNegated ? "NOT (" : ""}${clause}${isNegated ? ")" : ""})`);
             }
-            clauses.push(`(${isNegated ? "NOT (" : ""}${clause}${isNegated ? ")" : ""})`);
         };
 
         const checkContainments = (containment: Array<[string[], any]>, isNegated = false) => {
             for (const [propsArray, opnd] of containment) {
-                const obj = {};
+                const obj = Object.create(null);
                 let subobj = obj;
                 propsArray.forEach((prop, index) => {
                     if (index === propsArray.length - 1) {
                         subobj[prop] = opnd;
                         return;
                     }
-                    subobj[prop] = {};
+                    subobj[prop] = Object.create(null);
                     subobj = subobj[prop];
                 });
                 p1 = JSON.stringify(obj);
-                clauses.push(`(${isNegated ? "NOT " : ""}object @> ${para(p1, i++)}::jsonb)`);
+                clauses.push(`(${isNegated ? "NOT " : ""}object @> ${para(p1, pi++)}::jsonb)`);
                 params.push(p1);
             }
         };
@@ -619,44 +656,89 @@ export class PostgresAdapter extends DbAdapterBase {
             switch (op) {
                 case ObjectFilterOperator.LessThan:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} < ${para(p1, i++)}::jsonb)`);
-                    params.push(p1);
+                    if (supportsJsonpath) {
+                        clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} < ${para(p1, pi, true)}')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} < ${para(p1, pi++)}::jsonb)`);
+                        params.push(p1);
+                    }
                     break;
                 case ObjectFilterOperator.LessThanOrEqual:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} <= ${para(p1, i++)}::jsonb)`);
-                    params.push(p1);
+                    if (supportsJsonpath) {
+                        clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} <= ${para(p1, pi, true)}')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} <= ${para(p1, pi++)}::jsonb)`);
+                        params.push(p1);
+                    }
                     break;
                 case ObjectFilterOperator.GreaterThan:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} > ${para(p1, i++)}::jsonb)`);
-                    params.push(p1);
+                    if (supportsJsonpath) {
+                        clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} > ${para(p1, pi, true)}')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} > ${para(p1, pi++)}::jsonb)`);
+                        params.push(p1);
+                    }
                     break;
                 case ObjectFilterOperator.GreaterThanOrEqual:
                     p1 = JSON.stringify(opnd1);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} >= ${para(p1, i++)}::jsonb)`);
-                    params.push(p1);
+                    if (supportsJsonpath) {
+                        clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} >= ${para(p1, pi, true)}')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} >= ${para(p1, pi++)}::jsonb)`);
+                        params.push(p1);
+                    }
                     break;
                 case ObjectFilterOperator.Between:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
-                    i += 2;
-                    params.push(p1);
-                    params.push(p2);
+                    if (supportsJsonpath) {
+                        // String comparison assumes identical lexical ordering used in JavaScript and PG server.
+                        const swapOpnds = ObjectMatcher.matchesFilter({ value: opnd1 } as any as CoatyObject,
+                            { conditions: ["value", filterOp.greaterThan(opnd2)] });
+                        if (swapOpnds) {
+                            const ptmp = p1;
+                            p1 = p2;
+                            p2 = ptmp;
+                        }
+                        clauses.push(`(object @? '${this._getJsonpathKeys(propsArray)} ? (@ >= ${para(p1, pi, true)} && @ <= ${para(p2, pi + 1, true)})')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} BETWEEN SYMMETRIC ${para(p1, pi)}::jsonb AND ${para(p2, pi + 1)}::jsonb)`);
+                        pi += 2;
+                        params.push(p1);
+                        params.push(p2);
+                    }
                     break;
                 case ObjectFilterOperator.NotBetween:
                     p1 = JSON.stringify(opnd1);
                     p2 = JSON.stringify(opnd2);
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} NOT BETWEEN SYMMETRIC ${para(p1, i)}::jsonb AND ${para(p2, i + 1)}::jsonb)`);
-                    i += 2;
-                    params.push(p1);
-                    params.push(p2);
+                    if (supportsJsonpath) {
+                        // String comparison assumes identical lexical ordering used in JavaScript and PG server.
+                        const swapOpnds = ObjectMatcher.matchesFilter({ value: opnd1 } as any as CoatyObject,
+                            { conditions: ["value", filterOp.greaterThan(opnd2)] });
+                        if (swapOpnds) {
+                            const ptmp = p1;
+                            p1 = p2;
+                            p2 = ptmp;
+                        }
+                        clauses.push(`(object @? '${this._getJsonpathKeys(propsArray)} ? (@ < ${para(p1, pi, true)} || @ > ${para(p2, pi + 1, true)})')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray)} NOT BETWEEN SYMMETRIC ${para(p1, pi)}::jsonb AND ${para(p2, pi + 1)}::jsonb)`);
+                        pi += 2;
+                        params.push(p1);
+                        params.push(p2);
+                    }
                     break;
                 case ObjectFilterOperator.Like:
                     p1 = opnd1;
-                    clauses.push(`(${this._getObjectIndexer(propsArray, true)} LIKE ${para(p1, i++)})`);
-                    params.push(p1);
+                    if (supportsJsonpath) {
+                        const likeRegex = like2PosixRegex(p1);
+                        clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} like_regex ${para(JSON.stringify(likeRegex), pi, true)}')`);
+                    } else {
+                        clauses.push(`(${this._getObjectIndexer(propsArray, true)} LIKE ${para(p1, pi++)})`);
+                        params.push(p1);
+                    }
                     break;
                 case ObjectFilterOperator.Equals:
                     if (opnd1 === undefined) {
@@ -666,12 +748,20 @@ export class PostgresAdapter extends DbAdapterBase {
                             typeof opnd1 === "string" ||
                             typeof opnd1 === "boolean" ||
                             !opnd1) {
-                            // Using Contains for primitive types is faster 
-                            // because of jsonb_path_ops index
-                            contains.push([propsArray, opnd1]);
+                            // Using @> or @@ == operators for primitive types is faster than
+                            // using -> operator because GIN index jsonb_path_ops is applied.
+                            if (supportsJsonpath) {
+                                // Comparison of JSON primitive values by jsonpath operator
+                                // @@ with filter expression == is faster than using @>
+                                // although both are using the defined GIN index.
+                                p1 = JSON.stringify(opnd1);
+                                clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} == ${para(p1, pi, true)}')`);
+                            } else {
+                                contains.push([propsArray, opnd1]);
+                            }
                         } else {
                             p1 = JSON.stringify(opnd1);
-                            clauses.push(`(${this._getObjectIndexer(propsArray)} = ${para(p1, i++)}::jsonb)`);
+                            clauses.push(`(${this._getObjectIndexer(propsArray)} = ${para(p1, pi++)}::jsonb)`);
                             params.push(p1);
                         }
                     }
@@ -684,12 +774,20 @@ export class PostgresAdapter extends DbAdapterBase {
                             typeof opnd1 === "string" ||
                             typeof opnd1 === "boolean" ||
                             !opnd1) {
-                            // Using Not Contains for primitive types is faster 
-                            // because of jsonb_path_ops index
-                            notContains.push([propsArray, opnd1]);
+                            // Using NOT @> or @@ != operators for primitive types is faster than
+                            // using -> operator because GIN index jsonb_path_ops is applied.
+                            if (supportsJsonpath) {
+                                // Comparison of JSON primitive values by jsonpath operator
+                                // @@ with filter expression != is faster than using NOT @>
+                                // although both are using the defined GIN index.
+                                p1 = JSON.stringify(opnd1);
+                                clauses.push(`(object @@ '${this._getJsonpathKeys(propsArray)} != ${para(p1, pi, true)}')`);
+                            } else {
+                                notContains.push([propsArray, opnd1]);
+                            }
                         } else {
                             p1 = JSON.stringify(opnd1);
-                            clauses.push(`(${this._getObjectIndexer(propsArray)} <> ${para(p1, i++)}::jsonb)`);
+                            clauses.push(`(${this._getObjectIndexer(propsArray)} <> ${para(p1, pi++)}::jsonb)`);
                             params.push(p1);
                         }
                     }
@@ -713,8 +811,7 @@ export class PostgresAdapter extends DbAdapterBase {
                     }
                     const sqlOp = op === ObjectFilterOperator.In ? "in" : "not in";
                     p1 = JSON.stringify(opnd1);
-
-                    clauses.push(`(${this._getObjectIndexer(propsArray)} ${sqlOp} (SELECT value FROM jsonb_array_elements(${para(p1, i++)}::jsonb)))`);
+                    clauses.push(`(${this._getObjectIndexer(propsArray)} ${sqlOp} (SELECT value FROM jsonb_array_elements(${para(p1, pi++)}::jsonb)))`);
                     params.push(p1);
                     break;
                 default:
@@ -742,10 +839,15 @@ export class PostgresAdapter extends DbAdapterBase {
             .join(", ");
     }
 
-    private _getObjectIndexer(propsArray: string[], asText = false) {
-        return propsArray.length === 1 ?
-            `object ->${asText ? ">" : ""}${asLiteral(propsArray[0])}` :
-            `object #>${asText ? ">" : ""}array[${propsArray.map(p => asLiteral(p)).join(",")}]`;
+    private _getObjectIndexer(propsChain: string[], asText = false) {
+        return propsChain.length === 1 ?
+            `object ->${asText ? ">" : ""}${asLiteral(propsChain[0])}` :
+            `object #>${asText ? ">" : ""}array[${propsChain.map(p => asLiteral(p)).join(",")}]`;
+    }
+
+    private _getJsonpathKeys(propsChain: string[]) {
+        const keys = propsChain.map(p => asJsonpathLiteral(p, false)).join(".");
+        return keys === "" ? `$` : `$.${keys}`;
     }
 
     private _getSortOrder(order: "Asc" | "Desc") {
@@ -817,7 +919,7 @@ export class PostgresAdapter extends DbAdapterBase {
     /* Fetching results by in chunks or at once */
 
     private _fetchInChunks<T>(
-        text: string,
+        createQuery: CreateQuery,
         rowField: string,
         fetchSize: number,
         take: number,
@@ -829,10 +931,9 @@ export class PostgresAdapter extends DbAdapterBase {
             take = take !== undefined ? Math.max(0, take) : -1;
             skip = skip !== undefined ? Math.max(0, skip) : 0;
 
-            // Read from cursor sequentially, read the next chunk after the 
-            // current one yielded all results.
-            // Multiple cursors can be opened and read from simultaneously 
-            // on the same client, e.g. when using a transaction client.
+            // Read from cursor sequentially, read the next chunk after the current one
+            // yielded all results. Multiple cursors can be opened and read from
+            // simultaneously on the same client, e.g. when using a transaction client.
             const fetchNextChunk = (
                 client: PooledClient,
                 cursor: string,
@@ -848,8 +949,9 @@ export class PostgresAdapter extends DbAdapterBase {
                         let result: QueryResult;
 
                         if (Array.isArray(results)) {
-                            // Array consists of two results: one for MOVE command (to be ignored) and one for FETCH command.
-                            // Note: even if there is nothing to fetch any more, the FETCH result is present with an empty rowset.
+                            // Array consists of two results: one for MOVE command (to be ignored)
+                            // and one for FETCH command. Note: even if there is nothing to fetch
+                            // any more, the FETCH result is present with an empty rowset.
                             result = results.find(res => res.command === "FETCH");
                         } else {
                             // This is a FETCH command result only.
@@ -920,14 +1022,12 @@ export class PostgresAdapter extends DbAdapterBase {
             const iterator = new QueryIterator<T>();
             const donePromise = new Promise<[number, boolean]>((resolveDone, rejectDone) => {
                 iterator.setStarter(() => {
-                    const cpromise = this._transactionClient ?
-                        Promise.resolve(this._transactionClient) :
-                        this._getPool().connect().then(client => new PooledClient(client));
+                    const cpromise = this._transactionClient ? Promise.resolve(this._transactionClient) : this._getPooledClient();
                     let pc: PooledClient;
                     cpromise
                         .then(poolClient => {
                             pc = poolClient;
-                            return poolClient.queryCursor(text);
+                            return poolClient.queryCursorLazy(createQuery);
                         })
                         .then(cursor => {
                             if (take === 0) {
@@ -946,15 +1046,13 @@ export class PostgresAdapter extends DbAdapterBase {
     }
 
     private _fetchOnce<T>(
-        text: string,
-        values: any[],
+        createQuery: CreateQuery,
         rowField: string): Promise<IQueryIterator<T>> {
         return new Promise<IQueryIterator<T>>((resolve, reject) => {
             const iterator = new QueryIterator<T>();
             const donePromise = new Promise<[number, boolean]>((resolveDone, rejectDone) => {
                 iterator.setStarter(() => {
-                    const poolClient = this._getQueryable();
-                    poolClient.query(text, values)
+                    this._queryPooledLazy(createQuery)
                         .then(result => {
                             const rows = result.rows;
                             let resultIndex = 0;
@@ -988,8 +1086,8 @@ export class PostgresAdapter extends DbAdapterBase {
                                 i++;
                             }
 
-                            // Yield last batch if needed. If query yields no results at all, also 
-                            // submit the first (empty) batch.
+                            // Yield last batch if needed. If query yields no
+                            // results at all, also submit the first (empty) batch.
                             if (iterator.forBatchAction &&
                                 (currentBatch.length > 0 || resultIndex === 0)) {
                                 if (iterator.forBatchAction(currentBatch) === false) {
@@ -1020,10 +1118,9 @@ export class PostgresAdapter extends DbAdapterBase {
         client.query("BEGIN").then(
             () => action(client),
             err => {
-                // If there was a problem beginning the transaction
-                // something is seriously messed up. Return the error
-                // to the release function to close and remove this client from
-                // the pool.
+                // If there was a problem beginning the transaction something is
+                // seriously messed up. Return the error to the release function
+                // to close and remove this client from the pool.
                 client.release(err);
                 errorAction(err);
             });
@@ -1039,10 +1136,9 @@ export class PostgresAdapter extends DbAdapterBase {
                 action();
             },
             err => {
-                // If there was a problem committing the query
-                // something is seriously messed up. Return the error
-                // to the release function to close and remove this client from
-                // the pool.
+                // If there was a problem committing the query something is
+                // seriously messed up. Return the error to the release function
+                // to close and remove this client from the pool.
                 client.release(err);
                 errorAction(err);
             });
@@ -1059,11 +1155,12 @@ export class PostgresAdapter extends DbAdapterBase {
                     errorAction(error);
                 },
                 err => {
-                    // If there was a problem rolling back the query
-                    // something is seriously messed up. Return the error
-                    // to the release function to close and remove this client from
-                    // the pool. If you leave a client in the pool with an unaborted
-                    // transaction weird, hard to diagnose problems might happen.
+                    // If there was a problem rolling back the query something
+                    // is seriously messed up. Return the error to the release
+                    // function to close and remove this client from the pool.
+                    // If you leave a client in the pool with an unaborted
+                    // transaction weird, hard to diagnose problems might
+                    // happen.
                     client.release(err);
                     errorAction(error);
                 });
@@ -1083,33 +1180,67 @@ export class PostgresAdapter extends DbAdapterBase {
             PostgresAdapter.DEFAULT_FETCH_SIZE);
     }
 
-    /* Connection Pooling */
-
-    private _getQueryable(): IQueryable {
-        return this._transactionClient || (this._getPool() as IQueryable);
+    private _supportsJsonpath(info: ServerInfo) {
+        // Note: JSONB jsonpath operators were introduced in PG database server
+        // version 12. However, in this version GIN indexing with
+        // "jsonb_path_ops" only supports a subset of uses of @@ and @!
+        // operators (e.g. only jsonpath filter expressions like equality
+        // comparison (==), but not less-than or greather-than comparison).
+        // Starting with PG server version 13, all jsonpath filter expressions
+        // make use of GIN indexing.
+        return info.majorVersion >= 12;
     }
 
-    private _getPool() {
-        let pool = PostgresAdapter.PG_POOLS.get(this.connectionInfo);
-        if (pool === undefined) {
-            pool = new Pool(this._getPoolOptions(this.connectionInfo));
+    /* Connection Pooling */
 
-            // Emitted whenever an idle client in the pool encounters an error.
-            // This is common when your PostgreSQL server shuts down, reboots, 
-            // or a network partition otherwise causes it to become unavailable 
-            // while your pool has connected clients.
-            pool.on("error", (error, client) => {
-                // Handle this in the same way you would treat 
-                // process.on('uncaughtException').
-                // It is supplied the error as well as the idle client which 
-                // received the error.
-                console.log(`PostgresAdapter: pool idle client error: ${error.message}`);
-            });
+    private _queryPooled(text: string, values?: any[]): Promise<QueryResult> {
+        if (this._transactionClient) {
+            return this._transactionClient.query(text, values);
+        }
+        return this._getPoolItem().then(item => item.pool.query(text, values));
+    }
 
-            PostgresAdapter.PG_POOLS.set(this.connectionInfo, pool);
+    private _queryPooledLazy(createQuery: CreateQuery): Promise<QueryResult> {
+        if (this._transactionClient) {
+            return this._transactionClient.query(...createQuery(this._transactionClient.poolItem.serverInfo));
+        }
+        return this._getPoolItem().then(item => item.pool.query(...createQuery(item.serverInfo)));
+    }
+
+    private _getPooledClient(isTransactionClient = false) {
+        return this._getPoolItem().then(item => item.pool.connect().then(client => new PooledClient(client, item, isTransactionClient)));
+    }
+
+    private _getPoolItem() {
+        let poolItem = PostgresAdapter.PG_POOLS.get(this.connectionInfo);
+        if (poolItem !== undefined) {
+            return Promise.resolve(poolItem);
         }
 
-        return pool;
+        poolItem = {
+            pool: new Pool(this._getPoolOptions(this.connectionInfo)),
+            serverInfo: { majorVersion: 0, minorVersion: 0 },
+        };
+
+        // Emitted whenever an idle client in the pool encounters an error.
+        // This is common when your PostgreSQL server shuts down, reboots,
+        // or a network partition otherwise causes it to become unavailable
+        // while your pool has connected clients.
+        poolItem.pool.on("error", (error, client) => {
+            // Handle this in the same way you would treat
+            // process.on('uncaughtException'). It is supplied the error as
+            // well as the idle client which received the error.
+            console.log(`PostgresAdapter: pool idle client error: ${error.message}`);
+        });
+
+        return poolItem.pool.query("show server_version")
+            .then(result => {
+                const [major, minor] = (result.rows[0].server_version as string).split(".");
+                poolItem.serverInfo.majorVersion = parseInt(major, 10);
+                poolItem.serverInfo.minorVersion = parseInt(minor, 10);
+                PostgresAdapter.PG_POOLS.set(this.connectionInfo, poolItem);
+                return poolItem;
+            });
     }
 
     private _getPoolOptions(connectionInfo: DbConnectionInfo): PoolConfig {
@@ -1131,13 +1262,21 @@ export class PostgresAdapter extends DbAdapterBase {
 
 }
 
-interface IQueryable {
-    query(text: string, values?: any[]): Promise<QueryResult>;
+type CreateQuery = (info: ServerInfo) => [text: string, values?: any[]];
+
+interface ServerInfo {
+    majorVersion: number;
+    minorVersion: number;
 }
 
-class PooledClient implements IQueryable {
+interface PoolItem {
+    pool: Pool;
+    serverInfo: ServerInfo;
+}
 
-    constructor(private _client: PoolClient, public isTransactionClient: boolean = false) {
+class PooledClient {
+
+    constructor(private _client: PoolClient, public poolItem: PoolItem, public isTransactionClient: boolean = false) {
     }
 
     query(text: string, values?: any[]): Promise<QueryResult> {
@@ -1149,28 +1288,27 @@ class PooledClient implements IQueryable {
         });
     }
 
-    queryCursor(text: string): Promise<string> {
-        // We provide an explicit cursor implementation using Postgres SQL 
-        // statements. We do not use the pg-cursor library for reasons 
-        // explained next.
-        // 
-        // The pg-cursor library exhibits an issue when 
-        // closing cursors for which all results have been fetched.
-        // A cursor must be closed if not all cursor results
-        // have been fetched. Otherwise subsequent queries on the same
-        // client connection will hang.
-        // 
-        // Calling Cursor.close() on a completed cursor produces
-        // sporadic query result issues that are not reproducible. 
-        // For example, queries return unexpected values that do not 
-        // conform to the data in the database, such as returning 
-        // `undefined` for a `findObjectById` operation or 
-        // returning `undefined` array elements in batch
-        // results from `findObjects` operations.
+    queryCursorLazy(createQuery: CreateQuery): Promise<string> {
+        const [text] = createQuery(this.poolItem.serverInfo);
+
+        // We provide an explicit cursor implementation using Postgres SQL
+        // statements. We do not use the pg-cursor library for reasons explained
+        // next.
         //
-        // The problem is that we cannot detect reliably whether all
-        // values of a cursor query have been fetched in case of a
-        // premature break.
+        // The pg-cursor library exhibits an issue when closing cursors for
+        // which all results have been fetched. A cursor must be closed if not
+        // all cursor results have been fetched. Otherwise subsequent queries on
+        // the same client connection will hang.
+        //
+        // Calling Cursor.close() on a completed cursor produces sporadic query
+        // result issues that are not reproducible. For example, queries return
+        // unexpected values that do not conform to the data in the database,
+        // such as returning `undefined` for a `findObjectById` operation or
+        // returning `undefined` array elements in batch results from
+        // `findObjects` operations.
+        //
+        // The problem is that we cannot detect reliably whether all values of a
+        // cursor query have been fetched in case of a premature break.
         const cursor = asIdentifier(Runtime.newUuid());
 
         // Cursor declaration and execution must be inside a transaction block
@@ -1199,25 +1337,26 @@ class PooledClient implements IQueryable {
     }
 
     /**
-     * Release the client to the pool. This is equivalent to calling
-     * the `done` DoneCallback if Pool.connect is used with a connect callback
-     * instead of a promise.
+     * Release the client to the pool. This is equivalent to calling the `done`
+     * DoneCallback if Pool.connect is used with a connect callback instead of a
+     * promise.
      *
-     * If the error parameter is specified, the client
-     * instance is destroyed instead of being returned back to the pool.
-     * This is e.g. useful if a transaction error occurs on rollback. In this
-     * case the client instance should no longer be used.
+     * If the error parameter is specified, the client instance is destroyed
+     * instead of being returned back to the pool. This is e.g. useful if a
+     * transaction error occurs on rollback. In this case the client instance
+     * should no longer be used.
      */
     release(err?: any) {
         this._client.release(err);
     }
 
     /**
-     * Release the client to the pool if not inside a transaction block.
-     * Note that open cursors (see _fetchWithCursor) are implicitly closed at transaction
-     * end by the database server. Hopefully, this also affects cursors that
-     * yielded an error on reading or closing. Internally, the connection is kept 
-     * from hanging when a cursor operation fails.                  
+     * Release the client to the pool if not inside a transaction block. Note
+     * that open cursors (see _fetchWithCursor) are implicitly closed at
+     * transaction end by the database server. Hopefully, this also affects
+     * cursors that yielded an error on reading or closing. Internally, the
+     * connection is kept from hanging when a cursor operation fails.
+     * 
      */
     releaseIfNotTx(err?: any) {
         if (!this.isTransactionClient) {
@@ -1227,10 +1366,53 @@ class PooledClient implements IQueryable {
 }
 
 /**
- * Returns the given string suitably quoted to be used as an identifier
- * in a PostgreSQL statement string. Quotes are always added to disable
- * case folding. Embedded quotes are properly doubled.
- * (see Postgres string function _quoteIdent).
+ * Convert an SQL LIKE pattern to a POSIX regular expression.
+ *
+ * @remarks As of PG server version 12, SQL/JSON jsonpath expressions with
+ * the `like_regex` filter use POSIX reguar expressions to match text.
+ *
+ * @param like an SQL LIKE expression string
+ * @returns an equivalent POSIX regular expression string
+ */
+function like2PosixRegex(likePattern: string): string {
+    let regexStr = "^";
+    let isEscaped = false;
+    for (const c of likePattern) {
+        if (c === "\\") {
+            if (isEscaped) {
+                isEscaped = false;
+                regexStr += "\\\\";
+            } else {
+                isEscaped = true;
+            }
+            continue;
+        }
+        if (".*+?^${}()|[]".indexOf(c) !== -1) {
+            regexStr += "\\" + c;
+            isEscaped = false;
+            continue;
+        }
+        if (c === "_" && !isEscaped) {
+            regexStr += ".";
+            continue;
+        }
+        if (c === "%" && !isEscaped) {
+            regexStr += ".*";
+            continue;
+        }
+        regexStr += c;
+        isEscaped = false;
+    }
+    regexStr += "$";
+    return regexStr;
+}
+
+/**
+ * Returns the given string suitably quoted to be used as an identifier in a
+ * PostgreSQL statement string. Quotes are always added to disable case folding.
+ * Embedded quotes are properly doubled. (see Postgres string function
+ * _quoteIdent).
+ *
  * @param text a value to be used as identifier
  */
 function asIdentifier(text: any) {
@@ -1256,10 +1438,10 @@ function asIdentifier(text: any) {
 }
 
 /**
- * Returns the given string suitably quoted to be used as a string literal
- * in a PostgreSQL statement string. Embedded single-quotes and backslashes
- * are properly doubled.
- * (see Postgres string function _quoteLiteral).
+ * Returns the given string suitably quoted to be used as a string literal in a
+ * PostgreSQL statement string. Embedded single-quotes and backslashes are
+ * properly doubled. (see Postgres string function _quoteLiteral).
+ *
  * @param text a value to be used as literal
  */
 function asLiteral(text: any) {
@@ -1289,6 +1471,44 @@ function asLiteral(text: any) {
     // The Postgres escape string processor E removes one level of backslashes
     if (hasBackslash === true) {
         escaped = " E" + escaped;
+    }
+
+    return escaped;
+}
+
+/**
+ * Returns the given string suitably double quoted to be used as a string
+ * literal in a PostgreSQL jsonpath expression. Embedded single-quotes are
+ * properly doubled. Embedded double-quotes and backslashes are escaped by a
+ * backslash for a jsonpath accessor key or a `like-regex` pattern.
+ *
+ * @param text a value to be used as jsonpath literal
+ * @param isFilterExpression `true` if text value is a jsonpath filter
+ * expression as a stringified JSON value; `false` if text value denotes a
+ * jsonpath accessor key or a `like_regex` pattern
+ */
+function asJsonpathLiteral(text: string, isFilterExpression: boolean) {
+    const escape = "\"";
+    const backslash = "\\";
+    const len = text.length;
+    let escaped = isFilterExpression ? "" : escape;
+
+    for (let i = 0; i < len; i++) {
+        const c = text[i];
+        if (c === "'") {
+            escaped += c + c;
+        } else if (!isFilterExpression && (c === backslash || c === escape)) {
+            // Note: special JSON backslash sequences including \b, \f, \n, \r,
+            // \t, \v, \uNNNN, \xNN, and \u{N...(1-6)} are never used as
+            // literals by this adapter, so they need not be treated specially.
+            escaped += backslash + c;
+        } else {
+            escaped += c;
+        }
+    }
+
+    if (!isFilterExpression) {
+        escaped += escape;
     }
 
     return escaped;

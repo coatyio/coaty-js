@@ -2234,12 +2234,13 @@ built-in SQLite Node adapter can run in Node.js. The built-in Postgres adapter
 can also run in a Node.js environnment.
 
 For services, we recommend to use the standard built-in Postgres adapter in
-combination with a PostgreSQL 9.5 (or later) database server. PostgreSQL is an
-open-source object-relational DBMS running on a variety of operating system
-platforms. It supports almost all SQL operations as well as highly efficient
-NoSQL document operations using the JSONB data type for binary storage and
-retrieval of JSON objects. The Postgres adapter stores objects as JSONB column
-data properly indexed to speed-up containment operations on key-value pairs.
+combination with a PostgreSQL database server (at least version 9.5, recommended
+version 13 or later). PostgreSQL is an open-source object-relational DBMS
+running on a variety of operating system platforms. It supports almost all SQL
+operations as well as highly efficient NoSQL document operations using the JSONB
+data type for binary storage and retrieval of JSON objects. The Postgres adapter
+stores objects as JSONB column data properly indexed to speed-up containment
+operations on key-value pairs.
 
 For efficient non-persistent, in-memory storage of objects we recommend to use
 the built-in In-Memory adapter. This adapter supports NoSQL operations only. It
@@ -2252,9 +2253,10 @@ of the built-in SQLite adapters (see subsection 'Local Store operations' below).
 
 ### Persistent storage and retrieval of Coaty objects
 
-In the following, we will explain the Unified Storage API in detail using the example
-of a PostgreSQL database. For details on setting up a PostgreSQL database and
-configuring the Postgres adapter, see the subsection 'Postgres adapter' below.
+In the following, we will explain the Unified Storage API in detail using the
+example of a PostgreSQL database. For details on setting up a PostgreSQL
+database and configuring the Postgres adapter, see the subsection 'Postgres
+adapter' below.
 
 To connect to your Postgres database, connection information is supplied with
 the Coaty container configuration object in the `databases` property.
@@ -2719,10 +2721,16 @@ application project.
 
 ### Postgres adapter
 
-To make use of the built-in Postgres database adapter, install PostgreSQL
-version 9.5 or higher. Download and installation details can be found
-[here](https://www.postgresql.org/). Then, set up and start the database server
-as explained in the [Postgres documentation](https://www.postgresql.org/docs/).
+To make use of the built-in Postgres database adapter, install a PostgreSQL
+database server (minimum version 9.5, recommended version 13 or later). Download
+and installation details can be found [here](https://www.postgresql.org/). Then,
+set up and start the database server as explained in the [Postgres
+documentation](https://www.postgresql.org/docs/).
+
+> We strongly recommend, wherever possible, to use or migrate to PostgreSQL
+> server version 13 or later. For these versions, the Postgres adapter supports
+> highly optimized NoSQL containment, existence, and comparison operations on
+> nested JSON objects by fully indexed access via ``jsonpath`` operators.
 
 You also need to add the npm module `pg` as a dependency to your project's
 package.json and install it. The module version should correspond with the
