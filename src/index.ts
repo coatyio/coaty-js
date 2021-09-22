@@ -1,9 +1,9 @@
 /*! Copyright (c) 2020 Siemens AG. Licensed under the MIT License. */
 
 /**
- * @module
+ * @module core
  * @description
- * Export all public APIs of Coaty core.
+ * Module to export all public core APIs.
  */
 
 export * from "./com/advertise";

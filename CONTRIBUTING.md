@@ -142,8 +142,9 @@ and comments can be removed by applying appropriate tools.
 
 ## Generate Coaty framework documentation
 
-Generate HTML documentation from the TypeScript source code and the included
-JavaDoc comments:
+First, ensure that the framework has been build as explained in the previous
+section. Then, generate HTML documentation from the TypeScript source code and
+the included JavaDoc comments:
 
 ```sh
 npm run doc

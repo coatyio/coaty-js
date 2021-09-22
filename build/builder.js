@@ -237,25 +237,32 @@ function test(binding, verbose, debug) {
  * Generate API documentation from source code (using typedoc generator)
  */
 function doc(pkgName, pkgVersion) {
-    const TYPEDOC = require("typedoc");
-    const typescriptOptions = require(path.resolve("./build/tsconfig." + DIST_TARGET + ".json")).compilerOptions;
-    const typedocOptions = require(path.resolve("./build/typedoc.js"));
-    const app = new TYPEDOC.Application();
+    const TypeDoc = require("typedoc");
+    const app = new TypeDoc.Application();
     const inputFiles = [];
-
-    app.bootstrap(Object.assign({}, typedocOptions, typescriptOptions));
 
     getTypedocModuleEntryPoints(path.resolve(SRC_TARGETDIR), inputFiles);
 
-    const project = app.convert(app.expandInputFiles(inputFiles));
+    app.options.addReader(new TypeDoc.TSConfigReader());
+    app.options.addReader(new TypeDoc.TypeDocReader());
+
+    app.bootstrap({
+        options: path.resolve("./build/typedoc.js"),
+        // Assume TSConfig DIST_TARGET file has been copied into place from
+        // builder folder by a previous build command.
+        tsconfig: path.resolve(SRC_TARGETDIR + "/tsconfig.json"),
+        entryPoints: inputFiles,
+    });
+
+    const project = app.convert();
 
     if (project) {
-        rimraf.sync(path.resolve("./" + typedocOptions.out));
-        logInfo("Generating API documentation at " + typedocOptions.out);
-        app.generateDocs(project, typedocOptions.out);
-
+        const outputDir = path.resolve("docs/api");
+        rimraf.sync(outputDir);
+        logInfo("Generating API documentation at " + outputDir);
+        app.generateDocs(project, outputDir);
     } else {
-        logError("API documentation could not be projected due to errors. For details, turn on logger option.");
+        logError("API documentation could not be projected due to errors.");
     }
 
     function getTypedocModuleEntryPoints(srcPath, srcFiles) {
