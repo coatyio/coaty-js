@@ -1,5 +1,18 @@
 # Changelog
 
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/coatyio/coaty-js/compare/v2.3.3...v2.4.0) (2021-09-22)
+
+This release features an optimized Postgres adapter to significantly speed up NoSQL operations on recent PostgreSQL server versions.
+
+### Bug Fixes
+
+* **scripts:** ensure coaty-scripts can not only be run by "npm run" but also by "npx" and "npm exec" ([9542ad1](https://github.com/coatyio/coaty-js/commit/9542ad1f180674ebc07c5838424d737e121b0f66))
+
+### Features
+
+* **db:** in Postgres adapter support highly optimized NoSQL containment, existence, and comparison operations on JSON objects using indexed access via jsonpath operators (only available for PostgreSQL server version 13 or later) ([5ff94f0](https://github.com/coatyio/coaty-js/commit/5ff94f0370741190a183b0d0b4cfd31dbdd2be57))
+
 <a name="2.3.3"></a>
 ## [2.3.3](https://github.com/coatyio/coaty-js/compare/v2.3.2...v2.3.3) (2021-07-01)
 
