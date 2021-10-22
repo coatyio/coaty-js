@@ -35,7 +35,7 @@ export interface MqttBindingOptions extends CommunicationBindingOptions {
 
     /**
      * Keep alive interval in seconds (optional).
-     * 
+     *
      * Defaults to 60 seconds, set to 0 to disable.
      */
     keepalive?: number;
@@ -114,16 +114,16 @@ export interface MqttBindingOptions extends CommunicationBindingOptions {
          */
         rejectUnauthorized?: boolean;
 
-        /**  
+        /**
          * Any other option supported by
          * [`tls.connect()`](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options).
          */
         [option: string]: any;
     };
 
-    /** 
+    /**
      * WebSocket specific connection options (optional).
-     * 
+     *
      * Default is {}. Only used for WebSocket connections.
      *
      * For possible options have a look at:
@@ -164,6 +164,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
     private _issuedSubscriptionItems: SubscriptionItem[];
     private _isDrainingPublications: boolean;
     private _client: Client;
+    private _clientEventHandlers: Map<string, (...args: any[]) => void>;
     private _clientIdLogItem: string;
     private _qos: 0 | 1 | 2;
 
@@ -220,6 +221,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
     /* Communication Binding Protocol Handlers */
 
     protected onInit() {
+        this._initClientEventHandlers();
         this._reset();
     }
 
@@ -244,7 +246,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
         // Always use QoS level 0 for publications, subscriptions, and last will
         // as delivery of Coaty communication events should not rely on a higher
-        // QoS level. That's why we also connect with a clean session.  
+        // QoS level. That's why we also connect with a clean session.
         this._qos = 0;
 
         mqttClientOpts.will = this._getLastWill();
@@ -300,62 +302,7 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
         this.log(CommunicationBindingLogLevel.info, "Client connecting to ", this.options.brokerUrl);
 
-        // Called on successful (re)connection.
-        this._client.on("connect", (connack) => {
-            this.log(CommunicationBindingLogLevel.info, "Client connected");
-            this.emit("communicationState", CommunicationState.Online);
-
-            // Ensure all issued subscription items are (re)subscribed.
-            this._subscribeItems(this._issuedSubscriptionItems);
-
-            // Ensure join events are published first on (re)connection in the given order.
-            const joinEvents = this._joinOptions.joinEvents;
-            for (let i = joinEvents.length - 1; i >= 0; i--) {
-                this._addPublicationItem(joinEvents[i], undefined, true, true);
-            }
-
-            // Start emitting all deferred offline publications.
-            this._isDrainingPublications = false;
-            this._drainPublications();
-        });
-
-        // Called when a reconnect starts.
-        this._client.on("reconnect", () => {
-            this.log(CommunicationBindingLogLevel.info, "Client reconnecting...");
-        });
-
-        // Called after a disconnection requested by calling client.end().
-        this._client.on("close", () => {
-            this.log(CommunicationBindingLogLevel.info, "Client disconnected");
-
-            // Stop draining until next reconnect.
-            this._isDrainingPublications = true;
-
-            this.emit("communicationState", CommunicationState.Offline);
-        });
-
-        // Emitted when the client goes offline, i.e. when the connection to the server
-        // is closed (for whatever reason) and before the client reconnects.
-        this._client.on("offline", () => {
-            this.log(CommunicationBindingLogLevel.info, "Client offline");
-
-            // Stop draining until next reconnect.
-            this._isDrainingPublications = true;
-
-            this.emit("communicationState", CommunicationState.Offline);
-        });
-
-        // Emitted when the client cannot connect (i.e. connack rc != 0) or when a
-        // parsing error occurs.
-        this._client.on("error", (error) => {
-            this.log(CommunicationBindingLogLevel.info, "Client error on connect: ", error);
-            this.emit("communicationState", CommunicationState.Offline);
-        });
-
-        // Emitted when the client receives a publish packet.
-        this._client.on("message", (topic, payload, packet) => {
-            this._dispatchMessage(topic, payload);
-        });
+        this._registerClientEventHandlers();
     }
 
     protected onUnjoin() {
@@ -376,8 +323,9 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
                     // If unjoin event could not be published sucessfully, end client forcibly so
                     // that the broker delivers the unjoin event as last will.
                     this._client.end(publishFailed, () => {
-                        // Clean up all event listeners on disposed MQTT client instance.
-                        this._client.removeAllListeners();
+                        // Clean up all registered event listeners on disposed
+                        // client so that no further log messages are emitted.
+                        this._deregisterClientEventHandlers();
                         this._reset();
                         resolve();
                     });
@@ -440,6 +388,88 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
         this._pendingPublicationItems = [];
         this._issuedSubscriptionItems = [];
         this.emit("communicationState", CommunicationState.Offline);
+    }
+
+    private _initClientEventHandlers() {
+        if (this._clientEventHandlers) {
+            return;
+        }
+        this._clientEventHandlers = new Map();
+
+        // Called on successful (re)connection.
+        this._clientEventHandlers.set("connect", (connack) => {
+            this.log(CommunicationBindingLogLevel.info, "Client connected");
+            this.emit("communicationState", CommunicationState.Online);
+
+            // Ensure all issued subscription items are (re)subscribed.
+            this._subscribeItems(this._issuedSubscriptionItems);
+
+            // Ensure join events are published first on (re)connection in the given order.
+            const joinEvents = this._joinOptions.joinEvents;
+            for (let i = joinEvents.length - 1; i >= 0; i--) {
+                this._addPublicationItem(joinEvents[i], undefined, true, true);
+            }
+
+            // Start emitting all deferred offline publications.
+            this._isDrainingPublications = false;
+            this._drainPublications();
+        });
+
+        // Called when a reconnect starts.
+        this._clientEventHandlers.set("reconnect", () => {
+            this.log(CommunicationBindingLogLevel.info, "Client reconnecting...");
+        });
+
+        // Called after a disconnection requested by calling client.end().
+        this._clientEventHandlers.set("close", () => {
+            this.log(CommunicationBindingLogLevel.info, "Client disconnected");
+
+            // Stop draining until next reconnect.
+            this._isDrainingPublications = true;
+
+            this.emit("communicationState", CommunicationState.Offline);
+        });
+
+        // Emitted when the client goes offline, i.e. when the connection to the server
+        // is closed (for whatever reason) and before the client reconnects.
+        this._clientEventHandlers.set("offline", () => {
+            this.log(CommunicationBindingLogLevel.info, "Client offline");
+
+            // Stop draining until next reconnect.
+            this._isDrainingPublications = true;
+
+            this.emit("communicationState", CommunicationState.Offline);
+        });
+
+        // Emitted when the client cannot connect (i.e. connack rc != 0) or when a
+        // parsing error occurs.
+        this._clientEventHandlers.set("error", (error) => {
+            this.log(CommunicationBindingLogLevel.info, "Client error on connect: ", error);
+            this.emit("communicationState", CommunicationState.Offline);
+        });
+
+        // Emitted when the client receives a publish packet.
+        this._clientEventHandlers.set("message", (topic, payload, packet) => {
+            this._dispatchMessage(topic, payload);
+        });
+    }
+
+    private _registerClientEventHandlers() {
+        this._client.on("connect", this._clientEventHandlers.get("connect"));
+        this._client.on("reconnect", this._clientEventHandlers.get("reconnect"));
+        this._client.on("close", this._clientEventHandlers.get("close"));
+        this._client.on("offline", this._clientEventHandlers.get("offline"));
+        this._client.on("error", this._clientEventHandlers.get("error"));
+        this._client.on("message", this._clientEventHandlers.get("message"));
+    }
+
+    private _deregisterClientEventHandlers() {
+        this._client.removeListener("connect", this._clientEventHandlers.get("connect"));
+        this._client.removeListener("reconnect", this._clientEventHandlers.get("reconnect"));
+        this._client.removeListener("close", this._clientEventHandlers.get("close"));
+        this._client.removeListener("offline", this._clientEventHandlers.get("offline"));
+        this._client.removeListener("error", this._clientEventHandlers.get("error"));
+        this._client.removeListener("message", this._clientEventHandlers.get("message"));
     }
 
     private _getTopicFor(eventLike: CommunicationEventLike) {
@@ -556,8 +586,8 @@ export class MqttBinding extends CommunicationBinding<MqttBindingOptions> {
 
     /**
      * Encodes the given event data.
-     * 
-     * @param eventLike event with raw or JSON object data 
+     *
+     * @param eventLike event with raw or JSON object data
      * @returns encoded data in raw or JSON-UTF8 string format
      * @throws if event data cannot be encoded
      */
