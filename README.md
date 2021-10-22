@@ -5,8 +5,6 @@
 [![release](https://img.shields.io/badge/release-Conventional%20Commits-yellow.svg)](https://conventionalcommits.org/)
 [![npm version](https://badge.fury.io/js/%40coaty%2Fcore.svg)](https://www.npmjs.com/package/@coaty/core)
 
-> [Ready to upgrade to Coaty 2?](https://coatyio.github.io/coaty-js/man/migration-guide/)
-
 Using the Coaty [koʊti] framework as a middleware, you can build distributed
 applications out of decentrally organized application components, so called
 *Coaty agents*, which are loosely coupled and communicate with each other in
@@ -56,13 +54,12 @@ includes:
   event patterns](https://coatyio.github.io/coaty-js/man/communication-events/),
 * guidance notes on [rights
   management](https://coatyio.github.io/coaty-js/man/rights-management/) in a
-  Coaty application.
+  Coaty application,
 * a guide on the [OGC SensorThings API
   integration](https://coatyio.github.io/coaty-js/man/sensor-things-guide/) in
-  Coaty JS.
-* [Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/) - a
-  guide on migrating an existing Coaty JS application to a newer Coaty JS major
-  release
+  Coaty JS,
+* a [Migration Guide](https://coatyio.github.io/coaty-js/man/migration-guide/)
+  to upgrade an existing Coaty JS application to a newer Coaty JS major release.
 
 Coaty JS also includes a set of fully documented [code
 examples](https://github.com/coatyio/coaty-examples) that demonstrate best
