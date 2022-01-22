@@ -71,7 +71,7 @@
         "chalk": "^4.1.2",
         "geojson": "^0.5.0",
         "mqtt": "^4.2.8",
-        "node-fetch": "^2.6.4",
+        "node-fetch": "^3.1.1",
         "semver": "^7.3.5",
         "uuid": "^8.3.2",
         "websocket-stream": "^5.5.2"
