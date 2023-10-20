@@ -1063,7 +1063,7 @@ within any Ionic Component Page.
 
 Use the `CommunicationManager.observeCommunicationState` method to observe
 communication state changes of the underlying messaging transport connection to
-the Coaty communication infrastrcuture (i.e. online or offline). Usage of this
+the Coaty communication infrastructure (i.e. online or offline). Usage of this
 feature is further simplified by the convenience method
 `NodeUtils.logCommunicationState` and by a convenience controller class named
 [`ConnectionStateController`](#connection-state-controller).

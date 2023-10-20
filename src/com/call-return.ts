@@ -39,9 +39,9 @@ export class CallEvent extends CommunicationEvent<CallEventData> {
 
     /**
      * @internal For internal use in framework only. Do not use in application code.
-     * 
+     *
      * Create a Call event instance.
-     * 
+     *
      * @param operation the operation name of this Call event
      * @param eventData data associated with this Call event
      * @throws if operation name is not in a valid format
@@ -112,7 +112,7 @@ export class CallEventData extends CommunicationEventData {
     }
 
     /**
-     * A context filter whose conditions must match a context object at the remote end 
+     * A context filter whose conditions must match a context object at the remote end
      * in order to allow execution of the remote call (optional).
      * If no filter has been specified the value returned is `undefined`.
      */
@@ -152,7 +152,7 @@ export class CallEventData extends CommunicationEventData {
     /**
      * Returns the JSON value of the positional parameter with the given index. Returns `undefined`,
      * if the given index is out of range or if no index parameters have been specified.
-     * 
+     *
      * @param index the zero-based index into the JSON parameters array
      */
     getParameterByIndex(index: number) {
@@ -183,7 +183,7 @@ export class CallEventData extends CommunicationEventData {
      *
      * A match fails if:
      * - context filter and context object are *both* specified and they do not
-     *   match (checked by using `ObjectMatcher.matchesFilter`), or 
+     *   match (checked by using `ObjectMatcher.matchesFilter`), or
      * - context filter is *not* specified *and* context object *is* specified.
      *
      * In all other cases, the match is considered successfull.
@@ -223,11 +223,11 @@ export class CallEventData extends CommunicationEventData {
 
 /**
  * Defines error codes for pre-defined remote call errors.
- * 
+ *
  * The integer error codes from and including -32768 to -32000 are reserved for pre-defined errors
  * encountered while executing a remote call. Any code within this range, but not defined explicitly
  * below is reserved for future use. The remaining integers are available for application defined errors.
- * 
+ *
  * The predefined error messages corresponding to these predefined error codes are defined by enum
  * `RemoteCallErrorMessage`.
  */
@@ -237,7 +237,7 @@ export enum RemoteCallErrorCode {
 
 /**
  * Defines error messages for pre-defined remote call errors.
- * 
+ *
  * The predefined error codes corresponding to these predefined error messages are defined by enum
  * `RemoteCallErrorCode`.
  */
@@ -257,7 +257,7 @@ export class ReturnEvent extends CommunicationEvent<ReturnEventData> {
     /**
      * @internal For internal use in framework only. Do not use in application
      * code.
-     * 
+     *
      * Associated request event.
      */
     eventRequest: CallEvent;
@@ -274,13 +274,13 @@ export class ReturnEvent extends CommunicationEvent<ReturnEventData> {
 
     /**
      * Create a ReturnEvent instance for a remote operation call that yields an error.
-     * 
+     *
      * The error code given is an integer that indicates the error type
      * that occurred, either a predefined error or an application defined one. Predefined error
      * codes are defined by the `RemoteCallErrorCode` enum. Predefined error
      * codes are within the range -32768 to -32000. Application defined error codes must be
      * defined outside this range.
-     * 
+     *
      * The error message provides a short description of the error. Predefined error messages
      * exist for all predefined error codes (see enum `RemoteCallErrorMessage`).
      *
@@ -312,13 +312,13 @@ export class ReturnEventData extends CommunicationEventData {
     /**
      * The error object to be returned in case the operation call yielded an error (optional).
      * The value is `undefined` if the operation executed successfully.
-     * 
+     *
      * The error object consists of two properties: `code`, `message`.
-     * 
+     *
      * The error code given is an integer that indicates the error type
      * that occurred, either a predefined error or an application defined one. Predefined error
      * codes are defined by the `RemoteCallErrorCode` enum. Predefined error
-     * codes are within the range -32768 to -32000. Application defined error codes must be
+     * codes are within the range -32768 to -32000. Application specific error codes must be
      * defined outside this range.
      *
      * The error message provides a short description of the error. Predefined error messages
@@ -330,7 +330,7 @@ export class ReturnEventData extends CommunicationEventData {
 
     /**
      * Determines whether an error object has been returned.
-     * 
+     *
      * Returns true, if remote operation failed with an error; false otherwise.
      */
     get isError() {
@@ -338,10 +338,10 @@ export class ReturnEventData extends CommunicationEventData {
     }
 
     /**
-     * Defines additional information about the execution environment (ayn JSON value)
+     * Defines additional information about the execution environment (any JSON value)
      * such as the execution time of the operation or the ID of the operated control unit
      * (optional).
-     * 
+     *
      * The value is `undefined`, if no execution info has been specified.
      */
     get executionInfo() {
@@ -354,9 +354,9 @@ export class ReturnEventData extends CommunicationEventData {
 
     /**
      * Create an instance of ReturnEventData.
-     * 
+     *
      * Exactly one of the parameters `result` or `error` is required.
-     * The `executionInfo` parameter is optional and may be specified 
+     * The `executionInfo` parameter is optional and may be specified
      * both in case of success and error.
      *
      * @param result the result value to be returned (any JSON data type, optional)
